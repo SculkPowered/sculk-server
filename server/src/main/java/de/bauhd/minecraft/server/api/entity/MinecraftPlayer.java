@@ -7,7 +7,6 @@ import de.bauhd.minecraft.server.protocol.packet.play.TabListHeaderFooter;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
 import io.netty5.channel.Channel;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -16,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
-public final class Player implements Audience {
+public final class MinecraftPlayer implements Player {
 
     private final Channel channel;
     private final UUID uniqueId;
@@ -24,26 +23,26 @@ public final class Player implements Audience {
     private final UUID bossBarUniqueId = UUID.randomUUID(); // maybe change
     private final BossBar.Listener bossBarListener = new BossBar.Listener() {
 
-        private final UUID uniqueId = Player.this.bossBarUniqueId;
+        private final UUID uniqueId = MinecraftPlayer.this.bossBarUniqueId;
 
         @Override
         public void bossBarNameChanged(@NotNull BossBar bar, @NotNull Component oldName, @NotNull Component newName) {
-            Player.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newName));
+            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newName));
         }
 
         @Override
         public void bossBarProgressChanged(@NotNull BossBar bar, float oldProgress, float newProgress) {
-            Player.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newProgress));
+            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newProgress));
         }
 
         @Override
         public void bossBarColorChanged(@NotNull BossBar bar, BossBar.@NotNull Color oldColor, BossBar.@NotNull Color newColor) {
-            Player.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newColor.ordinal(), bar.overlay().ordinal()));
+            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newColor.ordinal(), bar.overlay().ordinal()));
         }
 
         @Override
         public void bossBarOverlayChanged(@NotNull BossBar bar, BossBar.@NotNull Overlay oldOverlay, BossBar.@NotNull Overlay newOverlay) {
-            Player.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, bar.color().ordinal(), newOverlay.ordinal()));
+            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, bar.color().ordinal(), newOverlay.ordinal()));
         }
 
         @Override
@@ -52,18 +51,28 @@ public final class Player implements Audience {
         }
     };
 
-    public Player(final Channel channel, final UUID uniqueId, final String name) {
+    public MinecraftPlayer(final Channel channel, final UUID uniqueId, final String name) {
         this.channel = channel;
         this.uniqueId = uniqueId;
         this.name = name;
     }
 
-    public UUID getUniqueId() {
+    public @NotNull UUID getUniqueId() {
         return this.uniqueId;
     }
 
-    public String getName() {
+    public @NotNull String getUsername() {
         return this.name;
+    }
+
+    @Override
+    public void sendMessage(@NotNull Component message) {
+        this.send(new SystemChatMessage(message, true));
+    }
+
+    @Override
+    public void sendActionBar(@NotNull Component message) {
+        this.send(new ActionBar(message));
     }
 
     @Override
@@ -72,8 +81,13 @@ public final class Player implements Audience {
     }
 
     @Override
-    public void sendActionBar(@NotNull Component message) {
-        this.send(new ActionBar(message));
+    public void showTitle(@NotNull Title title) {
+        this.send(new de.bauhd.minecraft.server.protocol.packet.play.title.Title(title.title()));
+        this.send(new Subtitle(title.subtitle()));
+
+        final var times = title.times() != null ? title.times() : Title.DEFAULT_TIMES;
+        assert times != null;
+        this.send(new TitleAnimationTimes(times.fadeIn().getNano(), times.stay().getNano(), times.fadeOut().getNano())); // TODO to ticks
     }
 
     @Override
@@ -90,18 +104,8 @@ public final class Player implements Audience {
     }
 
     @Override
-    public void showTitle(@NotNull Title title) {
-        this.send(new de.bauhd.minecraft.server.protocol.packet.play.title.Title(title.title()));
-        this.send(new Subtitle(title.subtitle()));
-
-        final var times = title.times() != null ? title.times() : Title.DEFAULT_TIMES;
-        assert times != null;
-        this.send(new TitleAnimationTimes(times.fadeIn().getNano(), times.stay().getNano(), times.fadeOut().getNano())); // TODO to ticks
-    }
-
-    @Override
-    public void sendMessage(@NotNull Component message) {
-        this.send(new SystemChatMessage(message, true));
+    public @NotNull EntityType getType() {
+        return EntityType.PLAYER;
     }
 
     public void send(final Packet packet) {

@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.MinecraftServer;
-import de.bauhd.minecraft.server.api.entity.Player;
+import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.util.MojangUtil;
@@ -75,8 +75,8 @@ public final class PlayerInfo implements Packet {
         return new PlayerInfo(0, uniqueId, name, gameMode, ping, displayName);
     }
 
-    public static PlayerInfo add(final Player player) {
-        return PlayerInfo.add(player.getUniqueId(), player.getName(), 1, 1, null);
+    public static PlayerInfo add(final MinecraftPlayer player) {
+        return PlayerInfo.add(player.getUniqueId(), player.getUsername(), 1, 1, null);
     }
 
     public static PlayerInfo remove(final UUID uniqueId) {

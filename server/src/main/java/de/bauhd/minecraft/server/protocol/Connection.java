@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol;
 
 import de.bauhd.minecraft.server.Worker;
-import de.bauhd.minecraft.server.api.entity.Player;
+import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.world.World;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
@@ -13,7 +13,6 @@ import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.status.StatusPing;
 import de.bauhd.minecraft.server.protocol.packet.status.StatusRequest;
 import de.bauhd.minecraft.server.protocol.packet.status.StatusResponse;
-import io.netty5.buffer.pool.PooledBufferAllocator;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
@@ -51,7 +50,7 @@ public final class Connection extends ChannelHandlerAdapter {
 
                 this.setState(State.PLAY);
                 ctx.writeAndFlush(new Login());
-                final var player = new Player(ctx.channel(), uuid, loginStart.getUsername());
+                final var player = new MinecraftPlayer(ctx.channel(), uuid, loginStart.getUsername());
                 final var world = new World();
 
                 Worker.PLAYERS.add(player);

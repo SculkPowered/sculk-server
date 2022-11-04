@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.api.world;
 
-import de.bauhd.minecraft.server.api.entity.Player;
+import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -38,7 +38,7 @@ public final class Chunk {
 
     }
 
-    public void send(Player player) {
+    public void send(MinecraftPlayer player) {
         final var dimensionHeight = 384;
         final var motionBlocking = new int[256];
         final var worldSurface = new int[256];
