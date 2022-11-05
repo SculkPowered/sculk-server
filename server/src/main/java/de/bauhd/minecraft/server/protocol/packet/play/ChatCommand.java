@@ -31,6 +31,22 @@ public final class ChatCommand implements Packet {
 
     }
 
+    public String command() {
+        return this.command;
+    }
+
+    public long timestamp() {
+        return this.timestamp;
+    }
+
+    public long salt() {
+        return this.salt;
+    }
+
+    public boolean signedPreview() {
+        return this.signedPreview;
+    }
+
     @Override
     public String toString() {
         return "ChatCommand{" +

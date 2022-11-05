@@ -1,29 +1,27 @@
 package de.bauhd.minecraft.server.api;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import de.bauhd.minecraft.server.api.command.BrigadierCommand;
+import de.bauhd.minecraft.server.api.command.CommandSender;
+import net.kyori.adventure.text.Component;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
-import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 
-public class Command {
+public class Command extends BrigadierCommand {
 
     public Command() {
-        final var dispatcher = new CommandDispatcher<>();
-        dispatcher.register(
-                literal("foo")
-                        .then(
-                                argument("bar", integer())
-                                        .executes(c -> {
-                                            System.out.println("Bar is " + getInteger(c, "bar"));
-                                            return 1;
-                                        })
-                        )
-                        .executes(c -> {
-                            System.out.println("Called foo with no arguments");
-                            return 1;
-                        })
-        );
+        super(LiteralArgumentBuilder.<CommandSender>literal("foo")
+                .then(RequiredArgumentBuilder.<CommandSender, Integer>argument("bar", IntegerArgumentType.integer())
+                                .executes(context -> {
+                                    context.getSource().sendMessage(Component.text("Bar is " + getInteger(context, "bar")));
+                                    return 1;
+                                })
+                )
+                .executes(context -> {
+                    context.getSource().sendMessage(Component.text("Called foo with no arguments"));
+                    return 1;
+                }));
     }
 }

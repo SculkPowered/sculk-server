@@ -108,6 +108,9 @@ public enum State {
             this.clientBound.register(BossBar.class, BossBar::new,
                     this.map(0x0A, MINECRAFT_1_19)
             );
+            this.clientBound.register(Commands.class, Commands::new,
+                    this.map(0x0F, MINECRAFT_1_19)
+            );
             this.clientBound.register(ContainerContent.class, ContainerContent::new,
                     this.map(0x11, MINECRAFT_1_19)
             );

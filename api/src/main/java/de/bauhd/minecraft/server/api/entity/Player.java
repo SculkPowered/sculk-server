@@ -1,11 +1,11 @@
 package de.bauhd.minecraft.server.api.entity;
 
-import net.kyori.adventure.audience.Audience;
+import de.bauhd.minecraft.server.api.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public interface Player extends LivingEntity, Audience {
+public interface Player extends LivingEntity, CommandSender {
 
     @NotNull UUID getUniqueId();
 

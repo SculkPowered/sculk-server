@@ -21,6 +21,7 @@
         <adventure.version>4.11.0</adventure.version>
         <gson.version>2.10</gson.version>
         <fastutil.version>8.5.9</fastutil.version>
+        <brigadier.version>1.0.18</brigadier.version>
     </properties>
 
     <repositories>

@@ -1,5 +1,7 @@
 package de.bauhd.minecraft.server;
 
+import de.bauhd.minecraft.server.api.Command;
+import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -15,7 +17,11 @@ public class MinecraftServer {
             GsonComponentSerializer.builder()
                     .build();
 
+    public static final MinecraftCommandHandler COMMAND_HANDLER = new MinecraftCommandHandler(); // TODO
+
     public static void main(String[] args) {
+
+        COMMAND_HANDLER.register("foo", new Command());
 
         new NettyServer().connect("0.0.0.0", 25565);
         new Worker().start();

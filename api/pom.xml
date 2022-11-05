@@ -24,6 +24,13 @@
             <version>${adventure.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>brigadier</artifactId>
+            <version>${brigadier.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

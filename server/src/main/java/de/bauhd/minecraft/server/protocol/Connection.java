@@ -1,5 +1,7 @@
 package de.bauhd.minecraft.server.protocol;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import de.bauhd.minecraft.server.MinecraftServer;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.world.World;
@@ -29,6 +31,7 @@ import java.util.UUID;
 public final class Connection extends ChannelHandlerAdapter {
 
     private final Channel channel;
+    private MinecraftPlayer player;
 
     public Connection(final Channel channel) {
         this.channel = channel;
@@ -50,10 +53,10 @@ public final class Connection extends ChannelHandlerAdapter {
 
                 this.setState(State.PLAY);
                 ctx.writeAndFlush(new Login());
-                final var player = new MinecraftPlayer(ctx.channel(), uuid, loginStart.getUsername());
+                this.player = new MinecraftPlayer(ctx.channel(), uuid, loginStart.getUsername());
                 final var world = new World();
 
-                Worker.PLAYERS.add(player);
+                Worker.PLAYERS.add(this.player);
 
                 ctx.writeAndFlush(new UpdateAttributes());
                 ctx.writeAndFlush(new SpawnPosition());
@@ -66,9 +69,9 @@ public final class Connection extends ChannelHandlerAdapter {
                 ctx.writeAndFlush(new SimulationDistance());
                 ctx.writeAndFlush(new Health());
                 ctx.writeAndFlush(new Experience());
-                ctx.writeAndFlush(PlayerInfo.add(player));
+                ctx.writeAndFlush(PlayerInfo.add(this.player));
 
-                player.sendPlayerListHeaderAndFooter(
+                this.player.sendPlayerListHeaderAndFooter(
                         Component.text("The best server ever!", TextColor.color(10, 43, 23)),
                         Component.text("lol")
                 );
@@ -77,10 +80,11 @@ public final class Connection extends ChannelHandlerAdapter {
                 final var bossBar = BossBar
                         .bossBar(Component.text("0"), 0F, BossBar.Color.GREEN, BossBar.Overlay.NOTCHED_6);
 
-                player.showBossBar(bossBar);
+                this.player.showBossBar(bossBar);
 
-                player.sendActionBar(Component.text("Hallo Noah", NamedTextColor.AQUA));
+                this.player.sendActionBar(Component.text("Hallo Noah", NamedTextColor.AQUA));
 
+                ctx.writeAndFlush(new Commands(MinecraftServer.COMMAND_HANDLER.dispatcher().getRoot()));
 
                 /*ctx.writeAndFlush(new UpdateObjectives());
                 ctx.writeAndFlush(new DisplayObjective());
@@ -120,6 +124,12 @@ public final class Connection extends ChannelHandlerAdapter {
                 ctx.writeAndFlush(PlayerInfo.add(npcUniqueId, npnName, -1, -1, null));
                 ctx.writeAndFlush(new SpawnPlayer(npcUniqueId));
               //  ctx.writeAndFlush(PlayerInfo.remove(npcUniqueId));
+            } else if (packet instanceof ChatCommand command) {
+                try {
+                    MinecraftServer.COMMAND_HANDLER.dispatcher().execute(command.command(), this.player);
+                } catch (CommandSyntaxException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
