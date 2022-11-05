@@ -92,9 +92,20 @@ public final class MinecraftPlayer implements Player {
 
     @Override
     public void showBossBar(@NotNull BossBar bar) {
+        byte flags = 0;
+        if (bar.flags().contains(BossBar.Flag.DARKEN_SCREEN)) {
+            flags |= 0x1;
+        }
+        if (bar.flags().contains(BossBar.Flag.PLAY_BOSS_MUSIC)) {
+            flags |= 0x2;
+        }
+        if (bar.flags().contains(BossBar.Flag.CREATE_WORLD_FOG)) {
+            flags |= 0x4;
+        }
+
         bar.addListener(this.bossBarListener);
         this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.add(this.bossBarUniqueId,
-                bar.name(), bar.progress(), bar.color().ordinal(), bar.overlay().ordinal(), 0x01)); // TODO flags
+                bar.name(), bar.progress(), bar.color().ordinal(), bar.overlay().ordinal(), flags));
     }
 
     @Override

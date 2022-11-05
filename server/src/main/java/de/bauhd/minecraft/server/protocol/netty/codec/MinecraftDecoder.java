@@ -31,7 +31,8 @@ public final class MinecraftDecoder implements ChannelHandler {
             final var id = PacketUtils.readVarInt(buf);
             final var packet = this.registry.createPacket(id);
             if (packet == null) {
-                //System.out.println("unknown packet id " + id + " " + this.registry.version);
+                if (id == 19 || id == 20 || id == 21) return; // ignore rotation packets, because they are not important yet
+                System.out.println("unknown packet id " + Integer.toHexString(id) + " " + this.registry.version);
             } else {
                 try (buf) {
                     final var minLength = packet.minLength();

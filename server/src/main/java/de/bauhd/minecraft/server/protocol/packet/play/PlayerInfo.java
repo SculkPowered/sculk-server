@@ -48,8 +48,6 @@ public final class PlayerInfo implements Packet {
             writeVarInt(buf, 1);
             writeString(buf, "textures");
             final var skin = MojangUtil.getSkinFromName(this.name);
-            System.out.println(skin.left());
-            System.out.println(skin.right());
             writeString(buf, skin.left());
             buf.writeBoolean(true);
             writeString(buf, skin.right());
