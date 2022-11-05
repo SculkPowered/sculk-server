@@ -10,6 +10,7 @@ import io.netty5.channel.Channel;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -81,13 +82,16 @@ public final class MinecraftPlayer implements Player {
     }
 
     @Override
-    public void showTitle(@NotNull Title title) {
-        this.send(new de.bauhd.minecraft.server.protocol.packet.play.title.Title(title.title()));
-        this.send(new Subtitle(title.subtitle()));
+    public <T> void sendTitlePart(@NotNull TitlePart<T> part, @NotNull T value) {
+        if (part == TitlePart.TITLE) {
+            this.send(new de.bauhd.minecraft.server.protocol.packet.play.title.Title((Component) value));
+        } else if (part == TitlePart.SUBTITLE) {
+            this.send(new Subtitle((Component) value));
+        } else if (part == TitlePart.TIMES) {
+            final var times = (Title.Times) value;
 
-        final var times = title.times() != null ? title.times() : Title.DEFAULT_TIMES;
-        assert times != null;
-        this.send(new TitleAnimationTimes(times.fadeIn().getNano(), times.stay().getNano(), times.fadeOut().getNano())); // TODO to ticks
+            this.send(new TitleAnimationTimes(times.fadeIn().getNano(), times.stay().getNano(), times.fadeOut().getNano())); // TODO to ticks
+        }
     }
 
     @Override
