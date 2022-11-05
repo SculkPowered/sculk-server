@@ -14,16 +14,14 @@ public final class PlayerCommand implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-
+        this.entityId = readVarInt(buf);
+        this.action = Action.get(readVarInt(buf));
+        this.jumpBoost = readVarInt(buf);
     }
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        this.entityId = readVarInt(buf);
-        this.action = Action.get(readVarInt(buf));
-        if (this.action == Action.START_JUMP_WITH_HORSE) {
-            this.jumpBoost = readVarInt(buf);
-        }
+
     }
 
     public int entityId() {
