@@ -23,6 +23,8 @@ import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -87,7 +89,7 @@ public final class Connection extends ChannelHandlerAdapter {
                 try {
                     MinecraftServer.COMMAND_HANDLER.dispatcher().execute(command.command(), this.player);
                 } catch (CommandSyntaxException e) {
-                    throw new RuntimeException(e);
+                    this.player.sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
                 }
             }
         }
