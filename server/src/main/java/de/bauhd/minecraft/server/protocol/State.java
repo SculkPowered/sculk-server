@@ -17,6 +17,8 @@ import io.netty5.util.collection.IntObjectHashMap;
 import io.netty5.util.collection.IntObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -46,10 +48,10 @@ public enum State {
                     this.map(0x01, MINECRAFT_1_7_2)
             );
 
-            this.clientBound.register(StatusResponse.class, StatusResponse::new,
+            this.clientBound.register(StatusResponse.class,
                     this.map(0x00, MINECRAFT_1_7_2)
             );
-            this.clientBound.register(StatusPing.class, StatusPing::new,
+            this.clientBound.register(StatusPing.class,
                     this.map(0x01, MINECRAFT_1_7_2)
             );
         }
@@ -63,20 +65,22 @@ public enum State {
                     this.map(0x01, MINECRAFT_1_7_2)
             );
 
-            this.clientBound.register(Disconnect.class, Disconnect::new,
+            this.clientBound.register(Disconnect.class,
                     this.map(0x00, MINECRAFT_1_7_2)
             );
-            this.clientBound.register(EncryptionRequest.class, EncryptionRequest::new,
+            this.clientBound.register(EncryptionRequest.class,
                     this.map(0x01, MINECRAFT_1_7_2)
             );
-            this.clientBound.register(LoginSuccess.class, LoginSuccess::new,
+            this.clientBound.register(LoginSuccess.class,
                     this.map(0x02, MINECRAFT_1_7_2)
             );
-
         }
     },
     PLAY {
         {
+            this.serverBound.disableFallback();
+            this.clientBound.disableFallback();
+
             this.serverBound.register(ConfirmTeleportation.class, ConfirmTeleportation::new,
                     this.map(0x00, MINECRAFT_1_19)
             );
@@ -98,130 +102,136 @@ public enum State {
                     this.map(0x11, MINECRAFT_1_19),
                     this.map(0x12, MINECRAFT_1_19_1)
             );
+            this.serverBound.register(PlayerCommand.class, PlayerCommand::new,
+                    this.map(0x1D, MINECRAFT_1_19)
+            );
+            this.serverBound.register(HeldItem.class, HeldItem::new,
+                    this.map(0x27, MINECRAFT_1_19)
+            );
 
-            this.clientBound.register(SpawnEntity.class, SpawnEntity::new,
+            this.clientBound.register(SpawnEntity.class,
                     this.map(0x00, MINECRAFT_1_19)
             );
-            this.clientBound.register(SpawnPlayer.class, SpawnPlayer::new,
+            this.clientBound.register(SpawnPlayer.class,
                     this.map(0x02, MINECRAFT_1_19)
             );
-            this.clientBound.register(BossBar.class, BossBar::new,
+            this.clientBound.register(BossBar.class,
                     this.map(0x0A, MINECRAFT_1_19)
             );
-            this.clientBound.register(Commands.class, Commands::new,
+            this.clientBound.register(Commands.class,
                     this.map(0x0F, MINECRAFT_1_19)
             );
-            this.clientBound.register(ContainerContent.class, ContainerContent::new,
+            this.clientBound.register(ContainerContent.class,
                     this.map(0x11, MINECRAFT_1_19)
             );
-            this.clientBound.register(PluginMessage.class, PluginMessage::new,
+            this.clientBound.register(PluginMessage.class,
                     this.map(0x15, MINECRAFT_1_19),
                     this.map(0x16, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(Disconnect.class, Disconnect::new,
+            this.clientBound.register(Disconnect.class,
                     this.map(0x17, MINECRAFT_1_19),
                     this.map(0x19, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(KeepAlive.class, KeepAlive::new,
+            this.clientBound.register(KeepAlive.class,
                     this.map(0x21, MINECRAFT_1_18_2),
                     this.map(0x1E, MINECRAFT_1_19),
                     this.map(0x20, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(ChunkDataAndUpdateLight.class, ChunkDataAndUpdateLight::new,
+            this.clientBound.register(ChunkDataAndUpdateLight.class,
                     this.map(0x22, MINECRAFT_1_18_2),
                     this.map(0x1F, MINECRAFT_1_19),
                     this.map(0x21, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(Login.class, Login::new,
+            this.clientBound.register(Login.class,
                     this.map(0x26, MINECRAFT_1_18_2),
                     this.map(0x23, MINECRAFT_1_19),
                     this.map(0x25, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(PlayerInfo.class, PlayerInfo::new,
+            this.clientBound.register(PlayerInfo.class,
                     this.map(0x34, MINECRAFT_1_19),
                     this.map(0x37, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(SynchronizePlayerPosition.class, SynchronizePlayerPosition::new,
+            this.clientBound.register(SynchronizePlayerPosition.class,
                     this.map(0x38, MINECRAFT_1_18_2),
                     this.map(0x36, MINECRAFT_1_19),
                     this.map(0x39, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(ActionBar.class, ActionBar::new,
+            this.clientBound.register(ActionBar.class,
                     this.map(0x40, MINECRAFT_1_19),
                     this.map(0x43, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(HeldItem.class, HeldItem::new,
+            this.clientBound.register(HeldItem.class,
                     this.map(0x47, MINECRAFT_1_19),
                     this.map(0x4A, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(CenterChunk.class, CenterChunk::new,
+            this.clientBound.register(CenterChunk.class,
                     this.map(0x48, MINECRAFT_1_19),
                     this.map(0x4B, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(RenderDistance.class, RenderDistance::new,
+            this.clientBound.register(RenderDistance.class,
                     this.map(0x49, MINECRAFT_1_19),
                     this.map(0x4C, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(SpawnPosition.class, SpawnPosition::new,
+            this.clientBound.register(SpawnPosition.class,
                     this.map(0x4B, MINECRAFT_1_18_2),
                     this.map(0x4A, MINECRAFT_1_19),
                     this.map(0x4D, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(DisplayObjective.class, DisplayObjective::new,
+            this.clientBound.register(DisplayObjective.class,
                     this.map(0x4C, MINECRAFT_1_19),
                     this.map(0x4F, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(Experience.class, Experience::new,
+            this.clientBound.register(Experience.class,
                     this.map(0x51, MINECRAFT_1_19),
                     this.map(0x54, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(Health.class, Health::new,
+            this.clientBound.register(Health.class,
                     this.map(0x52, MINECRAFT_1_19),
                     this.map(0x55, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(UpdateObjectives.class, UpdateObjectives::new,
+            this.clientBound.register(UpdateObjectives.class,
                     this.map(0x53, MINECRAFT_1_19),
                     this.map(0x56, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(UpdateScore.class, UpdateScore::new,
+            this.clientBound.register(UpdateScore.class,
                     this.map(0x56, MINECRAFT_1_19),
                     this.map(0x59, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(SimulationDistance.class, SimulationDistance::new,
+            this.clientBound.register(SimulationDistance.class,
                     this.map(0x57, MINECRAFT_1_19),
                     this.map(0x5A, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(Subtitle.class, Subtitle::new,
+            this.clientBound.register(Subtitle.class,
                     this.map(0x58, MINECRAFT_1_19),
                     this.map(0x5B, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(Title.class, Title::new,
+            this.clientBound.register(Title.class,
                     this.map(0x5A, MINECRAFT_1_19),
                     this.map(0x5D, MINECRAFT_1_19_1)
 
             );
-            this.clientBound.register(TitleAnimationTimes.class, TitleAnimationTimes::new,
+            this.clientBound.register(TitleAnimationTimes.class,
                     this.map(0x5B, MINECRAFT_1_19),
                     this.map(0x5E, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(SystemChatMessage.class, SystemChatMessage::new,
+            this.clientBound.register(SystemChatMessage.class,
                     this.map(0x5F, MINECRAFT_1_19)
             );
-            this.clientBound.register(TabListHeaderFooter.class, TabListHeaderFooter::new,
+            this.clientBound.register(TabListHeaderFooter.class,
                     this.map(0x60, MINECRAFT_1_19),
                     this.map(0x63, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(UpdateAttributes.class, UpdateAttributes::new,
+            this.clientBound.register(UpdateAttributes.class,
                     this.map(0x64, MINECRAFT_1_18_2),
                     this.map(0x65, MINECRAFT_1_19),
                     this.map(0x68, MINECRAFT_1_19_1)
                     //this.map(0x68, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(UpdateRecipes.class, UpdateRecipes::new,
+            this.clientBound.register(UpdateRecipes.class,
                     this.map(0x67, MINECRAFT_1_19),
                     this.map(0x6A, MINECRAFT_1_19_1)
             );
-            this.clientBound.register(UpdateTags.class, UpdateTags::new,
+            this.clientBound.register(UpdateTags.class,
                     this.map(0x68, MINECRAFT_1_19),
                     this.map(0x6B, MINECRAFT_1_19_1)
             );
@@ -233,12 +243,10 @@ public enum State {
 
     public static class PacketRegistry {
 
-        private final Direction direction;
         private final Map<Version, ProtocolRegistry> versions;
-        private final boolean fallback = true;
+        private boolean fallback = true;
 
         PacketRegistry(Direction direction) {
-            this.direction = direction;
 
             final Map<Version, ProtocolRegistry> mutableVersions = new EnumMap<>(Version.class);
             for (final var version : Version.values()) {
@@ -257,6 +265,11 @@ public enum State {
                 throw new IllegalArgumentException("Could not find data for protocol version " + version);
             }
             return registry;
+        }
+
+        protected <P extends Packet> void register(final Class<P> clazz,
+                                                   final MappedPacket... mappings) {
+            this.register(clazz, null, mappings);
         }
 
         protected <P extends Packet> void register(final Class<P> clazz,
@@ -306,12 +319,16 @@ public enum State {
                                 + " is already registered for version " + registry.version);
                     }
 
-                    if (!current.encodeOnly()) {
+                    if (packetSupplier != null) {
                         registry.packetIdToSupplier.put(current.id(), packetSupplier);
                     }
                     registry.packetClassToId.put(clazz, current.id());
                 }
             }
+        }
+
+        protected void disableFallback() {
+            this.fallback = false;
         }
 
         public static class ProtocolRegistry {
@@ -345,33 +362,26 @@ public enum State {
 
     protected MappedPacket map(final int id,
                                final Protocol.Version version) {
-        return new MappedPacket(id, version, null, false);
-    }
-
-    protected MappedPacket map(final int id,
-                               final Protocol.Version version,
-                               final boolean encodeOnly) {
-        return new MappedPacket(id, version, null, encodeOnly);
+        return new MappedPacket(id, version, null);
     }
 
     protected MappedPacket map(final int id,
                                final Protocol.Version version,
                                final Protocol.Version toVersion) {
-        return new MappedPacket(id, version, toVersion, false);
+        return new MappedPacket(id, version, toVersion);
     }
 
     protected MappedPacket map(final int id,
                                final Protocol.Version version,
                                final Protocol.Version toVersion,
                                final boolean encodeOnly) {
-        return new MappedPacket(id, version, toVersion, encodeOnly);
+        return new MappedPacket(id, version, toVersion);
     }
 
     private record MappedPacket(
             int id,
-            Protocol.Version version,
-            Protocol.Version toVersion,
-            boolean encodeOnly
+            @NotNull Protocol.Version version,
+            @Nullable Protocol.Version toVersion
     ) {
     }
 
