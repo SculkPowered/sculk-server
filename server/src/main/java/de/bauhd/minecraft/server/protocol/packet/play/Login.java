@@ -1,20 +1,241 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.MinecraftServer;
+import de.bauhd.minecraft.server.api.world.biome.Biome;
+import de.bauhd.minecraft.server.api.world.dimension.Dimension;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import io.netty5.buffer.Buffer;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.TagStringIO;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
+import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class Login implements Packet {
+
+    // TODO
+
+    private static final CompoundBinaryTag CHAT_REGISTRY;
+
+    static {
+        try {
+            CHAT_REGISTRY = TagStringIO.get().asCompound("""
+                    {
+                        "value": [
+                          {
+                            "name": "minecraft:chat",
+                            "id": 0,
+                            "element": {
+                              "chat": {
+                                "decoration": {
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ],
+                                  "translation_key": "chat.type.text",
+                                  "style": {}
+                                }
+                              },
+                              "narration": {
+                                "decoration": {
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ],
+                                  "translation_key": "chat.type.text.narrate",
+                                  "style": {}
+                                },
+                                "priority": "chat"
+                              }
+                            }
+                          },
+                          {
+                            "element": {
+                              "narration": {
+                                "priority": "system"
+                              },
+                              "chat": {}
+                            },
+                            "name": "minecraft:system",
+                            "id": 1
+                          },
+                          {
+                            "id": 2,
+                            "name": "minecraft:game_info",
+                            "element": {
+                              "overlay": {}
+                            }
+                          },
+                          {
+                            "element": {
+                              "narration": {
+                                "priority": "chat",
+                                "decoration": {
+                                  "style": {},
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ],
+                                  "translation_key": "chat.type.text.narrate"
+                                }
+                              },
+                              "chat": {
+                                "decoration": {
+                                  "style": {},
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ],
+                                  "translation_key": "chat.type.announcement"
+                                }
+                              }
+                            },
+                            "id": 3,
+                            "name": "minecraft:say_command"
+                          },
+                          {
+                            "id": 4,
+                            "element": {
+                              "chat": {
+                                "decoration": {
+                                  "translation_key": "commands.message.display.incoming",
+                                  "style": {
+                                    "italic": 1,
+                                    "color": "gray"
+                                  },
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ]
+                                }
+                              },
+                              "narration": {
+                                "priority": "chat",
+                                "decoration": {
+                                  "translation_key": "chat.type.text.narrate",
+                                  "style": {},
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ]
+                                }
+                              }
+                            },
+                            "name": "minecraft:msg_command"
+                          },
+                          {
+                            "name": "minecraft:team_msg_command",
+                            "id": 5,
+                            "element": {
+                              "narration": {
+                                "priority": "chat",
+                                "decoration": {
+                                  "style": {},
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ],
+                                  "translation_key": "chat.type.text.narrate"
+                                }
+                              },
+                              "chat": {
+                                "decoration": {
+                                  "translation_key": "chat.type.team.text",
+                                  "style": {},
+                                  "parameters": [
+                                    "team_name",
+                                    "sender",
+                                    "content"
+                                  ]
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "id": 6,
+                            "element": {
+                              "chat": {
+                                "decoration": {
+                                  "translation_key": "chat.type.emote",
+                                  "style": {},
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ]
+                                }
+                              },
+                              "narration": {
+                                "priority": "chat",
+                                "decoration": {
+                                  "style": {},
+                                  "translation_key": "chat.type.emote",
+                                  "parameters": [
+                                    "sender",
+                                    "content"
+                                  ]
+                                }
+                              }
+                            },
+                            "name": "minecraft:emote_command"
+                          },
+                          {
+                            "element": {
+                              "chat": {},
+                              "narration": {
+                                "priority": "chat"
+                              }
+                            },
+                            "id": 7,
+                            "name": "minecraft:tellraw_command"
+                          }
+                        ],
+                        "type": "minecraft:chat_type"
+                      }""");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final Dimension OVERWORLD = Dimension.builder("minecraft:overworld")
+            .piglinSafe(false)
+            .hasRaids(true)
+            .monsterSpawnLightLevel(CompoundBinaryTag.builder()
+                    .putString("type", "minecraft:uniform")
+                    .put("value", CompoundBinaryTag.builder()
+                            .putInt("max_inclusive", 7)
+                            .putInt("min_inclusive", 0)
+                            .build())
+                    .build())
+            .monsterSpawnBlockLightLimit(0)
+            .natural(true)
+            .ambientLight(0F)
+            .infiniburn("#minecraft:infiniburn_overworld")
+            .respawnAnchorWorks(false)
+            .hasSkylight(true)
+            .bedWorks(true)
+            .effects("minecraft:overworld")
+            .minY(384)
+            .height(384)
+            .logicalHeight(384)
+            .coordinateScale(1D)
+            .ultrawarm(false)
+            .hasCeiling(false)
+            .build();
+
+    private static final Biome THE_VOID = Biome.builder("minecraft:plains")
+            .precipitation("none")
+            .temperature(0.5F)
+            .downfall(0.5F)
+            .effects(Biome.Effects.builder()
+                    .skyColor(8103167)
+                    .waterFogColor(329011)
+                    .fogColor(12638463)
+                    .waterColor(4159204)
+            )
+            .build();
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
@@ -80,22 +301,24 @@ public final class Login implements Packet {
                         .build())
                 .build());*/
 
+        final var tag = CompoundBinaryTag.builder()
+                .put("minecraft:worldgen/biome", CompoundBinaryTag.builder()
+                        .putString("type", "minecraft:worldgen/biome")
+                        .put("value", ListBinaryTag.from(List.of(THE_VOID.nbt())))
+                        .build())
+                .put("minecraft:dimension_type", CompoundBinaryTag.builder()
+                        .putString("type", "minecraft:dimension_type")
+                        .put("value", ListBinaryTag.from(List.of(OVERWORLD.nbt())))
+                        .build())
+                .put("minecraft:chat_type", CHAT_REGISTRY)
+                .build();
         try {
-            final InputStream resourceStream;
-            if (version == Protocol.Version.MINECRAFT_1_19) {
-                resourceStream = MinecraftServer.class.getClassLoader().getResourceAsStream("codec-1-19.json");
-            } else if (version == Protocol.Version.MINECRAFT_1_19_1) {
-                resourceStream = MinecraftServer.class.getClassLoader().getResourceAsStream("codec-1-19-1.json");
-            } else {
-                System.out.println("oh no");
-                return;
-            }
-            assert resourceStream != null;
-            final var s = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
-            PacketUtils.writeCompoundTag(buf, TagStringIO.get().asCompound(s));
+            System.out.println(TagStringIO.get().asString(tag));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        writeCompoundTag(buf, tag);
 
         writeString(buf, "minecraft:overworld"); // Dimension Type
         writeString(buf, "minecraft:overworld"); // Dimension Name

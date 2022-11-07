@@ -32,7 +32,7 @@ public final class MinecraftEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected Buffer allocateBuffer(ChannelHandlerContext channelHandlerContext, Packet packet) {
-        return channelHandlerContext.bufferAllocator().allocate(16386); // TODO
+        return channelHandlerContext.bufferAllocator().allocate(0);
     }
 
     public void set(final State state, final Protocol.Version version) {
