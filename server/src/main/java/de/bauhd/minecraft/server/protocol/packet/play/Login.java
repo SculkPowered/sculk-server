@@ -217,7 +217,7 @@ public final class Login implements Packet {
             .hasSkylight(true)
             .bedWorks(true)
             .effects("minecraft:overworld")
-            .minY(384)
+            .minY(-64)
             .height(384)
             .logicalHeight(384)
             .coordinateScale(1D)
