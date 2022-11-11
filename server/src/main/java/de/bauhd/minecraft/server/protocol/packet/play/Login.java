@@ -5,7 +5,9 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
+import net.kyori.adventure.nbt.TagStringIO;
 
+import java.io.IOException;
 import java.util.List;
 
 import static de.bauhd.minecraft.server.api.world.biome.Biome.PLAINS;
@@ -13,6 +15,40 @@ import static de.bauhd.minecraft.server.api.world.dimension.Dimension.OVERWORLD;
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class Login implements Packet {
+
+    private static final CompoundBinaryTag CHAT_REGISTRY;
+
+    static {
+        try {
+            CHAT_REGISTRY = TagStringIO.get().asCompound("""
+                    {
+                                                    "type": "minecraft:chat_type",
+                                                    "value": [
+                                                         {
+                                                            "name":"minecraft:chat",
+                                                            "id":1,
+                                                            "element":{
+                                                               "chat":{
+                                                                  "translation_key":"chat.type.text",
+                                                                  "parameters":[
+                                                                     "sender",
+                                                                     "content"
+                                                                  ]
+                                                               },
+                                                               "narration":{
+                                                                  "translation_key":"chat.type.text.narrate",
+                                                                  "parameters":[
+                                                                     "sender",
+                                                                     "content"
+                                                                  ]
+                                                               }
+                                                            }
+                                                         }    ]
+                                                }""");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
@@ -36,7 +72,7 @@ public final class Login implements Packet {
                         .putString("type", "minecraft:dimension_type")
                         .put("value", ListBinaryTag.from(List.of(OVERWORLD.nbt())))
                         .build())
-                //.put("minecraft:chat_type", CHAT_REGISTRY)
+                .put("minecraft:chat_type", CHAT_REGISTRY)
                 .build());
         writeString(buf, "minecraft:overworld"); // Dimension Type
         writeString(buf, "minecraft:overworld"); // Dimension Name

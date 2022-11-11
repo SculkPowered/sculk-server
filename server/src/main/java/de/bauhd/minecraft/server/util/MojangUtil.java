@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import it.unimi.dsi.fastutil.Pair;
 
 import java.io.IOException;
@@ -19,20 +20,20 @@ public final class MojangUtil {
         return object.get("id").getAsString();
     }
 
-    public static Pair<String, String> getSkin(final String uniqueId) {
+    public static GameProfile.Property getSkin(final String uniqueId) {
         final var object = apiRequest(String.format(SESSION_SERVER, uniqueId));
         if (object == null) return null;
         for (final var element : object.getAsJsonArray("properties")) {
             final var property = element.getAsJsonObject();
             final var name = property.get("name").getAsString();
             if (name.equals("textures")) {
-                return Pair.of(property.get("value").getAsString(), property.get("signature").getAsString());
+                return new GameProfile.Property("textures", property.get("value").getAsString(), property.get("signature").getAsString());
             }
         }
         return null;
     }
 
-    public static Pair<String, String> getSkinFromName(final String name) {
+    public static GameProfile.Property getSkinFromName(final String name) {
         return getSkin(getUniqueIdString(name));
     }
 

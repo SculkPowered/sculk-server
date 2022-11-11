@@ -5,7 +5,6 @@ import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 
@@ -24,10 +23,12 @@ public final class PlayerInfo implements Packet {
     private int ping;
     private Component displayName;
 
-    private PlayerInfo(final int action, final UUID uniqueId, final String name, final int gameMode, final int ping, final Component displayName) {
+    private PlayerInfo(final int action, final UUID uniqueId, final String name, final List<GameProfile.Property> properties,
+                       final int gameMode, final int ping, final Component displayName) {
         this.action = action;
         this.uniqueId = uniqueId;
         this.name = name;
+        this.properties = properties;
         this.gameMode = gameMode;
         this.ping = ping;
         this.displayName = displayName;
@@ -49,11 +50,15 @@ public final class PlayerInfo implements Packet {
         if (this.action == 0) {
             writeString(buf, this.name);
             writeVarInt(buf, this.properties.size());
+            System.out.println(this.properties);
             for (final var property : this.properties) {
                 writeString(buf, property.key());
                 writeString(buf, property.value());
                 if (property.signature() != null) {
+                    buf.writeBoolean(true);
                     writeString(buf, property.signature());
+                } else {
+                    buf.writeBoolean(false);
                 }
             }
             writeVarInt(buf, this.gameMode);
@@ -74,16 +79,16 @@ public final class PlayerInfo implements Packet {
         }
     }
 
-    public static PlayerInfo add(final UUID uniqueId, final String name, final int gameMode, final int ping, final Component displayName) {
-        return new PlayerInfo(0, uniqueId, name, gameMode, ping, displayName);
+    public static PlayerInfo add(final UUID uniqueId, final String name, final List<GameProfile.Property> properties, final int gameMode, final int ping, final Component displayName) {
+        return new PlayerInfo(0, uniqueId, name, properties, gameMode, ping, displayName);
     }
 
     public static PlayerInfo add(final MinecraftPlayer player) {
-        return PlayerInfo.add(player.getUniqueId(), player.getUsername(), 1, 1, null);
+        return PlayerInfo.add(player.getUniqueId(), player.getUsername(), player.getProfile().properties(), 1, 1, null);
     }
 
     public static PlayerInfo remove(final UUID uniqueId) {
-        return new PlayerInfo(4, uniqueId, null, -1, -1, null);
+        return new PlayerInfo(4, uniqueId, null, null, -1, -1, null);
     }
 
     @Override

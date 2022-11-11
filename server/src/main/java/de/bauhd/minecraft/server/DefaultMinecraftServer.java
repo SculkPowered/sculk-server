@@ -1,11 +1,15 @@
 package de.bauhd.minecraft.server;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.bauhd.minecraft.server.api.Command;
 import de.bauhd.minecraft.server.api.MinecraftServer;
 import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
+import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
+import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -15,6 +19,11 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
 public class DefaultMinecraftServer extends MinecraftServer {
+
+    public static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
+            .create();
+    public static final boolean BUNGEECORD = false; // TODO change me
 
     private static final GsonComponentSerializer PRE_1_16_SERIALIZER =
             GsonComponentSerializer.builder()

@@ -24,6 +24,7 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
     private final Channel channel;
     private final UUID uniqueId;
     private final String name;
+    private final GameProfile profile;
     private final UUID bossBarUniqueId = UUID.randomUUID(); // maybe change
     private final BossBar.Listener bossBarListener = new BossBar.Listener() {
 
@@ -55,10 +56,11 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
         }
     };
 
-    public MinecraftPlayer(final Channel channel, final UUID uniqueId, final String name) {
+    public MinecraftPlayer(final Channel channel, final UUID uniqueId, final String name, final GameProfile profile) {
         this.channel = channel;
         this.uniqueId = uniqueId;
         this.name = name;
+        this.profile = profile;
     }
 
     public @NotNull UUID getUniqueId() {
@@ -71,7 +73,7 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
 
     @Override
     public @NotNull GameProfile getProfile() {
-        return null;
+        return this.profile;
     }
 
     @Override
