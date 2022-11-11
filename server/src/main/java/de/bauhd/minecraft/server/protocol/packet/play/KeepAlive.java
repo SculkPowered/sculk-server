@@ -29,6 +29,16 @@ public final class KeepAlive implements Packet {
     }
 
     @Override
+    public int minLength() {
+        return 8; // Long
+    }
+
+    @Override
+    public int maxLength() {
+        return 8; // Long
+    }
+
+    @Override
     public String toString() {
         return "KeepAlive{" +
                 "timeMillis=" + this.timeMillis +
