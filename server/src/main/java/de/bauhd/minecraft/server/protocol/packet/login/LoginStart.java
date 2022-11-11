@@ -4,12 +4,14 @@ import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readByteArray;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readString;
+import java.util.UUID;
+
+import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class LoginStart implements Packet {
 
     private String username;
+    private UUID uniqueId;
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
@@ -20,6 +22,11 @@ public final class LoginStart implements Packet {
                 buf.readLong();
                 readByteArray(buf); // public key
                 readByteArray(buf); // signature
+            }
+            if (version.compare(Protocol.Version.MINECRAFT_1_19_1)) {
+                if (buf.readBoolean()) {
+                    this.uniqueId = readUUID(buf);
+                }
             }
         }
     }
@@ -33,10 +40,15 @@ public final class LoginStart implements Packet {
         return this.username;
     }
 
+    public UUID uniqueId() {
+        return this.uniqueId;
+    }
+
     @Override
     public String toString() {
-        return "LoginStartPacket{" +
+        return "LoginStart{" +
                 "username='" + this.username + '\'' +
+                ", uniqueId=" + this.uniqueId +
                 '}';
     }
 }
