@@ -7,6 +7,7 @@ import de.bauhd.minecraft.server.protocol.packet.play.KeepAlive;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.ChannelHandler;
 import io.netty5.channel.ChannelHandlerContext;
+import io.netty5.handler.codec.DecoderException;
 
 public final class MinecraftDecoder implements ChannelHandler {
 
@@ -37,11 +38,12 @@ public final class MinecraftDecoder implements ChannelHandler {
                 try (buf) {
                     final var minLength = packet.minLength();
                     final var maxLength = packet.maxLength();
-                    if (maxLength != -1 && buf.readableBytes() > maxLength) {
-                        System.out.println("overflow");
+                    final var length = buf.readableBytes();
+                    if (maxLength != -1 && length > maxLength) {
+                        throw new DecoderException("Overflow packet " + packet.getClass().getSimpleName() + " (max length = " + maxLength + ", length = " + length + ")");
                     }
-                    if (buf.readableBytes() < minLength) {
-                        System.out.println("underflow");
+                    if (length < minLength) {
+                        throw new DecoderException("Underflow packet " + packet.getClass().getSimpleName() + " (min length = " + minLength + ", length = " + length + ")");
                     }
 
                     try {
@@ -50,7 +52,7 @@ public final class MinecraftDecoder implements ChannelHandler {
                         e.printStackTrace();
                     }
                     if (buf.readableBytes() > 0) {
-                        System.out.println("overflow after decode " + packet);
+                        throw new DecoderException("Overflow after decode packet " + packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
                     }
                     if (packet.getClass() != KeepAlive.class) System.out.println("decoded " + packet + " - " + id);
                     ctx.fireChannelRead(packet);
