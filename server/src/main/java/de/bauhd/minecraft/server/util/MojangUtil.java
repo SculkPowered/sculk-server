@@ -26,17 +26,7 @@ public final class MojangUtil {
             final var property = element.getAsJsonObject();
             final var name = property.get("name").getAsString();
             if (name.equals("textures")) {
-                return new Pair<>() {
-                    @Override
-                    public String left() {
-                        return property.get("value").getAsString();
-                    }
-
-                    @Override
-                    public String right() {
-                        return property.get("signature").getAsString();
-                    }
-                };
+                return Pair.of(property.get("value").getAsString(), property.get("signature").getAsString());
             }
         }
         return null;

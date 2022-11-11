@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import de.bauhd.minecraft.server.MinecraftServer;
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.world.Chunk;
@@ -12,10 +12,7 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginStart;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
-import de.bauhd.minecraft.server.protocol.packet.play.ChatCommand;
-import de.bauhd.minecraft.server.protocol.packet.play.Commands;
-import de.bauhd.minecraft.server.protocol.packet.play.Login;
-import de.bauhd.minecraft.server.protocol.packet.play.PlayerInfo;
+import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.status.StatusPing;
 import de.bauhd.minecraft.server.protocol.packet.status.StatusRequest;
 import de.bauhd.minecraft.server.protocol.packet.status.StatusResponse;
@@ -80,14 +77,22 @@ public final class Connection extends ChannelHandlerAdapter {
                 //ctx.writeAndFlush(new Experience());
 
                 ctx.writeAndFlush(PlayerInfo.add(this.player));
-                ctx.writeAndFlush(new Commands(MinecraftServer.COMMAND_HANDLER.dispatcher().getRoot()));
+                ctx.writeAndFlush(new Commands(DefaultMinecraftServer.COMMAND_HANDLER.dispatcher().getRoot()));
 
                 for (final var chunk : CHUNKS) {
                     chunk.send(this.player);
                 }
+
+                Worker.PLAYERS.forEach(player -> {
+                    if (player != this.player) {
+                        this.send(PlayerInfo.add(player));
+                        System.out.println(player.getId() + " - " + player.getUniqueId());
+                        this.send(new SpawnPlayer(player.getId(), player.getUniqueId()));
+                    }
+                });
             } else if (packet instanceof ChatCommand command) {
                 try {
-                    MinecraftServer.COMMAND_HANDLER.dispatcher().execute(command.command(), this.player);
+                    DefaultMinecraftServer.COMMAND_HANDLER.dispatcher().execute(command.command(), this.player);
                 } catch (CommandSyntaxException e) {
                     this.player.sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
                 }

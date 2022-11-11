@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.MinecraftServer;
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -43,7 +43,7 @@ public final class BossBar implements Packet {
         writeVarInt(buf, this.action);
 
         if (this.action == 0) {
-            writeString(buf, MinecraftServer.getGsonSerializer(version).serialize(this.title));
+            writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.title));
             buf.writeFloat(this.health);
             writeVarInt(buf, this.color);
             writeVarInt(buf, this.division);
@@ -51,7 +51,7 @@ public final class BossBar implements Packet {
         } else if (this.action == 2) {
             buf.writeFloat(this.health);
         } else if (this.action == 3) {
-            writeString(buf, MinecraftServer.getGsonSerializer(version).serialize(this.title));
+            writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.title));
         } else if (this.action == 4) {
             writeVarInt(buf, this.color);
             writeVarInt(buf, this.division);

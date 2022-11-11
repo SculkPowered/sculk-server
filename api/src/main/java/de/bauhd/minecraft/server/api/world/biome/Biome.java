@@ -7,7 +7,19 @@ public final class Biome {
 
     private static int CURRENT_ID = 0;
 
-    private CompoundBinaryTag nbt;
+    public static final Biome PLAINS = Biome.builder("minecraft:plains")
+            .precipitation("none")
+            .temperature(0.5F)
+            .downfall(0.5F)
+            .effects(Biome.Effects.builder()
+                    .skyColor(8103167)
+                    .waterFogColor(329011)
+                    .fogColor(12638463)
+                    .waterColor(4159204)
+            )
+            .build();
+
+    private final CompoundBinaryTag nbt;
 
     private Biome(final CompoundBinaryTag nbt) {
         this.nbt = nbt;

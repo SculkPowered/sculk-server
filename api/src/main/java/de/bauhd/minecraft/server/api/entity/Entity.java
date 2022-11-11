@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Entity {
 
+    int getId();
+
     @NotNull EntityType getType();
 
 }

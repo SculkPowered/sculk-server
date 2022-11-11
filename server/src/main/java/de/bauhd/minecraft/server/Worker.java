@@ -3,8 +3,8 @@ package de.bauhd.minecraft.server;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.packet.play.KeepAlive;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class Worker {
 
@@ -12,7 +12,7 @@ public final class Worker {
     private static final int MILLIS_BETWEEN_TICK = 1000 / TPS;
 
     // TODO
-    public static final List<MinecraftPlayer> PLAYERS = new ArrayList<>();
+    public static final List<MinecraftPlayer> PLAYERS = new CopyOnWriteArrayList<>();
 
     private boolean running = true;
 

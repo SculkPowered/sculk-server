@@ -7,6 +7,32 @@ public final class Dimension {
 
     private static int CURRENT_ID = 0;
 
+    public static final Dimension OVERWORLD = Dimension.builder("minecraft:overworld")
+            .piglinSafe(false)
+            .hasRaids(true)
+            .monsterSpawnLightLevel(CompoundBinaryTag.builder()
+                    .putString("type", "minecraft:uniform")
+                    .put("value", CompoundBinaryTag.builder()
+                            .putInt("max_inclusive", 7)
+                            .putInt("min_inclusive", 0)
+                            .build())
+                    .build())
+            .monsterSpawnBlockLightLimit(0)
+            .natural(true)
+            .ambientLight(0F)
+            .infiniburn("#minecraft:infiniburn_overworld")
+            .respawnAnchorWorks(false)
+            .hasSkylight(true)
+            .bedWorks(true)
+            .effects("minecraft:overworld")
+            .minY(-64)
+            .height(384)
+            .logicalHeight(384)
+            .coordinateScale(1D)
+            .ultrawarm(false)
+            .hasCeiling(false)
+            .build();
+
     private final CompoundBinaryTag nbt;
 
     private Dimension(final CompoundBinaryTag nbt) {

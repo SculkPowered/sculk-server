@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 import java.util.UUID;
 
-public final class MinecraftPlayer implements Player {
+public final class MinecraftPlayer extends AbstractEntity implements Player {
 
     private final Channel channel;
     private final UUID uniqueId;

@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.title;
 
-import de.bauhd.minecraft.server.MinecraftServer;
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -25,7 +25,7 @@ public final class Subtitle implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, MinecraftServer.getGsonSerializer(version).serialize(this.text));
+        writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.text));
     }
 
     @Override

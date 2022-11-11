@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.MinecraftServer;
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -27,7 +27,7 @@ public final class SystemChatMessage implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, MinecraftServer.getGsonSerializer(version).serialize(this.data));
+        writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.data));
         buf.writeBoolean(this.overlay);
     }
 

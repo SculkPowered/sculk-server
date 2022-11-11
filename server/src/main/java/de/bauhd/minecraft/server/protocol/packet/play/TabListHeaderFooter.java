@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.MinecraftServer;
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -27,7 +27,7 @@ public final class TabListHeaderFooter implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        final var serializer = MinecraftServer.getGsonSerializer(version);
+        final var serializer = DefaultMinecraftServer.getGsonSerializer(version);
 
         writeString(buf, serializer.serialize(this.header));
         writeString(buf, serializer.serialize(this.footer));

@@ -11,13 +11,13 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class SpawnPlayer implements Packet {
 
-    private UUID uniqueId;
+    private final int entityId;
+    private final UUID uniqueId;
 
-    public SpawnPlayer(final UUID uniqueId) {
+    public SpawnPlayer(final int entityId, final UUID uniqueId) {
+        this.entityId = entityId;
         this.uniqueId = uniqueId;
     }
-
-    public SpawnPlayer() {}
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
@@ -26,8 +26,20 @@ public final class SpawnPlayer implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeVarInt(buf, 2);
+        writeVarInt(buf, this.entityId);
         writeUUID(buf, this.uniqueId);
-        buf.writeDouble(22).writeDouble(40).writeDouble(5).writeByte((byte) 0).writeByte((byte) 0);
+        buf.writeDouble(22)
+                .writeDouble(40)
+                .writeDouble(5)
+                .writeByte((byte) 0)
+                .writeByte((byte) 0);
+    }
+
+    @Override
+    public String toString() {
+        return "SpawnPlayer{" +
+                "entityId=" + this.entityId +
+                ", uniqueId=" + this.uniqueId +
+                '}';
     }
 }
