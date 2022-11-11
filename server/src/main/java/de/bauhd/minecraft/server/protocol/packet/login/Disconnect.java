@@ -5,11 +5,16 @@ import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class Disconnect implements Packet {
+
+    private final Component text;
+
+    public Disconnect(final Component text) {
+        this.text = text;
+    }
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
@@ -18,6 +23,6 @@ public final class Disconnect implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(Component.text("hjewaipweahehwea").color(NamedTextColor.RED)));
+        writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.text));
     }
 }

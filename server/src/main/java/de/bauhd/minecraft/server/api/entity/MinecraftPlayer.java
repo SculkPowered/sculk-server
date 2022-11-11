@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.api.entity;
 
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
 import de.bauhd.minecraft.server.protocol.packet.play.SystemChatMessage;
 import de.bauhd.minecraft.server.protocol.packet.play.TabListHeaderFooter;
@@ -64,6 +65,11 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
 
     public @NotNull String getUsername() {
         return this.name;
+    }
+
+    @Override
+    public void disconnect(@NotNull Component component) {
+        this.send(new Disconnect(component));
     }
 
     @Override
