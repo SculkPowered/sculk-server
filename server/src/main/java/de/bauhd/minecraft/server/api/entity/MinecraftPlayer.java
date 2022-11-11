@@ -1,5 +1,7 @@
 package de.bauhd.minecraft.server.api.entity;
 
+import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
@@ -65,6 +67,11 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
 
     public @NotNull String getUsername() {
         return this.name;
+    }
+
+    @Override
+    public @NotNull GameProfile getProfile() {
+        return null;
     }
 
     @Override

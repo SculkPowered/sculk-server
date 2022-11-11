@@ -7,6 +7,7 @@ import io.netty5.buffer.BufferOutputStream;
 import io.netty5.handler.codec.EncoderException;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutput;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class PacketUtils {
 
-    public static void writeString(final Buffer buf, final CharSequence charSequence) {
+    public static void writeString(final Buffer buf, final @NotNull CharSequence charSequence) {
         writeVarInt(buf, Utf8.encodedLength(charSequence));
         buf.writeCharSequence(charSequence, UTF_8);
     }

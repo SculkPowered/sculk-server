@@ -2,12 +2,14 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
@@ -17,6 +19,7 @@ public final class PlayerInfo implements Packet {
     private int action;
     private UUID uniqueId;
     private String name;
+    private List<GameProfile.Property> properties;
     private int gameMode;
     private int ping;
     private Component displayName;
@@ -45,12 +48,14 @@ public final class PlayerInfo implements Packet {
 
         if (this.action == 0) {
             writeString(buf, this.name);
-            writeVarInt(buf, 1);
-            writeString(buf, "textures");
-            final var skin = MojangUtil.getSkinFromName(this.name);
-            writeString(buf, skin.left());
-            buf.writeBoolean(true);
-            writeString(buf, skin.right());
+            writeVarInt(buf, this.properties.size());
+            for (final var property : this.properties) {
+                writeString(buf, property.key());
+                writeString(buf, property.value());
+                if (property.signature() != null) {
+                    writeString(buf, property.signature());
+                }
+            }
             writeVarInt(buf, this.gameMode);
             writeVarInt(buf, this.ping);
             if (this.displayName != null) {
