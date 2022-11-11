@@ -248,7 +248,7 @@ public enum State {
 
         PacketRegistry(Direction direction) {
 
-            final Map<Version, ProtocolRegistry> mutableVersions = new EnumMap<>(Version.class);
+            final var mutableVersions = new EnumMap<Version, ProtocolRegistry>(Version.class);
             for (final var version : Version.values()) {
                 mutableVersions.put(version, new ProtocolRegistry(version));
             }
@@ -257,7 +257,7 @@ public enum State {
         }
 
         protected ProtocolRegistry getProtocolRegistry(final Version version) {
-            final ProtocolRegistry registry = this.versions.get(version);
+            final var registry = this.versions.get(version);
             if (registry == null) {
                 if (this.fallback) {
                     return this.getProtocolRegistry(Version.MINIMUM);
