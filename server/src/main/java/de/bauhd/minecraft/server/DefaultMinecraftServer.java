@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server;
 
 import de.bauhd.minecraft.server.api.Command;
 import de.bauhd.minecraft.server.api.MinecraftServer;
+import de.bauhd.minecraft.server.api.command.CommandHandler;
 import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
@@ -21,18 +22,17 @@ public class DefaultMinecraftServer extends MinecraftServer {
             GsonComponentSerializer.builder()
                     .build();
 
-    public static final MinecraftCommandHandler COMMAND_HANDLER = new MinecraftCommandHandler(); // TODO
-
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
+    private final MinecraftCommandHandler commandHandler;
 
-    public DefaultMinecraftServer() {
-        COMMAND_HANDLER.register("foo", new Command());
-
+    protected DefaultMinecraftServer() {
         new NettyServer().connect("0.0.0.0", 25565);
 
         this.dimensionHandler = new MinecraftDimensionHandler();
         this.biomeHandler = null;
+        this.commandHandler = new MinecraftCommandHandler();
+        this.commandHandler.register("foo", new Command());
 
         new Worker().start();
     }
@@ -43,11 +43,20 @@ public class DefaultMinecraftServer extends MinecraftServer {
 
     @Override
     public DimensionHandler getDimensionHandler() {
-        return null;
+        return this.dimensionHandler;
     }
 
     @Override
     public BiomeHandler getBiomeHandler() {
-        return null;
+        return this.biomeHandler;
+    }
+
+    @Override
+    public MinecraftCommandHandler getCommandHandler() {
+        return this.commandHandler;
+    }
+
+    public static DefaultMinecraftServer getInstance() {
+        return (DefaultMinecraftServer) MinecraftServer.getInstance();
     }
 }

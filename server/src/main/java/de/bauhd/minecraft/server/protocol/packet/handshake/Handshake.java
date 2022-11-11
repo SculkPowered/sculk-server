@@ -25,6 +25,16 @@ public final class Handshake implements Packet {
 
     }
 
+    @Override
+    public int minLength() {
+        return 5; // VarInt 1 + String 1 + Unsigned Short 2 + VarInt 1
+    }
+
+    @Override
+    public int maxLength() {
+        return 1039; // VarInt 5 + String 1027 + Unsigned Short 2 + VarInt 5
+    }
+
     public Protocol.Version getVersion() {
         return this.version;
     }

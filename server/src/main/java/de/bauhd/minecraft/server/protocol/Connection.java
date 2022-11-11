@@ -77,7 +77,7 @@ public final class Connection extends ChannelHandlerAdapter {
                 //ctx.writeAndFlush(new Experience());
 
                 ctx.writeAndFlush(PlayerInfo.add(this.player));
-                ctx.writeAndFlush(new Commands(DefaultMinecraftServer.COMMAND_HANDLER.dispatcher().getRoot()));
+                ctx.writeAndFlush(new Commands(DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
 
                 for (final var chunk : CHUNKS) {
                     chunk.send(this.player);
@@ -92,7 +92,7 @@ public final class Connection extends ChannelHandlerAdapter {
                 });
             } else if (packet instanceof ChatCommand command) {
                 try {
-                    DefaultMinecraftServer.COMMAND_HANDLER.dispatcher().execute(command.command(), this.player);
+                    DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().execute(command.command(), this.player);
                 } catch (CommandSyntaxException e) {
                     this.player.sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
                 }
