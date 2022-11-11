@@ -7,7 +7,6 @@ import io.netty5.buffer.Buffer;
 import java.util.Arrays;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readByteArray;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
 
 public final class EncryptionResponse implements Packet {
 
@@ -18,12 +17,11 @@ public final class EncryptionResponse implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        final var sharedSecretLength = readVarInt(buf);
-        this.sharedSecret = new byte[sharedSecretLength];
-        buf.readBytes(this.sharedSecret, 0, sharedSecretLength);
+        this.sharedSecret = readByteArray(buf);
 
         if (buf.readBoolean()) {
             this.verifyToken = readByteArray(buf);
+        } else {
             this.salt = buf.readLong();
             this.signature = readByteArray(buf);
         }

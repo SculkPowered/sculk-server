@@ -2,7 +2,6 @@ package de.bauhd.minecraft.server;
 
 import de.bauhd.minecraft.server.api.Command;
 import de.bauhd.minecraft.server.api.MinecraftServer;
-import de.bauhd.minecraft.server.api.command.CommandHandler;
 import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
@@ -10,6 +9,10 @@ import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 
 public class DefaultMinecraftServer extends MinecraftServer {
 
@@ -22,12 +25,21 @@ public class DefaultMinecraftServer extends MinecraftServer {
             GsonComponentSerializer.builder()
                     .build();
 
+    private final KeyPair keyPair;
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
     private final MinecraftCommandHandler commandHandler;
 
     protected DefaultMinecraftServer() {
         new NettyServer().connect("0.0.0.0", 25565);
+
+        try {
+            final var generator= KeyPairGenerator.getInstance("RSA");
+            generator.initialize(1024);
+            this.keyPair = generator.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
         this.dimensionHandler = new MinecraftDimensionHandler();
         this.biomeHandler = null;
@@ -54,6 +66,10 @@ public class DefaultMinecraftServer extends MinecraftServer {
     @Override
     public MinecraftCommandHandler getCommandHandler() {
         return this.commandHandler;
+    }
+
+    public KeyPair getKeyPair() {
+        return this.keyPair;
     }
 
     public static DefaultMinecraftServer getInstance() {
