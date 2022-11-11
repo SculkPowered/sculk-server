@@ -85,10 +85,12 @@ public enum State {
                     this.map(0x00, MINECRAFT_1_19)
             );
             this.serverBound.register(ChatCommand.class, ChatCommand::new,
-                    this.map(0x03, MINECRAFT_1_19)
+                    this.map(0x03, MINECRAFT_1_19),
+                    this.map(0x04, MINECRAFT_1_19_1)
             );
             this.serverBound.register(ChatMessage.class, ChatMessage::new,
-                    this.map(0x04, MINECRAFT_1_19)
+                    this.map(0x04, MINECRAFT_1_19),
+                    this.map(0x05, MINECRAFT_1_19_1)
             );
             this.serverBound.register(ClientInformation.class, ClientInformation::new,
                     this.map(0x07, MINECRAFT_1_19),
@@ -103,14 +105,19 @@ public enum State {
                     this.map(0x12, MINECRAFT_1_19_1)
             );
             this.serverBound.register(PlayerCommand.class, PlayerCommand::new,
-                    this.map(0x1D, MINECRAFT_1_19)
+                    this.map(0x1D, MINECRAFT_1_19),
+                    this.map(0x1E, MINECRAFT_1_19_1)
             );
             this.serverBound.register(HeldItem.class, HeldItem::new,
-                    this.map(0x27, MINECRAFT_1_19)
+                    this.map(0x27, MINECRAFT_1_19),
+                    this.map(0x28, MINECRAFT_1_19_1)
             );
 
             this.clientBound.register(SpawnEntity.class,
                     this.map(0x00, MINECRAFT_1_19)
+            );
+            this.clientBound.register(SpawnExperienceOrb.class,
+                    this.map(0x01, MINECRAFT_1_19)
             );
             this.clientBound.register(SpawnPlayer.class,
                     this.map(0x02, MINECRAFT_1_19)
@@ -215,7 +222,8 @@ public enum State {
                     this.map(0x5E, MINECRAFT_1_19_1)
             );
             this.clientBound.register(SystemChatMessage.class,
-                    this.map(0x5F, MINECRAFT_1_19)
+                    this.map(0x5F, MINECRAFT_1_19),
+                    this.map(0x62, MINECRAFT_1_19_1)
             );
             this.clientBound.register(TabListHeaderFooter.class,
                     this.map(0x60, MINECRAFT_1_19),
@@ -225,7 +233,6 @@ public enum State {
                     this.map(0x64, MINECRAFT_1_18_2),
                     this.map(0x65, MINECRAFT_1_19),
                     this.map(0x68, MINECRAFT_1_19_1)
-                    //this.map(0x68, MINECRAFT_1_19_1)
             );
             this.clientBound.register(UpdateRecipes.class,
                     this.map(0x67, MINECRAFT_1_19),
