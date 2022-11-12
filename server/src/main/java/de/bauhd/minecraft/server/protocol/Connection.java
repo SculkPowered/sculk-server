@@ -51,6 +51,14 @@ public final class Connection extends ChannelHandlerAdapter {
         }
     }
 
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        if (this.player != null) {
+            Worker.PLAYERS.remove(this.player);
+        }
+        ctx.close();
+    }
+
     public void play(GameProfile profile) {
         if (profile == null) {
             if (DefaultMinecraftServer.BUNGEECORD) {
