@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server.api.entity;
 
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
+import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
@@ -27,6 +28,7 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
     private final String name;
     private final GameProfile profile;
     private Component displayName;
+    private Position position = new Position(8.5, 40, 8.5);
     private final UUID bossBarUniqueId = UUID.randomUUID(); // maybe change
     private final BossBar.Listener bossBarListener = new BossBar.Listener() {
 
@@ -76,6 +78,14 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
     @Override
     public @NotNull GameProfile getProfile() {
         return this.profile;
+    }
+
+    public Position getPosition() {
+        return this.position;
+    }
+
+    public void setPosition(final Position position) {
+        this.position = position;
     }
 
     @Override

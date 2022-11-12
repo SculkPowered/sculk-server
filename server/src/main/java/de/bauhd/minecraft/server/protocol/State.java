@@ -4,6 +4,7 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
 import de.bauhd.minecraft.server.protocol.packet.login.*;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
+import de.bauhd.minecraft.server.protocol.packet.play.position.*;
 import de.bauhd.minecraft.server.protocol.packet.play.scoreboard.DisplayObjective;
 import de.bauhd.minecraft.server.protocol.packet.play.scoreboard.UpdateObjectives;
 import de.bauhd.minecraft.server.protocol.packet.play.scoreboard.UpdateScore;
@@ -104,6 +105,18 @@ public enum State {
                     this.map(0x11, MINECRAFT_1_19),
                     this.map(0x12, MINECRAFT_1_19_1)
             );
+            this.serverBound.register(PlayerPosition.class, PlayerPosition::new,
+                    this.map(0x13, MINECRAFT_1_19),
+                    this.map(0x14, MINECRAFT_1_19_1)
+            );
+            this.serverBound.register(PlayerPositionAndRotation.class, PlayerPositionAndRotation::new,
+                    this.map(0x14, MINECRAFT_1_19),
+                    this.map(0x15, MINECRAFT_1_19_1)
+            );
+            this.serverBound.register(PlayerRotation.class, PlayerRotation::new,
+                    this.map(0x15, MINECRAFT_1_19),
+                    this.map(0x16, MINECRAFT_1_19_1)
+            );
             this.serverBound.register(PlayerCommand.class, PlayerCommand::new,
                     this.map(0x1D, MINECRAFT_1_19),
                     this.map(0x1E, MINECRAFT_1_19_1)
@@ -154,6 +167,18 @@ public enum State {
                     this.map(0x23, MINECRAFT_1_19),
                     this.map(0x25, MINECRAFT_1_19_1)
             );
+            this.clientBound.register(EntityPosition.class,
+                    this.map(0x26, MINECRAFT_1_19),
+                    this.map(0x28, MINECRAFT_1_19_1)
+            );
+            this.clientBound.register(EntityPositionAndRotation.class,
+                    this.map(0x27, MINECRAFT_1_19),
+                    this.map(0x29, MINECRAFT_1_19_1)
+            );
+            this.clientBound.register(EntityRotation.class,
+                    this.map(0x28, MINECRAFT_1_19),
+                    this.map(0x2A, MINECRAFT_1_19_1)
+            );
             this.clientBound.register(PlayerInfo.class,
                     this.map(0x34, MINECRAFT_1_19),
                     this.map(0x37, MINECRAFT_1_19_1)
@@ -162,6 +187,10 @@ public enum State {
                     this.map(0x38, MINECRAFT_1_18_2),
                     this.map(0x36, MINECRAFT_1_19),
                     this.map(0x39, MINECRAFT_1_19_1)
+            );
+            this.clientBound.register(HeadRotation.class,
+                    this.map(0x3C, MINECRAFT_1_19),
+                    this.map(0x3F, MINECRAFT_1_19_1)
             );
             this.clientBound.register(ActionBar.class,
                     this.map(0x40, MINECRAFT_1_19),
@@ -215,7 +244,6 @@ public enum State {
             this.clientBound.register(Title.class,
                     this.map(0x5A, MINECRAFT_1_19),
                     this.map(0x5D, MINECRAFT_1_19_1)
-
             );
             this.clientBound.register(TitleAnimationTimes.class,
                     this.map(0x5B, MINECRAFT_1_19),

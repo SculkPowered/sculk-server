@@ -11,10 +11,7 @@ import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
-import de.bauhd.minecraft.server.protocol.packet.play.Commands;
-import de.bauhd.minecraft.server.protocol.packet.play.Login;
-import de.bauhd.minecraft.server.protocol.packet.play.PlayerInfo;
-import de.bauhd.minecraft.server.protocol.packet.play.SpawnPlayer;
+import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
@@ -75,6 +72,7 @@ public final class Connection extends ChannelHandlerAdapter {
         this.setState(State.PLAY);
         this.player = new MinecraftPlayer(this.channel, profile.uniqueId(), this.username, profile);
         this.send(new Login(this.player.getId()));
+        this.send(new SynchronizePlayerPosition(this.player.getPosition()));
 
         Worker.PLAYERS.add(this.player);
 
@@ -86,11 +84,11 @@ public final class Connection extends ChannelHandlerAdapter {
         }
 
         final var addPlayerInfo = PlayerInfo.add(this.player);
-        final var spawnPlayer = new SpawnPlayer(this.player.getId(), this.player.getUniqueId());
+        final var spawnPlayer = new SpawnPlayer(this.player);
 
         Worker.PLAYERS.forEach(player -> {
             if (player != this.player) {
-                this.send(new SpawnPlayer(player.getId(), player.getUniqueId()));
+                this.send(new SpawnPlayer(player));
                 player.send(addPlayerInfo);
                 player.send(spawnPlayer);
             }

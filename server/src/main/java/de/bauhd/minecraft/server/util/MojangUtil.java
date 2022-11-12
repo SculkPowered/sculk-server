@@ -53,10 +53,9 @@ public final class MojangUtil {
     private static JsonObject apiRequest(final String url) {
         try (final var reader = new InputStreamReader(new URL(url).openConnection().getInputStream())) {
             return JsonParser.parseReader(reader).getAsJsonObject();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | IllegalStateException e) {
+            return null;
         }
-        return null;
     }
 
 }

@@ -6,6 +6,7 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
@@ -16,7 +17,7 @@ public final class LoginStart implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.username = readString(buf, 16);
+        this.username = readString(buf, 16) + ThreadLocalRandom.current().nextInt(10);
 
         if (version.compare(Protocol.Version.MINECRAFT_1_19)) {
             if (buf.readBoolean()) {

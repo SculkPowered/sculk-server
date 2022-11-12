@@ -4,6 +4,9 @@ import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import de.bauhd.minecraft.server.protocol.packet.play.KeepAlive;
+import de.bauhd.minecraft.server.protocol.packet.play.position.PlayerPosition;
+import de.bauhd.minecraft.server.protocol.packet.play.position.PlayerPositionAndRotation;
+import de.bauhd.minecraft.server.protocol.packet.play.position.PlayerRotation;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.ChannelHandler;
 import io.netty5.channel.ChannelHandlerContext;
@@ -32,7 +35,6 @@ public final class MinecraftDecoder implements ChannelHandler {
             final var id = PacketUtils.readVarInt(buf);
             final var packet = this.registry.createPacket(id);
             if (packet == null) {
-                if (id == 19 || id == 20 || id == 21) return; // ignore rotation packets, because they are not important yet
                 System.out.println("unknown packet id " + Integer.toHexString(id) + " " + this.registry.version);
             } else {
                 try (buf) {
@@ -54,7 +56,9 @@ public final class MinecraftDecoder implements ChannelHandler {
                     if (buf.readableBytes() > 0) {
                         throw new DecoderException("Overflow after decode packet " + packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
                     }
-                    if (packet.getClass() != KeepAlive.class) System.out.println("decoded " + packet + " - " + id);
+                    final var clazz = packet.getClass();
+                    if (clazz != KeepAlive.class && clazz != PlayerPosition.class && clazz != PlayerPositionAndRotation.class && clazz != PlayerRotation.class)
+                        System.out.println("decoded " + packet + " - " + id);
                     ctx.fireChannelRead(packet);
                 }
             }
