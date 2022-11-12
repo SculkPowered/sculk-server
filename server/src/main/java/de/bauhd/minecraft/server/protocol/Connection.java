@@ -85,11 +85,13 @@ public final class Connection extends ChannelHandlerAdapter {
             chunk.send(this.player);
         }
 
+        final var addPlayerInfo = PlayerInfo.add(this.player);
         final var spawnPlayer = new SpawnPlayer(this.player.getId(), this.player.getUniqueId());
 
         Worker.PLAYERS.forEach(player -> {
             if (player != this.player) {
                 this.send(new SpawnPlayer(player.getId(), player.getUniqueId()));
+                player.send(addPlayerInfo);
                 player.send(spawnPlayer);
             }
         });
