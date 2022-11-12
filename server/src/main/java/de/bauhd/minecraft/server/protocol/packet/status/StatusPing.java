@@ -15,7 +15,7 @@ public final class StatusPing implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version  version) {
+    public void encode(Buffer buf, Protocol.Version version) {
         buf.writeLong(this.randomId);
     }
 
