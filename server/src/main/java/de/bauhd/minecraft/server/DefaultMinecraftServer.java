@@ -23,7 +23,7 @@ public class DefaultMinecraftServer extends MinecraftServer {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
             .create();
-    public static final boolean BUNGEECORD = true; // TODO change me
+    public static final boolean BUNGEECORD = false; // TODO change me
 
     private static final GsonComponentSerializer PRE_1_16_SERIALIZER =
             GsonComponentSerializer.builder()

@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -32,16 +33,13 @@ public final class LoginStart implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
-
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public UUID uniqueId() {
-        return this.uniqueId;
+    public void handle(Connection connection) {
+        connection.setUsername(this.username);
+        connection.play();
+        /*final var publicKey = DefaultMinecraftServer.getInstance().getKeyPair().getPublic().getEncoded();
+        final var verifyToken = new byte[4];
+        ThreadLocalRandom.current().nextBytes(verifyToken);
+        ctx.writeAndFlush(new EncryptionRequest("", publicKey, verifyToken));*/
     }
 
     @Override

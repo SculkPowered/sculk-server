@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol;
 
 import com.google.gson.reflect.TypeToken;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
@@ -11,20 +10,16 @@ import de.bauhd.minecraft.server.api.world.World;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
-import de.bauhd.minecraft.server.protocol.packet.login.LoginStart;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
-import de.bauhd.minecraft.server.protocol.packet.play.*;
-import de.bauhd.minecraft.server.protocol.packet.status.StatusPing;
-import de.bauhd.minecraft.server.protocol.packet.status.StatusRequest;
-import de.bauhd.minecraft.server.protocol.packet.status.StatusResponse;
+import de.bauhd.minecraft.server.protocol.packet.play.Commands;
+import de.bauhd.minecraft.server.protocol.packet.play.Login;
+import de.bauhd.minecraft.server.protocol.packet.play.PlayerInfo;
+import de.bauhd.minecraft.server.protocol.packet.play.SpawnPlayer;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -55,31 +50,11 @@ public final class Connection extends ChannelHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
         if (message instanceof Packet packet) {
-            if (packet instanceof Handshake handshake) {
-                this.set(handshake.getNextStatus() == 1 ? State.STATUS : State.LOGIN, handshake.getVersion());
-                this.serverAddress = handshake.getServerAddress();
-            } else if (packet instanceof StatusRequest) {
-                ctx.writeAndFlush(new StatusResponse());
-            } else if (packet instanceof StatusPing) {
-                this.sendAndClose(packet);
-            } else if (packet instanceof LoginStart loginStart) {
-                this.username = loginStart.getUsername();
-                this.play(ctx);
-                /*final var publicKey = DefaultMinecraftServer.getInstance().getKeyPair().getPublic().getEncoded();
-                final var verifyToken = new byte[4];
-                ThreadLocalRandom.current().nextBytes(verifyToken);
-                ctx.writeAndFlush(new EncryptionRequest("", publicKey, verifyToken));*/
-            } else if (packet instanceof ChatCommand command) {
-                try {
-                    DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().execute(command.command(), this.player);
-                } catch (CommandSyntaxException e) {
-                    this.player.sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
-                }
-            }
+            packet.handle(this);
         }
     }
 
-    private void play(final ChannelHandlerContext ctx) {
+    public void play() {
         GameProfile profile;
         if (DefaultMinecraftServer.BUNGEECORD) {
             final var arguments = this.serverAddress.split("\00");
@@ -96,28 +71,16 @@ public final class Connection extends ChannelHandlerAdapter {
                     List.of(MojangUtil.getSkinFromName(this.username))
             );
         }
-        ctx.writeAndFlush(new LoginSuccess(profile.uniqueId(), this.username));
+        this.send(new LoginSuccess(profile.uniqueId(), this.username));
 
         this.setState(State.PLAY);
-        ctx.writeAndFlush(new Login());
-        this.player = new MinecraftPlayer(ctx.channel(), profile.uniqueId(), this.username, profile);
+        this.send(new Login());
+        this.player = new MinecraftPlayer(this.channel, profile.uniqueId(), this.username, profile);
 
         Worker.PLAYERS.add(this.player);
 
-        //ctx.writeAndFlush(new UpdateAttributes());
-        //ctx.writeAndFlush(new SpawnPosition());
-        //ctx.writeAndFlush(new CenterChunk());
-        //ctx.writeAndFlush(new SynchronizePlayerPosition());
-        //ctx.writeAndFlush(new ContainerContent());
-        //ctx.writeAndFlush(new UpdateRecipes());
-        //ctx.writeAndFlush(new UpdateTags());
-        //ctx.writeAndFlush(new RenderDistance());
-        //ctx.writeAndFlush(new SimulationDistance());
-        //ctx.writeAndFlush(new Health());
-        //ctx.writeAndFlush(new Experience());
-
-        ctx.writeAndFlush(PlayerInfo.add(this.player));
-        ctx.writeAndFlush(new Commands(DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
+        this.send(PlayerInfo.add(this.player));
+        this.send(new Commands(DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
 
         for (final var chunk : CHUNKS) {
             chunk.send(this.player);
@@ -150,4 +113,15 @@ public final class Connection extends ChannelHandlerAdapter {
         this.channel.pipeline().get(MinecraftDecoder.class).setState(state);
     }
 
+    public void setServerAddress(final String serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    public void setUsername(final String username) {
+        this.username = username;
+    }
+
+    public MinecraftPlayer player() {
+        return this.player;
+    }
 }

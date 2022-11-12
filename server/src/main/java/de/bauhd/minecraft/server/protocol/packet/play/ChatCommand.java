@@ -1,8 +1,13 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
@@ -31,8 +36,12 @@ public final class ChatCommand implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
-
+    public void handle(Connection connection) {
+        try {
+            DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().execute(this.command, connection.player());
+        } catch (CommandSyntaxException e) {
+            connection.player().sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
+        }
     }
 
     public String command() {
