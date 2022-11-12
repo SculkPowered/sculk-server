@@ -90,7 +90,7 @@ public final class Connection extends ChannelHandlerAdapter {
         Worker.PLAYERS.forEach(player -> {
             if (player != this.player) {
                 this.send(new SpawnPlayer(player.getId(), player.getUniqueId()));
-                this.player.send(spawnPlayer);
+                player.send(spawnPlayer);
             }
         });
     }
