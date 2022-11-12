@@ -83,7 +83,7 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
 
     @Override
     public void sendMessage(@NotNull Component message) {
-        this.send(new SystemChatMessage(message, true));
+        this.send(new SystemChatMessage(message, false));
     }
 
     @Override

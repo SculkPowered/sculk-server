@@ -6,8 +6,7 @@ import io.netty5.buffer.Buffer;
 
 import java.util.Arrays;
 
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readByteArray;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readString;
+import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class ChatMessage implements Packet {
 
@@ -24,6 +23,9 @@ public final class ChatMessage implements Packet {
         this.salt = buf.readLong();
         this.signature = readByteArray(buf);
         this.signedPreview = buf.readBoolean();
+
+        // ignore for now
+        buf.skipReadableBytes(buf.readableBytes());
     }
 
     @Override

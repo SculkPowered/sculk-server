@@ -24,6 +24,10 @@ public final class ChatCommand implements Packet {
             readByteArray(buf);
         }
         this.signedPreview = buf.readBoolean();
+
+        // ignore for now
+        readVarInt(buf);
+        buf.readBoolean();
     }
 
     @Override
