@@ -1,8 +1,10 @@
 package de.bauhd.minecraft.server.api.entity;
 
+import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.protocol.packet.GameEvent;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
@@ -27,6 +29,7 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
+    private GameMode gameMode;
     private Component displayName;
     private Position position = new Position(8.5, 40, 8.5);
     private final UUID bossBarUniqueId = UUID.randomUUID(); // maybe change
@@ -96,6 +99,17 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
     @Override
     public void setDisplayName(@Nullable Component displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public @NotNull GameMode getGameMode() {
+        return this.gameMode;
+    }
+
+    @Override
+    public void setGameMode(@NotNull GameMode gameMode) {
+        this.gameMode = gameMode;
+        this.send(new GameEvent(3, gameMode.ordinal()));
     }
 
     @Override

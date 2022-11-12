@@ -16,6 +16,10 @@ public interface Player extends LivingEntity, CommandSender {
 
     @NotNull GameProfile getProfile();
 
+    @NotNull GameMode getGameMode();
+
+    void setGameMode(@NotNull GameMode gameMode);
+
     @Nullable Component getDisplayName();
 
     void setDisplayName(@Nullable Component displayName);
