@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.protocol.packet;
 
 import de.bauhd.minecraft.server.api.inventory.Slot;
+import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.util.Utf8;
 import io.netty5.buffer.Buffer;
 import io.netty5.buffer.BufferOutputStream;
@@ -111,5 +112,14 @@ public final class PacketUtils {
         } else {
             buf.writeBoolean(false);
         }
+    }
+
+    public static void writePosition(final Buffer buf, final Position position) {
+        buf.writeLong((((long) position.x() & 0x3FFFFFF) << 38) | (((long) position.z() & 0x3FFFFFF) << 12) | ((long) position.y() & 0xFFF));
+    }
+
+    public static Position readPosition(final Buffer buf) {
+        final var l = buf.readLong();
+        return new Position(l >> 38, l << 52 >> 52, l << 26 >> 38);
     }
 }

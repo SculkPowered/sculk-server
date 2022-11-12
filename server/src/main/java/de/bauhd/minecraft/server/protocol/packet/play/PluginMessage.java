@@ -1,8 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import io.netty5.buffer.Buffer;
+import io.netty5.buffer.DefaultBufferAllocators;
 
 import java.util.Arrays;
 
@@ -32,6 +35,13 @@ public final class PluginMessage implements Packet {
     public void encode(Buffer buf, Protocol.Version version) {
         writeString(buf, this.identifier);
         buf.writeBytes(this.data);
+    }
+
+    @Override
+    public void handle(Connection connection) {
+        final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(this.data.length);
+        buf.writeBytes(this.data);
+        System.out.println(PacketUtils.readString(buf));
     }
 
     @Override

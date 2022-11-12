@@ -1,5 +1,7 @@
 package de.bauhd.minecraft.server.protocol;
 
+import de.bauhd.minecraft.server.protocol.packet.BlockUpdate;
+import de.bauhd.minecraft.server.protocol.packet.GameEvent;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
 import de.bauhd.minecraft.server.protocol.packet.login.*;
@@ -117,6 +119,10 @@ public enum State {
                     this.map(0x15, MINECRAFT_1_19),
                     this.map(0x16, MINECRAFT_1_19_1)
             );
+            this.serverBound.register(PlayerAction.class, PlayerAction::new,
+                    this.map(0x1C, MINECRAFT_1_19),
+                    this.map(0x1D, MINECRAFT_1_19_1)
+            );
             this.serverBound.register(PlayerCommand.class, PlayerCommand::new,
                     this.map(0x1D, MINECRAFT_1_19),
                     this.map(0x1E, MINECRAFT_1_19_1)
@@ -135,8 +141,15 @@ public enum State {
             this.clientBound.register(SpawnPlayer.class,
                     this.map(0x02, MINECRAFT_1_19)
             );
+            this.clientBound.register(BlockUpdate.class,
+                    this.map(0x09, MINECRAFT_1_19)
+            );
             this.clientBound.register(BossBar.class,
                     this.map(0x0A, MINECRAFT_1_19)
+            );
+            this.clientBound.register(GameEvent.class,
+                    this.map(0x1B, MINECRAFT_1_19),
+                    this.map(0x1D, MINECRAFT_1_19_1)
             );
             this.clientBound.register(Commands.class,
                     this.map(0x0F, MINECRAFT_1_19)

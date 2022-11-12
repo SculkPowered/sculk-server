@@ -10,9 +10,11 @@ import de.bauhd.minecraft.server.api.world.World;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.util.MojangUtil;
+import io.netty5.buffer.DefaultBufferAllocators;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
@@ -26,6 +28,16 @@ import java.util.UUID;
 import static de.bauhd.minecraft.server.api.entity.player.GameProfile.Property;
 
 public final class Connection extends ChannelHandlerAdapter {
+
+    private static final PluginMessage BRAND_PACKET;
+
+    static {
+        final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(0);
+        PacketUtils.writeString(buf, "Best Server lol");
+        final var bytes = new byte[buf.readableBytes()];
+        buf.readBytes(bytes, 0, buf.readableBytes());
+        BRAND_PACKET = new PluginMessage("minecraft:brand", bytes);
+    }
 
     private static final List<Chunk> CHUNKS;
 
@@ -86,6 +98,7 @@ public final class Connection extends ChannelHandlerAdapter {
 
         this.send(PlayerInfo.add(Worker.PLAYERS));
         this.send(new Commands(DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
+        this.send(BRAND_PACKET);
 
         for (final var chunk : CHUNKS) {
             chunk.send(this.player);

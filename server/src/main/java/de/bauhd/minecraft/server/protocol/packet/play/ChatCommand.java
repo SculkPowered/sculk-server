@@ -30,9 +30,11 @@ public final class ChatCommand implements Packet {
         }
         this.signedPreview = buf.readBoolean();
 
-        // ignore for now
-        readVarInt(buf);
-        buf.readBoolean();
+        if (version.compare(Protocol.Version.MINECRAFT_1_19_1)) {
+            // ignore for now
+            readVarInt(buf);
+            buf.readBoolean();
+        }
     }
 
     @Override
