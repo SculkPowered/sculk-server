@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.UUID;
@@ -25,6 +26,7 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
+    private Component displayName;
     private final UUID bossBarUniqueId = UUID.randomUUID(); // maybe change
     private final BossBar.Listener bossBarListener = new BossBar.Listener() {
 
@@ -74,6 +76,16 @@ public final class MinecraftPlayer extends AbstractEntity implements Player {
     @Override
     public @NotNull GameProfile getProfile() {
         return this.profile;
+    }
+
+    @Override
+    public @Nullable Component getDisplayName() {
+        return this.displayName;
+    }
+
+    @Override
+    public void setDisplayName(@Nullable Component displayName) {
+        this.displayName = displayName;
     }
 
     @Override
