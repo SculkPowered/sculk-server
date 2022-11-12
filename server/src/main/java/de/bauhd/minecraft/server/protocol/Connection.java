@@ -14,6 +14,7 @@ import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.Commands;
 import de.bauhd.minecraft.server.protocol.packet.play.Login;
 import de.bauhd.minecraft.server.protocol.packet.play.PlayerInfo;
+import de.bauhd.minecraft.server.protocol.packet.play.SpawnPlayer;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
@@ -61,10 +62,11 @@ public final class Connection extends ChannelHandlerAdapter {
                 final var properties = (Property[]) DefaultMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class));
                 profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username, List.of(properties));
             } else {
+                final var skin = MojangUtil.getSkinFromName(this.username);
                 profile = new GameProfile(
                         UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.username).getBytes(StandardCharsets.UTF_8)),
                         this.username,
-                        List.of(MojangUtil.getSkinFromName(this.username))
+                        skin != null ? List.of(skin) : List.of()
                 );
             }
         }
@@ -76,20 +78,21 @@ public final class Connection extends ChannelHandlerAdapter {
 
         Worker.PLAYERS.add(this.player);
 
-        this.send(PlayerInfo.add(this.player));
+        this.send(PlayerInfo.add(Worker.PLAYERS));
         this.send(new Commands(DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
 
         for (final var chunk : CHUNKS) {
             chunk.send(this.player);
         }
 
-        /*Worker.PLAYERS.forEach(player -> {
+        final var spawnPlayer = new SpawnPlayer(this.player.getId(), this.player.getUniqueId());
+
+        Worker.PLAYERS.forEach(player -> {
             if (player != this.player) {
-                this.send(PlayerInfo.add(player));
-                System.out.println(player.getId() + " - " + player.getUniqueId());
                 this.send(new SpawnPlayer(player.getId(), player.getUniqueId()));
+                this.player.send(spawnPlayer);
             }
-        });*/
+        });
     }
 
     public void send(final Packet packet) {
