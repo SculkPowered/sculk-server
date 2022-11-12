@@ -217,6 +217,10 @@ public enum State {
                     this.map(0x4C, MINECRAFT_1_19),
                     this.map(0x4F, MINECRAFT_1_19_1)
             );
+            this.clientBound.register(EntityMetadata.class,
+                    this.map(0x4D, MINECRAFT_1_19),
+                    this.map(0x50, MINECRAFT_1_19_1)
+            );
             this.clientBound.register(Experience.class,
                     this.map(0x51, MINECRAFT_1_19),
                     this.map(0x54, MINECRAFT_1_19_1)

@@ -1,5 +1,7 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.Worker;
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -20,20 +22,22 @@ public final class PlayerCommand implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void handle(Connection connection) {
+        final var player = connection.player();
 
-    }
-
-    public int entityId() {
-        return this.entityId;
-    }
-
-    public Action action() {
-        return this.action;
-    }
-
-    public int jumpBoost() {
-        return this.jumpBoost;
+        if (this.action == Action.START_SNEAKING) {
+            final var packet = new EntityMetadata(connection.player().getId(), 6, 18, 5);
+            for (final var otherPlayer : Worker.PLAYERS) {
+                if (otherPlayer == player) continue;
+                otherPlayer.send(packet);
+            }
+        } else if (this.action == Action.STOP_SNEAKING) {
+            final var packet = new EntityMetadata(connection.player().getId(), 6, 18, 0);
+            for (final var otherPlayer : Worker.PLAYERS) {
+                if (otherPlayer == player) continue;
+                otherPlayer.send(packet);
+            }
+        }
     }
 
     @Override
