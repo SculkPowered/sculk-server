@@ -14,7 +14,6 @@ import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.Commands;
 import de.bauhd.minecraft.server.protocol.packet.play.Login;
 import de.bauhd.minecraft.server.protocol.packet.play.PlayerInfo;
-import de.bauhd.minecraft.server.protocol.packet.play.SpawnPlayer;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;

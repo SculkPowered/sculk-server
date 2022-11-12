@@ -1,13 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
