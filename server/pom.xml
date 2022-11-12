@@ -75,6 +75,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>it.unimi.dsi</groupId>
             <artifactId>fastutil-core</artifactId>
             <version>${fastutil.version}</version>

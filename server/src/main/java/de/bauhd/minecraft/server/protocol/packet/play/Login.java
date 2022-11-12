@@ -50,14 +50,15 @@ public final class Login implements Packet {
         }
     }
 
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    private final int entityId;
 
+    public Login(final int entityId) {
+        this.entityId = entityId;
     }
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        buf.writeInt(0); // Entity Id
+        buf.writeInt(this.entityId); // Entity Id
         buf.writeBoolean(false); // Hardcode
         buf.writeByte((byte) 1); // GameMode
         buf.writeByte((byte) -3); // Previous GameMode

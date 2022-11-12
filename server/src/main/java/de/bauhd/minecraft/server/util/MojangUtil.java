@@ -2,27 +2,31 @@ package de.bauhd.minecraft.server.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.UUID;
 
 public final class MojangUtil {
 
-    private static final String SESSION_SERVER = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
-    private static final String MOJANG_API = "https://api.mojang.com/users/profiles/minecraft/%s";
+    private static final String SESSION_SERVER_URL = "https://sessionserver.mojang.com";
+    private static final String SESSION_SERVER_PROFILE_URL = SESSION_SERVER_URL + "/session/minecraft/profile/%s?unsigned=false";
+    private static final String HAS_JOINED_URL = SESSION_SERVER_URL + "/session/minecraft/hasJoined?username=%s&serverId=%s";
+    private static final String MOJANG_API_PROFILE_URL = "https://api.mojang.com/users/profiles/minecraft/%s";
 
     public static String getUniqueIdString(final String name) {
-        final var object = apiRequest(String.format(MOJANG_API, name));
-        if (object == null) return null;
-        return object.get("id").getAsString();
+        final var json = apiRequest(String.format(MOJANG_API_PROFILE_URL, name));
+        if (json == null) return null;
+        return json.get("id").getAsString();
     }
 
     public static GameProfile.Property getSkin(final String uniqueId) {
-        final var object = apiRequest(String.format(SESSION_SERVER, uniqueId));
-        if (object == null) return null;
-        for (final var element : object.getAsJsonArray("properties")) {
+        final var json = apiRequest(String.format(SESSION_SERVER_PROFILE_URL, uniqueId));
+        if (json == null) return null;
+        for (final var element : json.getAsJsonArray("properties")) {
             final var property = element.getAsJsonObject();
             final var name = property.get("name").getAsString();
             if (name.equals("textures")) {
@@ -34,6 +38,16 @@ public final class MojangUtil {
 
     public static GameProfile.Property getSkinFromName(final String name) {
         return getSkin(getUniqueIdString(name));
+    }
+
+    public static GameProfile hasJoined(final String username, final String serverId) {
+        return DefaultMinecraftServer.GSON.fromJson(apiRequest(String.format(HAS_JOINED_URL, username, serverId)), GameProfile.class);
+    }
+
+    public static UUID fromMojang(String uniqueId) {
+        return UUID.fromString(uniqueId
+                .replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+                        "$1-$2-$3-$4-$5"));
     }
 
     private static JsonObject apiRequest(final String url) {

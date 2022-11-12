@@ -1,11 +1,13 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
@@ -35,11 +37,11 @@ public final class LoginStart implements Packet {
     @Override
     public void handle(Connection connection) {
         connection.setUsername(this.username);
-        connection.play();
+        connection.play(null);
         /*final var publicKey = DefaultMinecraftServer.getInstance().getKeyPair().getPublic().getEncoded();
         final var verifyToken = new byte[4];
         ThreadLocalRandom.current().nextBytes(verifyToken);
-        ctx.writeAndFlush(new EncryptionRequest("", publicKey, verifyToken));*/
+        connection.send(new EncryptionRequest("", publicKey, verifyToken));*/
     }
 
     @Override

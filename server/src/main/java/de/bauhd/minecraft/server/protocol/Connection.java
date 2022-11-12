@@ -54,28 +54,26 @@ public final class Connection extends ChannelHandlerAdapter {
         }
     }
 
-    public void play() {
-        GameProfile profile;
-        if (DefaultMinecraftServer.BUNGEECORD) {
-            final var arguments = this.serverAddress.split("\00");
-            this.serverAddress = arguments[0];
-            final var uniqueId = UUID.fromString(arguments[2]
-                    .replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-                            "$1-$2-$3-$4-$5"));
-            final var properties = (Property[]) DefaultMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class));
-            profile = new GameProfile(uniqueId, this.username, List.of(properties));
-        } else {
-            profile = new GameProfile(
-                    UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.username).getBytes(StandardCharsets.UTF_8)),
-                    this.username,
-                    List.of(MojangUtil.getSkinFromName(this.username))
-            );
+    public void play(GameProfile profile) {
+        if (profile == null) {
+            if (DefaultMinecraftServer.BUNGEECORD) {
+                final var arguments = this.serverAddress.split("\00");
+                this.serverAddress = arguments[0];
+                final var properties = (Property[]) DefaultMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class));
+                profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username, List.of(properties));
+            } else {
+                profile = new GameProfile(
+                        UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.username).getBytes(StandardCharsets.UTF_8)),
+                        this.username,
+                        List.of(MojangUtil.getSkinFromName(this.username))
+                );
+            }
         }
         this.send(new LoginSuccess(profile.uniqueId(), this.username));
 
         this.setState(State.PLAY);
-        this.send(new Login());
         this.player = new MinecraftPlayer(this.channel, profile.uniqueId(), this.username, profile);
+        this.send(new Login(this.player.getId()));
 
         Worker.PLAYERS.add(this.player);
 
@@ -86,13 +84,13 @@ public final class Connection extends ChannelHandlerAdapter {
             chunk.send(this.player);
         }
 
-        Worker.PLAYERS.forEach(player -> {
+        /*Worker.PLAYERS.forEach(player -> {
             if (player != this.player) {
                 this.send(PlayerInfo.add(player));
                 System.out.println(player.getId() + " - " + player.getUniqueId());
                 this.send(new SpawnPlayer(player.getId(), player.getUniqueId()));
             }
-        });
+        });*/
     }
 
     public void send(final Packet packet) {
@@ -115,6 +113,10 @@ public final class Connection extends ChannelHandlerAdapter {
 
     public void setServerAddress(final String serverAddress) {
         this.serverAddress = serverAddress;
+    }
+
+    public String username() {
+        return this.username;
     }
 
     public void setUsername(final String username) {

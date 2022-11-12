@@ -11,21 +11,14 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class EncryptionRequest implements Packet {
 
-    private String serverId;
-    private byte[] publicKey;
-    private byte[] verifyToken;
+    private final String serverId;
+    private final byte[] publicKey;
+    private final byte[] verifyToken;
 
     public EncryptionRequest(final String serverId, final byte[] publicKey, final byte[] verifyToken) {
         this.serverId = serverId;
         this.publicKey = publicKey;
         this.verifyToken = verifyToken;
-    }
-
-    public EncryptionRequest() {}
-
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
     }
 
     @Override

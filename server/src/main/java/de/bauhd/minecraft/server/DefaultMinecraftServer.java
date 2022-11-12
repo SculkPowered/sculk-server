@@ -9,6 +9,7 @@ import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
+import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
@@ -22,6 +23,7 @@ public class DefaultMinecraftServer extends MinecraftServer {
 
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
+            .registerTypeAdapter(GameProfile.class, new GameProfileDeserializer())
             .create();
     public static final boolean BUNGEECORD = false; // TODO change me
 
