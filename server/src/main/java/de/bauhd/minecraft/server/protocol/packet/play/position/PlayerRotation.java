@@ -33,4 +33,14 @@ public final class PlayerRotation implements Packet {
         }
         player.setPosition(new Position(position.x(), position.y(), position.z(), this.yaw, this.pitch));
     }
+
+    @Override
+    public int minLength() {
+        return 9;
+    }
+
+    @Override
+    public int maxLength() {
+        return this.minLength();
+    }
 }

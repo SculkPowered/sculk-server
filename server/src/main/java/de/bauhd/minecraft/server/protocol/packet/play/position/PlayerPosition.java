@@ -36,6 +36,16 @@ public final class PlayerPosition implements Packet {
         player.setPosition(new Position(this.x, this.y, this.z, position.yaw(), position.pitch()));
     }
 
+    @Override
+    public int minLength() {
+        return 25;
+    }
+
+    @Override
+    public int maxLength() {
+        return this.minLength();
+    }
+
     private short delta(final double previous, final double current) {
         return (short) ((current * 32 - previous * 32) * 128);
     }
