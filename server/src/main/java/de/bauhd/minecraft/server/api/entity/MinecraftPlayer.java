@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 import java.util.UUID;
 
-public final class MinecraftPlayer extends AbstractEntity implements Player {
+public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
 
     private final Channel channel;
     private final UUID uniqueId;

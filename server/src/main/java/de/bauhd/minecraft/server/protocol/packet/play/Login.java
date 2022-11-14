@@ -61,7 +61,7 @@ public final class Login implements Packet {
         buf.writeInt(this.entityId); // Entity Id
         buf.writeBoolean(false); // Hardcode
         buf.writeByte((byte) 1); // GameMode
-        buf.writeByte((byte) -3); // Previous GameMode
+        buf.writeByte((byte) -1); // Previous GameMode
         writeVarInt(buf, 1); // Dimensions
         writeString(buf, "minecraft:world"); // Dimensions
         writeCompoundTag(buf, CompoundBinaryTag.builder()
