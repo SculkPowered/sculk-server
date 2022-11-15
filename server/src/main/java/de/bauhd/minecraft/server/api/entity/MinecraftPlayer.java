@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.api.entity;
 
+import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
@@ -20,7 +21,6 @@ import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
 import java.util.UUID;
 
 public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
@@ -32,36 +32,6 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private GameMode gameMode;
     private Component displayName;
     private Position position = new Position(8.5, 40, 8.5);
-    private final UUID bossBarUniqueId = UUID.randomUUID(); // maybe change
-    private final BossBar.Listener bossBarListener = new BossBar.Listener() {
-
-        private final UUID uniqueId = MinecraftPlayer.this.bossBarUniqueId;
-
-        @Override
-        public void bossBarNameChanged(@NotNull BossBar bar, @NotNull Component oldName, @NotNull Component newName) {
-            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newName));
-        }
-
-        @Override
-        public void bossBarProgressChanged(@NotNull BossBar bar, float oldProgress, float newProgress) {
-            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newProgress));
-        }
-
-        @Override
-        public void bossBarColorChanged(@NotNull BossBar bar, BossBar.@NotNull Color oldColor, BossBar.@NotNull Color newColor) {
-            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, newColor.ordinal(), bar.overlay().ordinal()));
-        }
-
-        @Override
-        public void bossBarOverlayChanged(@NotNull BossBar bar, BossBar.@NotNull Overlay oldOverlay, BossBar.@NotNull Overlay newOverlay) {
-            MinecraftPlayer.this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(this.uniqueId, bar.color().ordinal(), newOverlay.ordinal()));
-        }
-
-        @Override
-        public void bossBarFlagsChanged(@NotNull BossBar bar, @NotNull Set<BossBar.Flag> flagsAdded, @NotNull Set<BossBar.Flag> flagsRemoved) {
-            // TODO
-        }
-    };
 
     public MinecraftPlayer(final Channel channel, final UUID uniqueId, final String name, final GameProfile profile) {
         this.channel = channel;
@@ -147,26 +117,12 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void showBossBar(@NotNull BossBar bar) {
-        byte flags = 0;
-        if (bar.flags().contains(BossBar.Flag.DARKEN_SCREEN)) {
-            flags |= 0x1;
-        }
-        if (bar.flags().contains(BossBar.Flag.PLAY_BOSS_MUSIC)) {
-            flags |= 0x2;
-        }
-        if (bar.flags().contains(BossBar.Flag.CREATE_WORLD_FOG)) {
-            flags |= 0x4;
-        }
-
-        bar.addListener(this.bossBarListener);
-        this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.add(this.bossBarUniqueId,
-                bar.name(), bar.progress(), bar.color().ordinal(), bar.overlay().ordinal(), flags));
+        DefaultMinecraftServer.getInstance().getBossBarListener().showBossBar(this, bar);
     }
 
     @Override
     public void hideBossBar(@NotNull BossBar bar) {
-        bar.removeListener(this.bossBarListener);
-        this.send(de.bauhd.minecraft.server.protocol.packet.play.BossBar.remove(this.bossBarUniqueId));
+        DefaultMinecraftServer.getInstance().getBossBarListener().hideBossBar(this, bar);
     }
 
     @Override

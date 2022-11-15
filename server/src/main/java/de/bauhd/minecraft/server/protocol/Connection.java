@@ -67,6 +67,7 @@ public final class Connection extends ChannelHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) {
         if (this.player != null) {
             Worker.PLAYERS.remove(this.player);
+            DefaultMinecraftServer.getInstance().getBossBarListener().onDisconnect(this.player);
         }
         ctx.close();
     }

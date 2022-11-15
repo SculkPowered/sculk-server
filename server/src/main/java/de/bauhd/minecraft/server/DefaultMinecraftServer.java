@@ -13,6 +13,7 @@ import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
+import de.bauhd.minecraft.server.util.BossBarListener;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.security.KeyPair;
@@ -40,6 +41,7 @@ public class DefaultMinecraftServer extends MinecraftServer {
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
     private final MinecraftCommandHandler commandHandler;
+    private final BossBarListener bossBarListener;
 
     protected DefaultMinecraftServer() {
         new NettyServer().connect("0.0.0.0", 25565);
@@ -56,6 +58,7 @@ public class DefaultMinecraftServer extends MinecraftServer {
         this.biomeHandler = null;
         this.commandHandler = new MinecraftCommandHandler();
         this.commandHandler.register("foo", new Command());
+        this.bossBarListener = new BossBarListener();
 
         new Worker().start();
     }
@@ -81,6 +84,10 @@ public class DefaultMinecraftServer extends MinecraftServer {
 
     public KeyPair getKeyPair() {
         return this.keyPair;
+    }
+
+    public BossBarListener getBossBarListener() {
+        return this.bossBarListener;
     }
 
     public static DefaultMinecraftServer getInstance() {
