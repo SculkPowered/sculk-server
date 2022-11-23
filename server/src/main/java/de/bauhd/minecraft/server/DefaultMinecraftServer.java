@@ -7,6 +7,8 @@ import de.bauhd.minecraft.server.api.MinecraftServer;
 import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.api.event.MinecraftEventHandler;
+import de.bauhd.minecraft.server.api.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.api.module.MinecraftModuleHandler;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
@@ -16,6 +18,7 @@ import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import de.bauhd.minecraft.server.util.BossBarListener;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -43,13 +46,13 @@ public class DefaultMinecraftServer implements MinecraftServer {
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
     private final MinecraftModuleHandler moduleHandler;
+    private final MinecraftEventHandler eventHandler;
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
 
     DefaultMinecraftServer() {
         instance = this;
 
-        new NettyServer().connect("0.0.0.0", 25565);
 
         try {
             final var generator= KeyPairGenerator.getInstance("RSA");
@@ -62,11 +65,16 @@ public class DefaultMinecraftServer implements MinecraftServer {
         this.dimensionHandler = new MinecraftDimensionHandler();
         this.biomeHandler = null;
         this.moduleHandler = new MinecraftModuleHandler();
+        this.eventHandler = new MinecraftEventHandler();
         this.commandHandler = new MinecraftCommandHandler();
         this.commandHandler.register("foo", new Command());
         this.bossBarListener = new BossBarListener();
 
         this.moduleHandler.loadModules();
+
+        this.eventHandler.call(new ServerInitializeEvent()).join();
+
+        new NettyServer().connect("0.0.0.0", 25565);
 
         new Worker().start();
     }
@@ -76,22 +84,27 @@ public class DefaultMinecraftServer implements MinecraftServer {
     }
 
     @Override
-    public DimensionHandler getDimensionHandler() {
+    public @NotNull DimensionHandler getDimensionHandler() {
         return this.dimensionHandler;
     }
 
     @Override
-    public BiomeHandler getBiomeHandler() {
+    public @NotNull BiomeHandler getBiomeHandler() {
         return this.biomeHandler;
     }
 
     @Override
-    public MinecraftModuleHandler getModuleHandler() {
+    public @NotNull MinecraftModuleHandler getModuleHandler() {
         return this.moduleHandler;
     }
 
     @Override
-    public MinecraftCommandHandler getCommandHandler() {
+    public @NotNull MinecraftEventHandler getEventHandler() {
+        return this.eventHandler;
+    }
+
+    @Override
+    public @NotNull MinecraftCommandHandler getCommandHandler() {
         return this.commandHandler;
     }
 

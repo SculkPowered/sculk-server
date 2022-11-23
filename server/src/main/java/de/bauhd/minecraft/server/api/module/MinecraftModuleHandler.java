@@ -53,6 +53,7 @@ public final class MinecraftModuleHandler implements ModuleHandler {
                 final var module = (Module) Class.forName(main, true, classLoader).getConstructor().newInstance();
                 module.init(DefaultMinecraftServer.getInstance());
                 this.modules.put(module, path);
+                DefaultMinecraftServer.getInstance().getEventHandler().register(module, module);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException |

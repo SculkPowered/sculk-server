@@ -1,17 +1,21 @@
 package de.bauhd.minecraft.server.api;
 
 import de.bauhd.minecraft.server.api.command.CommandHandler;
+import de.bauhd.minecraft.server.api.event.EventHandler;
 import de.bauhd.minecraft.server.api.module.ModuleHandler;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
+import org.jetbrains.annotations.NotNull;
 
 public interface MinecraftServer {
 
-    DimensionHandler getDimensionHandler();
+    @NotNull DimensionHandler getDimensionHandler();
 
-    BiomeHandler getBiomeHandler();
+    @NotNull BiomeHandler getBiomeHandler();
 
-    ModuleHandler getModuleHandler();
+    @NotNull ModuleHandler getModuleHandler();
 
-    CommandHandler getCommandHandler();
+    @NotNull EventHandler getEventHandler();
+
+    @NotNull CommandHandler getCommandHandler();
 }
