@@ -20,7 +20,9 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
-public class DefaultMinecraftServer extends MinecraftServer {
+public class DefaultMinecraftServer implements MinecraftServer {
+
+    private static DefaultMinecraftServer instance;
 
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
@@ -34,8 +36,7 @@ public class DefaultMinecraftServer extends MinecraftServer {
                     .emitLegacyHoverEvent()
                     .build();
     private static final GsonComponentSerializer MODERN_SERIALIZER =
-            GsonComponentSerializer.builder()
-                    .build();
+            GsonComponentSerializer.gson();
 
     private final KeyPair keyPair;
     private final DimensionHandler dimensionHandler;
@@ -43,7 +44,9 @@ public class DefaultMinecraftServer extends MinecraftServer {
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
 
-    protected DefaultMinecraftServer() {
+    DefaultMinecraftServer() {
+        instance = this;
+
         new NettyServer().connect("0.0.0.0", 25565);
 
         try {
@@ -91,6 +94,6 @@ public class DefaultMinecraftServer extends MinecraftServer {
     }
 
     public static DefaultMinecraftServer getInstance() {
-        return (DefaultMinecraftServer) MinecraftServer.getInstance();
+        return instance;
     }
 }

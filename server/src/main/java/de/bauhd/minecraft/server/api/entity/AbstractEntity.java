@@ -84,6 +84,9 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void setPose(@NotNull Pose pose) {
-
+        /*final var packet = new EntityMetadata(this.getId(), 6, 18, pose.ordinal());
+        for (final var player : Worker.PLAYERS) {
+            player.send(packet);
+        }*/
     }
 }

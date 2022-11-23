@@ -3,30 +3,32 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
+import it.unimi.dsi.fastutil.Pair;
+
+import java.util.Map;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class EntityMetadata implements Packet {
 
     private final int entityId;
-    private final int index;
-    private final int type;
-    private final int value;
+    private final Map<Integer, Pair<Integer, Object>> map;
 
-    public EntityMetadata(final int entityId, final int index, final int type, final int value) {
+    public EntityMetadata(final int entityId, final Map<Integer, Pair<Integer, Object>> map) {
         this.entityId = entityId;
-        this.index = index;
-        this.type = type;
-        this.value = value;
+        this.map = map;
     }
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
         writeVarInt(buf, this.entityId);
-        buf.writeUnsignedByte(this.index);
-        writeVarInt(buf, this.type);
-        writeVarInt(buf, this.value);
-        buf
-                .writeUnsignedByte(0xFF);
+        this.map.forEach((i, pair) -> {
+            buf.writeUnsignedByte(i);
+            writeVarInt(buf, pair.left());
+            final var object = pair.right();
+            final var clazz = object.getClass();
+
+        });
+        buf.writeUnsignedByte(0xFF);
     }
 }

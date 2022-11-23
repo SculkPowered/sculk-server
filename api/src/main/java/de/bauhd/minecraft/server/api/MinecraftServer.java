@@ -4,21 +4,11 @@ import de.bauhd.minecraft.server.api.command.CommandHandler;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
 
-public abstract class MinecraftServer {
+public interface MinecraftServer {
 
-    private static MinecraftServer instance;
+    DimensionHandler getDimensionHandler();
 
-    protected MinecraftServer() {
-        instance = this;
-    }
+    BiomeHandler getBiomeHandler();
 
-    public static MinecraftServer getInstance() {
-        return instance;
-    }
-
-    public abstract DimensionHandler getDimensionHandler();
-
-    public abstract BiomeHandler getBiomeHandler();
-
-    public abstract CommandHandler getCommandHandler();
+    CommandHandler getCommandHandler();
 }

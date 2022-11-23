@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -25,7 +24,7 @@ public final class PlayerCommand implements Packet {
     public void handle(Connection connection) {
         final var player = connection.player();
 
-        if (this.action == Action.START_SNEAKING) {
+        /*if (this.action == Action.START_SNEAKING) {
             final var packet = new EntityMetadata(connection.player().getId(), 6, 18, 5);
             for (final var otherPlayer : Worker.PLAYERS) {
                 if (otherPlayer == player) continue;
@@ -37,7 +36,7 @@ public final class PlayerCommand implements Packet {
                 if (otherPlayer == player) continue;
                 otherPlayer.send(packet);
             }
-        }
+        }*/
     }
 
     @Override
