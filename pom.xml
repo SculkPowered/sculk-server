@@ -11,6 +11,7 @@
     <modules>
         <module>api</module>
         <module>server</module>
+        <module>test-module</module>
     </modules>
 
     <properties>
@@ -23,13 +24,5 @@
         <fastutil.version>8.5.9</fastutil.version>
         <brigadier.version>1.0.18</brigadier.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>minecraft-libraries</id>
-            <name>Minecraft Libraries</name>
-            <url>https://libraries.minecraft.net</url>
-        </repository>
-    </repositories>
 
 </project>

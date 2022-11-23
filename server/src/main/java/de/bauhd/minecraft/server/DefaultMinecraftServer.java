@@ -7,6 +7,7 @@ import de.bauhd.minecraft.server.api.MinecraftServer;
 import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.api.module.MinecraftModuleHandler;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
@@ -41,6 +42,7 @@ public class DefaultMinecraftServer implements MinecraftServer {
     private final KeyPair keyPair;
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
+    private final MinecraftModuleHandler moduleHandler;
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
 
@@ -59,9 +61,12 @@ public class DefaultMinecraftServer implements MinecraftServer {
 
         this.dimensionHandler = new MinecraftDimensionHandler();
         this.biomeHandler = null;
+        this.moduleHandler = new MinecraftModuleHandler();
         this.commandHandler = new MinecraftCommandHandler();
         this.commandHandler.register("foo", new Command());
         this.bossBarListener = new BossBarListener();
+
+        this.moduleHandler.loadModules();
 
         new Worker().start();
     }
@@ -78,6 +83,11 @@ public class DefaultMinecraftServer implements MinecraftServer {
     @Override
     public BiomeHandler getBiomeHandler() {
         return this.biomeHandler;
+    }
+
+    @Override
+    public MinecraftModuleHandler getModuleHandler() {
+        return this.moduleHandler;
     }
 
     @Override

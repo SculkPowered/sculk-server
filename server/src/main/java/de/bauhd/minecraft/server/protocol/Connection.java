@@ -77,7 +77,7 @@ public final class Connection extends ChannelHandlerAdapter {
             if (DefaultMinecraftServer.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
                 this.serverAddress = arguments[0];
-                final var properties = (Property[]) DefaultMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class));
+                final var properties = (Property[]) DefaultMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
                 profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username, List.of(properties));
             } else {
                 final var skin = MojangUtil.getSkinFromName(this.username);
