@@ -5,6 +5,7 @@ import de.bauhd.minecraft.server.DefaultMinecraftServer;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.api.world.Chunk;
 import de.bauhd.minecraft.server.api.world.World;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
@@ -97,7 +98,8 @@ public final class Connection extends ChannelHandlerAdapter {
 
         Worker.PLAYERS.add(this.player);
 
-        this.send(PlayerInfo.add(Worker.PLAYERS));
+        // this is a strange java thing
+        this.send(PlayerInfo.add(Worker.PLAYERS.stream().map(player1 -> (PlayerInfoEntry) player1).toList()));
         this.send(new Commands(DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
         this.send(BRAND_PACKET);
 

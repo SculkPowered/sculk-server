@@ -67,6 +67,11 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     }
 
     @Override
+    public int getPing() {
+        return 1;
+    }
+
+    @Override
     public void setDisplayName(@Nullable Component displayName) {
         this.displayName = displayName;
     }

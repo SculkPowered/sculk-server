@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.DefaultMinecraftServer;
-import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -13,24 +13,25 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 public final class PlayerInfo implements Packet {
 
     private final int action;
-    private final List<MinecraftPlayer> players;
+    private final List<PlayerInfoEntry> entries;
 
-    public PlayerInfo(final int action, final List<MinecraftPlayer> players) {
+    public PlayerInfo(final int action, final List<PlayerInfoEntry> players) {
         this.action = action;
-        this.players = players;
+        this.entries = players;
     }
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
         writeVarInt(buf, this.action);
-        writeVarInt(buf, this.players.size());
-        for (final var player : this.players) {
-            writeUUID(buf, player.getUniqueId());
+        writeVarInt(buf, this.entries.size());
+        for (final var entry : this.entries) {
+            final var profile = entry.getProfile();
+            writeUUID(buf, profile.uniqueId());
 
             if (this.action == 0) {
-                writeString(buf, player.getUsername());
-                writeVarInt(buf, player.getProfile().properties().size());
-                for (final var property : player.getProfile().properties()) {
+                writeString(buf, profile.name());
+                writeVarInt(buf, profile.properties().size());
+                for (final var property : profile.properties()) {
                     writeString(buf, property.key());
                     writeString(buf, property.value());
                     if (property.signature() != null) {
@@ -40,12 +41,11 @@ public final class PlayerInfo implements Packet {
                         buf.writeBoolean(false);
                     }
                 }
-                // TODO add game mode and ping
-                writeVarInt(buf, 0);
-                writeVarInt(buf, 1);
-                if (player.getDisplayName() != null) {
+                writeVarInt(buf, entry.getGameMode().ordinal());
+                writeVarInt(buf, entry.getPing());
+                if (entry.getDisplayName() != null) {
                     buf.writeBoolean(true);
-                    writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(player.getDisplayName()));
+                    writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(entry.getDisplayName()));
                 } else {
                     buf.writeBoolean(false);
                 }
@@ -61,27 +61,27 @@ public final class PlayerInfo implements Packet {
         }
     }
 
-    public static PlayerInfo add(List<MinecraftPlayer> players) {
-        return new PlayerInfo(0, players);
+    public static PlayerInfo add(final List<PlayerInfoEntry> entries) {
+        return new PlayerInfo(0, entries);
     }
 
-    public static PlayerInfo add(MinecraftPlayer player) {
+    public static PlayerInfo add(final PlayerInfoEntry player) {
         return add(List.of(player));
     }
 
-    public static PlayerInfo remove(List<MinecraftPlayer> players) {
-        return new PlayerInfo(4, players);
+    public static PlayerInfo remove(final List<PlayerInfoEntry> entries) {
+        return new PlayerInfo(4, entries);
     }
 
-    public static PlayerInfo remove(MinecraftPlayer player) {
-        return add(List.of(player));
+    public static PlayerInfo remove(final PlayerInfoEntry entry) {
+        return add(List.of(entry));
     }
 
     @Override
     public String toString() {
         return "PlayerInfo{" +
                 "action=" + this.action +
-                ", players=" + this.players +
+                ", entries=" + this.entries +
                 '}';
     }
 }

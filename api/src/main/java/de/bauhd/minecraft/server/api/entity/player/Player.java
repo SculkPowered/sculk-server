@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface Player extends LivingEntity, CommandSender {
+public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry {
 
     @NotNull UUID getUniqueId();
 
