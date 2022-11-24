@@ -24,9 +24,9 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
-public class DefaultMinecraftServer implements MinecraftServer {
+public final class AdvancedMinecraftServer implements MinecraftServer {
 
-    private static DefaultMinecraftServer instance;
+    private static AdvancedMinecraftServer instance;
 
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
@@ -50,7 +50,7 @@ public class DefaultMinecraftServer implements MinecraftServer {
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
 
-    DefaultMinecraftServer() {
+    AdvancedMinecraftServer() {
         instance = this;
 
 
@@ -116,7 +116,7 @@ public class DefaultMinecraftServer implements MinecraftServer {
         return this.bossBarListener;
     }
 
-    public static DefaultMinecraftServer getInstance() {
+    public static AdvancedMinecraftServer getInstance() {
         return instance;
     }
 }

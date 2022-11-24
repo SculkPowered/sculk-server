@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -40,7 +40,7 @@ public final class ChatCommand implements Packet {
     @Override
     public void handle(Connection connection) {
         try {
-            DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().execute(this.command, connection.player());
+            AdvancedMinecraftServer.getInstance().getCommandHandler().dispatcher().execute(this.command, connection.player());
         } catch (CommandSyntaxException e) {
             connection.player().sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
         }

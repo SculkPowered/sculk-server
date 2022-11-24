@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.scoreboard;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -21,7 +21,7 @@ public final class UpdateObjectives implements Packet {
     public void encode(Buffer buf, Protocol.Version version) {
         writeString(buf, "board");
         buf.writeByte((byte) 0);
-        writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(Component.text("Title", NamedTextColor.RED)));
+        writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(Component.text("Title", NamedTextColor.RED)));
         writeVarInt(buf, 0);
     }
 }

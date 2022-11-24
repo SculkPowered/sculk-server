@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.api.module;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,9 +51,9 @@ public final class MinecraftModuleHandler implements ModuleHandler {
                 final var main = reader.readLine();
                 final var classLoader = new URLClassLoader(new URL[]{path.toUri().toURL()});
                 final var module = (Module) Class.forName(main, true, classLoader).getConstructor().newInstance();
-                module.init(DefaultMinecraftServer.getInstance());
+                module.init(AdvancedMinecraftServer.getInstance());
                 this.modules.put(module, path);
-                DefaultMinecraftServer.getInstance().getEventHandler().register(module, module);
+                AdvancedMinecraftServer.getInstance().getEventHandler().register(module, module);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException |

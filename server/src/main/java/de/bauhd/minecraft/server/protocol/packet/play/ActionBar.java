@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -10,13 +10,11 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class ActionBar implements Packet {
 
-    private Component actionBar;
+    private final Component text;
 
     public ActionBar(final Component actionBar) {
-        this.actionBar = actionBar;
+        this.text = actionBar;
     }
-
-    public ActionBar() {}
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
@@ -25,13 +23,13 @@ public final class ActionBar implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.actionBar));
+        writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.text));
     }
 
     @Override
     public String toString() {
         return "ActionBar{" +
-                "actionBar=" + this.actionBar +
+                "text=" + this.text +
                 '}';
     }
 }

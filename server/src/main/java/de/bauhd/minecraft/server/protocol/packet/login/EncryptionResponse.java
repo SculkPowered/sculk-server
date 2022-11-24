@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -26,7 +26,7 @@ public final class EncryptionResponse implements Packet {
 
         try {
             CIPHER = Cipher.getInstance("RSA");
-            CIPHER.init(Cipher.DECRYPT_MODE, DefaultMinecraftServer.getInstance().getKeyPair().getPrivate());
+            CIPHER.init(Cipher.DECRYPT_MODE, AdvancedMinecraftServer.getInstance().getKeyPair().getPrivate());
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
@@ -54,7 +54,7 @@ public final class EncryptionResponse implements Packet {
         try {
             final var digest = java.security.MessageDigest.getInstance("SHA-1");
             digest.update(CIPHER.doFinal(this.sharedSecret));
-            digest.update(DefaultMinecraftServer.getInstance().getKeyPair().getPublic().getEncoded());
+            digest.update(AdvancedMinecraftServer.getInstance().getKeyPair().getPublic().getEncoded());
             connection.play(MojangUtil.hasJoined(connection.username(), new BigInteger(digest.digest()).toString(16)));
         } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);

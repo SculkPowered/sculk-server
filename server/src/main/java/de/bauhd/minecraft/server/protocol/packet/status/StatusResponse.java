@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.status;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -22,6 +22,6 @@ public final class StatusResponse implements Packet {
     public void encode(Buffer buf, Protocol.Version version) {
         writeString(buf, "{\"version\":{\"name\":\"Minecraft Server\",\"protocol\":"
                 + version.protocolVersion() + "},\"players\":{\"max\":50,\"online\":0,\"sample\":[]},\"description\":"
-                + DefaultMinecraftServer.getGsonSerializer(version).serialize(this.component) + ",\"previewsChat\":true}\"\"\")");
+                + AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.component) + ",\"previewsChat\":true}\"\"\")");
     }
 }

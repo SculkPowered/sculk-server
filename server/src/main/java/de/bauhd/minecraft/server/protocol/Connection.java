@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol;
 
 import com.google.gson.reflect.TypeToken;
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
@@ -68,17 +68,17 @@ public final class Connection extends ChannelHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) {
         if (this.player != null) {
             Worker.PLAYERS.remove(this.player);
-            DefaultMinecraftServer.getInstance().getBossBarListener().onDisconnect(this.player);
+            AdvancedMinecraftServer.getInstance().getBossBarListener().onDisconnect(this.player);
         }
         ctx.close();
     }
 
     public void play(GameProfile profile) {
         if (profile == null) {
-            if (DefaultMinecraftServer.BUNGEECORD) {
+            if (AdvancedMinecraftServer.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
                 this.serverAddress = arguments[0];
-                final var properties = (Property[]) DefaultMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
+                final var properties = (Property[]) AdvancedMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
                 profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username, List.of(properties));
             } else {
                 final var skin = MojangUtil.getSkinFromName(this.username);
@@ -100,7 +100,7 @@ public final class Connection extends ChannelHandlerAdapter {
 
         // this is a strange java thing
         this.send(PlayerInfo.add(Worker.PLAYERS.stream().map(player1 -> (PlayerInfoEntry) player1).toList()));
-        this.send(new Commands(DefaultMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
+        this.send(new Commands(AdvancedMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
         this.send(BRAND_PACKET);
 
         for (final var chunk : CHUNKS) {

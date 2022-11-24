@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -12,13 +12,13 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class BossBar implements Packet {
 
-    private UUID uniqueId;
-    private int action;
-    private Component title;
-    private float health;
-    private int color;
-    private int division;
-    private int flags;
+    private final UUID uniqueId;
+    private final int action;
+    private final Component title;
+    private final float health;
+    private final int color;
+    private final int division;
+    private final int flags;
 
     private BossBar(final UUID uniqueId, final int action, final Component title, final float health, final int color, final int division, final int flags) {
         this.uniqueId = uniqueId;
@@ -30,20 +30,13 @@ public final class BossBar implements Packet {
         this.flags = flags;
     }
 
-    public BossBar() {}
-
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
-    }
-
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
         writeUUID(buf, this.uniqueId);
         writeVarInt(buf, this.action);
 
         if (this.action == 0) {
-            writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.title));
+            writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.title));
             buf.writeFloat(this.health);
             writeVarInt(buf, this.color);
             writeVarInt(buf, this.division);
@@ -51,13 +44,26 @@ public final class BossBar implements Packet {
         } else if (this.action == 2) {
             buf.writeFloat(this.health);
         } else if (this.action == 3) {
-            writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.title));
+            writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.title));
         } else if (this.action == 4) {
             writeVarInt(buf, this.color);
             writeVarInt(buf, this.division);
         } else if (this.action == 5) {
             buf.writeUnsignedByte(this.flags);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "BossBar{" +
+                "uniqueId=" + this.uniqueId +
+                ", action=" + this.action +
+                ", title=" + this.title +
+                ", health=" + this.health +
+                ", color=" + this.color +
+                ", division=" + this.division +
+                ", flags=" + this.flags +
+                '}';
     }
 
     public static BossBar add(final UUID uniqueId, final Component title, final float health, final int color, final int division, final int flags) {

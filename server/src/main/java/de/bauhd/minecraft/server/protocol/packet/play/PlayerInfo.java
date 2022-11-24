@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -45,7 +45,7 @@ public final class PlayerInfo implements Packet {
                 writeVarInt(buf, entry.getPing());
                 if (entry.getDisplayName() != null) {
                     buf.writeBoolean(true);
-                    writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(entry.getDisplayName()));
+                    writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(entry.getDisplayName()));
                 } else {
                     buf.writeBoolean(false);
                 }

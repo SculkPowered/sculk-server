@@ -2,7 +2,7 @@ package de.bauhd.minecraft.server.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public final class MojangUtil {
     }
 
     public static GameProfile hasJoined(final String username, final String serverId) {
-        return DefaultMinecraftServer.GSON.fromJson(apiRequest(String.format(HAS_JOINED_URL, username, serverId)), GameProfile.class);
+        return AdvancedMinecraftServer.GSON.fromJson(apiRequest(String.format(HAS_JOINED_URL, username, serverId)), GameProfile.class);
     }
 
     public static UUID fromMojang(String uniqueId) {

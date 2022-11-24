@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.title;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -10,22 +10,15 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class Title implements Packet {
 
-    private Component text;
+    private final Component text;
 
     public Title(final Component text) {
         this.text = text;
     }
 
-    public Title() {}
-
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
-    }
-
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, DefaultMinecraftServer.getGsonSerializer(version).serialize(this.text));
+        writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.text));
     }
 
     @Override

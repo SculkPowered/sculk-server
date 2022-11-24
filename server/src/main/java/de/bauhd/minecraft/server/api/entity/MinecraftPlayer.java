@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.api.entity;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
@@ -122,12 +122,12 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void showBossBar(@NotNull BossBar bar) {
-        DefaultMinecraftServer.getInstance().getBossBarListener().showBossBar(this, bar);
+        AdvancedMinecraftServer.getInstance().getBossBarListener().showBossBar(this, bar);
     }
 
     @Override
     public void hideBossBar(@NotNull BossBar bar) {
-        DefaultMinecraftServer.getInstance().getBossBarListener().hideBossBar(this, bar);
+        AdvancedMinecraftServer.getInstance().getBossBarListener().hideBossBar(this, bar);
     }
 
     @Override

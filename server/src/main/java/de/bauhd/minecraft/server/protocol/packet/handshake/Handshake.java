@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.handshake;
 
-import de.bauhd.minecraft.server.DefaultMinecraftServer;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -36,7 +36,7 @@ public final class Handshake implements Packet {
 
     @Override
     public int maxLength() {
-        if (DefaultMinecraftServer.BUNGEECORD) {
+        if (AdvancedMinecraftServer.BUNGEECORD) {
             return 32770;
         }
         return 1039; // VarInt 5 + String 1027 + Unsigned Short 2 + VarInt 5
