@@ -14,8 +14,8 @@ public final class VarIntFrameDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        final int readerIndex = buf.readerOffset();
-        final int length = PacketUtils.readVarInt(buf);
+        final var readerIndex = buf.readerOffset();
+        final var length = PacketUtils.readVarInt(buf);
 
         if (readerIndex == buf.readerOffset()) {
             buf.readerOffset(readerIndex);

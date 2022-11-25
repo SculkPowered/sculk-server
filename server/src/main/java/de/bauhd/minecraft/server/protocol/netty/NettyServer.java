@@ -14,7 +14,7 @@ public final class NettyServer {
     private Future<Void> channelFuture;
 
     public void connect(final String host, final int port) {
-        final IoHandlerFactory factory = Epoll.isAvailable() ? EpollHandler.newFactory() : NioHandler.newFactory();
+        final var factory = Epoll.isAvailable() ? EpollHandler.newFactory() : NioHandler.newFactory();
 
         new ServerBootstrap()
                 .channelFactory(Epoll.isAvailable() ? EpollServerSocketChannel::new : NioServerSocketChannel::new)
@@ -23,7 +23,7 @@ public final class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .bind(host, port)
                 .addListener(future -> {
-                    final Channel channel = future.getNow();
+                    final var channel = future.getNow();
                     this.channelFuture = channel.closeFuture()
                             .addListener(channel, ChannelFutureListeners.CLOSE_ON_FAILURE)
                             .addListener(channel, ChannelFutureListeners.FIRE_EXCEPTION_ON_FAILURE);
