@@ -32,6 +32,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
             .registerTypeAdapter(GameProfile.class, new GameProfileDeserializer())
             .create();
+
+    // move to config
+    public static final int COMPRESSION_THRESHOLD = -1;
+    public static final int COMPRESSION_LEVEL = 1;
     public static final boolean BUNGEECORD = false; // TODO change me
 
     private static final GsonComponentSerializer PRE_1_16_SERIALIZER =

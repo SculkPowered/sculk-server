@@ -77,6 +77,9 @@ public enum State {
             this.clientBound.register(LoginSuccess.class,
                     this.map(0x02, MINECRAFT_1_7_2)
             );
+            this.clientBound.register(CompressionPacket.class,
+                    this.map(0x03, MINECRAFT_1_8)
+            );
         }
     },
     PLAY {

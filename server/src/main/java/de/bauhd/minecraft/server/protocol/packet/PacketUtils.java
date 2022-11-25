@@ -19,13 +19,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class PacketUtils {
 
+    private static final int STRING_CAPACITY = 65536;
+
     public static void writeString(final Buffer buf, final @NotNull CharSequence charSequence) {
         writeVarInt(buf, Utf8.encodedLength(charSequence));
         buf.writeCharSequence(charSequence, UTF_8);
     }
 
     public static String readString(final Buffer buf) {
-        return readString(buf, 65536);
+        return readString(buf, STRING_CAPACITY);
     }
 
     public static String readString(final Buffer buf, final int cap) {

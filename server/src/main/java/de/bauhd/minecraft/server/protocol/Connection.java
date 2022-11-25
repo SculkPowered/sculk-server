@@ -8,10 +8,13 @@ import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.api.world.Chunk;
 import de.bauhd.minecraft.server.api.world.World;
+import de.bauhd.minecraft.server.protocol.netty.codec.CompressorDecoder;
+import de.bauhd.minecraft.server.protocol.netty.codec.CompressorEncoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
+import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.util.MojangUtil;
@@ -31,13 +34,22 @@ import static de.bauhd.minecraft.server.api.entity.player.GameProfile.Property;
 public final class Connection extends ChannelHandlerAdapter {
 
     private static final PluginMessage BRAND_PACKET;
+    private static final CompressionPacket COMPRESSION_PACKET;
 
     static {
-        final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(0);
-        PacketUtils.writeString(buf, "Best Server lol");
+        final var brand = "Best Server lol";
+        final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(brand.length());
+        PacketUtils.writeString(buf, brand);
         final var bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes, 0, buf.readableBytes());
+        buf.close();
         BRAND_PACKET = new PluginMessage("minecraft:brand", bytes);
+
+        if (AdvancedMinecraftServer.COMPRESSION_THRESHOLD != -1) {
+            COMPRESSION_PACKET = new CompressionPacket(AdvancedMinecraftServer.COMPRESSION_THRESHOLD);
+        } else {
+            COMPRESSION_PACKET = null;
+        }
     }
 
     private static final List<Chunk> CHUNKS;
@@ -89,6 +101,10 @@ public final class Connection extends ChannelHandlerAdapter {
                 );
             }
         }
+        if (COMPRESSION_PACKET != null) {
+            this.send(COMPRESSION_PACKET);
+            this.addCompressionHandler();
+        }
         this.send(new LoginSuccess(profile.uniqueId(), this.username));
 
         this.setState(State.PLAY);
@@ -135,6 +151,13 @@ public final class Connection extends ChannelHandlerAdapter {
     public void setState(final State state) {
         this.channel.pipeline().get(MinecraftEncoder.class).setState(state);
         this.channel.pipeline().get(MinecraftDecoder.class).setState(state);
+    }
+
+    private void addCompressionHandler() {
+        this.channel.pipeline()
+                .addAfter("frame-decoder", "compressor-decoder", new CompressorDecoder())
+                .addAfter("compressor-decoder", "compressor-encoder", new CompressorEncoder())
+                .remove("frame-decoder");
     }
 
     public void setServerAddress(final String serverAddress) {
