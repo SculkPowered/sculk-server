@@ -29,7 +29,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
-    private GameMode gameMode;
+    private GameMode gameMode = GameMode.CREATIVE;
     private Component displayName;
     private Position position = new Position(8.5, 40, 8.5);
 
