@@ -23,6 +23,10 @@ public final class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .bind(host, port)
                 .addListener(future -> {
+                    if (future.isFailed()) {
+                        throw new RuntimeException(future.cause());
+                    }
+
                     final var channel = future.getNow();
                     this.channelFuture = channel.closeFuture()
                             .addListener(channel, ChannelFutureListeners.CLOSE_ON_FAILURE)
