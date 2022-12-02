@@ -13,9 +13,9 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 public final class PlayerInfo implements Packet {
 
     private final int action;
-    private final List<PlayerInfoEntry> entries;
+    private final List<? extends PlayerInfoEntry> entries;
 
-    public PlayerInfo(final int action, final List<PlayerInfoEntry> players) {
+    public PlayerInfo(final int action, final List<? extends PlayerInfoEntry> players) {
         this.action = action;
         this.entries = players;
     }
@@ -61,7 +61,7 @@ public final class PlayerInfo implements Packet {
         }
     }
 
-    public static PlayerInfo add(final List<PlayerInfoEntry> entries) {
+    public static PlayerInfo add(final List<? extends PlayerInfoEntry> entries) {
         return new PlayerInfo(0, entries);
     }
 
@@ -69,7 +69,7 @@ public final class PlayerInfo implements Packet {
         return add(List.of(player));
     }
 
-    public static PlayerInfo remove(final List<PlayerInfoEntry> entries) {
+    public static PlayerInfo remove(final List<? extends PlayerInfoEntry> entries) {
         return new PlayerInfo(4, entries);
     }
 
