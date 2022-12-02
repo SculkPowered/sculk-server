@@ -54,6 +54,13 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>de.bauhd.minecraft.server</groupId>

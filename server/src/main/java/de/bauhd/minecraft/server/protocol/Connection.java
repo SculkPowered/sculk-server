@@ -3,6 +3,7 @@ package de.bauhd.minecraft.server.protocol;
 import com.google.gson.reflect.TypeToken;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.Worker;
+import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
@@ -13,12 +14,10 @@ import de.bauhd.minecraft.server.protocol.netty.codec.CompressorEncoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.util.MojangUtil;
-import io.netty5.buffer.DefaultBufferAllocators;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
@@ -35,29 +34,22 @@ public final class Connection extends ChannelHandlerAdapter {
 
     private static final PluginMessage BRAND_PACKET;
     private static final CompressionPacket COMPRESSION_PACKET;
-
-    static {
-        final var brand = "Best Server lol";
-        final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(brand.length());
-        PacketUtils.writeString(buf, brand);
-        final var bytes = new byte[buf.readableBytes()];
-        buf.readBytes(bytes, 0, buf.readableBytes());
-        buf.close();
-        BRAND_PACKET = new PluginMessage("minecraft:brand", bytes);
-
-        if (AdvancedMinecraftServer.COMPRESSION_THRESHOLD != -1) {
-            COMPRESSION_PACKET = new CompressionPacket(AdvancedMinecraftServer.COMPRESSION_THRESHOLD);
-        } else {
-            COMPRESSION_PACKET = null;
-        }
-    }
-
     private static final List<Chunk> CHUNKS;
 
     static {
+        BRAND_PACKET = new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
+
+        final var threshold = AdvancedMinecraftServer.getInstance().getConfiguration().compressionThreshold();
+        if (threshold != -1) {
+            COMPRESSION_PACKET = new CompressionPacket(threshold);
+        } else {
+            COMPRESSION_PACKET = null;
+        }
+
         CHUNKS = new ArrayList<>();
         final var world = new World();
         world.chunksInRange(0, 0, 10, (x, z) -> CHUNKS.add(world.createChunk(x, z)));
+
     }
 
     private final Channel channel;
@@ -87,7 +79,7 @@ public final class Connection extends ChannelHandlerAdapter {
 
     public void play(GameProfile profile) {
         if (profile == null) {
-            if (AdvancedMinecraftServer.BUNGEECORD) {
+            if (AdvancedMinecraftServer.getInstance().getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
                 this.serverAddress = arguments[0];
                 final var properties = (Property[]) AdvancedMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());

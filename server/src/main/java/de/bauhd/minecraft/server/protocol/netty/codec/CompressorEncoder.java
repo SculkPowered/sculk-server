@@ -12,7 +12,7 @@ public final class CompressorEncoder extends MessageToByteEncoder<Buffer> {
     private final Deflater deflater;
 
     public CompressorEncoder() {
-        this.deflater = new Deflater(AdvancedMinecraftServer.COMPRESSION_LEVEL, false);
+        this.deflater = new Deflater(AdvancedMinecraftServer.getInstance().getConfiguration().compressionThreshold(), false);
     }
 
     @Override

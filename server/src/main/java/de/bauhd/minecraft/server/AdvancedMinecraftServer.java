@@ -3,6 +3,8 @@ package de.bauhd.minecraft.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.bauhd.minecraft.server.api.Command;
+import de.bauhd.minecraft.server.api.MinecraftConfig;
+import de.bauhd.minecraft.server.api.MinecraftConfiguration;
 import de.bauhd.minecraft.server.api.MinecraftServer;
 import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
@@ -20,6 +22,9 @@ import de.bauhd.minecraft.server.util.BossBarListener;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -31,12 +36,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
             .registerTypeAdapter(GameProfile.class, new GameProfileDeserializer())
+            .setPrettyPrinting()
             .create();
-
-    // move to config
-    public static final int COMPRESSION_THRESHOLD = -1;
-    public static final int COMPRESSION_LEVEL = 1;
-    public static final boolean BUNGEECORD = false; // TODO change me
 
     private static final GsonComponentSerializer PRE_1_16_SERIALIZER =
             GsonComponentSerializer.builder()
@@ -46,7 +47,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private static final GsonComponentSerializer MODERN_SERIALIZER =
             GsonComponentSerializer.gson();
 
-    private final KeyPair keyPair;
+    private MinecraftConfiguration configuration;
+    private KeyPair keyPair;
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
     private final MinecraftModuleHandler moduleHandler;
@@ -57,13 +59,16 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     AdvancedMinecraftServer() {
         instance = this;
 
+        this.loadConfig();
 
-        try {
-            final var generator= KeyPairGenerator.getInstance("RSA");
-            generator.initialize(1024);
-            this.keyPair = generator.generateKeyPair();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        if (this.configuration.mode() == MinecraftConfig.Mode.ONLINE) {
+            try {
+                final var generator= KeyPairGenerator.getInstance("RSA");
+                generator.initialize(1024);
+                this.keyPair = generator.generateKeyPair();
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         this.dimensionHandler = new MinecraftDimensionHandler();
@@ -78,13 +83,30 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
         this.eventHandler.call(new ServerInitializeEvent()).join();
 
-        new NettyServer().connect("0.0.0.0", 25565);
+        new NettyServer().connect(this.configuration.host(), this.configuration.port());
 
         new Worker().start();
     }
 
-    public static GsonComponentSerializer getGsonSerializer(final Protocol.Version version) {
-        return version.compare(Protocol.Version.MINECRAFT_1_16) ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
+    private void loadConfig() {
+        final var path = Path.of("config.json");
+
+        try {
+            if (Files.notExists(path)) {
+                Files.createFile(path);
+                this.configuration = new MinecraftConfiguration();
+                try (final var writer = Files.newBufferedWriter(path)) {
+                    writer.write(GSON.toJson(this.configuration));
+                }
+            } else {
+                try (final var reader = Files.newBufferedReader(path)) {
+                    this.configuration = GSON.fromJson(reader, MinecraftConfiguration.class);
+                }
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -112,6 +134,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         return this.commandHandler;
     }
 
+    public MinecraftConfiguration getConfiguration() {
+        return this.configuration;
+    }
+
     public KeyPair getKeyPair() {
         return this.keyPair;
     }
@@ -122,5 +148,9 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     public static AdvancedMinecraftServer getInstance() {
         return instance;
+    }
+
+    public static GsonComponentSerializer getGsonSerializer(final Protocol.Version version) {
+        return version.compare(Protocol.Version.MINECRAFT_1_16) ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
     }
 }
