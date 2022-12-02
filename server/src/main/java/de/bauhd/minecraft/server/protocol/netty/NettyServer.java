@@ -21,6 +21,7 @@ public final class NettyServer {
                 .group(new MultithreadEventLoopGroup(factory), new MultithreadEventLoopGroup(factory))
                 .childHandler(new NettyServerInitializer())
                 .childOption(ChannelOption.TCP_NODELAY, true)
+                .childOption(ChannelOption.IP_TOS, 24)
                 .bind(host, port)
                 .addListener(future -> {
                     if (future.isFailed()) {
