@@ -16,4 +16,9 @@ public final class StatusRequest implements Packet {
     public int maxLength() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "StatusRequest";
+    }
 }

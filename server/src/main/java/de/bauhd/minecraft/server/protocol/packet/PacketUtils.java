@@ -4,12 +4,14 @@ import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.util.Utf8;
 import io.netty5.buffer.Buffer;
+import io.netty5.buffer.BufferInputStream;
 import io.netty5.buffer.BufferOutputStream;
 import io.netty5.handler.codec.EncoderException;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.BitSet;
@@ -72,6 +74,14 @@ public final class PacketUtils {
         }
     }
 
+    public static @NotNull CompoundBinaryTag readCompoundTag(final Buffer buf) {
+        try {
+            return BinaryTagIO.reader().read((DataInput) new BufferInputStream(buf.send()));
+        } catch (IOException e) {
+            return CompoundBinaryTag.empty();
+        }
+    }
+
     public static void writeUUID(final Buffer buf, final UUID uuid) {
         buf.writeLong(uuid.getMostSignificantBits());
         buf.writeLong(uuid.getLeastSignificantBits());
@@ -114,6 +124,13 @@ public final class PacketUtils {
         } else {
             buf.writeBoolean(false);
         }
+    }
+
+    public static Slot readSlot(final Buffer buf) {
+        if (!buf.readBoolean()) {
+            return null;
+        }
+        return new Slot(readVarInt(buf), buf.readByte(), readCompoundTag(buf));
     }
 
     public static void writePosition(final Buffer buf, final Position position) {

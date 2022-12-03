@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
@@ -25,7 +26,15 @@ public final class HeldItem implements Packet {
         buf.writeByte((byte) this.slot);
     }
 
-    public short slot() {
-        return this.slot;
+    @Override
+    public void handle(Connection connection) {
+        connection.player().setHeldItemSlot(this.slot);
+    }
+
+    @Override
+    public String toString() {
+        return "HeldItem{" +
+                "slot=" + this.slot +
+                '}';
     }
 }

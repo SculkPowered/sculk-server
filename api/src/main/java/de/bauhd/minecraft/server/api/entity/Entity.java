@@ -1,11 +1,12 @@
 package de.bauhd.minecraft.server.api.entity;
 
+import de.bauhd.minecraft.server.api.Viewable;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Entity {
+public interface Entity extends Viewable {
 
     int getId();
 

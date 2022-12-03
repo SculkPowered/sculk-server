@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.Worker;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -34,10 +34,7 @@ public final class ChatMessage implements Packet {
 
     @Override
     public void handle(Connection connection) {
-        final var packet = new SystemChatMessage(Component.text(connection.player().getUsername() + " - " + this.message), false);
-        for (final var player : Worker.PLAYERS) {
-            player.send(packet);
-        }
+        AdvancedMinecraftServer.getInstance().sendAll(new SystemChatMessage(Component.text(connection.player().getUsername() + " - " + this.message), false));
     }
 
     @Override

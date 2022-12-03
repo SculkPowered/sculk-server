@@ -16,9 +16,9 @@ public final class MinecraftCommandHandler implements CommandHandler {
     }
 
     @Override
-    public @NotNull CommandHandler register(@NotNull String name, @NotNull BrigadierCommand command) {
-        this.commands.put(name, command);
-        this.dispatcher.getRoot().addChild(command.commandNode());
+    public @NotNull CommandHandler register(@NotNull BrigadierCommand command) {
+        this.commands.put(command.node().getName(), command);
+        this.dispatcher.getRoot().addChild(command.node());
         return this;
     }
 

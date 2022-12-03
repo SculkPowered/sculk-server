@@ -10,19 +10,12 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class LoginSuccess implements Packet {
 
-    private UUID uniqueId;
-    private String username;
+    private final UUID uniqueId;
+    private final String username;
 
     public LoginSuccess(final UUID uniqueId, final String username) {
         this.uniqueId = uniqueId;
         this.username = username;
-    }
-
-    public LoginSuccess() {}
-
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
     }
 
     @Override
@@ -32,4 +25,11 @@ public final class LoginSuccess implements Packet {
         writeVarInt(buf, 0);
     }
 
+    @Override
+    public String toString() {
+        return "LoginSuccess{" +
+                "uniqueId=" + this.uniqueId +
+                ", username='" + this.username + '\'' +
+                '}';
+    }
 }

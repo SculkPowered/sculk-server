@@ -20,4 +20,12 @@ public final class GameEvent implements Packet {
                 .writeUnsignedByte(this.event)
                 .writeFloat(this.value);
     }
+
+    @Override
+    public String toString() {
+        return "GameEvent{" +
+                "event=" + this.event +
+                ", value=" + this.value +
+                '}';
+    }
 }

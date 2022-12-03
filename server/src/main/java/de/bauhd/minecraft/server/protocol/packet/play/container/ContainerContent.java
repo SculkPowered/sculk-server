@@ -1,4 +1,4 @@
-package de.bauhd.minecraft.server.protocol.packet.play;
+package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.api.world.Material;

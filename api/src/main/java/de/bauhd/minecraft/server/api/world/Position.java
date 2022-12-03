@@ -39,4 +39,15 @@ public class Position {
     public float pitch() {
         return this.pitch;
     }
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "x=" + this.x +
+                ", y=" + this.y +
+                ", z=" + this.z +
+                ", yaw=" + this.yaw +
+                ", pitch=" + this.pitch +
+                '}';
+    }
 }

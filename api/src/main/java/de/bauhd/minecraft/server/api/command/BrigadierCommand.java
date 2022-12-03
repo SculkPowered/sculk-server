@@ -6,17 +6,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class BrigadierCommand {
 
-    private final LiteralCommandNode<CommandSender> commandNode;
+    private final LiteralCommandNode<CommandSender> node;
 
     public BrigadierCommand(final @NotNull LiteralArgumentBuilder<CommandSender> argumentBuilder) {
         this(argumentBuilder.build());
     }
 
     public BrigadierCommand(final @NotNull LiteralCommandNode<CommandSender> commandNode) {
-        this.commandNode = commandNode;
+        this.node = commandNode;
     }
 
-    public LiteralCommandNode<CommandSender> commandNode() {
-        return this.commandNode;
+    public LiteralCommandNode<CommandSender> node() {
+        return this.node;
     }
 }

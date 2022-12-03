@@ -26,4 +26,8 @@ public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry {
 
     void disconnect(@NotNull Component component);
 
+    int getHeldItemSlot();
+
+    void setHeldItemSlot(int slot);
+
 }

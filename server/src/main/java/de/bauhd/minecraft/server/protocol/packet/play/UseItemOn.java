@@ -10,35 +10,49 @@ import io.netty5.buffer.Buffer;
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readPosition;
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
 
-public final class PlayerAction implements Packet {
+public final class UseItemOn implements Packet {
 
-    private int status;
+    private int hand;
     private Position position;
-    private byte face;
+    private int face;
+    private float x;
+    private float y;
+    private float z;
+    private boolean insideBlock;
     private int sequence;
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.status = readVarInt(buf);
+        this.hand = readVarInt(buf);
         this.position = readPosition(buf);
-        this.face = buf.readByte();
+        this.face = readVarInt(buf);
+        this.x = buf.readFloat();
+        this.y = buf.readFloat();
+        this.z = buf.readFloat();
+        this.insideBlock = buf.readBoolean();
         this.sequence = readVarInt(buf);
     }
 
     @Override
     public void handle(Connection connection) {
-        if (this.status == 0) { // 0 only if instant break
-            // TODO get chunk viewers
-            AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, 0));
+        final var player = connection.player();
+        final var slot = player.getItem(player.getHeldItemSlot() + 36);
+        if (slot == null) {
+            return;
         }
+        AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, slot.materialId())); // not correctly
     }
 
     @Override
     public String toString() {
-        return "PlayerAction{" +
-                "status=" + this.status +
+        return "UseItemOn{" +
+                "hand=" + this.hand +
                 ", position=" + this.position +
                 ", face=" + this.face +
+                ", x=" + this.x +
+                ", y=" + this.y +
+                ", z=" + this.z +
+                ", insideBlock=" + this.insideBlock +
                 ", sequence=" + this.sequence +
                 '}';
     }

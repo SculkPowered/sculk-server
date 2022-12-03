@@ -1,9 +1,14 @@
 package de.bauhd.minecraft.server.api.entity;
 
+import de.bauhd.minecraft.server.api.entity.player.Player;
+import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractEntity implements Entity {
@@ -11,6 +16,7 @@ public abstract class AbstractEntity implements Entity {
     private static final AtomicInteger CURRENT_ID = new AtomicInteger(0);
 
     private final int id = CURRENT_ID.getAndIncrement();
+    private final Collection<MinecraftPlayer> viewers = new ArrayList<>();
 
     @Override
     public int getId() {
@@ -88,5 +94,31 @@ public abstract class AbstractEntity implements Entity {
         for (final var player : Worker.PLAYERS) {
             player.send(packet);
         }*/
+    }
+
+    @Override
+    public @NotNull Collection<Player> getViewers() {
+        return List.copyOf(this.viewers);
+    }
+
+    @Override
+    public void addViewer(@NotNull Player player) {
+        // TODO send add packets
+    }
+
+    @Override
+    public void removeViewer(@NotNull Player player) {
+        // TODO send remove packets
+    }
+
+    public void sendViewers(final Packet packet) {
+        this.viewers.forEach(player -> player.send(packet));
+    }
+
+    public void sendViewers(final Packet packet1, final Packet packet2) {
+        this.viewers.forEach(player -> {
+            player.send(packet1);
+            player.send(packet2);
+        });
     }
 }

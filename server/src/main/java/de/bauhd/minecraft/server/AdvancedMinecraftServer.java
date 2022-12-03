@@ -2,13 +2,14 @@ package de.bauhd.minecraft.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.bauhd.minecraft.server.api.Command;
 import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.api.MinecraftConfiguration;
 import de.bauhd.minecraft.server.api.MinecraftServer;
 import de.bauhd.minecraft.server.api.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.api.dimension.MinecraftDimensionHandler;
+import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.api.event.MinecraftEventHandler;
 import de.bauhd.minecraft.server.api.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.api.module.MinecraftModuleHandler;
@@ -18,9 +19,13 @@ import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
+import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.util.BossBarListener;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +33,11 @@ import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class AdvancedMinecraftServer implements MinecraftServer {
 
@@ -38,6 +48,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             .registerTypeAdapter(GameProfile.class, new GameProfileDeserializer())
             .setPrettyPrinting()
             .create();
+    public static final Component SUS_COMPONENT = Component.text("Very sus!", NamedTextColor.RED);
 
     private static final GsonComponentSerializer PRE_1_16_SERIALIZER =
             GsonComponentSerializer.builder()
@@ -49,6 +60,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     private MinecraftConfiguration configuration;
     private KeyPair keyPair;
+
+    private final Map<UUID, MinecraftPlayer> players = new ConcurrentHashMap<>();
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
     private final MinecraftModuleHandler moduleHandler;
@@ -76,7 +89,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         this.moduleHandler = new MinecraftModuleHandler();
         this.eventHandler = new MinecraftEventHandler();
         this.commandHandler = new MinecraftCommandHandler();
-        this.commandHandler.register("foo", new Command());
         this.bossBarListener = new BossBarListener();
 
         this.moduleHandler.loadModules();
@@ -85,7 +97,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
         new NettyServer().connect(this.configuration.host(), this.configuration.port());
 
-        new Worker().start();
+        new Worker(this).start();
     }
 
     private void loadConfig() {
@@ -134,6 +146,21 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         return this.commandHandler;
     }
 
+    @Override
+    public @NotNull Collection<Player> getAllPlayers() {
+        return List.copyOf(this.players.values());
+    }
+
+    @Override
+    public int getPlayerCount() {
+        return this.players.size();
+    }
+
+    @Override
+    public @Nullable Player getPlayer(@NotNull UUID uniqueId) {
+        return null;
+    }
+
     public MinecraftConfiguration getConfiguration() {
         return this.configuration;
     }
@@ -144,6 +171,18 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     public BossBarListener getBossBarListener() {
         return this.bossBarListener;
+    }
+
+    public void sendAll(final Packet packet) {
+        this.players.values().forEach(player -> player.send(packet));
+    }
+
+    public void addPlayer(final MinecraftPlayer player) {
+        this.players.put(player.getUniqueId(), player);
+    }
+
+    public void removePlayer(final UUID uniqueId) {
+        this.players.remove(uniqueId);
     }
 
     public static AdvancedMinecraftServer getInstance() {

@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
-import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
@@ -24,13 +23,10 @@ public final class PlayerRotation implements Packet {
     public void handle(Connection connection) {
         final var player = connection.player();
         final var position = player.getPosition();
-        final var updateRotation = new EntityRotation(player.getId(), this.yaw, this.pitch, this.onGround);
-        final var headRotation = new HeadRotation(player.getId(), this.yaw);
-        for (final var otherPlayer : Worker.PLAYERS) {
-            if (otherPlayer == player) continue;
-            otherPlayer.send(updateRotation);
-            otherPlayer.send(headRotation);
-        }
+        player.sendViewers(
+                new EntityRotation(player.getId(), this.yaw, this.pitch, this.onGround),
+                new HeadRotation(player.getId(), this.yaw)
+        );
         player.setPosition(new Position(position.x(), position.y(), position.z(), this.yaw, this.pitch));
     }
 

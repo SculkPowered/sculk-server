@@ -24,4 +24,11 @@ public final class StatusResponse implements Packet {
                 + version.protocolVersion() + "},\"players\":{\"max\":50,\"online\":0,\"sample\":[]},\"description\":"
                 + AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.component) + ",\"previewsChat\":true}\"\"\")");
     }
+
+    @Override
+    public String toString() {
+        return "StatusResponse{" +
+                "component=" + this.component +
+                '}';
+    }
 }

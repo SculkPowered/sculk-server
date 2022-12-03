@@ -2,10 +2,10 @@ package de.bauhd.minecraft.server.protocol;
 
 import com.google.gson.reflect.TypeToken;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.api.world.Chunk;
 import de.bauhd.minecraft.server.api.world.World;
 import de.bauhd.minecraft.server.protocol.netty.codec.CompressorDecoder;
@@ -31,6 +31,7 @@ import static de.bauhd.minecraft.server.api.entity.player.GameProfile.Property;
 
 public final class Connection extends ChannelHandlerAdapter {
 
+    private static final AdvancedMinecraftServer SERVER = AdvancedMinecraftServer.getInstance();
     private static final PluginMessage BRAND_PACKET;
     private static final CompressionPacket COMPRESSION_PACKET;
     private static final List<Chunk> CHUNKS;
@@ -38,7 +39,7 @@ public final class Connection extends ChannelHandlerAdapter {
     static {
         BRAND_PACKET = new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
 
-        final var threshold = AdvancedMinecraftServer.getInstance().getConfiguration().compressionThreshold();
+        final var threshold = SERVER.getConfiguration().compressionThreshold();
         if (threshold != -1) {
             COMPRESSION_PACKET = new CompressionPacket(threshold);
         } else {
@@ -70,15 +71,15 @@ public final class Connection extends ChannelHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         if (this.player != null) {
-            Worker.PLAYERS.remove(this.player);
-            AdvancedMinecraftServer.getInstance().getBossBarListener().onDisconnect(this.player);
+            SERVER.removePlayer(this.player.getUniqueId());
+            SERVER.getBossBarListener().onDisconnect(this.player);
         }
         ctx.close();
     }
 
     public void play(GameProfile profile) {
         if (profile == null) {
-            if (AdvancedMinecraftServer.getInstance().getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
+            if (SERVER.getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
                 this.serverAddress = arguments[0];
                 final var properties = (Property[]) AdvancedMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
@@ -103,26 +104,20 @@ public final class Connection extends ChannelHandlerAdapter {
         this.send(new Login(this.player.getId()));
         this.send(new SynchronizePlayerPosition(this.player.getPosition()));
 
-        Worker.PLAYERS.add(this.player);
+        SERVER.addPlayer(this.player);
 
-        this.send(PlayerInfo.add(Worker.PLAYERS));
-        this.send(new Commands(AdvancedMinecraftServer.getInstance().getCommandHandler().dispatcher().getRoot()));
+        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) SERVER.getAllPlayers()));
+        this.send(new Commands(SERVER.getCommandHandler().dispatcher().getRoot()));
         this.send(BRAND_PACKET);
 
         for (final var chunk : CHUNKS) {
             chunk.send(this.player);
         }
 
-        final var addPlayerInfo = PlayerInfo.add(this.player);
-        final var spawnPlayer = new SpawnPlayer(this.player);
-
-        Worker.PLAYERS.forEach(player -> {
-            if (player != this.player) {
-                this.send(new SpawnPlayer(player));
-                player.send(addPlayerInfo);
-                player.send(spawnPlayer);
-            }
-        });
+        this.player.sendViewers(
+                PlayerInfo.add(this.player),
+                new SpawnPlayer(this.player)
+        );
     }
 
     public void send(final Packet packet) {

@@ -23,4 +23,12 @@ public final class BlockUpdate implements Packet {
         writePosition(buf, this.position);
         writeVarInt(buf, this.blockId);
     }
+
+    @Override
+    public String toString() {
+        return "BlockUpdate{" +
+                "position=" + this.position +
+                ", blockId=" + this.blockId +
+                '}';
+    }
 }

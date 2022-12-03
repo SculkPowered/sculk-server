@@ -1,11 +1,10 @@
 package de.bauhd.minecraft.server.protocol;
 
-import de.bauhd.minecraft.server.protocol.packet.BlockUpdate;
-import de.bauhd.minecraft.server.protocol.packet.GameEvent;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
 import de.bauhd.minecraft.server.protocol.packet.login.*;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
+import de.bauhd.minecraft.server.protocol.packet.play.container.ContainerContent;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
 import de.bauhd.minecraft.server.protocol.packet.play.scoreboard.DisplayObjective;
 import de.bauhd.minecraft.server.protocol.packet.play.scoreboard.UpdateObjectives;
@@ -98,6 +97,10 @@ public enum State {
                     this.map(0x04, MINECRAFT_1_19),
                     this.map(0x05, MINECRAFT_1_19_1)
             );
+            this.serverBound.register(ClientCommand.class, ClientCommand::new,
+                    this.map(0x06, MINECRAFT_1_19),
+                    this.map(0x07, MINECRAFT_1_19_1)
+            );
             this.serverBound.register(ClientInformation.class, ClientInformation::new,
                     this.map(0x07, MINECRAFT_1_19),
                     this.map(0x08, MINECRAFT_1_19_1)
@@ -134,6 +137,18 @@ public enum State {
                     this.map(0x27, MINECRAFT_1_19),
                     this.map(0x28, MINECRAFT_1_19_1)
             );
+            this.serverBound.register(CreativeModeSlot.class, CreativeModeSlot::new,
+                    this.map(0x2A, MINECRAFT_1_19),
+                    this.map(0x2B, MINECRAFT_1_19_1)
+            );
+            this.serverBound.register(SwingArm.class, SwingArm::new,
+                    this.map(0x2E, MINECRAFT_1_19),
+                    this.map(0x2F, MINECRAFT_1_19_1)
+            );
+            this.serverBound.register(UseItemOn.class, UseItemOn::new,
+                    this.map(0x30, MINECRAFT_1_19_1),
+                    this.map(0x31, MINECRAFT_1_19_1)
+            );
 
             this.clientBound.register(SpawnEntity.class,
                     this.map(0x00, MINECRAFT_1_19)
@@ -143,6 +158,12 @@ public enum State {
             );
             this.clientBound.register(SpawnPlayer.class,
                     this.map(0x02, MINECRAFT_1_19)
+            );
+            this.clientBound.register(EntityAnimation.class,
+                    this.map(0x03, MINECRAFT_1_19)
+            );
+            this.clientBound.register(AwardStatistics.class,
+                    this.map(0x04, MINECRAFT_1_19)
             );
             this.clientBound.register(BlockUpdate.class,
                     this.map(0x09, MINECRAFT_1_19)

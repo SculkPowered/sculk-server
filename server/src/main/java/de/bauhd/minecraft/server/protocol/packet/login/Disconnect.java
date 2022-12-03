@@ -25,4 +25,11 @@ public final class Disconnect implements Packet {
     public void encode(Buffer buf, Protocol.Version version) {
         writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.text));
     }
+
+    @Override
+    public String toString() {
+        return "Disconnect{" +
+                "text=" + this.text +
+                '}';
+    }
 }

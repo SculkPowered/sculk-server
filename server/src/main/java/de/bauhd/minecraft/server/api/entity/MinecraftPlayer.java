@@ -4,6 +4,7 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
+import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.packet.play.GameEvent;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -14,6 +15,8 @@ import de.bauhd.minecraft.server.protocol.packet.play.TabListHeaderFooter;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
 import io.netty5.channel.Channel;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -32,6 +35,8 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private GameMode gameMode = GameMode.CREATIVE;
     private Component displayName;
     private Position position = new Position(8.5, 40, 8.5);
+    private int heldItem;
+    private final Int2ObjectMap<Slot> slots = new Int2ObjectOpenHashMap<>();
 
     public MinecraftPlayer(final Channel channel, final UUID uniqueId, final String name, final GameProfile profile) {
         this.channel = channel;
@@ -83,13 +88,25 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void setGameMode(@NotNull GameMode gameMode) {
-        this.gameMode = gameMode;
-        this.send(new GameEvent(3, gameMode.ordinal()));
+        if (gameMode != this.gameMode) {
+            this.gameMode = gameMode;
+            this.send(new GameEvent(3, gameMode.ordinal()));
+        }
     }
 
     @Override
     public void disconnect(@NotNull Component component) {
         this.send(new Disconnect(component));
+    }
+
+    @Override
+    public int getHeldItemSlot() {
+        return this.heldItem;
+    }
+
+    @Override
+    public void setHeldItemSlot(int slot) {
+        this.heldItem = slot;
     }
 
     @Override
@@ -133,6 +150,14 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public @NotNull EntityType getType() {
         return EntityType.PLAYER;
+    }
+
+    public Slot getItem(final int slot) {
+        return this.slots.get(slot);
+    }
+
+    public void setItem(final short slot, final Slot clickedItem) {
+        this.slots.put(slot, clickedItem);
     }
 
     public void send(final Packet packet) {

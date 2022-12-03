@@ -33,4 +33,11 @@ public final class StatusPing implements Packet {
     public int maxLength() {
         return 8;
     }
+
+    @Override
+    public String toString() {
+        return "StatusPing{" +
+                "randomId=" + this.randomId +
+                '}';
+    }
 }
