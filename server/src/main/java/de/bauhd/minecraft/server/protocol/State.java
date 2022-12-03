@@ -323,7 +323,6 @@ public enum State {
         private boolean fallback = true;
 
         PacketRegistry(Direction direction) {
-
             final var mutableVersions = new EnumMap<Version, ProtocolRegistry>(Version.class);
             for (final var version : Version.values()) {
                 mutableVersions.put(version, new ProtocolRegistry(version));
@@ -444,13 +443,6 @@ public enum State {
     protected MappedPacket map(final int id,
                                final Protocol.Version version,
                                final Protocol.Version toVersion) {
-        return new MappedPacket(id, version, toVersion);
-    }
-
-    protected MappedPacket map(final int id,
-                               final Protocol.Version version,
-                               final Protocol.Version toVersion,
-                               final boolean encodeOnly) {
         return new MappedPacket(id, version, toVersion);
     }
 
