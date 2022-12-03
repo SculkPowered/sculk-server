@@ -1,7 +1,8 @@
-package de.bauhd.minecraft.server.protocol.packet;
+package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.Protocol;
+import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writePosition;

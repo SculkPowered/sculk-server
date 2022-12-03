@@ -5,7 +5,7 @@ import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.api.world.Position;
-import de.bauhd.minecraft.server.protocol.packet.GameEvent;
+import de.bauhd.minecraft.server.protocol.packet.play.GameEvent;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
