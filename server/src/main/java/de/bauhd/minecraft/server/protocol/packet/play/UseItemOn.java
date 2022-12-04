@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.api.world.block.Block;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -14,7 +15,7 @@ public final class UseItemOn implements Packet {
 
     private int hand;
     private Position position;
-    private int face;
+    private Block.Face face;
     private float x;
     private float y;
     private float z;
@@ -25,7 +26,7 @@ public final class UseItemOn implements Packet {
     public void decode(Buffer buf, Protocol.Version version) {
         this.hand = readVarInt(buf);
         this.position = readPosition(buf);
-        this.face = readVarInt(buf);
+        this.face = Block.Face.class.getEnumConstants()[readVarInt(buf)];
         this.x = buf.readFloat();
         this.y = buf.readFloat();
         this.z = buf.readFloat();
@@ -40,7 +41,15 @@ public final class UseItemOn implements Packet {
         if (slot == null) {
             return;
         }
-        AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, slot.materialId())); // not correctly
+        this.position = switch (this.face) {
+            case BOTTOM -> this.position.subtract(0, 1, 0);
+            case TOP -> this.position.add(0, 1, 0);
+            case NORTH -> this.position.subtract(0, 0, 1);
+            case SOUTH -> this.position.add(0, 0, 1);
+            case WEST -> this.position.subtract(1, 0, 0);
+            case EAST -> this.position.add(1, 0, 0);
+        };
+        AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, slot.materialId()));
     }
 
     @Override

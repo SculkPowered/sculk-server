@@ -4,7 +4,7 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
 import de.bauhd.minecraft.server.protocol.packet.login.*;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
-import de.bauhd.minecraft.server.protocol.packet.play.container.ContainerContent;
+import de.bauhd.minecraft.server.protocol.packet.play.container.*;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
 import de.bauhd.minecraft.server.protocol.packet.play.scoreboard.DisplayObjective;
 import de.bauhd.minecraft.server.protocol.packet.play.scoreboard.UpdateObjectives;
@@ -105,9 +105,21 @@ public enum State {
                     this.map(0x07, MINECRAFT_1_19),
                     this.map(0x08, MINECRAFT_1_19_1)
             );
+            this.serverBound.register(ClickContainerButton.class, ClickContainerButton::new,
+                    this.map(0x09, MINECRAFT_1_19),
+                    this.map(0x0A, MINECRAFT_1_19_1)
+            );
+            this.serverBound.register(ClickContainer.class, ClickContainer::new,
+                    this.map(0x0A, MINECRAFT_1_19),
+                    this.map(0x0B, MINECRAFT_1_19_1)
+            );
             this.serverBound.register(PluginMessage.class, PluginMessage::new,
                     this.map(0x0C, MINECRAFT_1_19),
                     this.map(0x0D, MINECRAFT_1_19_1)
+            );
+            this.serverBound.register(Interact.class, Interact::new,
+                    this.map(0x0F, MINECRAFT_1_19),
+                    this.map(0x10, MINECRAFT_1_19_1)
             );
             this.serverBound.register(KeepAlive.class, KeepAlive::new,
                     this.map(0x11, MINECRAFT_1_19),
@@ -171,6 +183,9 @@ public enum State {
             this.clientBound.register(BossBar.class,
                     this.map(0x0A, MINECRAFT_1_19)
             );
+            this.clientBound.register(ContainerSlot.class,
+                    this.map(0x13, MINECRAFT_1_19)
+            );
             this.clientBound.register(GameEvent.class,
                     this.map(0x1B, MINECRAFT_1_19),
                     this.map(0x1D, MINECRAFT_1_19_1)
@@ -180,6 +195,9 @@ public enum State {
             );
             this.clientBound.register(ContainerContent.class,
                     this.map(0x11, MINECRAFT_1_19)
+            );
+            this.clientBound.register(ContainerProperty.class,
+                    this.map(0x12, MINECRAFT_1_19)
             );
             this.clientBound.register(PluginMessage.class,
                     this.map(0x15, MINECRAFT_1_19),
@@ -215,6 +233,10 @@ public enum State {
             this.clientBound.register(EntityRotation.class,
                     this.map(0x28, MINECRAFT_1_19),
                     this.map(0x2A, MINECRAFT_1_19_1)
+            );
+            this.clientBound.register(OpenScreen.class,
+                    this.map(0x2B, MINECRAFT_1_19),
+                    this.map(0x2D, MINECRAFT_1_19_1)
             );
             this.clientBound.register(PlayerInfo.class,
                     this.map(0x34, MINECRAFT_1_19),

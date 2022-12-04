@@ -24,6 +24,8 @@ import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
@@ -162,5 +164,26 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     public void send(final Packet packet) {
         this.channel.writeAndFlush(packet);
+    }
+
+    // TODO change
+    @Override
+    public void sendViewers(Packet packet) {
+        AdvancedMinecraftServer.getInstance().getAllPlayers().forEach(player -> {
+            if (player != this) {
+                ((MinecraftPlayer) player).send(packet);
+            }
+        });
+    }
+
+    // TODO change
+    @Override
+    public void sendViewers(Packet packet1, Packet packet2) {
+        AdvancedMinecraftServer.getInstance().getAllPlayers().forEach(player -> {
+            if (player != this) {
+                ((MinecraftPlayer) player).send(packet1);
+                ((MinecraftPlayer) player).send(packet2);
+            }
+        });
     }
 }

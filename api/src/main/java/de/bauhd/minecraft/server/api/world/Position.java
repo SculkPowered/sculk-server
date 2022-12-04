@@ -40,6 +40,14 @@ public class Position {
         return this.pitch;
     }
 
+    public Position add(final double x, final double y, final double z) {
+        return new Position(this.x + x, this.y + y, this.z + z, this.yaw, this.pitch);
+    }
+
+    public Position subtract(final double x, final double y, final double z) {
+        return new Position(this.x - x, this.y - y, this.z - z, this.yaw, this.pitch);
+    }
+
     @Override
     public String toString() {
         return "Position{" +

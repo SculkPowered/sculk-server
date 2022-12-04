@@ -5,9 +5,12 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.play.container.OpenScreen;
 import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
@@ -44,22 +47,6 @@ public final class ChatCommand implements Packet {
         } catch (CommandSyntaxException e) {
             connection.player().sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
         }
-    }
-
-    public String command() {
-        return this.command;
-    }
-
-    public long timestamp() {
-        return this.timestamp;
-    }
-
-    public long salt() {
-        return this.salt;
-    }
-
-    public boolean signedPreview() {
-        return this.signedPreview;
     }
 
     @Override

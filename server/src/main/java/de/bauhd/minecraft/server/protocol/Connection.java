@@ -118,6 +118,11 @@ public final class Connection extends ChannelHandlerAdapter {
                 PlayerInfo.add(this.player),
                 new SpawnPlayer(this.player)
         );
+        SERVER.getAllPlayers().forEach(other -> {
+            if (other != this.player) {
+                this.player.send(new SpawnPlayer((MinecraftPlayer) other));
+            }
+        });
     }
 
     public void send(final Packet packet) {

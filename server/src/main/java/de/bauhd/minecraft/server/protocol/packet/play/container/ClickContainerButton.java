@@ -4,27 +4,20 @@ import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import io.netty5.buffer.Buffer;
 
-public final class CloseContainer implements Packet {
+public final class ClickContainerButton implements Packet {
 
-    private int id;
-
-    public CloseContainer(final int id) {
-        this.id = id;
-    }
+    private byte windowId;
+    private byte buttonId;
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.id = buf.readUnsignedByte();
-    }
-
-    @Override
-    public void encode(Buffer buf, Protocol.Version version) {
-        buf.writeUnsignedByte(this.id);
+        this.windowId = buf.readByte();
+        this.buttonId = buf.readByte();
     }
 
     @Override
     public int minLength() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -34,8 +27,9 @@ public final class CloseContainer implements Packet {
 
     @Override
     public String toString() {
-        return "CloseContainer{" +
-                "id=" + this.id +
+        return "ClickContainerButton{" +
+                "windowId=" + this.windowId +
+                ", buttonId=" + this.buttonId +
                 '}';
     }
 }
