@@ -41,9 +41,9 @@ public final class MinecraftModuleHandler implements ModuleHandler {
 
     public void loadModule(final Path path) {
         try (final var jarFile = new JarFile(path.toFile())) {
-            final var jarEntry = jarFile.getEntry("module.json");
+            final var jarEntry = jarFile.getEntry("module");
             if (jarEntry == null) {
-                System.err.println(path.getFileName() + " has no module.json");
+                System.err.println(path.getFileName() + " has no module file");
                 return;
             }
 

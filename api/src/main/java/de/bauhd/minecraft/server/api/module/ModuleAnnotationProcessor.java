@@ -22,7 +22,7 @@ public final class ModuleAnnotationProcessor extends AbstractProcessor {
             if (element.getKind() == ElementKind.CLASS) {
                 try {
                     final var file = this.processingEnv.getFiler()
-                            .createResource(StandardLocation.CLASS_OUTPUT, "", "module.json");
+                            .createResource(StandardLocation.CLASS_OUTPUT, "", "module");
                     try (final var writer = file.openWriter()) {
                         writer.write(((TypeElement) element).getQualifiedName().toString());
                     }
