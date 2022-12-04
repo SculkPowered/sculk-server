@@ -11,7 +11,7 @@ public final class Biome {
             .precipitation("none")
             .temperature(0.5F)
             .downfall(0.5F)
-            .effects(Biome.Effects.builder()
+            .effects(Effects.builder()
                     .skyColor(8103167)
                     .waterFogColor(329011)
                     .fogColor(12638463)

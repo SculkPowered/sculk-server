@@ -430,11 +430,11 @@ public enum State {
 
         public static class ProtocolRegistry {
 
-            public final Protocol.Version version;
+            public final Version version;
             public final IntObjectMap<Supplier<? extends Packet>> packetIdToSupplier = new IntObjectHashMap<>(16, 0.5f);
             protected final Object2IntMap<Class<? extends Packet>> packetClassToId = new Object2IntOpenHashMap<>(16, 0.5f);
 
-            ProtocolRegistry(final Protocol.Version version) {
+            ProtocolRegistry(final Version version) {
                 this.version = version;
                 this.packetClassToId.defaultReturnValue(-1);
             }
@@ -458,13 +458,13 @@ public enum State {
     }
 
     protected MappedPacket map(final int id,
-                               final Protocol.Version version) {
+                               final Version version) {
         return new MappedPacket(id, version, null);
     }
 
     protected MappedPacket map(final int id,
-                               final Protocol.Version version,
-                               final Protocol.Version toVersion) {
+                               final Version version,
+                               final Version toVersion) {
         return new MappedPacket(id, version, toVersion);
     }
 

@@ -6,10 +6,10 @@ import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.api.world.Position;
-import de.bauhd.minecraft.server.protocol.packet.play.GameEvent;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
+import de.bauhd.minecraft.server.protocol.packet.play.GameEvent;
 import de.bauhd.minecraft.server.protocol.packet.play.SystemChatMessage;
 import de.bauhd.minecraft.server.protocol.packet.play.TabListHeaderFooter;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
@@ -24,8 +24,6 @@ import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.UUID;
 
 public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
