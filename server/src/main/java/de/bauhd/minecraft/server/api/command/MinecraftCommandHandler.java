@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.api.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import de.bauhd.minecraft.server.api.command.defaults.ShutdownCommand;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -13,6 +14,10 @@ public final class MinecraftCommandHandler implements CommandHandler {
 
     public MinecraftCommandHandler() {
         this.dispatcher = new CommandDispatcher<>();
+
+        // register default commands
+        this.register(new ShutdownCommand());
+        this.register(new InfoCommand().get());
     }
 
     @Override
