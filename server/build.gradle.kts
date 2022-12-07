@@ -8,6 +8,7 @@ apply(plugin = "com.github.johnrengelman.shadow")
 tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = "de.bauhd.minecraft.server.Main"
+        attributes["Multi-Release"] = true
     }
 }
 
@@ -21,6 +22,16 @@ dependencies {
     implementation("io.netty:netty5-transport-native-epoll")
     implementation("io.netty:netty5-transport-native-epoll:linux-x86_64")
     implementation("io.netty:netty5-transport-native-epoll:linux-aarch_64")
+
+    // terminal
+    implementation("org.jline:jline-reader:3.21.0")
+    runtimeOnly("org.fusesource.jansi:jansi:2.4.0")
+
+    // logging
+    val log4jVersion = "2.19.0"
+    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-iostreams:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-jul:$log4jVersion") // for jline logger
 
     implementation("it.unimi.dsi:fastutil-core:8.5.9")
 }

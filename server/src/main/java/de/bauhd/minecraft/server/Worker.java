@@ -8,14 +8,13 @@ public final class Worker {
     private static final int MILLIS_BETWEEN_TICK = 1000 / TPS;
 
     private final AdvancedMinecraftServer server;
-    private boolean running = true;
 
     public Worker(final AdvancedMinecraftServer server) {
         this.server = server;
     }
 
     public void start() {
-        while (this.running) {
+        while (this.server.isRunning()) {
             this.sendKeepAlive();
 
             try {

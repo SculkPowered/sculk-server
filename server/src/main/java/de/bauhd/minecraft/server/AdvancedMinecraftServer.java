@@ -20,10 +20,13 @@ import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.terminal.SimpleTerminal;
 import de.bauhd.minecraft.server.util.BossBarListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +36,7 @@ import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +44,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class AdvancedMinecraftServer implements MinecraftServer {
+
+    private static final Logger LOGGER = LogManager.getLogger(AdvancedMinecraftServer.class);
 
     private static AdvancedMinecraftServer instance;
 
@@ -58,6 +64,12 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private static final GsonComponentSerializer MODERN_SERIALIZER =
             GsonComponentSerializer.gson();
 
+    static {
+        System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
+    }
+
+    private boolean running = true;
+
     private MinecraftConfiguration configuration;
     private KeyPair keyPair;
 
@@ -68,15 +80,19 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private final MinecraftEventHandler eventHandler;
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
+    private final NettyServer nettyServer;
 
     AdvancedMinecraftServer() {
         instance = this;
+
+        final var startTime = System.currentTimeMillis();
+        final var terminal = new SimpleTerminal(this);
 
         this.loadConfig();
 
         if (this.configuration.mode() == MinecraftConfig.Mode.ONLINE) {
             try {
-                final var generator= KeyPairGenerator.getInstance("RSA");
+                final var generator = KeyPairGenerator.getInstance("RSA");
                 generator.initialize(1024);
                 this.keyPair = generator.generateKeyPair();
             } catch (NoSuchAlgorithmException e) {
@@ -95,9 +111,30 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
         this.eventHandler.call(new ServerInitializeEvent()).join();
 
-        new NettyServer().connect(this.configuration.host(), this.configuration.port());
+        this.nettyServer = new NettyServer();
+        this.nettyServer.connect(this.configuration.host(), this.configuration.port());
+
+        LOGGER.info("Done ({}s)!", new DecimalFormat("#.##")
+                .format((System.currentTimeMillis() - startTime) / 1000D));
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> this.shutdown(false), "Minecraft Shutdown Thread"));
+
+        terminal.start();
 
         new Worker(this).start();
+    }
+
+    public void shutdown(final boolean runtime) {
+        LOGGER.info("Shutdown!");
+        this.running = false;
+
+        LogManager.shutdown(false);
+
+        this.nettyServer.close();
+
+        if (runtime) {
+            Runtime.getRuntime().exit(0);
+        }
     }
 
     private void loadConfig() {
@@ -119,6 +156,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isRunning() {
+        return this.running;
     }
 
     @Override
