@@ -6,8 +6,8 @@ import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
-import de.bauhd.minecraft.server.api.world.Chunk;
-import de.bauhd.minecraft.server.api.world.World;
+import de.bauhd.minecraft.server.api.world.chunk.MinecraftChunk;
+import de.bauhd.minecraft.server.api.world.MinecraftWorld;
 import de.bauhd.minecraft.server.protocol.netty.codec.CompressorDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.CompressorEncoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
@@ -18,6 +18,7 @@ import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.channel.Channel;
+import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
 
@@ -33,7 +34,7 @@ public final class Connection extends ChannelHandlerAdapter {
     private static final AdvancedMinecraftServer SERVER = AdvancedMinecraftServer.getInstance();
     private static final PluginMessage BRAND_PACKET;
     private static final CompressionPacket COMPRESSION_PACKET;
-    private static final List<Chunk> CHUNKS;
+    private static final List<MinecraftChunk> CHUNKS;
 
     static {
         BRAND_PACKET = new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
@@ -46,8 +47,8 @@ public final class Connection extends ChannelHandlerAdapter {
         }
 
         CHUNKS = new ArrayList<>();
-        final var world = new World();
-        world.chunksInRange(0, 0, 10, (x, z) -> CHUNKS.add(world.createChunk(x, z)));
+        final var world = new MinecraftWorld();
+        world.forChunksInRange(0, 0, 10, (x, z) -> CHUNKS.add(world.createChunk(x, z)));
 
     }
 
@@ -132,10 +133,7 @@ public final class Connection extends ChannelHandlerAdapter {
     }
 
     public void sendAndClose(final Packet packet) {
-        this.channel.writeAndFlush(packet).addListener(this.channel, (context, future) -> {
-            System.out.println("close future");
-            context.close();
-        });
+        this.channel.writeAndFlush(packet).addListener(this.channel, ChannelFutureListeners.CLOSE);
     }
 
     public void set(final State state, final Protocol.Version version) {

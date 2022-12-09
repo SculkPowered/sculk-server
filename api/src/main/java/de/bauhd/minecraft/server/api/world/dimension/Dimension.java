@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class Dimension {
 
-    private static int CURRENT_ID = 0;
+    private static final int CHUNK_SIZE = 16;
 
     private static final int[] MAGIC = {
             -1, -1, 0, Integer.MIN_VALUE, 0, 0, 1431655765, 1431655765, 0, Integer.MIN_VALUE,
@@ -41,6 +41,8 @@ public final class Dimension {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
+    private static int CURRENT_ID = 0;
+
     public static final Dimension OVERWORLD = Dimension.builder("minecraft:overworld")
             .piglinSafe(false)
             .hasRaids(true)
@@ -70,6 +72,8 @@ public final class Dimension {
 
     private final CompoundBinaryTag nbt;
     private final CompoundBinaryTag heightmaps;
+    private final int minimumSections;
+    private final int maximumSections;
 
     private Dimension(final CompoundBinaryTag nbt) {
         this.nbt = nbt;
@@ -85,6 +89,10 @@ public final class Dimension {
                 .putLongArray("MOTION_BLOCKING", encodeBlocks(MOTION_BLOCKING, bitsForHeight))
                 .putLongArray("WORLD_SURFACE", encodeBlocks(worldSurface, bitsForHeight))
                 .build();
+
+        final var minY = this.nbt.getInt("min_y");
+        this.minimumSections = minY / CHUNK_SIZE;
+        this.maximumSections = (minY + this.nbt.getInt("")) / CHUNK_SIZE;
     }
 
     public static @NotNull Builder builder(@NotNull String name) {
@@ -97,6 +105,14 @@ public final class Dimension {
 
     public @NotNull CompoundBinaryTag heightmaps() {
         return this.heightmaps;
+    }
+
+    public int minimumSections() {
+        return this.minimumSections;
+    }
+
+    public int maximumSections() {
+        return this.maximumSections;
     }
 
     public static class Builder {

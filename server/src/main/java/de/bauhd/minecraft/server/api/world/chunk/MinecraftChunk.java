@@ -1,6 +1,7 @@
-package de.bauhd.minecraft.server.api.world;
+package de.bauhd.minecraft.server.api.world.chunk;
 
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.api.world.*;
 import de.bauhd.minecraft.server.api.world.dimension.Dimension;
 import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -10,30 +11,28 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-public final class Chunk {
+public final class MinecraftChunk implements Chunk {
 
+    private final Dimension dimension;
     private final int chunkX;
     private final int chunkZ;
-    private final int minSection;
-    private final int maxSection;
     private final List<Section> sections;
     private final Int2ObjectMap<Block> blocks = new Int2ObjectOpenHashMap<>();
 
-    public Chunk(final int chunkX, final int chunkZ) {
+    public MinecraftChunk(final World world, final int chunkX, final int chunkZ) {
+        this.dimension = world.getDimension();
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
-        this.minSection = -64 / 16;
-        this.maxSection = (-64 + 384) / 16;
 
-        final var capacity = this.maxSection - this.minSection;
-        this.sections = new ArrayList<>(this.maxSection - this.minSection);
+        final var capacity = this.dimension.maximumSections() - this.dimension.minimumSections();
+        this.sections = new ArrayList<>(capacity);
         for (int i = 0; i < capacity; i++) {
             this.sections.add(new Section());
         }
     }
 
     public void setBlock(final int x, final int y, final int z, final Material material) {
-        final var section = this.sections.get(y >> 4 + this.minSection);
+        final var section = this.sections.get(y >> 4 + this.dimension.minimumSections());
         section.blocks().set(x, y, z, 0x010);
 
     }
