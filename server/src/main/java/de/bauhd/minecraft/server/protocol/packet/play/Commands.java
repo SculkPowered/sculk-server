@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -19,13 +19,11 @@ import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class Commands implements Packet {
 
-    private RootCommandNode<CommandSender> rootNode;
+    private final RootCommandNode<CommandSender> rootNode;
 
     public Commands(final RootCommandNode<CommandSender> rootNode) {
         this.rootNode = rootNode;
     }
-
-    public Commands() {}
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
@@ -93,7 +91,53 @@ public final class Commands implements Packet {
                 final var type = argumentNode.getType();
 
                 // TODO make it better
-                if (type.getClass() == IntegerArgumentType.class) {
+                if (type.getClass() == BoolArgumentType.class) {
+                    writeVarInt(buf, 0);
+                } else if (type.getClass() == DoubleArgumentType.class) {
+                    final var argument = (DoubleArgumentType) type;
+                    final var hasMinimum = argument.getMinimum() != -Double.MAX_VALUE;
+                    final var hasMaximum = argument.getMaximum() != Double.MAX_VALUE;
+
+                    writeVarInt(buf, 3);
+
+                    byte argumentFlags = 0;
+                    if (hasMinimum) {
+                        argumentFlags |= 0x01;
+                    }
+                    if (hasMaximum) {
+                        argumentFlags |= 0x02;
+                    }
+
+                    buf.writeByte(argumentFlags);
+                    if (hasMinimum) {
+                        buf.writeDouble(argument.getMinimum());
+                    }
+                    if (hasMaximum) {
+                        buf.writeDouble(argument.getMaximum());
+                    }
+                } else if (type.getClass() == FloatArgumentType.class) {
+                    final var argument = (FloatArgumentType) type;
+                    final var hasMinimum = argument.getMinimum() != -Float.MAX_VALUE;
+                    final var hasMaximum = argument.getMaximum() != Float.MAX_VALUE;
+
+                    writeVarInt(buf, 3);
+
+                    byte argumentFlags = 0;
+                    if (hasMinimum) {
+                        argumentFlags |= 0x01;
+                    }
+                    if (hasMaximum) {
+                        argumentFlags |= 0x02;
+                    }
+
+                    buf.writeByte(argumentFlags);
+                    if (hasMinimum) {
+                        buf.writeFloat(argument.getMinimum());
+                    }
+                    if (hasMaximum) {
+                        buf.writeFloat(argument.getMaximum());
+                    }
+                } else if (type.getClass() == IntegerArgumentType.class) {
                     final var argument = (IntegerArgumentType) type;
                     final var hasMinimum = argument.getMinimum() != Integer.MIN_VALUE;
                     final var hasMaximum = argument.getMaximum() != Integer.MAX_VALUE;
@@ -115,6 +159,30 @@ public final class Commands implements Packet {
                     if (hasMaximum) {
                         buf.writeInt(argument.getMaximum());
                     }
+                } else if (type.getClass() == LongArgumentType.class) {
+                    final var argument = (LongArgumentType) type;
+                    final var hasMinimum = argument.getMinimum() != Long.MIN_VALUE;
+                    final var hasMaximum = argument.getMaximum() != Long.MAX_VALUE;
+
+                    writeVarInt(buf, 3);
+
+                    byte argumentFlags = 0;
+                    if (hasMinimum) {
+                        argumentFlags |= 0x01;
+                    }
+                    if (hasMaximum) {
+                        argumentFlags |= 0x02;
+                    }
+
+                    buf.writeByte(argumentFlags);
+                    if (hasMinimum) {
+                        buf.writeLong(argument.getMinimum());
+                    }
+                    if (hasMaximum) {
+                        buf.writeLong(argument.getMaximum());
+                    }
+                } else if (type.getClass() == StringArgumentType.class) {
+                    writeVarInt(buf, ((StringArgumentType) type).getType().ordinal());
                 }
 
                 // suggestion type
