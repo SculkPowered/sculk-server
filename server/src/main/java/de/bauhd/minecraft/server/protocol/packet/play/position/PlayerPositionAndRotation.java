@@ -26,7 +26,7 @@ public final class PlayerPositionAndRotation implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         final var player = connection.player();
         final var position = player.getPosition();
         player.sendViewers(new EntityPositionAndRotation(player.getId(),
@@ -34,6 +34,7 @@ public final class PlayerPositionAndRotation implements Packet {
                 this.yaw, this.pitch, this.onGround),
                 new HeadRotation(player.getId(), this.yaw));
         player.setPosition(new Position(this.x, this.y, this.z, this.yaw, this.pitch));
+        return false;
     }
 
     @Override

@@ -17,8 +17,9 @@ public final class SwingArm implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         connection.player().sendViewers(new EntityAnimation(connection.player().getId(), (byte) (this.hand == 1 ? 3 : 0)));
+        return false;
     }
 
     @Override

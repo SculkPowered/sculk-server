@@ -3,31 +3,43 @@ package de.bauhd.minecraft.server.protocol.packet.handshake;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
-import de.bauhd.minecraft.server.protocol.Protocol;
+import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import io.netty5.buffer.Buffer;
+import net.kyori.adventure.text.Component;
+
+import static de.bauhd.minecraft.server.protocol.Protocol.Version.*;
 
 public final class Handshake implements Packet {
 
     private Protocol.Version version;
     private String serverAddress;
     private int port;
-    private int nextStatus;
+    private State nextStatus;
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
         this.version = Protocol.Version.get(PacketUtils.readVarInt(buf));
         this.serverAddress = PacketUtils.readString(buf, 256);
         this.port = buf.readUnsignedShort();
-        this.nextStatus = PacketUtils.readVarInt(buf);
+        this.nextStatus = (PacketUtils.readVarInt(buf) == 1 ? State.STATUS : State.LOGIN);
     }
 
     @Override
-    public void handle(Connection connection) {
-        connection.set(this.nextStatus == 1 ? State.STATUS : State.LOGIN, this.version);
+    public boolean handle(Connection connection) {
+        connection.set(this.nextStatus, (this.version != UNKNOWN ? this.version : MINIMUM_VERSION));
+        if (this.nextStatus == State.LOGIN
+                && (this.version.older(MINIMUM_VERSION) || this.version.newer(MAXIMUM_VERSION))) {
+            connection.send(new Disconnect(Component
+                    .translatable("multiplayer.disconnect.outdated_client", Component.text(SUPPORTED_VERSIONS))));
+            return true;
+        }
+        connection.setVersion(this.version);
         connection.setServerAddress(this.serverAddress);
+        return false;
     }
 
     @Override

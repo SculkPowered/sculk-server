@@ -5,12 +5,9 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.play.container.OpenScreen;
 import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
@@ -33,7 +30,7 @@ public final class ChatCommand implements Packet {
         }
         this.signedPreview = buf.readBoolean();
 
-        if (version.compare(Protocol.Version.MINECRAFT_1_19_1)) {
+        if (version.newerOr(Protocol.Version.MINECRAFT_1_19_1)) {
             // ignore for now
             readVarInt(buf);
             buf.readBoolean();
@@ -41,12 +38,13 @@ public final class ChatCommand implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         try {
             AdvancedMinecraftServer.getInstance().getCommandHandler().dispatcher().execute(this.command, connection.player());
         } catch (CommandSyntaxException e) {
             connection.player().sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
         }
+        return false;
     }
 
     @Override

@@ -22,12 +22,13 @@ public final class PlayerPosition implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         final var player = connection.player();
         final var position = player.getPosition();
         player.sendViewers(new EntityPosition(player.getId(),
                 this.delta(position.x(), this.x), this.delta(position.y(), this.y), this.delta(position.z(), this.z), this.onGround));
         player.setPosition(new Position(this.x, this.y, this.z, position.yaw(), position.pitch()));
+        return false;
     }
 
     @Override

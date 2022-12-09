@@ -21,7 +21,7 @@ public final class PlayerCommand implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         final var player = connection.player();
 
         /*if (this.action == Action.START_SNEAKING) {
@@ -37,6 +37,7 @@ public final class PlayerCommand implements Packet {
                 otherPlayer.send(packet);
             }
         }*/
+        return false;
     }
 
     @Override

@@ -26,11 +26,12 @@ public final class PlayerAction implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         if (this.status == 0) { // 0 only if instant break
             // TODO get chunk viewers
             AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, 0));
         }
+        return false;
     }
 
     @Override

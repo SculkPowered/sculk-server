@@ -17,11 +17,6 @@ public final class Disconnect implements Packet {
     }
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
-    }
-
-    @Override
     public void encode(Buffer buf, Protocol.Version version) {
         writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.text));
     }

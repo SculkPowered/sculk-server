@@ -37,47 +37,47 @@ public enum State {
     HANDSHAKE {
         {
             this.serverBound.register(Handshake.class, Handshake::new,
-                    this.map(0x00, MINECRAFT_1_7_2)
+                    this.map(0x00, MINIMUM_VERSION)
             );
         }
     },
     STATUS {
         {
             this.serverBound.register(StatusRequest.class, () -> StatusRequest.INSTANCE,
-                    this.map(0x00, MINECRAFT_1_7_2)
+                    this.map(0x00, MINIMUM_VERSION) // since 1.7
             );
             this.serverBound.register(StatusPing.class, StatusPing::new,
-                    this.map(0x01, MINECRAFT_1_7_2)
+                    this.map(0x01, MINIMUM_VERSION) // since 1.7
             );
 
             this.clientBound.register(StatusResponse.class,
-                    this.map(0x00, MINECRAFT_1_7_2)
+                    this.map(0x00, MINIMUM_VERSION) // since 1.7
             );
             this.clientBound.register(StatusPing.class,
-                    this.map(0x01, MINECRAFT_1_7_2)
+                    this.map(0x01, MINIMUM_VERSION) // since 1.7
             );
         }
     },
     LOGIN {
         {
             this.serverBound.register(LoginStart.class, LoginStart::new,
-                    this.map(0x00, MINECRAFT_1_7_2)
+                    this.map(0x00, MINIMUM_VERSION) // since 1.7
             );
             this.serverBound.register(EncryptionResponse.class, EncryptionResponse::new,
-                    this.map(0x01, MINECRAFT_1_7_2)
+                    this.map(0x01, MINIMUM_VERSION) // since 1.7
             );
 
             this.clientBound.register(Disconnect.class,
-                    this.map(0x00, MINECRAFT_1_7_2)
+                    this.map(0x00, MINIMUM_VERSION) // since 1.7
             );
             this.clientBound.register(EncryptionRequest.class,
-                    this.map(0x01, MINECRAFT_1_7_2)
+                    this.map(0x01, MINIMUM_VERSION) // since 1.7
             );
             this.clientBound.register(LoginSuccess.class,
-                    this.map(0x02, MINECRAFT_1_7_2)
+                    this.map(0x02, MINIMUM_VERSION) // since 1.7
             );
             this.clientBound.register(CompressionPacket.class,
-                    this.map(0x03, MINECRAFT_1_8)
+                    this.map(0x03, MINIMUM_VERSION) // since 1.8
             );
         }
     },
@@ -357,7 +357,7 @@ public enum State {
             final var registry = this.versions.get(version);
             if (registry == null) {
                 if (this.fallback) {
-                    return this.getProtocolRegistry(Version.MINIMUM);
+                    return this.getProtocolRegistry(MINIMUM_VERSION);
                 }
                 throw new IllegalArgumentException("Could not find data for protocol version " + version);
             }
@@ -382,15 +382,15 @@ public enum State {
                     if (next != current) {
                         throw new IllegalArgumentException("Cannot add a mapping after last valid mapping");
                     }
-                    if (from.compareTo(lastValid) > 0) {
+                    if (from.newer(lastValid)) {
                         throw new IllegalArgumentException(
                                 "Last mapping version cannot be higher than highest mapping version");
                     }
                 }
                 final var to = current == next ? lastValid != null
-                        ? lastValid : Version.MAXIMUM : next.version();
+                        ? lastValid : MAXIMUM_VERSION : next.version();
 
-                if (from.compareTo(to) >= 0 && from != Version.MAXIMUM) {
+                if (from.newerOr(to) && from != MAXIMUM_VERSION) {
                     throw new IllegalArgumentException(String.format(
                             "Next mapping version (%s) should be lower then current (%s)", to, from));
                 }

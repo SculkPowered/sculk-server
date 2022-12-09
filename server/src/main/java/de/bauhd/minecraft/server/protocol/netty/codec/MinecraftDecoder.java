@@ -21,7 +21,7 @@ public final class MinecraftDecoder implements ChannelHandler {
     public MinecraftDecoder(Protocol.Direction direction) {
         this.direction = direction;
         this.state = State.HANDSHAKE;
-        this.registry = direction.getRegistry(this.state, Protocol.Version.MINIMUM);
+        this.registry = direction.getRegistry(this.state, Protocol.Version.MINIMUM_VERSION);
     }
 
     @Override
@@ -54,7 +54,8 @@ public final class MinecraftDecoder implements ChannelHandler {
                         e.printStackTrace();
                     }
                     if (buf.readableBytes() > 0) {
-                        throw new DecoderException("Overflow after decode packet " + packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
+                        throw new DecoderException("Overflow after decode packet " +
+                                packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
                     }
                     final var clazz = packet.getClass();
                     if (clazz != KeepAlive.class && clazz != PlayerPosition.class && clazz != PlayerPositionAndRotation.class && clazz != PlayerRotation.class)

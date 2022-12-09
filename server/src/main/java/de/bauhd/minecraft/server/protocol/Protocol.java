@@ -47,39 +47,52 @@ public final class Protocol {
         MINECRAFT_1_19(759, "1.19"),
         MINECRAFT_1_19_1(760, "1.19.1", "1.19.2");
 
-        public static final Version MINIMUM = MINECRAFT_1_13_1;
-        public static final Version MAXIMUM = MINECRAFT_1_19_1;
+        public static final Version MINIMUM_VERSION = MINECRAFT_1_19;
+        public static final Version MAXIMUM_VERSION = MINECRAFT_1_19_1;
 
         public static final Map<Integer, Version> PROTOCOL_VERSIONS;
 
+        public static final String SUPPORTED_VERSIONS = MINIMUM_VERSION.versions[0]
+                + "-" + MAXIMUM_VERSION.versions[MAXIMUM_VERSION.versions.length - 1];
+
         static {
             PROTOCOL_VERSIONS = new HashMap<>();
-            for (final Version version : values()) {
-                PROTOCOL_VERSIONS.putIfAbsent(version.protocolVersion, version);
+            for (final var version : values()) {
+                PROTOCOL_VERSIONS.putIfAbsent(version.protocolId, version);
             }
         }
 
         public static Version get(final int protocolVersion) {
-            return PROTOCOL_VERSIONS.get(protocolVersion);
+            return PROTOCOL_VERSIONS.getOrDefault(protocolVersion, Version.UNKNOWN);
         }
 
-        private final int protocolVersion;
-
+        private final int protocolId;
         private final String[] versions;
 
-        Version(final int protocolVersion, final String... versions) {
-            this.protocolVersion = protocolVersion;
+        Version(final int protocolId, final String... versions) {
+            this.protocolId = protocolId;
             this.versions = versions;
         }
 
-        public int protocolVersion() {
-            return this.protocolVersion;
+        public int protocolId() {
+            return this.protocolId;
         }
 
-        public boolean compare(final Version version) {
+        public boolean newerOr(final Version version) {
             return this.compareTo(version) >= 0;
         }
 
+        public boolean newer(final Version version) {
+            return this.compareTo(version) > 0;
+        }
+
+        public boolean older(final Version version) {
+            return this.compareTo(version) < 0;
+        }
+
+        public String[] versions() {
+            return this.versions;
+        }
     }
 
     public enum Direction {

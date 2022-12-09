@@ -27,8 +27,9 @@ public final class HeldItem implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         connection.player().setHeldItemSlot(this.slot);
+        return false;
     }
 
     @Override

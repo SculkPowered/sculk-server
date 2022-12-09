@@ -8,8 +8,9 @@ public final class StatusRequest implements Packet {
     public static final StatusRequest INSTANCE = new StatusRequest();
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         connection.send(new StatusResponse());
+        return false;
     }
 
     @Override

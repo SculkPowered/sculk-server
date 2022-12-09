@@ -37,10 +37,11 @@ public final class PluginMessage implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(this.data.length);
         buf.writeBytes(this.data);
         //System.out.println(PacketUtils.readString(buf));
+        return false;
     }
 
     @Override

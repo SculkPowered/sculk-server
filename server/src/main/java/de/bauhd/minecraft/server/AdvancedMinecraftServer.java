@@ -231,6 +231,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     public static GsonComponentSerializer getGsonSerializer(final Protocol.Version version) {
-        return version.compare(Protocol.Version.MINECRAFT_1_16) ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
+        return version.newerOr(Protocol.Version.MINECRAFT_1_16) ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
     }
 }

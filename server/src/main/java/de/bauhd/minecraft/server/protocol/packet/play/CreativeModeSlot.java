@@ -22,13 +22,14 @@ public final class CreativeModeSlot implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         final var player = connection.player();
         if (player.getGameMode() != GameMode.CREATIVE) {
             player.sendMessage(AdvancedMinecraftServer.SUS_COMPONENT);
-            return;
+            return false;
         }
         player.setItem(this.slot, this.clickedItem);
+        return false;
     }
 
     @Override

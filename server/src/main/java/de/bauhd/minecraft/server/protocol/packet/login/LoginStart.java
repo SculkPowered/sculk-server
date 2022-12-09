@@ -18,13 +18,13 @@ public final class LoginStart implements Packet {
     public void decode(Buffer buf, Protocol.Version version) {
         this.username = readString(buf, 16);// + ThreadLocalRandom.current().nextInt(10);
 
-        if (version.compare(Protocol.Version.MINECRAFT_1_19)) {
+        if (version.newerOr(Protocol.Version.MINECRAFT_1_19)) {
             if (buf.readBoolean()) {
                 buf.readLong();
                 readByteArray(buf); // public key
                 readByteArray(buf); // signature
             }
-            if (version.compare(Protocol.Version.MINECRAFT_1_19_1)) {
+            if (version.newerOr(Protocol.Version.MINECRAFT_1_19_1)) {
                 if (buf.readBoolean()) {
                     this.uniqueId = readUUID(buf);
                 }
@@ -33,13 +33,14 @@ public final class LoginStart implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         connection.setUsername(this.username);
         connection.play(null);
         /*final var publicKey = DefaultMinecraftServer.getInstance().getKeyPair().getPublic().getEncoded();
         final var verifyToken = new byte[4];
         ThreadLocalRandom.current().nextBytes(verifyToken);
         connection.send(new EncryptionRequest("", publicKey, verifyToken));*/
+        return false;
     }
 
     @Override

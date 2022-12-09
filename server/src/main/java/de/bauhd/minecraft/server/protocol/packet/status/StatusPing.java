@@ -20,8 +20,9 @@ public final class StatusPing implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         connection.sendAndClose(this);
+        return false;
     }
 
     @Override

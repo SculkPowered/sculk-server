@@ -35,11 +35,11 @@ public final class UseItemOn implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         final var player = connection.player();
         final var slot = player.getItem(player.getHeldItemSlot() + 36);
         if (slot == null) {
-            return;
+            return false;
         }
         this.position = switch (this.face) {
             case BOTTOM -> this.position.subtract(0, 1, 0);
@@ -50,6 +50,7 @@ public final class UseItemOn implements Packet {
             case EAST -> this.position.add(1, 0, 0);
         };
         AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, slot.materialId()));
+        return false;
     }
 
     @Override

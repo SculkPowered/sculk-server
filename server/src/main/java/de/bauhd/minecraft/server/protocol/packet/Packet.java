@@ -10,7 +10,9 @@ public interface Packet {
 
     default void encode(final Buffer buf, final Protocol.Version version) {}
 
-    default void handle(final Connection connection) {}
+    default boolean handle(final Connection connection) {
+        return false;
+    }
 
     default int minLength() {
         return 0;

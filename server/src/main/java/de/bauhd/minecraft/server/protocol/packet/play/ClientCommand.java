@@ -17,10 +17,11 @@ public final class ClientCommand implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         if (this.actionId == 1) {
             connection.send(new AwardStatistics());
         }
+        return false;
     }
 
     @Override

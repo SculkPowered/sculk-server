@@ -33,8 +33,10 @@ public final class ChatMessage implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
-        AdvancedMinecraftServer.getInstance().sendAll(new SystemChatMessage(Component.text(connection.player().getUsername() + " - " + this.message), false));
+    public boolean handle(Connection connection) {
+        AdvancedMinecraftServer.getInstance().sendAll(
+                new SystemChatMessage(Component.text(connection.player().getUsername() + " - " + this.message), false));
+        return false;
     }
 
     @Override

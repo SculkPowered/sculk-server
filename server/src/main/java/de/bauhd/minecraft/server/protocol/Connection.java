@@ -18,7 +18,6 @@ import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.channel.Channel;
-import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
 
@@ -53,6 +52,7 @@ public final class Connection extends ChannelHandlerAdapter {
     }
 
     private final Channel channel;
+    private Protocol.Version version;
     private String serverAddress;
     private String username;
     private MinecraftPlayer player;
@@ -64,7 +64,9 @@ public final class Connection extends ChannelHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
         if (message instanceof Packet packet) {
-            packet.handle(this);
+            if (packet.handle(this)) {
+                ctx.close();
+            }
         }
     }
 
@@ -130,7 +132,10 @@ public final class Connection extends ChannelHandlerAdapter {
     }
 
     public void sendAndClose(final Packet packet) {
-        this.channel.writeAndFlush(packet).addListener(this.channel, ChannelFutureListeners.CLOSE);
+        this.channel.writeAndFlush(packet).addListener(this.channel, (context, future) -> {
+            System.out.println("close future");
+            context.close();
+        });
     }
 
     public void set(final State state, final Protocol.Version version) {
@@ -148,6 +153,14 @@ public final class Connection extends ChannelHandlerAdapter {
                 .addAfter("frame-decoder", "compressor-decoder", new CompressorDecoder())
                 .addAfter("compressor-decoder", "compressor-encoder", new CompressorEncoder())
                 .remove("frame-decoder");
+    }
+
+    public void setVersion(final Protocol.Version version) {
+        this.version = version;
+    }
+
+    public Protocol.Version version() {
+        return this.version;
     }
 
     public void setServerAddress(final String serverAddress) {

@@ -50,7 +50,7 @@ public final class EncryptionResponse implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
+    public boolean handle(Connection connection) {
         try {
             final var digest = java.security.MessageDigest.getInstance("SHA-1");
             digest.update(CIPHER.doFinal(this.sharedSecret));
@@ -59,6 +59,7 @@ public final class EncryptionResponse implements Packet {
         } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);
         }
+        return false;
     }
 
     @Override

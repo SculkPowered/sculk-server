@@ -34,8 +34,8 @@ public final class Interact implements Packet {
     }
 
     @Override
-    public void handle(Connection connection) {
-
+    public boolean handle(Connection connection) {
+        return false;
     }
 
     @Override

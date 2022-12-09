@@ -1,9 +1,9 @@
 package de.bauhd.minecraft.server.protocol.netty.codec;
 
 import de.bauhd.minecraft.server.protocol.Protocol;
+import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
-import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import de.bauhd.minecraft.server.protocol.packet.play.KeepAlive;
 import de.bauhd.minecraft.server.protocol.packet.play.position.EntityPosition;
@@ -23,7 +23,7 @@ public final class MinecraftEncoder extends MessageToByteEncoder<Packet> {
     public MinecraftEncoder(final Protocol.Direction direction) {
         this.direction = direction;
         this.state = State.HANDSHAKE;
-        this.registry = direction.getRegistry(this.state, Protocol.Version.MINIMUM);
+        this.registry = direction.getRegistry(this.state, Protocol.Version.MINIMUM_VERSION);
     }
 
     @Override
