@@ -18,6 +18,8 @@ import io.netty5.channel.Channel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
@@ -27,6 +29,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
+
+    private final Pointers pointers = Pointers.builder()
+            .withDynamic(Identity.NAME, this::getUsername)
+            .withDynamic(Identity.UUID, this::getUniqueId)
+            .withDynamic(Identity.DISPLAY_NAME, this::getDisplayName)
+            .build();
 
     private final Channel channel;
     private final UUID uniqueId;
@@ -145,6 +153,12 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public void hideBossBar(@NotNull BossBar bar) {
         AdvancedMinecraftServer.getInstance().getBossBarListener().hideBossBar(this, bar);
+    }
+
+    @NotNull
+    @Override
+    public Pointers pointers() {
+        return this.pointers;
     }
 
     @Override
