@@ -20,6 +20,13 @@ dependencies {
 
 }
 
+tasks.getByName<Javadoc>("javadoc") {
+    (options as StandardJavadocDocletOptions).links = listOf(
+        "https://docs.oracle.com/en/java/javase/17/docs/api/",
+        "https://jd.adventure.kyori.net/api/4.12.0/"
+    )
+}
+
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
