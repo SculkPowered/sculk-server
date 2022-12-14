@@ -30,8 +30,7 @@ public final class ChatCommand implements Packet {
 
         if (version.newerOr(Protocol.Version.MINECRAFT_1_19_1)) {
             // ignore for now
-            buf.readVarInt();
-            buf.readBoolean();
+            buf.readAll();
         }
     }
 
