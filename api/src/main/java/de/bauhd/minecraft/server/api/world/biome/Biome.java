@@ -123,13 +123,79 @@ public final class Biome {
             return this;
         }
 
+        public @NotNull Effects foliageColor(int foliageColor) {
+            this.builder.putInt("foliage_color", foliageColor);
+            return this;
+        }
+
+        public @NotNull Effects grassColor(int grassColor) {
+            this.builder.putInt("grass_color", grassColor);
+            return this;
+        }
+
+        public @NotNull Effects grassColorModifier(String grassColorModifier) {
+            this.builder.putString("grass_color_modifier", grassColorModifier);
+            return this;
+        }
+
+        public @NotNull Effects music(CompoundBinaryTag binaryTag) {
+            this.builder.put("music", binaryTag);
+            return this;
+        }
+
+        public @NotNull Effects ambientSound(String ambientSound) {
+            this.builder.putString("ambient_sound", ambientSound);
+            return this;
+        }
+
+        public @NotNull Effects additionsSound(CompoundBinaryTag binaryTag) {
+            this.builder.put("additions_sound", binaryTag);
+            return this;
+        }
+
+        public @NotNull Effects moodSound(CompoundBinaryTag binaryTag) {
+            this.builder.put("mood_sound", binaryTag);
+            return this;
+        }
+
+        public @NotNull Effects particle(CompoundBinaryTag binaryTag) {
+            this.builder.put("particle", binaryTag);
+            return this;
+        }
+
         public CompoundBinaryTag build() {
             return this.builder.build();
         }
 
     }
 
-    public class Music {
+    public static class Music {
+
+        private final CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder();
+
+        public @NotNull Music replaceCurrentMusic(final byte b) {
+            this.builder.putByte("replace_current_music", b);
+            return this;
+        }
+
+        public @NotNull Music sound(final String sound) {
+            this.builder.putString("sound", sound);
+            return this;
+        }
+
+        public @NotNull Music maxDelay(final int maxDelay) {
+            this.builder.putInt("max_delay", maxDelay);
+            return this;
+        }
+
+        public @NotNull Music minDelay(final int minDelay) {
+            this.builder.putInt("min_delay", minDelay);
+            return this;
+        }
+
+        public CompoundBinaryTag build() {
+            return this.builder.build();
+        }
 
     }
 

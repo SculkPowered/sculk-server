@@ -266,10 +266,6 @@ public final class Dimension {
 
     }
 
-    public class Music {
-
-    }
-
     private static long[] encodeBlocks(final int[] blocks, final int bitsPerEntry) {
         final var maxEntryValue = (1L << bitsPerEntry) - 1;
         final var valuesPerLong = (char) (64 / bitsPerEntry);
