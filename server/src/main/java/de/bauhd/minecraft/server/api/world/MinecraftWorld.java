@@ -27,9 +27,8 @@ public final class MinecraftWorld implements World {
     }
 
     public MinecraftChunk createChunk(final int chunkX, final int chunkZ) {
-        final var chunk = new MinecraftChunk(this, chunkX, chunkZ);
         //this.chunkGenerator.generate(chunk, chunkX, chunkZ);
-        return chunk;
+        return new MinecraftChunk(this, chunkX, chunkZ);
     }
 
     public void forChunksInRange(final int chunkX, final int chunkZ, final int range, final BiConsumer<Integer, Integer> chunk) {

@@ -1,4 +1,4 @@
-package de.bauhd.minecraft.server.protocol.packet.play;
+package de.bauhd.minecraft.server.protocol.packet.play.command;
 
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
@@ -6,16 +6,13 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import de.bauhd.minecraft.server.api.command.CommandSender;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 
 import java.util.ArrayDeque;
 import java.util.List;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class Commands implements Packet {
 
@@ -23,11 +20,6 @@ public final class Commands implements Packet {
 
     public Commands(final RootCommandNode<CommandSender> rootNode) {
         this.rootNode = rootNode;
-    }
-
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
     }
 
     @Override
@@ -44,11 +36,11 @@ public final class Commands implements Packet {
             }
         }
 
-        writeVarInt(buf, nodes.size());
+        buf.writeVarInt(nodes.size());
         for (final var node : nodes.keySet()) {
             this.writeNode(buf, node, nodes);
         }
-        writeVarInt(buf, nodes.getInt(this.rootNode));
+        buf.writeVarInt(nodes.getInt(this.rootNode));
     }
 
     private void writeNode(final Buffer buf,
@@ -74,53 +66,31 @@ public final class Commands implements Packet {
         buf.writeByte(flags);
 
         // node children
-        writeVarInt(buf, node.getChildren().size());
+        buf.writeVarInt(node.getChildren().size());
         for (final var child : node.getChildren()) {
-            writeVarInt(buf, nodes.getInt(child));
+            buf.writeVarInt(nodes.getInt(child));
         }
 
         // redirect node
         if (node.getRedirect() != null) {
-            writeVarInt(buf, nodes.getInt(node.getRedirect()));
+            buf.writeVarInt(nodes.getInt(node.getRedirect()));
         }
 
         if (node instanceof ArgumentCommandNode<?,?> || node instanceof LiteralCommandNode<CommandSender>) {
-            writeString(buf, node.getName()); // name
+            buf.writeString(node.getName()); // name
 
             if (node instanceof ArgumentCommandNode<?,?> argumentNode) {
                 final var type = argumentNode.getType();
 
                 // TODO make it better
                 if (type.getClass() == BoolArgumentType.class) {
-                    writeVarInt(buf, 0);
-                } else if (type.getClass() == DoubleArgumentType.class) {
-                    final var argument = (DoubleArgumentType) type;
-                    final var hasMinimum = argument.getMinimum() != -Double.MAX_VALUE;
-                    final var hasMaximum = argument.getMaximum() != Double.MAX_VALUE;
-
-                    writeVarInt(buf, 3);
-
-                    byte argumentFlags = 0;
-                    if (hasMinimum) {
-                        argumentFlags |= 0x01;
-                    }
-                    if (hasMaximum) {
-                        argumentFlags |= 0x02;
-                    }
-
-                    buf.writeByte(argumentFlags);
-                    if (hasMinimum) {
-                        buf.writeDouble(argument.getMinimum());
-                    }
-                    if (hasMaximum) {
-                        buf.writeDouble(argument.getMaximum());
-                    }
+                    buf.writeVarInt(0);
                 } else if (type.getClass() == FloatArgumentType.class) {
                     final var argument = (FloatArgumentType) type;
                     final var hasMinimum = argument.getMinimum() != -Float.MAX_VALUE;
                     final var hasMaximum = argument.getMaximum() != Float.MAX_VALUE;
 
-                    writeVarInt(buf, 3);
+                    buf.writeVarInt(1);
 
                     byte argumentFlags = 0;
                     if (hasMinimum) {
@@ -137,12 +107,34 @@ public final class Commands implements Packet {
                     if (hasMaximum) {
                         buf.writeFloat(argument.getMaximum());
                     }
+                } else if (type.getClass() == DoubleArgumentType.class) {
+                    final var argument = (DoubleArgumentType) type;
+                    final var hasMinimum = argument.getMinimum() != -Double.MAX_VALUE;
+                    final var hasMaximum = argument.getMaximum() != Double.MAX_VALUE;
+
+                    buf.writeVarInt(2);
+
+                    byte argumentFlags = 0;
+                    if (hasMinimum) {
+                        argumentFlags |= 0x01;
+                    }
+                    if (hasMaximum) {
+                        argumentFlags |= 0x02;
+                    }
+
+                    buf.writeByte(argumentFlags);
+                    if (hasMinimum) {
+                        buf.writeDouble(argument.getMinimum());
+                    }
+                    if (hasMaximum) {
+                        buf.writeDouble(argument.getMaximum());
+                    }
                 } else if (type.getClass() == IntegerArgumentType.class) {
                     final var argument = (IntegerArgumentType) type;
                     final var hasMinimum = argument.getMinimum() != Integer.MIN_VALUE;
                     final var hasMaximum = argument.getMaximum() != Integer.MAX_VALUE;
 
-                    writeVarInt(buf, 3);
+                    buf.writeVarInt(3);
 
                     byte argumentFlags = 0;
                     if (hasMinimum) {
@@ -164,7 +156,7 @@ public final class Commands implements Packet {
                     final var hasMinimum = argument.getMinimum() != Long.MIN_VALUE;
                     final var hasMaximum = argument.getMaximum() != Long.MAX_VALUE;
 
-                    writeVarInt(buf, 3);
+                    buf.writeVarInt(4);
 
                     byte argumentFlags = 0;
                     if (hasMinimum) {
@@ -182,14 +174,19 @@ public final class Commands implements Packet {
                         buf.writeLong(argument.getMaximum());
                     }
                 } else if (type.getClass() == StringArgumentType.class) {
-                    writeVarInt(buf, ((StringArgumentType) type).getType().ordinal());
+                    buf.writeVarInt(4).writeVarInt(((StringArgumentType) type).getType().ordinal());
                 }
 
                 // suggestion type
                 if (argumentNode.getCustomSuggestions() != null) {
-                    writeString(buf, "minecraft:ask_server");
+                    buf.writeString("minecraft:ask_server");
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Commands{}";
     }
 }

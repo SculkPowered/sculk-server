@@ -3,12 +3,10 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.inventory.Slot;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readSlot;
 
 public final class CreativeModeSlot implements Packet {
 
@@ -18,7 +16,7 @@ public final class CreativeModeSlot implements Packet {
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
         this.slot = buf.readShort();
-        this.clickedItem = readSlot(buf);
+        this.clickedItem = buf.readSlot();
     }
 
     @Override

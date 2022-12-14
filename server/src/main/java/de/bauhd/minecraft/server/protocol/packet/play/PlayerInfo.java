@@ -1,14 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 
 import java.util.List;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class PlayerInfo implements Packet {
 
@@ -22,30 +19,33 @@ public final class PlayerInfo implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeVarInt(buf, this.action);
-        writeVarInt(buf, this.entries.size());
+        buf
+                .writeVarInt(this.action)
+                .writeVarInt(this.entries.size());
         for (final var entry : this.entries) {
             final var profile = entry.getProfile();
-            writeUUID(buf, profile.uniqueId());
+            buf.writeUniqueId(profile.uniqueId());
 
             if (this.action == 0) {
-                writeString(buf, profile.name());
-                writeVarInt(buf, profile.properties().size());
+                buf
+                        .writeString(profile.name())
+                        .writeVarInt(profile.properties().size());
                 for (final var property : profile.properties()) {
-                    writeString(buf, property.key());
-                    writeString(buf, property.value());
+                    buf.writeString(property.key()).writeString(property.value());
                     if (property.signature() != null) {
                         buf.writeBoolean(true);
-                        writeString(buf, property.signature());
+                        buf.writeString(property.signature());
                     } else {
                         buf.writeBoolean(false);
                     }
                 }
-                writeVarInt(buf, entry.getGameMode().ordinal());
-                writeVarInt(buf, entry.getPing());
+                buf
+                        .writeVarInt(entry.getGameMode().ordinal())
+                        .writeVarInt(entry.getPing());
                 if (entry.getDisplayName() != null) {
-                    buf.writeBoolean(true);
-                    writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(entry.getDisplayName()));
+                    buf
+                            .writeBoolean(true)
+                            .writeComponent(entry.getDisplayName(), version);
                 } else {
                     buf.writeBoolean(false);
                 }

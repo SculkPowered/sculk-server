@@ -1,14 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 
 import java.util.UUID;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class BossBar implements Packet {
 
@@ -32,22 +29,21 @@ public final class BossBar implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeUUID(buf, this.uniqueId);
-        writeVarInt(buf, this.action);
+        buf.writeUniqueId(this.uniqueId).writeVarInt(this.action);
 
         if (this.action == 0) {
-            writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.title));
-            buf.writeFloat(this.health);
-            writeVarInt(buf, this.color);
-            writeVarInt(buf, this.division);
-            buf.writeUnsignedByte(this.flags);
+            buf
+                    .writeComponent(this.title, version)
+                    .writeFloat(this.health)
+                    .writeVarInt(this.color)
+                    .writeVarInt(this.division)
+                    .writeUnsignedByte(this.flags);
         } else if (this.action == 2) {
             buf.writeFloat(this.health);
         } else if (this.action == 3) {
-            writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.title));
+            buf.writeComponent(this.title, version);
         } else if (this.action == 4) {
-            writeVarInt(buf, this.color);
-            writeVarInt(buf, this.division);
+            buf.writeVarInt(this.color).writeVarInt(this.division);
         } else if (this.action == 5) {
             buf.writeUnsignedByte(this.flags);
         }

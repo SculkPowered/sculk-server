@@ -1,11 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class SynchronizePlayerPosition implements Packet {
 
@@ -22,8 +20,15 @@ public final class SynchronizePlayerPosition implements Packet {
                 .writeDouble(this.position.z())
                 .writeFloat(this.position.yaw())
                 .writeFloat(this.position.pitch())
-                .writeByte((byte) 0x00);
-        writeVarInt(buf, 1);
-        buf.writeBoolean(false);
+                .writeByte((byte) 0x00)
+                .writeVarInt(1)
+                .writeBoolean(false);
+    }
+
+    @Override
+    public String toString() {
+        return "SynchronizePlayerPosition{" +
+                "position=" + this.position +
+                '}';
     }
 }

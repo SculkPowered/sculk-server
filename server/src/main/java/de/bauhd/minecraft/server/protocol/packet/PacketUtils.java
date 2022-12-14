@@ -1,44 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet;
 
-import de.bauhd.minecraft.server.api.inventory.Slot;
-import de.bauhd.minecraft.server.api.world.Position;
-import de.bauhd.minecraft.server.util.Utf8;
 import io.netty5.buffer.Buffer;
-import io.netty5.buffer.BufferInputStream;
-import io.netty5.buffer.BufferOutputStream;
-import io.netty5.handler.codec.EncoderException;
-import net.kyori.adventure.nbt.BinaryTagIO;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.BitSet;
-import java.util.UUID;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class PacketUtils {
-
-    private static final int STRING_CAPACITY = 65536;
-
-    public static void writeString(final Buffer buf, final @NotNull CharSequence charSequence) {
-        writeVarInt(buf, Utf8.encodedLength(charSequence));
-        buf.writeCharSequence(charSequence, UTF_8);
-    }
-
-    public static String readString(final Buffer buf) {
-        return readString(buf, STRING_CAPACITY);
-    }
-
-    public static String readString(final Buffer buf, final int cap) {
-        return readString(buf, cap, readVarInt(buf));
-    }
-
-    private static String readString(final Buffer buf, final int cap, final int length) {
-        return buf.readCharSequence(length, UTF_8).toString();
-    }
 
     public static void writeVarInt(final Buffer buf, int input) {
         while ((input & -128) != 0) {
@@ -66,79 +30,4 @@ public final class PacketUtils {
         return value;
     }
 
-    public static void writeCompoundTag(final Buffer buf, final CompoundBinaryTag compoundTag) {
-        try {
-            BinaryTagIO.writer().write(compoundTag, (DataOutput) new BufferOutputStream(buf));
-        } catch (IOException e) {
-            throw new EncoderException("Unable to encode NBT CompoundTag");
-        }
-    }
-
-    public static @NotNull CompoundBinaryTag readCompoundTag(final Buffer buf) {
-        try {
-            return BinaryTagIO.reader().read((DataInput) new BufferInputStream(buf.send()));
-        } catch (IOException e) {
-            return CompoundBinaryTag.empty();
-        }
-    }
-
-    public static void writeUUID(final Buffer buf, final UUID uuid) {
-        buf.writeLong(uuid.getMostSignificantBits());
-        buf.writeLong(uuid.getLeastSignificantBits());
-    }
-
-    public static UUID readUUID(final Buffer buf) {
-        return new UUID(buf.readLong(), buf.readLong());
-    }
-
-    public static void writeByteArray(final Buffer buf, final byte[] bytes) {
-        writeVarInt(buf, bytes.length);
-        buf.writeBytes(bytes);
-    }
-
-    public static byte[] readByteArray(final Buffer buf) {
-        final var length = readVarInt(buf);
-        final var bytes = new byte[length];
-        buf.readBytes(bytes, 0, length);
-        return bytes;
-    }
-
-    public static void writeBitSet(final Buffer buf, final BitSet bitSet) {
-        final var longs = bitSet.toLongArray();
-        writeVarInt(buf, longs.length);
-        for (final var l : longs) {
-            buf.writeLong(l);
-        }
-    }
-
-    public static void writeAngle(final Buffer buf, final float f) {
-        buf.writeByte((byte) (f * 256 / 360));
-    }
-
-    public static void writeSlot(final Buffer buf, final Slot slot) {
-        if (slot != null) {
-            buf.writeBoolean(true);
-            writeVarInt(buf, slot.material().ordinal());
-            buf.writeByte((byte) slot.count());
-            writeCompoundTag(buf, CompoundBinaryTag.empty());
-        } else {
-            buf.writeBoolean(false);
-        }
-    }
-
-    public static Slot readSlot(final Buffer buf) {
-        if (!buf.readBoolean()) {
-            return null;
-        }
-        return new Slot(readVarInt(buf), buf.readByte(), readCompoundTag(buf));
-    }
-
-    public static void writePosition(final Buffer buf, final Position position) {
-        buf.writeLong((((long) position.x() & 0x3FFFFFF) << 38) | (((long) position.z() & 0x3FFFFFF) << 12) | ((long) position.y() & 0xFFF));
-    }
-
-    public static Position readPosition(final Buffer buf) {
-        final var l = buf.readLong();
-        return new Position(l >> 38, l << 52 >> 52, l << 26 >> 38);
-    }
 }

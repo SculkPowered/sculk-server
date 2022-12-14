@@ -2,13 +2,11 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readPosition;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
+import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 
 public final class PlayerAction implements Packet {
 
@@ -19,17 +17,26 @@ public final class PlayerAction implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.status = readVarInt(buf);
-        this.position = readPosition(buf);
+        this.status = buf.readVarInt();
+        this.position = buf.readPosition();
         this.face = buf.readByte();
-        this.sequence = readVarInt(buf);
+        this.sequence = buf.readVarInt();
     }
 
     @Override
     public boolean handle(Connection connection) {
-        if (this.status == 0) { // 0 only if instant break
-            // TODO get chunk viewers
-            AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, 0));
+        final var player = connection.player();
+        switch (this.status) {
+            case 0: // only if instant break
+                // TODO get chunk viewers
+                AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, 0));
+                break;
+            case 3:
+
+                break;
+            case 4:
+                player.getItemInMainHand().count(player.getItemInMainHand().count() - 1);
+                break;
         }
         return false;
     }

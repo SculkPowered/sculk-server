@@ -1,13 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import it.unimi.dsi.fastutil.Pair;
 
 import java.util.Map;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class EntityMetadata implements Packet {
 
@@ -21,10 +19,11 @@ public final class EntityMetadata implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeVarInt(buf, this.entityId);
+        buf.writeVarInt(this.entityId);
         this.map.forEach((i, pair) -> {
-            buf.writeUnsignedByte(i);
-            writeVarInt(buf, pair.left());
+            buf
+                    .writeUnsignedByte(i)
+                    .writeVarInt(pair.left());
             final var object = pair.right();
             final var clazz = object.getClass();
 

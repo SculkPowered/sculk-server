@@ -1,9 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
-import io.netty5.buffer.Buffer;
 
 public final class ClientInformation implements Packet {
 
@@ -18,12 +17,12 @@ public final class ClientInformation implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.locale = PacketUtils.readString(buf, 16);
+        this.locale = buf.readString(16);
         this.viewDistance = buf.readByte();
-        this.chatMode = PacketUtils.readVarInt(buf);
+        this.chatMode = buf.readVarInt();
         this.chatColors = buf.readBoolean();
         this.skinParts = buf.readUnsignedByte();
-        this.mainHand = PacketUtils.readVarInt(buf);
+        this.mainHand = buf.readVarInt();
         this.enableTextFiltering = buf.readBoolean();
         this.allowServerListings = buf.readBoolean();
     }

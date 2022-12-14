@@ -5,9 +5,8 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
-import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
-import de.bauhd.minecraft.server.api.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.api.world.MinecraftWorld;
+import de.bauhd.minecraft.server.api.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.protocol.netty.codec.CompressorDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.CompressorEncoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
@@ -16,6 +15,7 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
+import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
@@ -103,13 +103,13 @@ public final class Connection extends ChannelHandlerAdapter {
         this.send(new LoginSuccess(profile.uniqueId(), this.username));
 
         this.setState(State.PLAY);
-        this.player = new MinecraftPlayer(this.channel, profile.uniqueId(), this.username, profile);
+        this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
         this.send(new Login(this.player.getId()));
         this.send(new SynchronizePlayerPosition(this.player.getPosition()));
 
         SERVER.addPlayer(this.player);
 
-        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) SERVER.getAllPlayers()));
+        //this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) SERVER.getAllPlayers())); // player info changed in 1.19.3 but not documented yet
         this.send(new Commands(SERVER.getCommandHandler().dispatcher().getRoot()));
         this.send(BRAND_PACKET);
 

@@ -29,7 +29,7 @@ public final class MinecraftEncoder extends MessageToByteEncoder<Packet> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet packet, Buffer buf) {
         PacketUtils.writeVarInt(buf, this.registry.getPacketId(packet));
-        packet.encode(buf, this.registry.version);
+        packet.encode(new de.bauhd.minecraft.server.protocol.Buffer(buf), this.registry.version);
         final var clazz = packet.getClass();
         if (clazz == KeepAlive.class || clazz == ChunkDataAndUpdateLight.class
                 || clazz == EntityPosition.class

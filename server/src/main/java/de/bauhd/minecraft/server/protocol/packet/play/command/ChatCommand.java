@@ -1,15 +1,13 @@
-package de.bauhd.minecraft.server.protocol.packet.play;
+package de.bauhd.minecraft.server.protocol.packet.play.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class ChatCommand implements Packet {
 
@@ -20,19 +18,19 @@ public final class ChatCommand implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.command = readString(buf);
+        this.command = buf.readString();
         this.timestamp = buf.readLong();
         this.salt = buf.readLong();
-        final var signatures = readVarInt(buf);
+        final var signatures = buf.readVarInt();
         for (int i = 0; i < signatures; i++) {
-            readString(buf);
-            readByteArray(buf);
+            buf.readString();
+            buf.readByteArray();
         }
         this.signedPreview = buf.readBoolean();
 
         if (version.newerOr(Protocol.Version.MINECRAFT_1_19_1)) {
             // ignore for now
-            readVarInt(buf);
+            buf.readVarInt();
             buf.readBoolean();
         }
     }

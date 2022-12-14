@@ -1,10 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
 
 public final class ConfirmTeleportation implements Packet {
 
@@ -12,12 +10,7 @@ public final class ConfirmTeleportation implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.teleportId = readVarInt(buf);
-    }
-
-    @Override
-    public void encode(Buffer buf, Protocol.Version version) {
-
+        this.teleportId = buf.readVarInt();
     }
 
     @Override

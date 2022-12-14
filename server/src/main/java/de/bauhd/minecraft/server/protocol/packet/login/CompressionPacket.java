@@ -1,10 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class CompressionPacket implements Packet {
 
@@ -16,7 +14,7 @@ public final class CompressionPacket implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeVarInt(buf, this.threshold);
+        buf.writeVarInt(this.threshold);
     }
 
     @Override

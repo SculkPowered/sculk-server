@@ -1,8 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 
 public final class CloseContainer implements Packet {
 
@@ -11,6 +11,8 @@ public final class CloseContainer implements Packet {
     public CloseContainer(final int id) {
         this.id = id;
     }
+
+    public CloseContainer() {}
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {

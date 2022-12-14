@@ -1,16 +1,13 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 
 import java.util.Arrays;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readByteArray;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readString;
 
 public final class ChatMessage implements Packet {
 
@@ -22,14 +19,14 @@ public final class ChatMessage implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.message = readString(buf, 256);
+        this.message = buf.readString(256);
         this.timestamp = buf.readLong();
         this.salt = buf.readLong();
-        this.signature = readByteArray(buf);
+        this.signature = buf.readByteArray();
         this.signedPreview = buf.readBoolean();
 
         // ignore for now
-        buf.skipReadableBytes(buf.readableBytes());
+        buf.buf().skipReadableBytes(buf.buf().readableBytes());
     }
 
     @Override

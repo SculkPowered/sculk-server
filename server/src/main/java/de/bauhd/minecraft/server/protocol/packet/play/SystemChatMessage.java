@@ -1,12 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class SystemChatMessage implements Packet {
 
@@ -20,8 +17,9 @@ public final class SystemChatMessage implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.data));
-        buf.writeBoolean(this.overlay);
+        buf
+                .writeComponent(this.data, version)
+                .writeBoolean(this.overlay);
     }
 
     @Override

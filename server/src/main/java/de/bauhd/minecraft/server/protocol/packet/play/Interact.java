@@ -1,11 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
 
 public final class Interact implements Packet {
 
@@ -19,16 +17,15 @@ public final class Interact implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.entityId = readVarInt(buf);
-        this.type = readVarInt(buf);
+        this.entityId = buf.readVarInt();
+        this.type = buf.readVarInt();
         if (this.type == 2) {
             this.x = buf.readFloat();
             this.y = buf.readFloat();
             this.z = buf.readFloat();
-            this.hand = readVarInt(buf);
-        }
-        if (this.type == 0) {
-            this.hand = readVarInt(buf);
+            this.hand = buf.readVarInt();
+        } else if (this.type == 0) {
+            this.hand = buf.readVarInt();
         }
         this.sneaking = buf.readBoolean();
     }

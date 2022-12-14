@@ -1,26 +1,19 @@
 package de.bauhd.minecraft.server.protocol.packet.play.title;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 
 public final class TitleAnimationTimes implements Packet {
 
-    private int fadeIn;
-    private int stay;
-    private int fadeOut;
+    private final int fadeIn;
+    private final int stay;
+    private final int fadeOut;
 
     public TitleAnimationTimes(final int fadeIn, final int stay, final int fadeOut) {
         this.fadeIn = fadeIn;
         this.stay = stay;
         this.fadeOut = fadeOut;
-    }
-
-    public TitleAnimationTimes() {}
-
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
     }
 
     @Override

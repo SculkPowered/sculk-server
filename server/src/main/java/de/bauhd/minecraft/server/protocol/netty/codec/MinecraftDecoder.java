@@ -49,7 +49,7 @@ public final class MinecraftDecoder implements ChannelHandler {
                     }
 
                     try {
-                        packet.decode(buf, this.registry.version);
+                        packet.decode(new de.bauhd.minecraft.server.protocol.Buffer(buf), this.registry.version);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

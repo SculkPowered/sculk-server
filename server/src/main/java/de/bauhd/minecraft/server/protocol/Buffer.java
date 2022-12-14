@@ -1,0 +1,235 @@
+package de.bauhd.minecraft.server.protocol;
+
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.api.inventory.Slot;
+import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
+import de.bauhd.minecraft.server.util.Utf8;
+import io.netty5.buffer.BufferInputStream;
+import io.netty5.buffer.BufferOutputStream;
+import io.netty5.handler.codec.EncoderException;
+import net.kyori.adventure.nbt.BinaryTagIO;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.BitSet;
+import java.util.UUID;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+public record Buffer(io.netty5.buffer.Buffer buf) {
+
+    private static final int STRING_CAPACITY = 65536;
+
+    public int readUnsignedByte() {
+        return this.buf.readUnsignedByte();
+    }
+
+    public @NotNull Buffer writeUnsignedByte(int value) {
+        this.buf.writeUnsignedByte(value);
+        return this;
+    }
+
+    public byte readByte() {
+        return this.buf.readByte();
+    }
+
+    public @NotNull Buffer writeByte(byte value) {
+        this.buf.writeByte(value);
+        return this;
+    }
+
+    public byte[] readBytes(final int length) {
+        final byte[] bytes = new byte[length];
+        this.buf.readBytes(bytes, 0, length);
+        return bytes;
+    }
+
+    public byte[] readAll() {
+        return this.readBytes(this.buf.readableBytes());
+    }
+
+    public @NotNull Buffer writeBytes(final byte[] bytes) {
+        this.buf.writeBytes(bytes);
+        return this;
+    }
+
+    public short readShort() {
+        return this.buf.readShort();
+    }
+
+    public @NotNull Buffer writeShort(short value) {
+        return this;
+    }
+
+    public int readUnsignedShort() {
+        return this.buf.readUnsignedShort();
+    }
+
+    public @NotNull Buffer writeUnsignedShort(int value) {
+        this.buf.writeUnsignedShort(value);
+        return this;
+    }
+
+    public int readInt() {
+        return this.buf.readInt();
+    }
+
+    public @NotNull Buffer writeInt(int value) {
+        this.buf.writeInt(value);
+        return this;
+    }
+
+    public int readVarInt() {
+        return PacketUtils.readVarInt(this.buf);
+    }
+
+    public @NotNull Buffer writeVarInt(final int value) {
+        PacketUtils.writeVarInt(this.buf, value);
+        return this;
+    }
+
+    public float readFloat() {
+        return this.buf.readFloat();
+    }
+
+    public @NotNull Buffer writeFloat(float value) {
+        this.buf.writeFloat(value);
+        return this;
+    }
+
+    public long readLong() {
+        return this.buf.readLong();
+    }
+
+    public @NotNull Buffer writeLong(long value) {
+        this.buf.writeLong(value);
+        return this;
+    }
+
+    public double readDouble() {
+        return this.buf.readDouble();
+    }
+
+    public @NotNull Buffer writeDouble(double value) {
+        this.buf.writeDouble(value);
+        return this;
+    }
+
+    public boolean readBoolean() {
+        return this.buf.readBoolean();
+    }
+
+    public @NotNull Buffer writeBoolean(final boolean value) {
+        this.buf.writeBoolean(value);
+        return this;
+    }
+
+    public String readString() {
+        return this.readString(STRING_CAPACITY);
+    }
+
+    public String readString(final int capacity) {
+        return this.readString(capacity, this.readVarInt());
+    }
+
+    public String readString(final int capacity, final int length) {
+        return this.buf.readCharSequence(length, UTF_8).toString();
+    }
+
+    public @NotNull Buffer writeString(String value) {
+        this.writeVarInt(Utf8.encodedLength(value));
+        this.buf.writeCharSequence(value, UTF_8);
+        return this;
+    }
+
+    public byte[] readByteArray() {
+        return this.readBytes(this.readVarInt());
+    }
+
+    public @NotNull Buffer writeByteArray(final byte[] bytes) {
+        this.writeVarInt(bytes.length).writeBytes(bytes);
+        return this;
+    }
+
+    public @NotNull Buffer writeComponent(final Component component, final Protocol.Version version) {
+        this.writeString(AdvancedMinecraftServer.getGsonSerializer(version).serialize(component));
+        return this;
+    }
+
+    public CompoundBinaryTag readCompoundTag() {
+        try {
+            return BinaryTagIO.reader().read((DataInput) new BufferInputStream(buf.send()));
+        } catch (IOException e) {
+            return CompoundBinaryTag.empty();
+        }
+
+    }
+
+    public @NotNull Buffer writeCompoundTag(final CompoundBinaryTag binaryTag) {
+        try {
+            BinaryTagIO.writer().write(binaryTag, (DataOutput) new BufferOutputStream(buf));
+        } catch (IOException e) {
+            throw new EncoderException("Unable to encode NBT CompoundTag");
+        }
+        return this;
+    }
+
+    public UUID readUniqueId() {
+        return new UUID(this.buf.readLong(), this.buf.readLong());
+    }
+
+    public @NotNull Buffer writeUniqueId(final UUID uniqueId) {
+        this.writeLong(uniqueId.getMostSignificantBits()).writeLong(uniqueId.getLeastSignificantBits());
+        return this;
+    }
+
+    public Slot readSlot() {
+        if (!this.readBoolean()) {
+            return null;
+        }
+        return new Slot(this.readVarInt(), this.readByte(), this.readCompoundTag());
+    }
+
+    public @NotNull Buffer writeSlot(final @Nullable Slot slot) {
+        if (slot != null) {
+            this
+                    .writeBoolean(true)
+                    .writeVarInt(slot.material().ordinal())
+                    .writeByte((byte) slot.count())
+                    .writeCompoundTag(CompoundBinaryTag.empty());
+        } else {
+            this.buf.writeBoolean(false);
+        }
+        return this;
+    }
+
+    public Position readPosition() {
+        final var value = this.readLong();
+        return new Position(value >> 38, value << 52 >> 52, value << 26 >> 38);
+    }
+
+    public @NotNull Buffer writePosition(final @NotNull Position position) {
+        this.writeLong((((long) position.x() & 0x3FFFFFF) << 38) | (((long) position.z() & 0x3FFFFFF) << 12) | ((long) position.y() & 0xFFF));
+        return this;
+    }
+
+    public @NotNull Buffer writeBitSet(final @NotNull BitSet bitSet) {
+        final var longs = bitSet.toLongArray();
+        this.writeVarInt(longs.length);
+        for (final var l : longs) {
+            this.writeLong(l);
+        }
+        return this;
+    }
+
+    public @NotNull Buffer writeAngel(final float angel) {
+        this.writeByte((byte) (angel * 256 / 360));
+        return this;
+    }
+}

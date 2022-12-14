@@ -1,12 +1,9 @@
-package de.bauhd.minecraft.server.protocol.packet.play;
+package de.bauhd.minecraft.server.protocol.packet.play.block;
 
 import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writePosition;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class BlockUpdate implements Packet {
 
@@ -20,8 +17,9 @@ public final class BlockUpdate implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writePosition(buf, this.position);
-        writeVarInt(buf, this.blockId);
+        buf
+                .writePosition(this.position)
+                .writeVarInt(this.blockId);
     }
 
     @Override

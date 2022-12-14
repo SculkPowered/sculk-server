@@ -6,6 +6,7 @@ import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
@@ -14,7 +15,6 @@ import de.bauhd.minecraft.server.protocol.packet.play.SystemChatMessage;
 import de.bauhd.minecraft.server.protocol.packet.play.TabListHeaderFooter;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
-import io.netty5.channel.Channel;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.bossbar.BossBar;
@@ -36,7 +36,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
             .withDynamic(Identity.DISPLAY_NAME, this::getDisplayName)
             .build();
 
-    private final Channel channel;
+    private final Connection connection;
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
@@ -46,8 +46,8 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private int heldItem;
     private final Int2ObjectMap<Slot> slots = new Int2ObjectOpenHashMap<>();
 
-    public MinecraftPlayer(final Channel channel, final UUID uniqueId, final String name, final GameProfile profile) {
-        this.channel = channel;
+    public MinecraftPlayer(final Connection connection, final UUID uniqueId, final String name, final GameProfile profile) {
+        this.connection = connection;
         this.uniqueId = uniqueId;
         this.name = name;
         this.profile = profile;
@@ -166,6 +166,10 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         return EntityType.PLAYER;
     }
 
+    public void send(final Packet packet) {
+        this.connection.send(packet);
+    }
+
     public Slot getItem(final int slot) {
         return this.slots.get(slot);
     }
@@ -174,8 +178,8 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         this.slots.put(slot, clickedItem);
     }
 
-    public void send(final Packet packet) {
-        this.channel.writeAndFlush(packet);
+    public Slot getItemInMainHand() {
+        return this.slots.get(36 + this.heldItem);
     }
 
     // TODO change
@@ -183,7 +187,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     public void sendViewers(Packet packet) {
         AdvancedMinecraftServer.getInstance().getAllPlayers().forEach(player -> {
             if (player != this) {
-                ((MinecraftPlayer) player).send(packet);
+                ((MinecraftPlayer) player).connection.send(packet);
             }
         });
     }
@@ -193,8 +197,8 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     public void sendViewers(Packet packet1, Packet packet2) {
         AdvancedMinecraftServer.getInstance().getAllPlayers().forEach(player -> {
             if (player != this) {
-                ((MinecraftPlayer) player).send(packet1);
-                ((MinecraftPlayer) player).send(packet2);
+                ((MinecraftPlayer) player).connection.send(packet1);
+                ((MinecraftPlayer) player).connection.send(packet2);
             }
         });
     }

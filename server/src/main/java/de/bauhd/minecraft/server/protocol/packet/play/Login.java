@@ -1,8 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.TagStringIO;
@@ -12,7 +12,6 @@ import java.util.List;
 
 import static de.bauhd.minecraft.server.api.world.biome.Biome.PLAINS;
 import static de.bauhd.minecraft.server.api.world.dimension.Dimension.OVERWORLD;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class Login implements Packet {
 
@@ -58,13 +57,13 @@ public final class Login implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        buf.writeInt(this.entityId); // Entity Id
+        buf.writeInt(this.entityId); // Entity id
         buf.writeBoolean(false); // Hardcode
         buf.writeByte((byte) 1); // GameMode
         buf.writeByte((byte) -1); // Previous GameMode
-        writeVarInt(buf, 1); // Dimensions
-        writeString(buf, "minecraft:world"); // Dimensions
-        writeCompoundTag(buf, CompoundBinaryTag.builder()
+        buf.writeVarInt(1); // Dimensions
+        buf.writeString("minecraft:world"); // Dimensions
+        buf.writeCompoundTag(CompoundBinaryTag.builder()
                 .put("minecraft:worldgen/biome", CompoundBinaryTag.builder()
                         .putString("type", "minecraft:worldgen/biome")
                         .put("value", ListBinaryTag.from(List.of(PLAINS.nbt())))
@@ -75,12 +74,12 @@ public final class Login implements Packet {
                         .build())
                 .put("minecraft:chat_type", CHAT_REGISTRY)
                 .build());
-        writeString(buf, "minecraft:overworld"); // Dimension Type
-        writeString(buf, "minecraft:overworld"); // Dimension Name
+        buf.writeString("minecraft:overworld"); // Dimension Type
+        buf.writeString("minecraft:overworld"); // Dimension Name
         buf.writeLong(34723587329438L); // Hashed Seed
-        writeVarInt(buf, 20); // Max Players
-        writeVarInt(buf, 18); // View Distance
-        writeVarInt(buf, 10); // Simulation Distance
+        buf.writeVarInt(20); // Max Players
+        buf.writeVarInt(18); // View Distance
+        buf.writeVarInt(10); // Simulation Distance
         buf.writeBoolean(false); // Reduced Debug Info
         buf.writeBoolean(false); // Enable respawn screen
         buf.writeBoolean(false); // Debug
@@ -88,4 +87,10 @@ public final class Login implements Packet {
         buf.writeBoolean(false); // Death Location
     }
 
+    @Override
+    public String toString() {
+        return "Login{" +
+                "entityId=" + this.entityId +
+                '}';
+    }
 }

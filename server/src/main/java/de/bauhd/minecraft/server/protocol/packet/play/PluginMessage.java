@@ -1,15 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-import io.netty5.buffer.DefaultBufferAllocators;
 
 import java.util.Arrays;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readString;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class PluginMessage implements Packet {
 
@@ -25,22 +21,22 @@ public final class PluginMessage implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.identifier = readString(buf, 32);
-        this.data = new byte[buf.readableBytes()];
-        buf.readBytes(this.data, 0, buf.readableBytes());
+        this.identifier = buf.readString(32);
+        this.data = buf.readAll();
     }
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, this.identifier);
-        buf.writeBytes(this.data);
+        buf
+                .writeString(this.identifier)
+                .writeBytes(this.data);
     }
 
     @Override
     public boolean handle(Connection connection) {
-        final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(this.data.length);
+        /*final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(this.data.length);
         buf.writeBytes(this.data);
-        //System.out.println(PacketUtils.readString(buf));
+        System.out.println(PacketUtils.readString(buf))*/
         return false;
     }
 

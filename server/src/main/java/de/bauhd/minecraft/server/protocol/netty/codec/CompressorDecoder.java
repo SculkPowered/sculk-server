@@ -16,7 +16,7 @@ public final class CompressorDecoder extends MessageToMessageDecoder<Buffer> {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, Buffer buf) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, Buffer buf) {
         final int size = PacketUtils.readVarInt(buf);
 
         if (size == 0) {

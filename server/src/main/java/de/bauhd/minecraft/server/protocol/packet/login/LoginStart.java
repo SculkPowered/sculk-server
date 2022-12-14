@@ -1,13 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 
 import java.util.UUID;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
 
 public final class LoginStart implements Packet {
 
@@ -16,17 +14,19 @@ public final class LoginStart implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.username = readString(buf, 16);// + ThreadLocalRandom.current().nextInt(10);
+        this.username = buf.readString(16);// + ThreadLocalRandom.current().nextInt(10);
 
         if (version.newerOr(Protocol.Version.MINECRAFT_1_19)) {
-            if (buf.readBoolean()) {
-                buf.readLong();
-                readByteArray(buf); // public key
-                readByteArray(buf); // signature
+            if (version.older(Protocol.Version.MINECRAFT_1_19_3)) { // removed in minecraft 1.19.3
+                if (buf.readBoolean()) {
+                    buf.readLong();
+                    buf.readByteArray(); // public key
+                    buf.readByteArray(); // signature
+                }
             }
             if (version.newerOr(Protocol.Version.MINECRAFT_1_19_1)) {
                 if (buf.readBoolean()) {
-                    this.uniqueId = readUUID(buf);
+                    this.uniqueId = buf.readUniqueId();
                 }
             }
         }

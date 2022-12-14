@@ -16,7 +16,7 @@ public final class CompressorEncoder extends MessageToByteEncoder<Buffer> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Buffer buffer, Buffer buffer2) throws Exception {
+    protected void encode(ChannelHandlerContext channelHandlerContext, Buffer buffer, Buffer buffer2) {
 
     }
 

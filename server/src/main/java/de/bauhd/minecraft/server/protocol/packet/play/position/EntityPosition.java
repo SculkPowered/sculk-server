@@ -1,10 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
 
 public final class EntityPosition implements Packet {
 
@@ -24,8 +22,8 @@ public final class EntityPosition implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeVarInt(buf, this.entityId);
         buf
+                .writeVarInt(this.entityId)
                 .writeShort(this.deltaX)
                 .writeShort(this.deltaY)
                 .writeShort(this.deltaZ)

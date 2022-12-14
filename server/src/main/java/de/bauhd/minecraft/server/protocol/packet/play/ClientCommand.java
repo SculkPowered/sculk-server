@@ -1,11 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
 
 public final class ClientCommand implements Packet {
 
@@ -13,7 +11,7 @@ public final class ClientCommand implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.actionId = readVarInt(buf);
+        this.actionId = buf.readVarInt();
     }
 
     @Override

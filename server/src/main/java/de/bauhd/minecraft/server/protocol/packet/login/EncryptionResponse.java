@@ -1,11 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.util.MojangUtil;
-import io.netty5.buffer.Buffer;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,8 +15,6 @@ import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readByteArray;
 
 public final class EncryptionResponse implements Packet {
 
@@ -39,13 +37,13 @@ public final class EncryptionResponse implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.sharedSecret = readByteArray(buf);
+        this.sharedSecret = buf.readByteArray();
 
         if (buf.readBoolean()) {
-            this.verifyToken = readByteArray(buf);
+            this.verifyToken = buf.readByteArray();
         } else {
             this.salt = buf.readLong();
-            this.signature = readByteArray(buf);
+            this.signature = buf.readByteArray();
         }
     }
 

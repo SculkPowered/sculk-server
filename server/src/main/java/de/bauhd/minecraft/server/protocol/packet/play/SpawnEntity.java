@@ -1,37 +1,36 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 
 import java.util.UUID;
 
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeUUID;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeVarInt;
-
 public final class SpawnEntity implements Packet {
 
-    private static int i = -1;
+    private final int entityId;
+    private final UUID uniqueId;
+    private final int type;
 
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
+    public SpawnEntity(final int entityId, final UUID uniqueId, final int type) {
+        this.entityId = entityId;
+        this.uniqueId = uniqueId;
+        this.type = type;
     }
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeVarInt(buf, 1 + i++);
-        writeUUID(buf, UUID.randomUUID());
-        writeVarInt(buf, i++);
         buf
-                .writeDouble(18 + i)
+                .writeVarInt(this.entityId)
+                .writeUniqueId(this.uniqueId)
+                .writeVarInt(this.type)
+                .writeDouble(18)
                 .writeDouble(40)
                 .writeDouble(5)
                 .writeByte((byte) 0)
                 .writeByte((byte) 0)
-                .writeByte((byte) 0);
-        writeVarInt(buf, 0);
-        buf
+                .writeByte((byte) 0)
+                .writeVarInt(0)
                 .writeShort((short) 0)
                 .writeShort((short) 0)
                 .writeShort((short) 0);

@@ -1,8 +1,8 @@
 package de.bauhd.minecraft.server.protocol.packet;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
-import io.netty5.buffer.Buffer;
 
 public interface Packet {
 

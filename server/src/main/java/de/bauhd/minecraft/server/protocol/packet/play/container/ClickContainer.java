@@ -1,14 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.api.inventory.Slot;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import java.util.Arrays;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readSlot;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public final class ClickContainer implements Packet {
 
@@ -17,22 +14,21 @@ public final class ClickContainer implements Packet {
     private short slot;
     private byte button;
     private int mode;
-    private Slot[] slots;
+    private final Int2ObjectMap<Slot> slots = new Int2ObjectOpenHashMap<>();
     private Slot carriedItem;
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
         this.windowId = buf.readUnsignedByte();
-        this.stateId = readVarInt(buf);
+        this.stateId = buf.readVarInt();
         this.slot = buf.readShort();
         this.button = buf.readByte();
-        this.mode = readVarInt(buf);
-        final var slotCount = readVarInt(buf);
-        this.slots = new Slot[slotCount];
+        this.mode = buf.readVarInt();
+        final var slotCount = buf.readVarInt();
         for (int i = 0; i < slotCount; i++) {
-            this.slots[buf.readShort()] = readSlot(buf);
+            this.slots.put(buf.readShort(), buf.readSlot());
         }
-        this.carriedItem = readSlot(buf);
+        this.carriedItem = buf.readSlot();
     }
 
     @Override
@@ -43,7 +39,7 @@ public final class ClickContainer implements Packet {
                 ", slot=" + this.slot +
                 ", button=" + this.button +
                 ", mode=" + this.mode +
-                ", slots=" + Arrays.toString(this.slots) +
+                ", slots=" + this.slots +
                 ", carriedItem=" + this.carriedItem +
                 '}';
     }

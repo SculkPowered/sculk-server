@@ -1,25 +1,23 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 import java.util.BitSet;
 
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.*;
-
 public final class ChunkDataAndUpdateLight implements Packet {
 
-    private int chunkX;
-    private int chunkZ;
-    private CompoundBinaryTag heightmaps;
-    private byte[] data;
-    private boolean trustEdges;
-    private BitSet skyLightMask;
-    private BitSet blockLightMask;
-    private BitSet emptySkyLightMask;
-    private BitSet emptyBlockLightMask;
+    private final int chunkX;
+    private final int chunkZ;
+    private final CompoundBinaryTag heightmaps;
+    private final byte[] data;
+    private final boolean trustEdges;
+    private final BitSet skyLightMask;
+    private final BitSet blockLightMask;
+    private final BitSet emptySkyLightMask;
+    private final BitSet emptyBlockLightMask;
     // TODO sky light block light
 
     public ChunkDataAndUpdateLight(final int chunkX,
@@ -42,28 +40,21 @@ public final class ChunkDataAndUpdateLight implements Packet {
         this.emptyBlockLightMask = emptyBlockLightMask;
     }
 
-    public ChunkDataAndUpdateLight() {}
-
-    @Override
-    public void decode(Buffer buf, Protocol.Version version) {
-
-    }
-
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        buf.writeInt(this.chunkX);
-        buf.writeInt(this.chunkZ);
-        writeCompoundTag(buf, this.heightmaps);
-        writeVarInt(buf, this.data.length);
-        buf.writeBytes(this.data);
-        writeVarInt(buf, 0); // Block entities
-        buf.writeBoolean(this.trustEdges);
-        writeBitSet(buf, this.skyLightMask); // Sky Light Mask
-        writeBitSet(buf, this.blockLightMask); // Block Light Mask
-        writeBitSet(buf, this.emptySkyLightMask); // Empty Sky Light Mask
-        writeBitSet(buf, this.emptyBlockLightMask); // Empty Block Light Mask
-        writeVarInt(buf, 0); // Sky Light Array
-        writeVarInt(buf, 0); // Block Light Array*/ // for 1.19
+        buf
+                .writeInt(this.chunkX)
+                .writeInt(this.chunkZ)
+                .writeCompoundTag(this.heightmaps)
+                .writeByteArray(this.data)
+                .writeVarInt(0) // Block entities
+                .writeBoolean(this.trustEdges)
+                .writeBitSet(this.skyLightMask) // Skylight Mask
+                .writeBitSet(this.blockLightMask) // Block Light Mask
+                .writeBitSet(this.emptySkyLightMask) // Empty Skylight Mask
+                .writeBitSet(this.emptyBlockLightMask) // Empty Block Light Mask
+                .writeVarInt(0) // Skylight Array
+                .writeVarInt(0); // Block Light Array // for 1.19
     }
 
 }

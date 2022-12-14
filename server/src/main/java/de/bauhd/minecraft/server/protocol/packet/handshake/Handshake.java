@@ -2,13 +2,12 @@ package de.bauhd.minecraft.server.protocol.packet.handshake;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.MinecraftConfig;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
 
 import static de.bauhd.minecraft.server.protocol.Protocol.Version.*;
@@ -22,10 +21,10 @@ public final class Handshake implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.version = Protocol.Version.get(PacketUtils.readVarInt(buf));
-        this.serverAddress = PacketUtils.readString(buf, 256);
+        this.version = Protocol.Version.get(buf.readVarInt());
+        this.serverAddress = buf.readString(256);
         this.port = buf.readUnsignedShort();
-        this.nextStatus = (PacketUtils.readVarInt(buf) == 1 ? State.STATUS : State.LOGIN);
+        this.nextStatus = (buf.readVarInt() == 1 ? State.STATUS : State.LOGIN);
     }
 
     @Override

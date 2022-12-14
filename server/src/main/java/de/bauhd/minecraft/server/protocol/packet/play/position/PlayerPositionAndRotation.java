@@ -1,10 +1,10 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
 import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 
 public final class PlayerPositionAndRotation implements Packet {
 

@@ -45,10 +45,11 @@ public final class Protocol {
         MINECRAFT_1_18(757, "1.18", "1.18.1"),
         MINECRAFT_1_18_2(758, "1.18.2"),
         MINECRAFT_1_19(759, "1.19"),
-        MINECRAFT_1_19_1(760, "1.19.1", "1.19.2");
+        MINECRAFT_1_19_1(760, "1.19.1", "1.19.2"),
+        MINECRAFT_1_19_3(761, "1.19.3");
 
         public static final Version MINIMUM_VERSION = MINECRAFT_1_19;
-        public static final Version MAXIMUM_VERSION = MINECRAFT_1_19_1;
+        public static final Version MAXIMUM_VERSION = MINECRAFT_1_19_3;
 
         public static final Map<Integer, Version> PROTOCOL_VERSIONS;
 

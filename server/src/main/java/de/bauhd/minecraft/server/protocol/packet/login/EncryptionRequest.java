@@ -1,13 +1,10 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 
 import java.util.Arrays;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeByteArray;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class EncryptionRequest implements Packet {
 
@@ -23,9 +20,10 @@ public final class EncryptionRequest implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        writeString(buf, this.serverId);
-        writeByteArray(buf, this.publicKey);
-        writeByteArray(buf, this.verifyToken);
+        buf
+                .writeString(this.serverId)
+                .writeByteArray(this.publicKey)
+                .writeByteArray(this.verifyToken);
     }
 
     @Override

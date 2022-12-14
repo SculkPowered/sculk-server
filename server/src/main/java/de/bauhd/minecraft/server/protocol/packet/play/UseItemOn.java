@@ -1,15 +1,16 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.api.inventory.Inventory;
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.api.world.block.Block;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readPosition;
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.readVarInt;
+import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
+import de.bauhd.minecraft.server.protocol.packet.play.container.OpenScreen;
+import net.kyori.adventure.text.Component;
 
 public final class UseItemOn implements Packet {
 
@@ -24,18 +25,19 @@ public final class UseItemOn implements Packet {
 
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
-        this.hand = readVarInt(buf);
-        this.position = readPosition(buf);
-        this.face = Block.Face.class.getEnumConstants()[readVarInt(buf)];
+        this.hand = buf.readVarInt();
+        this.position = buf.readPosition();
+        this.face = Block.Face.class.getEnumConstants()[buf.readVarInt()];
         this.x = buf.readFloat();
         this.y = buf.readFloat();
         this.z = buf.readFloat();
         this.insideBlock = buf.readBoolean();
-        this.sequence = readVarInt(buf);
+        this.sequence = buf.readVarInt();
     }
 
     @Override
     public boolean handle(Connection connection) {
+        connection.send(new OpenScreen(1, Inventory.Type.GENERIC_9x2.ordinal(), Component.empty()));
         final var player = connection.player();
         final var slot = player.getItem(player.getHeldItemSlot() + 36);
         if (slot == null) {

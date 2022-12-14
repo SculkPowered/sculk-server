@@ -1,12 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import io.netty5.buffer.Buffer;
 import net.kyori.adventure.text.Component;
-
-import static de.bauhd.minecraft.server.protocol.packet.PacketUtils.writeString;
 
 public final class TabListHeaderFooter implements Packet {
 
@@ -20,10 +17,9 @@ public final class TabListHeaderFooter implements Packet {
 
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
-        final var serializer = AdvancedMinecraftServer.getGsonSerializer(version);
-
-        writeString(buf, serializer.serialize(this.header));
-        writeString(buf, serializer.serialize(this.footer));
+        buf
+                .writeComponent(this.header, version)
+                .writeComponent(this.footer, version);
     }
 
     @Override
