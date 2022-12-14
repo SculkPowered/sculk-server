@@ -90,9 +90,9 @@ public final class Dimension {
                 .putLongArray("WORLD_SURFACE", encodeBlocks(worldSurface, bitsForHeight))
                 .build();
 
-        final var minY = this.nbt.getInt("min_y");
+        final var minY = this.nbt.getCompound("element").getInt("min_y");
         this.minimumSections = minY / CHUNK_SIZE;
-        this.maximumSections = (minY + this.nbt.getInt("")) / CHUNK_SIZE;
+        this.maximumSections = (minY + dimensionHeight) / CHUNK_SIZE;
     }
 
     public static @NotNull Builder builder(@NotNull String name) {
