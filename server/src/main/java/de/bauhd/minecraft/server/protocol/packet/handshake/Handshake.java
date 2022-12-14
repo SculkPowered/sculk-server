@@ -29,7 +29,7 @@ public final class Handshake implements Packet {
 
     @Override
     public boolean handle(Connection connection) {
-        connection.set(this.nextStatus, (this.version != UNKNOWN ? this.version : MINIMUM_VERSION));
+        connection.set(this.nextStatus, this.version);
         if (this.nextStatus == State.LOGIN
                 && (this.version.older(MINIMUM_VERSION) || this.version.newer(MAXIMUM_VERSION))) {
             connection.send(new Disconnect(Component

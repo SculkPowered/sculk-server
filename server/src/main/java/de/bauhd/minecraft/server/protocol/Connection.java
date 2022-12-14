@@ -136,7 +136,12 @@ public final class Connection extends ChannelHandlerAdapter {
         this.channel.writeAndFlush(packet).addListener(this.channel, ChannelFutureListeners.CLOSE);
     }
 
-    public void set(final State state, final Protocol.Version version) {
+    public void set(final State state, Protocol.Version version) {
+        // fallback to minimum version to accept status packets
+        if (version == Protocol.Version.UNKNOWN) {
+            version = Protocol.Version.MINIMUM_VERSION;
+        }
+
         this.channel.pipeline().get(MinecraftEncoder.class).set(state, version);
         this.channel.pipeline().get(MinecraftDecoder.class).set(state, version);
     }

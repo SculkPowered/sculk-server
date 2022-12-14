@@ -7,6 +7,8 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
+import static de.bauhd.minecraft.server.protocol.Protocol.Version.MINIMUM_VERSION;
+
 public final class StatusResponse implements Packet {
 
     private final Component component = Component.text("Hallo Welt!", TextColor.color(109, 331, 221));
@@ -15,8 +17,8 @@ public final class StatusResponse implements Packet {
     public void encode(Buffer buf, Protocol.Version version) {
         buf.writeString("{\"version\":{" +
                 "\"name\":\"not vanilla " + Protocol.Version.SUPPORTED_VERSIONS + "\"," +
-                "\"protocol\":" + version.protocolId() + "}," +
-                "\"players\":{\"max\":50,\"online\":0,\"sample\":[]}," +
+                "\"protocol\":" + (version.older(MINIMUM_VERSION) ? MINIMUM_VERSION.protocolId() : version.protocolId()) + "}," +
+                "\"players\":{\"max\":50,\"online\":" + AdvancedMinecraftServer.getInstance().getPlayerCount() + ",\"sample\":[]}," +
                 "\"description\":" + AdvancedMinecraftServer.getGsonSerializer(version).serialize(this.component) + "," +
                 "\"previewsChat\":true}");
     }
