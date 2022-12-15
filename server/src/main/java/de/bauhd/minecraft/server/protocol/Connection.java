@@ -18,10 +18,12 @@ import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.util.MojangUtil;
+import io.netty5.buffer.Buffer;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
+import io.netty5.util.ReferenceCountUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -65,9 +67,17 @@ public final class Connection extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
-        if (message instanceof Packet packet) {
-            if (packet.handle(this)) {
-                ctx.close();
+        try {
+            if (message instanceof Packet packet) {
+                if (packet.handle(this)) {
+                    ctx.close();
+                }
+            }
+        } finally {
+            if (message instanceof Buffer buf) {
+                buf.close();
+            } else {
+                ReferenceCountUtil.release(message);
             }
         }
     }

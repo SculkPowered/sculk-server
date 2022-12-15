@@ -32,9 +32,12 @@ public final class MinecraftDecoder implements ChannelHandler {
                 return;
             }
 
+            final var offset = buf.readerOffset();
             final var id = PacketUtils.readVarInt(buf);
             final var packet = this.registry.createPacket(id);
             if (packet == null) {
+                buf.readerOffset(offset);
+                ctx.fireChannelRead(message);
                 System.out.println("unknown packet id " + Integer.toHexString(id) + " " + this.registry.version);
             } else {
                 try (buf) {
