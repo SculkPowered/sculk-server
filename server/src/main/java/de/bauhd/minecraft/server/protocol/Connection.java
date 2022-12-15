@@ -5,6 +5,7 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.api.world.MinecraftWorld;
 import de.bauhd.minecraft.server.api.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.protocol.netty.codec.CompressorDecoder;
@@ -109,7 +110,7 @@ public final class Connection extends ChannelHandlerAdapter {
 
         SERVER.addPlayer(this.player);
 
-        //this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) SERVER.getAllPlayers())); // player info changed in 1.19.3 but not documented yet
+        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) SERVER.getAllPlayers(), this.version));
         this.send(new Commands(SERVER.getCommandHandler().dispatcher().getRoot()));
         this.send(BRAND_PACKET);
 
@@ -117,13 +118,12 @@ public final class Connection extends ChannelHandlerAdapter {
             chunk.send(this.player);
         }
 
-        this.player.sendViewers(
-                PlayerInfo.add(this.player),
-                new SpawnPlayer(this.player)
-        );
+        this.player.sendViewers(new SpawnPlayer(this.player));
         SERVER.getAllPlayers().forEach(other -> {
             if (other != this.player) {
-                this.player.send(new SpawnPlayer((MinecraftPlayer) other));
+                final var otherPlayer = (MinecraftPlayer) other;
+                otherPlayer.send(PlayerInfo.add(this.player, otherPlayer.getVersion()));
+                this.player.send(new SpawnPlayer(otherPlayer));
             }
         });
     }

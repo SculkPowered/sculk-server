@@ -7,6 +7,7 @@ import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
@@ -26,6 +27,7 @@ import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
@@ -182,24 +184,27 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         return this.slots.get(36 + this.heldItem);
     }
 
+    public Protocol.Version getVersion() {
+        return this.connection.version();
+    }
+
     // TODO change
     @Override
     public void sendViewers(Packet packet) {
-        AdvancedMinecraftServer.getInstance().getAllPlayers().forEach(player -> {
-            if (player != this) {
-                ((MinecraftPlayer) player).connection.send(packet);
-            }
-        });
+        this.getViewers().forEach(player -> ((MinecraftPlayer) player).connection.send(packet));
     }
 
     // TODO change
     @Override
     public void sendViewers(Packet packet1, Packet packet2) {
-        AdvancedMinecraftServer.getInstance().getAllPlayers().forEach(player -> {
-            if (player != this) {
+        this.getViewers().forEach(player -> {
                 ((MinecraftPlayer) player).connection.send(packet1);
                 ((MinecraftPlayer) player).connection.send(packet2);
-            }
         });
+    }
+
+    @Override
+    public @NotNull Collection<Player> getViewers() {
+        return AdvancedMinecraftServer.getInstance().getAllPlayers().stream().filter(player -> player != this).toList();
     }
 }
