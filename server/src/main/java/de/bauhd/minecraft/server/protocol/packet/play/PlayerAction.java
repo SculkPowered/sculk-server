@@ -35,7 +35,10 @@ public final class PlayerAction implements Packet {
 
                 break;
             case 4:
-                player.getItemInMainHand().count(player.getItemInMainHand().count() - 1);
+                final var itemInHand = player.getItemInMainHand();
+                if (itemInHand != null) {
+                    itemInHand.count(itemInHand.count() - 1);
+                }
                 break;
         }
         return false;
