@@ -191,6 +191,10 @@ public enum State {
                     this.map(0x30, MINECRAFT_1_19),
                     this.map(0x31, MINECRAFT_1_19_1)
             );
+            this.serverBound.register(UseItem.class, UseItem::new,
+                    this.map(0x31, MINECRAFT_1_19),
+                    this.map(0x32, MINECRAFT_1_19_1)
+            );
 
             this.clientBound.register(SpawnEntity.class,
                     this.map(0x00, MINECRAFT_1_19)
