@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
@@ -22,6 +23,12 @@ public final class KeepAlive implements Packet {
     @Override
     public void encode(Buffer buf, Protocol.Version version) {
         buf.writeLong(System.currentTimeMillis());
+    }
+
+    @Override
+    public boolean handle(Connection connection) {
+        connection.player().setKeepAlivePending(false);
+        return false;
     }
 
     @Override

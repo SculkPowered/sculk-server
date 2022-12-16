@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server;
 
 import de.bauhd.minecraft.server.protocol.packet.play.KeepAlive;
+import net.kyori.adventure.text.Component;
 
 public final class Worker {
 
@@ -15,7 +16,24 @@ public final class Worker {
 
     public void start() {
         while (this.server.isRunning()) {
-            this.sendKeepAlive();
+            final var time = System.currentTimeMillis();
+
+            final var keepAlive = new KeepAlive(time);
+            this.server.getMinecraftPlayers().forEach(player -> {
+                final var elapsedTime = System.currentTimeMillis() - player.lastSendKeepAlive();
+
+                if (player.keepAlivePending()) {
+                    if (elapsedTime > 30000) { // disconnect after 30 seconds
+                        player.disconnect(Component.translatable("disconnect.timeout"));
+                    }
+                } else {
+                    if (elapsedTime > 15000) { // send all 15 seconds
+                        player.setKeepAlivePending(true);
+                        player.setLastSendKeepAlive(time);
+                        player.send(keepAlive);
+                    }
+                }
+            });
 
             try {
                 //noinspection BusyWait
@@ -24,11 +42,6 @@ public final class Worker {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private void sendKeepAlive() {
-        final var keepAlive = new KeepAlive(System.currentTimeMillis());
-        this.server.sendAll(keepAlive);
     }
 
 }
