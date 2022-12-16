@@ -192,6 +192,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         return List.copyOf(this.players.values());
     }
 
+    public Collection<MinecraftPlayer> getMinecraftPlayers() {
+        return this.players.values();
+    }
+
     @Override
     public int getPlayerCount() {
         return this.players.size();
