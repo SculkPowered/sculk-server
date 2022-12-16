@@ -42,6 +42,8 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
+    private long lastSendKeepAlive;
+    private boolean keepAlivePending;
     private GameMode gameMode = GameMode.CREATIVE;
     private Component displayName;
     private Position position = new Position(8.5, 40, 8.5);
@@ -186,6 +188,22 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     public Protocol.Version getVersion() {
         return this.connection.version();
+    }
+
+    public long lastSendKeepAlive() {
+        return this.lastSendKeepAlive;
+    }
+
+    public void setLastSendKeepAlive(final long lastSendKeepAlive) {
+        this.lastSendKeepAlive = lastSendKeepAlive;
+    }
+
+    public boolean keepAlivePending() {
+        return this.keepAlivePending;
+    }
+
+    public void setKeepAlivePending(final boolean keepAlivePending) {
+        this.keepAlivePending = keepAlivePending;
     }
 
     // TODO change
