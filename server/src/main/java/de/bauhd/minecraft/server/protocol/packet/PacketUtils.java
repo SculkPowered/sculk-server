@@ -4,13 +4,22 @@ import io.netty5.buffer.Buffer;
 
 public final class PacketUtils {
 
-    public static void writeVarInt(final Buffer buf, int input) {
-        while ((input & -128) != 0) {
-            buf.writeByte((byte) (input & 127 | 128));
-            input >>>= 7;
-        }
-        buf.writeByte((byte) input);
-    }
+    // https://steinborn.me/posts/performance/how-fast-can-you-write-a-varint/
+    public static void writeVarInt(final Buffer buf, int value) {
+        if ((value & (0xFFFFFFFF << 7)) == 0) {
+            buf.writeByte((byte) value);
+        } else if ((value & (0xFFFFFFFF << 14)) == 0) {
+            buf.writeShort((short) ((value & 0x7F | 0x80) << 8 | (value >>> 7)));
+        } else if ((value & (0xFFFFFFFF << 21)) == 0) {
+            buf.writeMedium((value & 0x7F | 0x80) << 16 | ((value >>> 7) & 0x7F | 0x80) << 8 | (value >>> 14));
+        } else if ((value & (0xFFFFFFFF << 28)) == 0) {
+            buf.writeInt((value & 0x7F | 0x80) << 24 | (((value >>> 7) & 0x7F | 0x80) << 16)
+                    | ((value >>> 14) & 0x7F | 0x80) << 8 | (value >>> 21));
+        } else {
+            buf.writeInt((value & 0x7F | 0x80) << 24 | ((value >>> 7) & 0x7F | 0x80) << 16
+                    | ((value >>> 14) & 0x7F | 0x80) << 8 | ((value >>> 21) & 0x7F | 0x80));
+            buf.writeByte((byte) (value >>> 28));
+        }}
 
     public static int readVarInt(final Buffer buf) {
         var value = 0;
