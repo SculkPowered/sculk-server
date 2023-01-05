@@ -14,7 +14,7 @@ public interface MinecraftConfig {
 
         ONLINE,
         OFFLINE,
-        BUNGEECORD
+        BUNGEECORD,
 
     }
 

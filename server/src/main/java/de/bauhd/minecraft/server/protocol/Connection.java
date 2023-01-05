@@ -8,10 +8,7 @@ import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.api.world.MinecraftWorld;
 import de.bauhd.minecraft.server.api.world.chunk.MinecraftChunk;
-import de.bauhd.minecraft.server.protocol.netty.codec.CompressorDecoder;
-import de.bauhd.minecraft.server.protocol.netty.codec.CompressorEncoder;
-import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
-import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
+import de.bauhd.minecraft.server.protocol.netty.codec.*;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
@@ -24,7 +21,11 @@ import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.util.ReferenceCountUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,8 @@ import java.util.UUID;
 import static de.bauhd.minecraft.server.api.entity.player.GameProfile.Property;
 
 public final class Connection extends ChannelHandlerAdapter {
+
+    private static final Logger LOGGER = LogManager.getLogger(Connection.class);
 
     private static final AdvancedMinecraftServer SERVER = AdvancedMinecraftServer.getInstance();
     private static final PluginMessage BRAND_PACKET;
@@ -60,6 +63,7 @@ public final class Connection extends ChannelHandlerAdapter {
     private String serverAddress;
     private String username;
     private MinecraftPlayer player;
+    private byte[] verifyToken;
 
     public Connection(final Channel channel) {
         this.channel = channel;
@@ -87,6 +91,7 @@ public final class Connection extends ChannelHandlerAdapter {
         if (this.player != null) {
             SERVER.removePlayer(this.player.getUniqueId());
             SERVER.getBossBarListener().onDisconnect(this.player);
+            LOGGER.info("Connection from " + this.player.getUsername() + " closed.");
         }
         ctx.close();
     }
@@ -161,6 +166,14 @@ public final class Connection extends ChannelHandlerAdapter {
         this.channel.pipeline().get(MinecraftDecoder.class).setState(state);
     }
 
+    public void enableEncryption(final byte[] secret) {
+        final var secretKey = new SecretKeySpec(secret, "AES");
+
+        this.channel.pipeline()
+                .addBefore("frame-decoder", "cipher-decoder", new JavaCipher(secretKey, Cipher.DECRYPT_MODE))
+                .addBefore("frame-encoder", "cipher-encoder", new JavaCipher(secretKey, Cipher.ENCRYPT_MODE));
+    }
+
     private void addCompressionHandler() {
         this.channel.pipeline()
                 .addAfter("frame-decoder", "compressor-decoder", new CompressorDecoder())
@@ -190,5 +203,13 @@ public final class Connection extends ChannelHandlerAdapter {
 
     public MinecraftPlayer player() {
         return this.player;
+    }
+
+    public void setVerifyToken(final byte[] verifyToken) {
+        this.verifyToken = verifyToken;
+    }
+
+    public byte[] verifyToken() {
+        return this.verifyToken;
     }
 }

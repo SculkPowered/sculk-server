@@ -17,7 +17,8 @@ public final class VarIntLengthEncoder extends MessageToByteEncoder<Buffer> {
 
     @Override
     protected Buffer allocateBuffer(ChannelHandlerContext channelHandlerContext, Buffer buffer) {
-        return channelHandlerContext.bufferAllocator().allocate(Integer.numberOfLeadingZeros(buffer.readableBytes()) + buffer.readableBytes());
+        return channelHandlerContext.bufferAllocator()
+                .allocate(Integer.numberOfLeadingZeros(buffer.readableBytes()) + buffer.readableBytes());
     }
 
     @Override
