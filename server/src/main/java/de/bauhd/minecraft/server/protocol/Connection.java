@@ -170,8 +170,8 @@ public final class Connection extends ChannelHandlerAdapter {
         final var secretKey = new SecretKeySpec(secret, "AES");
 
         this.channel.pipeline()
-                .addBefore("frame-decoder", "cipher-decoder", new JavaCipher(secretKey, Cipher.DECRYPT_MODE))
-                .addBefore("frame-encoder", "cipher-encoder", new JavaCipher(secretKey, Cipher.ENCRYPT_MODE));
+                .addBefore("frame-decoder", "cipher-decoder", new CipherDecoder(new JavaCipher(secretKey, Cipher.DECRYPT_MODE)))
+                .addBefore("frame-encoder", "cipher-encoder", new CipherEncoder(new JavaCipher(secretKey, Cipher.ENCRYPT_MODE)));
     }
 
     private void addCompressionHandler() {

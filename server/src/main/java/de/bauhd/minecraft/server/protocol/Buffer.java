@@ -63,7 +63,8 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return this.buf.readShort();
     }
 
-    public @NotNull Buffer writeShort(short value) {
+    public @NotNull Buffer writeShort(final short value) {
+        this.buf.writeShort(value);
         return this;
     }
 
