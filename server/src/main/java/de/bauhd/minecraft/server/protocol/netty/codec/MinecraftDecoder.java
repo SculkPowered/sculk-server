@@ -3,10 +3,6 @@ package de.bauhd.minecraft.server.protocol.netty.codec;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
-import de.bauhd.minecraft.server.protocol.packet.play.KeepAlive;
-import de.bauhd.minecraft.server.protocol.packet.play.position.PlayerPosition;
-import de.bauhd.minecraft.server.protocol.packet.play.position.PlayerPositionAndRotation;
-import de.bauhd.minecraft.server.protocol.packet.play.position.PlayerRotation;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.ChannelHandler;
 import io.netty5.channel.ChannelHandlerContext;
@@ -60,9 +56,7 @@ public final class MinecraftDecoder implements ChannelHandler {
                         throw new DecoderException("Overflow after decode packet " +
                                 packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
                     }
-                    final var clazz = packet.getClass();
-                    if (clazz != KeepAlive.class && clazz != PlayerPosition.class && clazz != PlayerPositionAndRotation.class && clazz != PlayerRotation.class)
-                        System.out.println("decoded " + packet + " - " + id);
+                    System.out.println("decoded " + packet + " - " + id);
                     ctx.fireChannelRead(packet);
                 }
             }

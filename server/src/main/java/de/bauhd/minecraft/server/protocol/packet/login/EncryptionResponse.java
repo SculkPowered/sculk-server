@@ -1,34 +1,22 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.util.EncryptionUtil;
 import de.bauhd.minecraft.server.util.MojangUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public final class EncryptionResponse implements Packet {
-
-    private static final Cipher CIPHER;
-
-    static {
-
-        try {
-            CIPHER = Cipher.getInstance("RSA");
-            CIPHER.init(Cipher.DECRYPT_MODE, AdvancedMinecraftServer.getInstance().getKeyPair().getPrivate());
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private byte[] sharedSecret;
     private byte[] verifyToken;
@@ -39,7 +27,7 @@ public final class EncryptionResponse implements Packet {
     public void decode(Buffer buf, Protocol.Version version) {
         this.sharedSecret = buf.readByteArray();
 
-        if (buf.readBoolean()) {
+        if (version.newerOr(Protocol.Version.MINECRAFT_1_19_3) || buf.readBoolean()) {
             this.verifyToken = buf.readByteArray();
         } else {
             this.salt = buf.readLong();
@@ -50,11 +38,19 @@ public final class EncryptionResponse implements Packet {
     @Override
     public boolean handle(Connection connection) {
         try {
-            final var digest = java.security.MessageDigest.getInstance("SHA-1");
-            digest.update(CIPHER.doFinal(this.sharedSecret));
-            digest.update(AdvancedMinecraftServer.getInstance().getKeyPair().getPublic().getEncoded());
-            connection.play(MojangUtil.hasJoined(connection.username(), new BigInteger(digest.digest()).toString(16)));
-        } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException e) {
+            final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.verifyToken);
+            if (!Arrays.equals(decryptedVerifyToken, connection.verifyToken())) {
+                connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
+                return false;
+            }
+
+            final var decryptedSecret = EncryptionUtil.decryptRsa(this.sharedSecret);
+            final var gameProfile = MojangUtil.hasJoined(connection.username(), EncryptionUtil.generateServerId(decryptedSecret));
+
+            connection.enableEncryption(decryptedSecret);
+            connection.play(gameProfile);
+        } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException |
+                 InvalidKeyException e) {
             throw new RuntimeException(e);
         }
         return false;
