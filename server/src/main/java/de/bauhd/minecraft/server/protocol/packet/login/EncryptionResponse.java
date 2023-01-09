@@ -38,10 +38,14 @@ public final class EncryptionResponse implements Packet {
     @Override
     public boolean handle(Connection connection) {
         try {
-            final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.verifyToken);
-            if (!Arrays.equals(decryptedVerifyToken, connection.verifyToken())) {
-                connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
-                return false;
+            if (this.verifyToken != null) {
+                final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.verifyToken);
+                if (!Arrays.equals(decryptedVerifyToken, connection.verifyToken())) {
+                    connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
+                    return false;
+                }
+            } else {
+                // TODO verify signature
             }
 
             final var decryptedSecret = EncryptionUtil.decryptRsa(this.sharedSecret);
@@ -62,7 +66,6 @@ public final class EncryptionResponse implements Packet {
                 "sharedSecret=" + Arrays.toString(this.sharedSecret) +
                 ", verifyToken=" + Arrays.toString(this.verifyToken) +
                 ", salt=" + this.salt +
-                ", signature=" + Arrays.toString(this.signature) +
                 '}';
     }
 }
