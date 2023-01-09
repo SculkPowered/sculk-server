@@ -47,7 +47,6 @@ public final class DirectIndirectPalette implements Palette {
         if (air != (value == 0)) {
             this.size += air ? 1 : -1;
         }
-        System.out.println("set " + x + " " + y + " " + z + " " + value);
     }
 
     @Override
@@ -67,7 +66,6 @@ public final class DirectIndirectPalette implements Palette {
     }
 
     private int index(final int value) {
-        System.out.println(value);
         if (!this.isIndirect()) {
             return value;
         }
