@@ -5,6 +5,7 @@ import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
+import java.util.Arrays;
 import java.util.BitSet;
 
 public final class ChunkDataAndUpdateLight implements Packet {
@@ -57,4 +58,18 @@ public final class ChunkDataAndUpdateLight implements Packet {
                 .writeVarInt(0); // Block Light Array // for 1.19
     }
 
+    @Override
+    public String toString() {
+        return "ChunkDataAndUpdateLight{" +
+                "chunkX=" + this.chunkX +
+                ", chunkZ=" + this.chunkZ +
+                ", heightmaps=" + this.heightmaps +
+                ", data=" + Arrays.toString(this.data) +
+                ", trustEdges=" + this.trustEdges +
+                ", skyLightMask=" + this.skyLightMask +
+                ", blockLightMask=" + this.blockLightMask +
+                ", emptySkyLightMask=" + this.emptySkyLightMask +
+                ", emptyBlockLightMask=" + this.emptyBlockLightMask +
+                '}';
+    }
 }

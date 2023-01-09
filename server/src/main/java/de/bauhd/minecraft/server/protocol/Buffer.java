@@ -220,13 +220,16 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return this;
     }
 
-    public @NotNull Buffer writeBitSet(final @NotNull BitSet bitSet) {
-        final var longs = bitSet.toLongArray();
+    public @NotNull Buffer writeLongArray(final long @NotNull [] longs) {
         this.writeVarInt(longs.length);
         for (final var l : longs) {
             this.writeLong(l);
         }
         return this;
+    }
+
+    public @NotNull Buffer writeBitSet(final @NotNull BitSet bitSet) {
+        return this.writeLongArray(bitSet.toLongArray());
     }
 
     public @NotNull Buffer writeAngel(final float angel) {
