@@ -13,7 +13,7 @@ import java.util.List;
 
 public final class PlayerInfo implements Packet {
 
-    private int action = -1;
+    private Integer action;
     private EnumSet<Action> actions;
     private final List<? extends PlayerInfoEntry> entries;
 
@@ -32,12 +32,10 @@ public final class PlayerInfo implements Packet {
         if (version.newerOr(Protocol.Version.MINECRAFT_1_19_3)) {
             final var actions = Action.class.getEnumConstants();
             final var bitSet = new BitSet(actions.length);
-            for (int idx = 0; idx < actions.length; idx++) {
-                bitSet.set(idx, this.actions.contains(actions[idx]));
+            for (var index = 0; index < actions.length; index++) {
+                bitSet.set(index, this.actions.contains(actions[index]));
             }
-
-            byte[] bytes = bitSet.toByteArray();
-            buf.writeBytes(Arrays.copyOf(bytes, -Math.floorDiv(-actions.length, 8)));
+            buf.writeBytes(Arrays.copyOf(bitSet.toByteArray(), -Math.floorDiv(-actions.length, 8)));
 
             buf.writeVarInt(this.entries.size());
             for (final var entry : entries) {
@@ -129,7 +127,7 @@ public final class PlayerInfo implements Packet {
     @Override
     public String toString() {
         return "PlayerInfo{" +
-                (this.action == -1 ? "actions=" + this.actions : "action=" + this.action) +
+                (this.action == null ? "actions=" + this.actions : "action=" + this.action) +
                 ", entries=" + this.entries +
                 '}';
     }
