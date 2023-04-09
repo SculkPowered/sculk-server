@@ -41,10 +41,12 @@ public final class MinecraftDecoder implements ChannelHandler {
                     final var maxLength = packet.maxLength();
                     final var length = buf.readableBytes();
                     if (maxLength != -1 && length > maxLength) {
-                        throw new DecoderException("Overflow packet " + packet.getClass().getSimpleName() + " (max length = " + maxLength + ", length = " + length + ")");
+                        throw new DecoderException("Overflow packet " + packet.getClass().getSimpleName() +
+                                " (max length = " + maxLength + ", length = " + length + ")");
                     }
                     if (length < minLength) {
-                        throw new DecoderException("Underflow packet " + packet.getClass().getSimpleName() + " (min length = " + minLength + ", length = " + length + ")");
+                        throw new DecoderException("Underflow packet " + packet.getClass().getSimpleName() +
+                                " (min length = " + minLength + ", length = " + length + ")");
                     }
 
                     try {

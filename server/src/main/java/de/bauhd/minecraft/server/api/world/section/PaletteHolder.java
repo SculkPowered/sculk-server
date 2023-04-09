@@ -32,7 +32,7 @@ public final class PaletteHolder implements Palette {
         if (palette instanceof SingleValuedPalette) { // not possible with single value palette
             this.palette = new DirectIndirectPalette(this.dimension, this.defaultBitsPerEntry, this.maxBitsPerEntry);
         }
-        palette.set(x, y, z, value);
+        this.palette.set(x, y, z, value);
     }
 
     @Override

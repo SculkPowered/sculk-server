@@ -28,7 +28,7 @@ public final class SingleValuedPalette implements Palette {
 
     @Override
     public void set(int x, int y, int z, int value) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
