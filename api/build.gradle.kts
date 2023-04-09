@@ -6,7 +6,7 @@ plugins {
 dependencies {
 
     // adventure
-    api(platform("net.kyori:adventure-bom:4.13.0"))
+    api(platform(libs.adventure.bom))
     api("net.kyori:adventure-api")
     api("net.kyori:adventure-nbt")
     api("net.kyori:adventure-text-serializer-gson")
@@ -14,16 +14,15 @@ dependencies {
     api("net.kyori:adventure-text-serializer-plain")
     api("net.kyori:adventure-text-minimessage")
 
-    api("com.google.code.gson:gson:2.10.1")
-
-    api("com.mojang:brigadier:1.0.18")
+    api(libs.gson)
+    api(libs.brigadier)
 
 }
 
 tasks.getByName<Javadoc>("javadoc") {
     (options as StandardJavadocDocletOptions).links = listOf(
         "https://docs.oracle.com/en/java/javase/17/docs/api/",
-        "https://jd.adventure.kyori.net/api/4.13.0/"
+        "https://jd.advntr.dev/api/${libs.adventure.bom.get().version}/"
     )
 }
 

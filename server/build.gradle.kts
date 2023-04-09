@@ -16,7 +16,7 @@ dependencies {
     implementation(project(":api"))
 
     // netty
-    implementation(platform("io.netty:netty5-bom:5.0.0.Alpha5"))
+    implementation(platform(libs.netty.bom))
     implementation("io.netty:netty5-transport")
     implementation("io.netty:netty5-codec")
     implementation("io.netty:netty5-transport-native-epoll")
@@ -24,16 +24,11 @@ dependencies {
     implementation("io.netty:netty5-transport-native-epoll:linux-aarch_64")
 
     // terminal
-    implementation("org.jline:jline-reader:3.21.0")
-    runtimeOnly("org.fusesource.jansi:jansi:2.4.0")
+    implementation(libs.jline)
+    runtimeOnly(libs.jansi)
 
-    // logging
-    val log4jVersion = "2.19.0"
-    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-iostreams:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-jul:$log4jVersion") // for jline logger
-
-    implementation("it.unimi.dsi:fastutil-core:8.5.9")
+    implementation(libs.bundles.log4j)
+    implementation(libs.fastutil)
 }
 
 tasks.withType<ShadowJar> {
