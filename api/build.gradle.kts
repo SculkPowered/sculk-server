@@ -14,7 +14,7 @@ dependencies {
     api("net.kyori:adventure-text-serializer-plain")
     api("net.kyori:adventure-text-minimessage")
 
-    api("com.google.code.gson:gson:2.10")
+    api("com.google.code.gson:gson:2.10.1")
 
     api("com.mojang:brigadier:1.0.18")
 
