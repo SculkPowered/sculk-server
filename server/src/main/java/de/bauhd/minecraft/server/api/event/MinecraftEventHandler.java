@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.api.event;
 
-import de.bauhd.minecraft.server.api.module.Module;
+import de.bauhd.minecraft.server.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +21,7 @@ public final class MinecraftEventHandler implements EventHandler {
             Runtime.getRuntime().availableProcessors(), new EventThreadFactory());
 
     @Override
-    public void register(@NotNull Module module, @NotNull Object listener) {
+    public void register(@NotNull Plugin plugin, @NotNull Object listener) {
         for (final var method : this.findMethods(listener.getClass())) {
             final var clazz = method.getParameters()[0].getType();
             final boolean create = !this.consumers.containsKey(clazz);
@@ -39,9 +39,9 @@ public final class MinecraftEventHandler implements EventHandler {
     }
 
     @Override
-    public void register(@NotNull Module module, @NotNull Object... listeners) {
+    public void register(@NotNull Plugin plugin, @NotNull Object... listeners) {
         for (final var listener : listeners) {
-            this.register(module, listener);
+            this.register(plugin, listener);
         }
     }
 

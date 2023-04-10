@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 
 public final class Scoreboard {
 
-    private Component title;
+    private final Component title;
 
     public Scoreboard(final Component title) {
         this.title = title;

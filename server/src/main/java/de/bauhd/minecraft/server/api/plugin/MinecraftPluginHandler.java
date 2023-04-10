@@ -1,4 +1,4 @@
-package de.bauhd.minecraft.server.api.module;
+package de.bauhd.minecraft.server.api.plugin;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 
@@ -14,48 +14,48 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 
-public final class MinecraftModuleHandler implements ModuleHandler {
+public final class MinecraftPluginHandler implements PluginHandler {
 
-    private static final Path MODULES_DIRECTORY = Path.of("modules");
+    private static final Path PLUGINS_DIRECTORY = Path.of("plugins");
 
     private final AdvancedMinecraftServer server;
-    private final Map<Module, Path> modules = new HashMap<>();
+    private final Map<Plugin, Path> plugins = new HashMap<>();
 
-    public MinecraftModuleHandler(final AdvancedMinecraftServer server) {
+    public MinecraftPluginHandler(final AdvancedMinecraftServer server) {
         this.server = server;
         try {
-            if (Files.notExists(MODULES_DIRECTORY)) {
-                Files.createDirectory(MODULES_DIRECTORY);
+            if (Files.notExists(PLUGINS_DIRECTORY)) {
+                Files.createDirectory(PLUGINS_DIRECTORY);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void loadModules() {
-        try (final var stream = Files.newDirectoryStream(MODULES_DIRECTORY,
+    public void loadPlugins() {
+        try (final var stream = Files.newDirectoryStream(PLUGINS_DIRECTORY,
                 path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".jar"))) {
-            stream.forEach(this::loadModule);
+            stream.forEach(this::loadPlugin);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void loadModule(final Path path) {
+    public void loadPlugin(final Path path) {
         try (final var jarFile = new JarFile(path.toFile())) {
-            final var jarEntry = jarFile.getEntry("module");
+            final var jarEntry = jarFile.getEntry("plugin");
             if (jarEntry == null) {
-                System.err.println(path.getFileName() + " has no module file");
+                System.err.println(path.getFileName() + " has no plugin file");
                 return;
             }
 
             try (final var reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(jarEntry)))) {
                 final var main = reader.readLine();
                 final var classLoader = new URLClassLoader(new URL[]{path.toUri().toURL()});
-                final var module = (Module) Class.forName(main, true, classLoader).getConstructor().newInstance();
-                module.init(this.server);
-                this.modules.put(module, path);
-                this.server.getEventHandler().register(module, module);
+                final var plugin = (Plugin) Class.forName(main, true, classLoader).getConstructor().newInstance();
+                plugin.init(this.server);
+                this.plugins.put(plugin, path);
+                this.server.getEventHandler().register(plugin, plugin);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException |

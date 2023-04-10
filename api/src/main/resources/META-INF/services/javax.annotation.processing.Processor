@@ -1,1 +1,1 @@
-de.bauhd.minecraft.server.api.module.ModuleAnnotationProcessor
+de.bauhd.minecraft.server.api.plugin.PluginAnnotationProcessor

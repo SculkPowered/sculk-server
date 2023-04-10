@@ -1,4 +1,4 @@
-package de.bauhd.minecraft.module.command;
+package de.bauhd.minecraft.plugin.command;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

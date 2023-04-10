@@ -7,7 +7,7 @@ public abstract class Property<T> {
 
     public abstract Collection<T> values();
 
-    public final class BooleanProperty extends Property<Boolean> {
+    public static final class BooleanProperty extends Property<Boolean> {
 
         private static final List<Boolean> VALUES = List.of(true, false);
 

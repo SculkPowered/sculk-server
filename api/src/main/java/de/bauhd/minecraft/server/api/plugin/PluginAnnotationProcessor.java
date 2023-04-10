@@ -1,4 +1,4 @@
-package de.bauhd.minecraft.server.api.module;
+package de.bauhd.minecraft.server.api.plugin;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -9,8 +9,8 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.util.Set;
 
-@SupportedAnnotationTypes("de.bauhd.minecraft.server.api.module.ModuleDescription")
-public final class ModuleAnnotationProcessor extends AbstractProcessor {
+@SupportedAnnotationTypes("de.bauhd.minecraft.server.api.plugin.PluginDescription")
+public final class PluginAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -18,11 +18,11 @@ public final class ModuleAnnotationProcessor extends AbstractProcessor {
             return false;
         }
 
-        roundEnv.getElementsAnnotatedWith(ModuleDescription.class).forEach(element -> {
+        roundEnv.getElementsAnnotatedWith(PluginDescription.class).forEach(element -> {
             if (element.getKind() == ElementKind.CLASS) {
                 try {
                     final var file = this.processingEnv.getFiler()
-                            .createResource(StandardLocation.CLASS_OUTPUT, "", "module");
+                            .createResource(StandardLocation.CLASS_OUTPUT, "", "plugin");
                     try (final var writer = file.openWriter()) {
                         writer.write(((TypeElement) element).getQualifiedName().toString());
                     }

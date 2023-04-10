@@ -12,7 +12,7 @@ import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
 import de.bauhd.minecraft.server.api.event.MinecraftEventHandler;
 import de.bauhd.minecraft.server.api.event.lifecycle.ServerInitializeEvent;
-import de.bauhd.minecraft.server.api.module.MinecraftModuleHandler;
+import de.bauhd.minecraft.server.api.plugin.MinecraftPluginHandler;
 import de.bauhd.minecraft.server.api.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.api.world.dimension.DimensionHandler;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
@@ -74,7 +74,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private final Map<UUID, MinecraftPlayer> players = new ConcurrentHashMap<>();
     private final DimensionHandler dimensionHandler;
     private final BiomeHandler biomeHandler;
-    private final MinecraftModuleHandler moduleHandler;
+    private final MinecraftPluginHandler pluginHandler;
     private final MinecraftEventHandler eventHandler;
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
@@ -98,12 +98,12 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
         this.dimensionHandler = new MinecraftDimensionHandler();
         this.biomeHandler = null;
-        this.moduleHandler = new MinecraftModuleHandler(this);
+        this.pluginHandler = new MinecraftPluginHandler(this);
         this.eventHandler = new MinecraftEventHandler();
         this.commandHandler = new MinecraftCommandHandler(this);
         this.bossBarListener = new BossBarListener();
 
-        this.moduleHandler.loadModules();
+        this.pluginHandler.loadPlugins();
 
         this.eventHandler.call(new ServerInitializeEvent()).join();
 
@@ -169,8 +169,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     @Override
-    public @NotNull MinecraftModuleHandler getModuleHandler() {
-        return this.moduleHandler;
+    public @NotNull MinecraftPluginHandler getPluginHandler() {
+        return this.pluginHandler;
     }
 
     @Override
