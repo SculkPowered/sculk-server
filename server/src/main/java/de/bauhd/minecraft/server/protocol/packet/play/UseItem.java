@@ -11,7 +11,7 @@ public final class UseItem implements Packet {
     private int sequence;
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf, Protocol.Version version) {
         this.hand = buf.readVarInt();
         this.sequence = buf.readVarInt();
     }
