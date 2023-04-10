@@ -4,6 +4,7 @@ import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -29,6 +30,11 @@ public final class ClickContainer implements Packet {
             this.slots.put(buf.readShort(), buf.readSlot());
         }
         this.carriedItem = buf.readSlot();
+    }
+
+    @Override
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override

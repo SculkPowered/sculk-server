@@ -1,9 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 // yes, decode -> short and encode -> byte, is right
 public final class HeldItem implements Packet {
@@ -27,9 +27,8 @@ public final class HeldItem implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        connection.player().setHeldItemSlot(this.slot);
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override
@@ -37,5 +36,9 @@ public final class HeldItem implements Packet {
         return "HeldItem{" +
                 "slot=" + this.slot +
                 '}';
+    }
+
+    public short slot() {
+        return this.slot;
     }
 }

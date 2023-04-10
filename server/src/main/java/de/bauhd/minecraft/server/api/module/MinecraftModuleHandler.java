@@ -18,9 +18,11 @@ public final class MinecraftModuleHandler implements ModuleHandler {
 
     private static final Path MODULES_DIRECTORY = Path.of("modules");
 
+    private final AdvancedMinecraftServer server;
     private final Map<Module, Path> modules = new HashMap<>();
 
-    public MinecraftModuleHandler() {
+    public MinecraftModuleHandler(final AdvancedMinecraftServer server) {
+        this.server = server;
         try {
             if (Files.notExists(MODULES_DIRECTORY)) {
                 Files.createDirectory(MODULES_DIRECTORY);
@@ -51,9 +53,9 @@ public final class MinecraftModuleHandler implements ModuleHandler {
                 final var main = reader.readLine();
                 final var classLoader = new URLClassLoader(new URL[]{path.toUri().toURL()});
                 final var module = (Module) Class.forName(main, true, classLoader).getConstructor().newInstance();
-                module.init(AdvancedMinecraftServer.getInstance());
+                module.init(this.server);
                 this.modules.put(module, path);
-                AdvancedMinecraftServer.getInstance().getEventHandler().register(module, module);
+                this.server.getEventHandler().register(module, module);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException |

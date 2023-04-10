@@ -71,6 +71,9 @@ public enum State {
             this.serverBound.register(EncryptionResponse.class, EncryptionResponse::new,
                     this.map(0x01, MINECRAFT_1_7_2)
             );
+            this.serverBound.register(LoginPluginResponse.class, LoginPluginResponse::new,
+                    this.map(0x02, MINECRAFT_1_13)
+            );
 
             this.clientBound.register(Disconnect.class,
                     this.map(0x00, MINECRAFT_1_7_2)

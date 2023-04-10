@@ -1,10 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
-import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class PlayerPositionAndRotation implements Packet {
 
@@ -26,15 +25,8 @@ public final class PlayerPositionAndRotation implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        final var player = connection.player();
-        final var position = player.getPosition();
-        player.sendViewers(new EntityPositionAndRotation(player.getId(),
-                this.delta(position.x(), this.x), this.delta(position.y(), this.y), this.delta(position.z(), this.z),
-                this.yaw, this.pitch, this.onGround),
-                new HeadRotation(player.getId(), this.yaw));
-        player.setPosition(new Position(this.x, this.y, this.z, this.yaw, this.pitch));
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override
@@ -47,7 +39,27 @@ public final class PlayerPositionAndRotation implements Packet {
         return this.minLength();
     }
 
-    private short delta(final double previous, final double current) {
-        return (short) ((current * 32 - previous * 32) * 128);
+    public double x() {
+        return this.x;
+    }
+
+    public double y() {
+        return this.y;
+    }
+
+    public double z() {
+        return this.z;
+    }
+
+    public float yaw() {
+        return this.yaw;
+    }
+
+    public float pitch() {
+        return this.pitch;
+    }
+
+    public boolean onGround() {
+        return this.onGround;
     }
 }

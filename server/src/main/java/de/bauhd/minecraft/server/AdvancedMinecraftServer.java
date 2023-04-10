@@ -47,8 +47,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     private static final Logger LOGGER = LogManager.getLogger(AdvancedMinecraftServer.class);
 
-    private static AdvancedMinecraftServer instance;
-
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(GameProfile.Property.class, new GameProfilePropertyDeserializer())
             .registerTypeAdapter(GameProfile.class, new GameProfileDeserializer())
@@ -83,8 +81,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private final NettyServer nettyServer;
 
     AdvancedMinecraftServer() {
-        instance = this;
-
         final var startTime = System.currentTimeMillis();
         final var terminal = new SimpleTerminal(this);
 
@@ -102,16 +98,16 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
         this.dimensionHandler = new MinecraftDimensionHandler();
         this.biomeHandler = null;
-        this.moduleHandler = new MinecraftModuleHandler();
+        this.moduleHandler = new MinecraftModuleHandler(this);
         this.eventHandler = new MinecraftEventHandler();
-        this.commandHandler = new MinecraftCommandHandler();
+        this.commandHandler = new MinecraftCommandHandler(this);
         this.bossBarListener = new BossBarListener();
 
         this.moduleHandler.loadModules();
 
         this.eventHandler.call(new ServerInitializeEvent()).join();
 
-        this.nettyServer = new NettyServer();
+        this.nettyServer = new NettyServer(this);
         this.nettyServer.connect(this.configuration.host(), this.configuration.port());
 
         LOGGER.info("Done ({}s)!", new DecimalFormat("#.##")
@@ -228,10 +224,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     public void removePlayer(final UUID uniqueId) {
         this.players.remove(uniqueId);
-    }
-
-    public static AdvancedMinecraftServer getInstance() {
-        return instance;
     }
 
     public static GsonComponentSerializer getGsonSerializer(final Protocol.Version version) {

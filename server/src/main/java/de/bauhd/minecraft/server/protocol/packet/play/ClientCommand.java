@@ -1,9 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class ClientCommand implements Packet {
 
@@ -15,11 +15,12 @@ public final class ClientCommand implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        if (this.actionId == 1) {
-            connection.send(new AwardStatistics());
-        }
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
+    }
+
+    public int actionId() {
+        return this.actionId;
     }
 
     @Override

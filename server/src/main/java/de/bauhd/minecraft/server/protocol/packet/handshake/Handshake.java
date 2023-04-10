@@ -1,16 +1,10 @@
 package de.bauhd.minecraft.server.protocol.packet.handshake;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
-import net.kyori.adventure.text.Component;
-
-import static de.bauhd.minecraft.server.protocol.Protocol.Version.*;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class Handshake implements Packet {
 
@@ -28,17 +22,24 @@ public final class Handshake implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        connection.set(this.nextStatus, this.version);
-        if (this.nextStatus == State.LOGIN
-                && (this.version.older(MINIMUM_VERSION) || this.version.newer(MAXIMUM_VERSION))) {
-            connection.send(new Disconnect(Component
-                    .translatable("multiplayer.disconnect.outdated_client", Component.text(SUPPORTED_VERSIONS))));
-            return true;
-        }
-        connection.setVersion(this.version);
-        connection.setServerAddress(this.serverAddress);
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
+    }
+
+    public Protocol.Version version() {
+        return this.version;
+    }
+
+    public String serverAddress() {
+        return this.serverAddress;
+    }
+
+    public int port() {
+        return this.port;
+    }
+
+    public State nextStatus() {
+        return this.nextStatus;
     }
 
     @Override
@@ -48,10 +49,10 @@ public final class Handshake implements Packet {
 
     @Override
     public int maxLength() {
-        if (AdvancedMinecraftServer.getInstance().getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
-            return 32770;
-        }
-        return 1039; // VarInt 5 + String 1027 + Unsigned Short 2 + VarInt 5
+        //if (AdvancedMinecraftServer.getInstance().getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
+        return 32770; // max length with bungeecord
+        //}
+        //return 1039; // VarInt 5 + String 1027 + Unsigned Short 2 + VarInt 5
     }
 
     @Override

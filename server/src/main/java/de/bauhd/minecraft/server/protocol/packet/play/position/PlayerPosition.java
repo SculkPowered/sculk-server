@@ -1,10 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
-import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class PlayerPosition implements Packet {
 
@@ -22,13 +21,8 @@ public final class PlayerPosition implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        final var player = connection.player();
-        final var position = player.getPosition();
-        player.sendViewers(new EntityPosition(player.getId(),
-                this.delta(position.x(), this.x), this.delta(position.y(), this.y), this.delta(position.z(), this.z), this.onGround));
-        player.setPosition(new Position(this.x, this.y, this.z, position.yaw(), position.pitch()));
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override
@@ -41,7 +35,19 @@ public final class PlayerPosition implements Packet {
         return this.minLength();
     }
 
-    private short delta(final double previous, final double current) {
-        return (short) ((current * 32 - previous * 32) * 128);
+    public double x() {
+        return this.x;
+    }
+
+    public double y() {
+        return this.y;
+    }
+
+    public double z() {
+        return this.z;
+    }
+
+    public boolean onGround() {
+        return this.onGround;
     }
 }

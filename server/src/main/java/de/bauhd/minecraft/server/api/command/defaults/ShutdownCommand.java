@@ -7,10 +7,10 @@ import de.bauhd.minecraft.server.api.command.CommandSender;
 
 public final class ShutdownCommand extends BrigadierCommand {
 
-    public ShutdownCommand() {
+    public ShutdownCommand(final AdvancedMinecraftServer server) {
         super(LiteralArgumentBuilder.<CommandSender>literal("shutdown")
                 .executes(context -> {
-                    AdvancedMinecraftServer.getInstance().shutdown(true);
+                    server.shutdown(true);
                     return 0;
                 })
                 .build());

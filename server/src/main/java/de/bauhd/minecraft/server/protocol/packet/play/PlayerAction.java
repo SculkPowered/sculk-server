@@ -1,12 +1,10 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class PlayerAction implements Packet {
 
@@ -24,24 +22,8 @@ public final class PlayerAction implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        final var player = connection.player();
-        switch (this.status) {
-            case 0: // only if instant break
-                // TODO get chunk viewers
-                AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, 0));
-                break;
-            case 3:
-
-                break;
-            case 4:
-                final var itemInHand = player.getItemInMainHand();
-                if (itemInHand != null) {
-                    itemInHand.count(itemInHand.count() - 1);
-                }
-                break;
-        }
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override
@@ -52,5 +34,21 @@ public final class PlayerAction implements Packet {
                 ", face=" + this.face +
                 ", sequence=" + this.sequence +
                 '}';
+    }
+
+    public int status() {
+        return this.status;
+    }
+
+    public Position position() {
+        return this.position;
+    }
+
+    public byte face() {
+        return this.face;
+    }
+
+    public int sequence() {
+        return this.sequence;
     }
 }

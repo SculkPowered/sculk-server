@@ -1,12 +1,10 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class CreativeModeSlot implements Packet {
 
@@ -20,14 +18,8 @@ public final class CreativeModeSlot implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        final var player = connection.player();
-        if (player.getGameMode() != GameMode.CREATIVE) {
-            player.sendMessage(AdvancedMinecraftServer.SUS_COMPONENT);
-            return false;
-        }
-        player.setItem(this.slot, this.clickedItem);
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override
@@ -36,5 +28,13 @@ public final class CreativeModeSlot implements Packet {
                 "slot=" + this.slot +
                 ", clickedItem=" + this.clickedItem +
                 '}';
+    }
+
+    public short slot() {
+        return this.slot;
+    }
+
+    public Slot clickedItem() {
+        return this.clickedItem;
     }
 }

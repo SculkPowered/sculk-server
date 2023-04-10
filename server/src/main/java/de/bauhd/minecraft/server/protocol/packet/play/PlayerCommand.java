@@ -1,9 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class PlayerCommand implements Packet {
 
@@ -19,23 +19,8 @@ public final class PlayerCommand implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        final var player = connection.player();
-
-        /*if (this.action == Action.START_SNEAKING) {
-            final var packet = new EntityMetadata(connection.player().getId(), 6, 18, 5);
-            for (final var otherPlayer : Worker.PLAYERS) {
-                if (otherPlayer == player) continue;
-                otherPlayer.send(packet);
-            }
-        } else if (this.action == Action.STOP_SNEAKING) {
-            final var packet = new EntityMetadata(connection.player().getId(), 6, 18, 0);
-            for (final var otherPlayer : Worker.PLAYERS) {
-                if (otherPlayer == player) continue;
-                otherPlayer.send(packet);
-            }
-        }*/
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override

@@ -10,6 +10,11 @@ import de.bauhd.minecraft.server.api.world.MinecraftWorld;
 import de.bauhd.minecraft.server.api.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.protocol.netty.codec.*;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
+import de.bauhd.minecraft.server.protocol.packet.handler.HandshakePacketHandler;
+import de.bauhd.minecraft.server.protocol.packet.handler.LoginPacketHandler;
+import de.bauhd.minecraft.server.protocol.packet.handler.PlayPacketHandler;
+import de.bauhd.minecraft.server.protocol.packet.handler.StatusPacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
@@ -37,7 +42,6 @@ public final class Connection extends ChannelHandlerAdapter {
 
     private static final Logger LOGGER = LogManager.getLogger(Connection.class);
 
-    private static final AdvancedMinecraftServer SERVER = AdvancedMinecraftServer.getInstance();
     private static final PluginMessage BRAND_PACKET;
     private static final CompressionPacket COMPRESSION_PACKET;
     private static final List<MinecraftChunk> CHUNKS;
@@ -45,7 +49,7 @@ public final class Connection extends ChannelHandlerAdapter {
     static {
         BRAND_PACKET = new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
 
-        final var threshold = SERVER.getConfiguration().compressionThreshold();
+        final var threshold = -1; // TODO configuration
         if (threshold != -1) {
             COMPRESSION_PACKET = new CompressionPacket(threshold);
         } else {
@@ -58,22 +62,25 @@ public final class Connection extends ChannelHandlerAdapter {
 
     }
 
+    private final AdvancedMinecraftServer server;
     private final Channel channel;
+    private PacketHandler packetHandler;
     private Protocol.Version version;
     private String serverAddress;
     private String username;
     private MinecraftPlayer player;
-    private byte[] verifyToken;
 
-    public Connection(final Channel channel) {
+    public Connection(final AdvancedMinecraftServer server, final Channel channel) {
+        this.server = server;
         this.channel = channel;
+        this.packetHandler = new HandshakePacketHandler(this);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
         try {
             if (message instanceof Packet packet) {
-                if (packet.handle(this)) {
+                if (packet.handle(this.packetHandler)) {
                     ctx.close();
                 }
             }
@@ -89,8 +96,8 @@ public final class Connection extends ChannelHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         if (this.player != null) {
-            SERVER.removePlayer(this.player.getUniqueId());
-            SERVER.getBossBarListener().onDisconnect(this.player);
+            this.server.removePlayer(this.player.getUniqueId());
+            this.server.getBossBarListener().onDisconnect(this.player);
             LOGGER.info("Connection from " + this.player.getUsername() + " closed.");
         }
         ctx.close();
@@ -98,7 +105,7 @@ public final class Connection extends ChannelHandlerAdapter {
 
     public void play(GameProfile profile) {
         if (profile == null) {
-            if (SERVER.getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
+            if (this.server.getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
                 this.serverAddress = arguments[0];
                 final var properties = (Property[]) AdvancedMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
@@ -120,13 +127,14 @@ public final class Connection extends ChannelHandlerAdapter {
 
         this.setState(State.PLAY);
         this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
+        this.packetHandler = new PlayPacketHandler(this);
         this.send(new Login(this.player.getId()));
         this.send(new SynchronizePlayerPosition(this.player.getPosition()));
 
-        SERVER.addPlayer(this.player);
+        this.server.addPlayer(this.player);
 
-        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) SERVER.getAllPlayers(), this.version));
-        this.send(new Commands(SERVER.getCommandHandler().dispatcher().getRoot()));
+        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers(), this.version));
+        this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
         this.send(BRAND_PACKET);
 
         for (final var chunk : CHUNKS) {
@@ -134,7 +142,7 @@ public final class Connection extends ChannelHandlerAdapter {
         }
 
         this.player.sendViewers(new SpawnPlayer(this.player));
-        SERVER.getAllPlayers().forEach(other -> {
+        this.server.getAllPlayers().forEach(other -> {
             if (other != this.player) {
                 final var otherPlayer = (MinecraftPlayer) other;
                 otherPlayer.send(PlayerInfo.add(this.player, otherPlayer.getVersion()));
@@ -157,6 +165,12 @@ public final class Connection extends ChannelHandlerAdapter {
             version = Protocol.Version.MINIMUM_VERSION;
         }
 
+        this.packetHandler = switch (state) {
+            case STATUS -> new StatusPacketHandler(this);
+            case LOGIN -> new LoginPacketHandler(this);
+            default -> null;
+        };
+
         this.channel.pipeline().get(MinecraftEncoder.class).set(state, version);
         this.channel.pipeline().get(MinecraftDecoder.class).set(state, version);
     }
@@ -177,12 +191,16 @@ public final class Connection extends ChannelHandlerAdapter {
     private void addCompressionHandler() {
         this.channel.pipeline()
                 .addAfter("frame-decoder", "compressor-decoder", new CompressorDecoder())
-                .addAfter("compressor-decoder", "compressor-encoder", new CompressorEncoder())
+                .addAfter("compressor-decoder", "compressor-encoder", new CompressorEncoder(this.server))
                 .remove("frame-decoder");
     }
 
     public void setVersion(final Protocol.Version version) {
         this.version = version;
+    }
+
+    public AdvancedMinecraftServer server() {
+        return this.server;
     }
 
     public Protocol.Version version() {
@@ -203,13 +221,5 @@ public final class Connection extends ChannelHandlerAdapter {
 
     public MinecraftPlayer player() {
         return this.player;
-    }
-
-    public void setVerifyToken(final byte[] verifyToken) {
-        this.verifyToken = verifyToken;
-    }
-
-    public byte[] verifyToken() {
-        return this.verifyToken;
     }
 }

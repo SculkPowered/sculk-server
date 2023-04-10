@@ -1,13 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play.command;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class ChatCommand implements Packet {
 
@@ -35,13 +31,24 @@ public final class ChatCommand implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        try {
-            AdvancedMinecraftServer.getInstance().getCommandHandler().dispatcher().execute(this.command, connection.player());
-        } catch (CommandSyntaxException e) {
-            connection.player().sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
-        }
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
+    }
+
+    public String command() {
+        return this.command;
+    }
+
+    public long timestamp() {
+        return this.timestamp;
+    }
+
+    public long salt() {
+        return this.salt;
+    }
+
+    public boolean signedPreview() {
+        return this.signedPreview;
     }
 
     @Override

@@ -1,19 +1,10 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.util.EncryptionUtil;
-import de.bauhd.minecraft.server.util.MojangUtil;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public final class EncryptionResponse implements Packet {
@@ -36,28 +27,24 @@ public final class EncryptionResponse implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        try {
-            if (this.verifyToken != null) {
-                final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.verifyToken);
-                if (!Arrays.equals(decryptedVerifyToken, connection.verifyToken())) {
-                    connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
-                    return false;
-                }
-            } else {
-                // TODO verify signature
-            }
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
+    }
 
-            final var decryptedSecret = EncryptionUtil.decryptRsa(this.sharedSecret);
-            final var gameProfile = MojangUtil.hasJoined(connection.username(), EncryptionUtil.generateServerId(decryptedSecret));
+    public byte[] sharedSecret() {
+        return this.sharedSecret;
+    }
 
-            connection.enableEncryption(decryptedSecret);
-            connection.play(gameProfile);
-        } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException |
-                 InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
-        return false;
+    public byte[] verifyToken() {
+        return this.verifyToken;
+    }
+
+    public long salt() {
+        return this.salt;
+    }
+
+    public byte[] signature() {
+        return this.signature;
     }
 
     @Override

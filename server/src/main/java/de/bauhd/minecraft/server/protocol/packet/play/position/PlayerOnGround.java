@@ -3,6 +3,7 @@ package de.bauhd.minecraft.server.protocol.packet.play.position;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class PlayerOnGround implements Packet {
 
@@ -11,6 +12,11 @@ public final class PlayerOnGround implements Packet {
     @Override
     public void decode(Buffer buf, Protocol.Version version) {
         this.onGround = buf.readBoolean();
+    }
+
+    @Override
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override

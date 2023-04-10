@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.api.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.command.defaults.ShutdownCommand;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,11 +13,11 @@ public final class MinecraftCommandHandler implements CommandHandler {
     private final CommandDispatcher<CommandSender> dispatcher;
     private final Map<String, BrigadierCommand> commands = new HashMap<>();
 
-    public MinecraftCommandHandler() {
+    public MinecraftCommandHandler(final AdvancedMinecraftServer server) {
         this.dispatcher = new CommandDispatcher<>();
 
         // register default commands
-        this.register(new ShutdownCommand());
+        this.register(new ShutdownCommand(server));
         this.register(new InfoCommand().get());
     }
 

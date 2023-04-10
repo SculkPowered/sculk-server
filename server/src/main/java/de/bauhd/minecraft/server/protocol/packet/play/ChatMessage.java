@@ -1,11 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import net.kyori.adventure.text.Component;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 import java.util.Arrays;
 
@@ -30,10 +28,28 @@ public final class ChatMessage implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        AdvancedMinecraftServer.getInstance().sendAll(
-                new SystemChatMessage(Component.text(connection.player().getUsername() + " - " + this.message), false));
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
+    }
+
+    public String message() {
+        return this.message;
+    }
+
+    public long timestamp() {
+        return this.timestamp;
+    }
+
+    public long salt() {
+        return this.salt;
+    }
+
+    public byte[] signature() {
+        return this.signature;
+    }
+
+    public boolean signedPreview() {
+        return this.signedPreview;
     }
 
     @Override

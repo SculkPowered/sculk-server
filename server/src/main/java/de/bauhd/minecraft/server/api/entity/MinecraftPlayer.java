@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.api.entity;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.entity.player.GameMode;
 import de.bauhd.minecraft.server.api.entity.player.GameProfile;
 import de.bauhd.minecraft.server.api.entity.player.Player;
@@ -151,12 +150,12 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void showBossBar(@NotNull BossBar bar) {
-        AdvancedMinecraftServer.getInstance().getBossBarListener().showBossBar(this, bar);
+        this.connection.server().getBossBarListener().showBossBar(this, bar);
     }
 
     @Override
     public void hideBossBar(@NotNull BossBar bar) {
-        AdvancedMinecraftServer.getInstance().getBossBarListener().hideBossBar(this, bar);
+        this.connection.server().getBossBarListener().hideBossBar(this, bar);
     }
 
     @NotNull
@@ -223,6 +222,6 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public @NotNull Collection<Player> getViewers() {
-        return AdvancedMinecraftServer.getInstance().getAllPlayers().stream().filter(player -> player != this).toList();
+        return this.connection.server().getAllPlayers().stream().filter(player -> player != this).toList();
     }
 }

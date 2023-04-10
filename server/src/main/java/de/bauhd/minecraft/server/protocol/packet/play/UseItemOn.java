@@ -1,13 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.api.world.block.Block;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class UseItemOn implements Packet {
 
@@ -33,22 +31,8 @@ public final class UseItemOn implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        final var player = connection.player();
-        final var slot = player.getItem(player.getHeldItemSlot() + 36);
-        if (slot == null) {
-            return false;
-        }
-        this.position = switch (this.face) {
-            case BOTTOM -> this.position.subtract(0, 1, 0);
-            case TOP -> this.position.add(0, 1, 0);
-            case NORTH -> this.position.subtract(0, 0, 1);
-            case SOUTH -> this.position.add(0, 0, 1);
-            case WEST -> this.position.subtract(1, 0, 0);
-            case EAST -> this.position.add(1, 0, 0);
-        };
-        AdvancedMinecraftServer.getInstance().sendAll(new BlockUpdate(this.position, slot.materialId()));
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override
@@ -63,5 +47,37 @@ public final class UseItemOn implements Packet {
                 ", insideBlock=" + this.insideBlock +
                 ", sequence=" + this.sequence +
                 '}';
+    }
+
+    public int hand() {
+        return this.hand;
+    }
+
+    public Position position() {
+        return this.position;
+    }
+
+    public Block.Face face() {
+        return this.face;
+    }
+
+    public float x() {
+        return this.x;
+    }
+
+    public float y() {
+        return this.y;
+    }
+
+    public float z() {
+        return this.z;
+    }
+
+    public boolean insideBlock() {
+        return this.insideBlock;
+    }
+
+    public int sequence() {
+        return this.sequence;
     }
 }

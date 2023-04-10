@@ -1,9 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 import java.util.Arrays;
 
@@ -33,11 +33,8 @@ public final class PluginMessage implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        /*final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(this.data.length);
-        buf.writeBytes(this.data);
-        System.out.println(PacketUtils.readString(buf))*/
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override

@@ -1,10 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
-import de.bauhd.minecraft.server.api.world.Position;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class PlayerRotation implements Packet {
 
@@ -20,15 +19,8 @@ public final class PlayerRotation implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        final var player = connection.player();
-        final var position = player.getPosition();
-        player.sendViewers(
-                new EntityRotation(player.getId(), this.yaw, this.pitch, this.onGround),
-                new HeadRotation(player.getId(), this.yaw)
-        );
-        player.setPosition(new Position(position.x(), position.y(), position.z(), this.yaw, this.pitch));
-        return false;
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override
@@ -39,5 +31,17 @@ public final class PlayerRotation implements Packet {
     @Override
     public int maxLength() {
         return this.minLength();
+    }
+
+    public float yaw() {
+        return this.yaw;
+    }
+
+    public float pitch() {
+        return this.pitch;
+    }
+
+    public boolean onGround() {
+        return this.onGround;
     }
 }

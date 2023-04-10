@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.protocol.netty;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
@@ -12,6 +13,12 @@ import io.netty5.channel.ChannelInitializer;
 
 public final class NettyServerInitializer extends ChannelInitializer<Channel> {
 
+    private final AdvancedMinecraftServer server;
+
+    public NettyServerInitializer(final AdvancedMinecraftServer server) {
+        this.server = server;
+    }
+
     @Override
     protected void initChannel(Channel channel) {
         channel.pipeline()
@@ -19,7 +26,7 @@ public final class NettyServerInitializer extends ChannelInitializer<Channel> {
                 .addLast("frame-encoder", VarIntLengthEncoder.INSTANCE)
                 .addLast("minecraft-decoder", new MinecraftDecoder(Protocol.Direction.SERVERBOUND))
                 .addLast("minecraft-encoder", new MinecraftEncoder(Protocol.Direction.CLIENTBOUND))
-                .addLast("handler", new Connection(channel));
+                .addLast("handler", new Connection(this.server, channel));
     }
 
     @Override

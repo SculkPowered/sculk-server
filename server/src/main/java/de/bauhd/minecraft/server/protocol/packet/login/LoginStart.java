@@ -1,14 +1,11 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.MinecraftConfig;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 public final class LoginStart implements Packet {
 
@@ -36,20 +33,16 @@ public final class LoginStart implements Packet {
     }
 
     @Override
-    public boolean handle(Connection connection) {
-        connection.setUsername(this.username);
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
+    }
 
-        final var server = AdvancedMinecraftServer.getInstance();
-        if (server.getConfiguration().mode() == MinecraftConfig.Mode.ONLINE) {
-            final var publicKey = server.getKeyPair().getPublic().getEncoded();
-            final var verifyToken = new byte[4];
-            ThreadLocalRandom.current().nextBytes(verifyToken);
-            connection.setVerifyToken(verifyToken);
-            connection.send(new EncryptionRequest("", publicKey, verifyToken));
-        } else {
-            connection.play(null);
-        }
-        return false;
+    public String username() {
+        return this.username;
+    }
+
+    public UUID uniqueId() {
+        return this.uniqueId;
     }
 
     @Override
