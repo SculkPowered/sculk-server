@@ -215,9 +215,14 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public void sendViewers(Packet packet1, Packet packet2) {
         this.getViewers().forEach(player -> {
-                ((MinecraftPlayer) player).connection.send(packet1);
-                ((MinecraftPlayer) player).connection.send(packet2);
+            ((MinecraftPlayer) player).connection.send(packet1);
+            ((MinecraftPlayer) player).connection.send(packet2);
         });
+    }
+
+    public void sendViewersAndSelf(final Packet packet) {
+        this.send(packet);
+        this.sendViewers(packet);
     }
 
     @Override

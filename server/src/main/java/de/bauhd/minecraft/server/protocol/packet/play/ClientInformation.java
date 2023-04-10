@@ -46,4 +46,36 @@ public final class ClientInformation implements Packet {
                 ", allowServerListings=" + this.allowServerListings +
                 '}';
     }
+
+    public String locale() {
+        return this.locale;
+    }
+
+    public byte viewDistance() {
+        return this.viewDistance;
+    }
+
+    public int chatMode() {
+        return this.chatMode;
+    }
+
+    public boolean chatColors() {
+        return this.chatColors;
+    }
+
+    public int skinParts() {
+        return this.skinParts;
+    }
+
+    public int mainHand() {
+        return this.mainHand;
+    }
+
+    public boolean enableTextFiltering() {
+        return this.enableTextFiltering;
+    }
+
+    public boolean allowServerListings() {
+        return this.allowServerListings;
+    }
 }

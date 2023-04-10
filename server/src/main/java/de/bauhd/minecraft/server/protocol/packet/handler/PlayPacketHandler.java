@@ -23,6 +23,8 @@ public final class PlayPacketHandler extends PacketHandler {
     private final AdvancedMinecraftServer server;
     private final MinecraftPlayer player;
 
+    private ClientInformation clientInformation;
+
     public PlayPacketHandler(final Connection connection) {
         this.connection = connection;
         this.server = connection.server();
@@ -61,7 +63,12 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ClientInformation clientInformation) {
-        return super.handle(clientInformation);
+        if (this.clientInformation == null || this.clientInformation.skinParts() != clientInformation.skinParts()) {
+            this.player.sendViewersAndSelf(new EntityMetadata(this.player.getId(), buf ->
+                    buf.writeUnsignedByte(17).writeVarInt(0).writeByte((byte) clientInformation.skinParts())));
+        }
+        this.clientInformation = clientInformation;
+        return false;
     }
 
     @Override
