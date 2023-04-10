@@ -236,4 +236,8 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         this.writeByte((byte) (angel * 256 / 360));
         return this;
     }
+
+    public void close() {
+        this.buf.close();
+    }
 }

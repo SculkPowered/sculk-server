@@ -78,7 +78,7 @@ public final class MinecraftChunk implements Chunk {
             section.biomes().write(buf);
         }
         final var data = buf.readAll();
-        buf.buf().close();
+        buf.close();
         return data;
     }
 

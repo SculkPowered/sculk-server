@@ -47,6 +47,7 @@ public final class Biome {
 
         public @NotNull Builder precipitation(@NotNull String precipitation) {
             this.builder.putString("precipitation", precipitation);
+            this.builder.putBoolean("has_precipitation", !precipitation.equals("none"));
             return this;
         }
 
