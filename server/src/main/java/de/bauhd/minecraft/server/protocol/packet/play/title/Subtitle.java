@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.title;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 
@@ -14,8 +13,8 @@ public final class Subtitle implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
-        buf.writeComponent(this.text, version);
+    public void encode(Buffer buf) {
+        buf.writeComponent(this.text);
     }
 
     @Override

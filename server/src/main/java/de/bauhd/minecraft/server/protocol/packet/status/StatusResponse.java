@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.status;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 public final class StatusResponse implements Packet {
@@ -13,7 +12,7 @@ public final class StatusResponse implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf.writeString(this.json);
     }
 

@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 
@@ -28,12 +27,12 @@ public final class BossBar implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf.writeUniqueId(this.uniqueId).writeVarInt(this.action);
 
         if (this.action == 0) {
             buf
-                    .writeComponent(this.title, version)
+                    .writeComponent(this.title)
                     .writeFloat(this.health)
                     .writeVarInt(this.color)
                     .writeVarInt(this.division)
@@ -41,7 +40,7 @@ public final class BossBar implements Packet {
         } else if (this.action == 2) {
             buf.writeFloat(this.health);
         } else if (this.action == 3) {
-            buf.writeComponent(this.title, version);
+            buf.writeComponent(this.title);
         } else if (this.action == 4) {
             buf.writeVarInt(this.color).writeVarInt(this.division);
         } else if (this.action == 5) {

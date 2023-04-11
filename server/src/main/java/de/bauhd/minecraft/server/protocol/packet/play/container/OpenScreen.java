@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 
@@ -18,10 +17,10 @@ public final class OpenScreen implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
                 .writeVarInt(this.windowId)
                 .writeVarInt(this.windowType)
-                .writeComponent(this.title, version);
+                .writeComponent(this.title);
     }
 }

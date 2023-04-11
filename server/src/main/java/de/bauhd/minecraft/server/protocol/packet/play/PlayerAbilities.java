@@ -3,19 +3,23 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
-public final class ConfirmTeleportation implements Packet {
+public final class PlayerAbilities implements Packet {
 
-    private int teleportId;
+    private byte flags;
 
     @Override
     public void decode(Buffer buf) {
-        this.teleportId = buf.readVarInt();
+        this.flags = buf.readByte();
     }
 
     @Override
     public String toString() {
-        return "ConfirmTeleportation{" +
-                "teleportId=" + this.teleportId +
+        return "PlayerAbilities{" +
+                "flags=" + this.flags +
                 '}';
+    }
+
+    public byte flags() {
+        return this.flags;
     }
 }

@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
@@ -12,7 +11,7 @@ public final class PlayerCommand implements Packet {
     private int jumpBoost;
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf) {
         this.entityId = buf.readVarInt();
         this.action = Action.get(buf.readVarInt());
         this.jumpBoost = buf.readVarInt();

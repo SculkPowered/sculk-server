@@ -19,7 +19,7 @@ public final class HandshakePacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(Handshake handshake) {
-        this.connection.set(handshake.nextStatus(), handshake.version());
+        this.connection.set(handshake.nextStatus());
         if (handshake.nextStatus() == State.LOGIN
                 && (handshake.version().older(MINIMUM_VERSION) || handshake.version().newer(MAXIMUM_VERSION))) {
             this.connection.send(new Disconnect(Component

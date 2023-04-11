@@ -7,7 +7,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import de.bauhd.minecraft.server.api.command.CommandSender;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 
@@ -23,7 +22,7 @@ public final class Commands implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         final var nodeQueue = new ArrayDeque<CommandNode<CommandSender>>(List.of(this.rootNode));
         final var nodes = new Object2IntLinkedOpenHashMap<CommandNode<CommandSender>>();
         while (!nodeQueue.isEmpty()) {

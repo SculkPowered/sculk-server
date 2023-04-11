@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.command;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
@@ -13,7 +12,7 @@ public final class ChatCommand implements Packet {
     private boolean signedPreview;
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf) {
         this.command = buf.readString();
         this.timestamp = buf.readLong();
         this.salt = buf.readLong();
@@ -24,10 +23,8 @@ public final class ChatCommand implements Packet {
         }
         this.signedPreview = buf.readBoolean();
 
-        if (version.newerOr(Protocol.Version.MINECRAFT_1_19_1)) {
-            // ignore for now
-            buf.readAll();
-        }
+        // ignore for now
+        buf.readAll();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
@@ -59,7 +58,7 @@ public final class Login implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf.writeInt(this.entityId); // Entity id
         buf.writeBoolean(false); // Hardcode
         buf.writeByte((byte) 1); // GameMode
@@ -76,9 +75,7 @@ public final class Login implements Packet {
                         .put("value", ListBinaryTag.from(List.of(OVERWORLD.nbt())))
                         .build())
                 .put("minecraft:chat_type", CHAT_REGISTRY);
-        if (version.newerOr(Protocol.Version.MINECRAFT_1_19_4)) {
-            registryCodec.put("minecraft:damage_type", DAMAGE_TYPE_REGISTRY);
-        }
+        registryCodec.put("minecraft:damage_type", DAMAGE_TYPE_REGISTRY);
         buf.writeCompoundTag(registryCodec.build());
         buf.writeString("minecraft:overworld"); // Dimension Type
         buf.writeString("minecraft:overworld"); // Dimension Name

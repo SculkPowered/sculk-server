@@ -12,12 +12,12 @@ public final class MinecraftDecoder implements ChannelHandler {
 
     private final Protocol.Direction direction;
     private State state;
-    private State.PacketRegistry.ProtocolRegistry registry;
+    private State.PacketRegistry registry;
 
     public MinecraftDecoder(Protocol.Direction direction) {
         this.direction = direction;
         this.state = State.HANDSHAKE;
-        this.registry = direction.getRegistry(this.state, Protocol.Version.MINIMUM_VERSION);
+        this.registry = direction.getRegistry(this.state);
     }
 
     @Override
@@ -34,7 +34,7 @@ public final class MinecraftDecoder implements ChannelHandler {
             if (packet == null) {
                 buf.readerOffset(offset);
                 ctx.fireChannelRead(message);
-                System.out.println("unknown packet id " + Integer.toHexString(id) + " " + this.registry.version);
+                System.out.println("Unknown packet id " + Integer.toHexString(id));
             } else {
                 try (buf) {
                     final var minLength = packet.minLength();
@@ -50,7 +50,7 @@ public final class MinecraftDecoder implements ChannelHandler {
                     }
 
                     try {
-                        packet.decode(new de.bauhd.minecraft.server.protocol.Buffer(buf), this.registry.version);
+                        packet.decode(new de.bauhd.minecraft.server.protocol.Buffer(buf));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -67,13 +67,13 @@ public final class MinecraftDecoder implements ChannelHandler {
         }
     }
 
-    public void set(final State state, final Protocol.Version version) {
+    public void set(final State state) {
         this.state = state;
-        this.registry = this.direction.getRegistry(state, version);
+        this.registry = this.direction.getRegistry(state);
     }
 
     public void setState(final State state) {
-        this.set(state, this.registry.version);
+        this.set(state);
     }
 
 }

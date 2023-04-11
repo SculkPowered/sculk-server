@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
@@ -11,7 +10,7 @@ public final class ClickContainerButton implements Packet {
     private byte buttonId;
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf) {
         this.windowId = buf.readByte();
         this.buttonId = buf.readByte();
     }

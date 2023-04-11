@@ -4,9 +4,10 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
 import de.bauhd.minecraft.server.protocol.packet.login.*;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
-import de.bauhd.minecraft.server.protocol.packet.play.block.*;
+import de.bauhd.minecraft.server.protocol.packet.play.block.BlockAction;
+import de.bauhd.minecraft.server.protocol.packet.play.block.BlockEntityData;
+import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.minecraft.server.protocol.packet.play.command.ChatCommand;
-import de.bauhd.minecraft.server.protocol.packet.play.command.CommandSuggestionsResponse;
 import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.protocol.packet.play.container.*;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
@@ -24,639 +25,258 @@ import io.netty5.util.collection.IntObjectHashMap;
 import io.netty5.util.collection.IntObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Map;
 import java.util.function.Supplier;
-
-import static de.bauhd.minecraft.server.protocol.Protocol.Direction;
-import static de.bauhd.minecraft.server.protocol.Protocol.Version;
-import static de.bauhd.minecraft.server.protocol.Protocol.Version.*;
 
 public enum State {
 
     HANDSHAKE {
         {
-            this.serverBound.register(Handshake.class, Handshake::new,
-                    this.map(0x00, MINECRAFT_1_7_2)
-            );
+            this.serverBound.register(Handshake.class, Handshake::new);
         }
     },
     STATUS {
         {
-            this.serverBound.register(StatusRequest.class, () -> StatusRequest.INSTANCE,
-                    this.map(0x00, MINECRAFT_1_7_2)
-            );
-            this.serverBound.register(StatusPing.class, StatusPing::new,
-                    this.map(0x01, MINECRAFT_1_7_2)
-            );
+            this.serverBound.register(StatusRequest.class, () -> StatusRequest.INSTANCE);
+            this.serverBound.register(StatusPing.class, StatusPing::new);
 
-            this.clientBound.register(StatusResponse.class,
-                    this.map(0x00, MINECRAFT_1_7_2)
-            );
-            this.clientBound.register(StatusPing.class,
-                    this.map(0x01, MINECRAFT_1_7_2)
-            );
+            this.clientBound.register(StatusResponse.class);
+            this.clientBound.register(StatusPing.class);
         }
     },
     LOGIN {
         {
-            this.serverBound.register(LoginStart.class, LoginStart::new,
-                    this.map(0x00, MINECRAFT_1_7_2)
-            );
-            this.serverBound.register(EncryptionResponse.class, EncryptionResponse::new,
-                    this.map(0x01, MINECRAFT_1_7_2)
-            );
-            this.serverBound.register(LoginPluginResponse.class, LoginPluginResponse::new,
-                    this.map(0x02, MINECRAFT_1_13)
-            );
+            this.serverBound.register(LoginStart.class, LoginStart::new);
+            this.serverBound.register(EncryptionResponse.class, EncryptionResponse::new);
+            this.serverBound.register(LoginPluginResponse.class, LoginPluginResponse::new);
 
-            this.clientBound.register(Disconnect.class,
-                    this.map(0x00, MINECRAFT_1_7_2)
-            );
-            this.clientBound.register(EncryptionRequest.class,
-                    this.map(0x01, MINECRAFT_1_7_2)
-            );
-            this.clientBound.register(LoginSuccess.class,
-                    this.map(0x02, MINECRAFT_1_7_2)
-            );
-            this.clientBound.register(CompressionPacket.class,
-                    this.map(0x03, MINECRAFT_1_8)
-            );
-            this.clientBound.register(LoginPluginRequest.class,
-                    this.map(0x04, MINECRAFT_1_13)
-            );
+            this.clientBound.register(Disconnect.class);
+            this.clientBound.register(EncryptionRequest.class);
+            this.clientBound.register(LoginSuccess.class);
+            this.clientBound.register(CompressionPacket.class);
+            this.clientBound.register(LoginPluginRequest.class);
         }
     },
     PLAY {
         {
-            this.serverBound.disableFallback();
-            this.clientBound.disableFallback();
+            this.serverBound.register(ConfirmTeleportation.class, ConfirmTeleportation::new);
+            this.serverBound.skip(); // Query Block Entity Tag
+            this.serverBound.skip(); // Change Difficulty - only Single-player
+            this.serverBound.skip(); // Message Acknowledgment
+            this.serverBound.register(ChatCommand.class, ChatCommand::new);
+            this.serverBound.register(ChatMessage.class, ChatMessage::new);
+            this.serverBound.skip(); // Player Session
+            this.serverBound.register(ClientCommand.class, ClientCommand::new);
+            this.serverBound.register(ClientInformation.class, ClientInformation::new);
+            this.serverBound.register(CommandSuggestionsRequest.class, CommandSuggestionsRequest::new);
+            this.serverBound.register(ClickContainerButton.class, ClickContainerButton::new);
+            this.serverBound.register(ClickContainer.class, ClickContainer::new);
+            this.serverBound.register(CloseContainer.class, CloseContainer::new);
+            this.serverBound.register(PluginMessage.class, PluginMessage::new);
+            this.serverBound.register(EditBook.class, EditBook::new);
+            this.serverBound.skip(); // Query Entity Tag
+            this.serverBound.register(Interact.class, Interact::new);
+            this.serverBound.skip(); // Jigsaw Generate
+            this.serverBound.register(KeepAlive.class, KeepAlive::new);
+            this.serverBound.skip(); // Lock Difficult
+            this.serverBound.register(PlayerPosition.class, PlayerPosition::new);
+            this.serverBound.register(PlayerPositionAndRotation.class, PlayerPositionAndRotation::new);
+            this.serverBound.register(PlayerRotation.class, PlayerRotation::new);
+            this.serverBound.register(PlayerOnGround.class, PlayerOnGround::new);
+            this.serverBound.skip(); // Move Vehicle
+            this.serverBound.skip(); // Paddle Boat
+            this.serverBound.skip(); // Pick Item
+            this.serverBound.skip(); // Place Recipe
+            this.serverBound.register(PlayerAbilities.class, PlayerAbilities::new);
+            this.serverBound.register(PlayerAction.class, PlayerAction::new);
+            this.serverBound.register(PlayerCommand.class, PlayerCommand::new);
+            this.serverBound.skip(); // Player Input
+            this.serverBound.skip(); // Pong
+            this.serverBound.skip(); // Change Recipe Book Settings
+            this.serverBound.skip(); // Seen Recipe
+            this.serverBound.skip(); // Rename Item
+            this.serverBound.skip(); // Resource Pack
+            this.serverBound.skip(); // Advancements
+            this.serverBound.skip(); // Select Trade
+            this.serverBound.skip(); // Beacon Effect
+            this.serverBound.register(HeldItem.class, HeldItem::new);
+            this.serverBound.skip(); // Program Command Block
+            this.serverBound.skip(); // Program Command Block Minecart
+            this.serverBound.register(CreativeModeSlot.class, CreativeModeSlot::new);
+            this.serverBound.skip(); // Program Jigsaw Block
+            this.serverBound.skip(); // Program Structure Block
+            this.serverBound.skip(); // Update Sign
+            this.serverBound.register(SwingArm.class, SwingArm::new);
+            this.serverBound.register(TeleportToEntity.class, TeleportToEntity::new);
+            this.serverBound.register(UseItemOn.class, UseItemOn::new);
+            this.serverBound.register(UseItem.class, UseItem::new);
 
-            this.serverBound.register(ConfirmTeleportation.class, ConfirmTeleportation::new,
-                    this.map(0x00, MINECRAFT_1_19)
-            );
-            this.serverBound.register(ChatCommand.class, ChatCommand::new,
-                    this.map(0x03, MINECRAFT_1_19),
-                    this.map(0x04, MINECRAFT_1_19_1)
-            );
-            this.serverBound.register(ChatMessage.class, ChatMessage::new,
-                    this.map(0x04, MINECRAFT_1_19),
-                    this.map(0x05, MINECRAFT_1_19_1)
-            );
-            this.serverBound.register(ClientCommand.class, ClientCommand::new,
-                    this.map(0x06, MINECRAFT_1_19),
-                    this.map(0x07, MINECRAFT_1_19_1),
-                    this.map(0x06, MINECRAFT_1_19_3),
-                    this.map(0x07, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(ClientInformation.class, ClientInformation::new,
-                    this.map(0x07, MINECRAFT_1_19),
-                    this.map(0x08, MINECRAFT_1_19_1),
-                    this.map(0x07, MINECRAFT_1_19_3),
-                    this.map(0x08, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(ClickContainerButton.class, ClickContainerButton::new,
-                    this.map(0x09, MINECRAFT_1_19),
-                    this.map(0x0A, MINECRAFT_1_19_1),
-                    this.map(0x09, MINECRAFT_1_19_3),
-                    this.map(0x0A, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(ClickContainer.class, ClickContainer::new,
-                    this.map(0x0A, MINECRAFT_1_19),
-                    this.map(0x0B, MINECRAFT_1_19_1),
-                    this.map(0x0A, MINECRAFT_1_19_3),
-                    this.map(0x0B, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(CloseContainer.class, CloseContainer::new,
-                    this.map(0x0B, MINECRAFT_1_19),
-                    this.map(0x0C, MINECRAFT_1_19_1),
-                    this.map(0x0B, MINECRAFT_1_19_3),
-                    this.map(0x0C, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(PluginMessage.class, PluginMessage::new,
-                    this.map(0x0C, MINECRAFT_1_19),
-                    this.map(0x0D, MINECRAFT_1_19_1),
-                    this.map(0x0C, MINECRAFT_1_19_3),
-                    this.map(0x0D, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(Interact.class, Interact::new,
-                    this.map(0x0F, MINECRAFT_1_19),
-                    this.map(0x10, MINECRAFT_1_19_1),
-                    this.map(0x0F, MINECRAFT_1_19_3),
-                    this.map(0x10, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(KeepAlive.class, KeepAlive::new,
-                    this.map(0x11, MINECRAFT_1_19),
-                    this.map(0x12, MINECRAFT_1_19_1),
-                    this.map(0x11, MINECRAFT_1_19_3),
-                    this.map(0x12, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(PlayerPosition.class, PlayerPosition::new,
-                    this.map(0x13, MINECRAFT_1_19),
-                    this.map(0x14, MINECRAFT_1_19_1),
-                    this.map(0x13, MINECRAFT_1_19_3),
-                    this.map(0x14, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(PlayerPositionAndRotation.class, PlayerPositionAndRotation::new,
-                    this.map(0x14, MINECRAFT_1_19),
-                    this.map(0x15, MINECRAFT_1_19_1),
-                    this.map(0x14, MINECRAFT_1_19_3),
-                    this.map(0x15, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(PlayerRotation.class, PlayerRotation::new,
-                    this.map(0x15, MINECRAFT_1_19),
-                    this.map(0x16, MINECRAFT_1_19_1),
-                    this.map(0x15, MINECRAFT_1_19_3),
-                    this.map(0x16, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(PlayerOnGround.class, PlayerOnGround::new,
-                    this.map(0x16, MINECRAFT_1_19),
-                    this.map(0x17, MINECRAFT_1_19_1),
-                    this.map(0x16, MINECRAFT_1_19_3),
-                    this.map(0x17, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(PlayerAction.class, PlayerAction::new,
-                    this.map(0x1C, MINECRAFT_1_19),
-                    this.map(0x1D, MINECRAFT_1_19_1),
-                    this.map(0x1C, MINECRAFT_1_19_3),
-                    this.map(0x1D, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(PlayerCommand.class, PlayerCommand::new,
-                    this.map(0x1D, MINECRAFT_1_19),
-                    this.map(0x1E, MINECRAFT_1_19_1),
-                    this.map(0x1D, MINECRAFT_1_19_3),
-                    this.map(0x1E, MINECRAFT_1_19_4)
-            );
-            this.serverBound.register(HeldItem.class, HeldItem::new,
-                    this.map(0x27, MINECRAFT_1_19),
-                    this.map(0x28, MINECRAFT_1_19_1)
-            );
-            this.serverBound.register(CreativeModeSlot.class, CreativeModeSlot::new,
-                    this.map(0x2A, MINECRAFT_1_19),
-                    this.map(0x2B, MINECRAFT_1_19_1)
-            );
-            this.serverBound.register(SwingArm.class, SwingArm::new,
-                    this.map(0x2E, MINECRAFT_1_19),
-                    this.map(0x2F, MINECRAFT_1_19_1)
-            );
-            this.serverBound.register(UseItemOn.class, UseItemOn::new,
-                    this.map(0x30, MINECRAFT_1_19),
-                    this.map(0x31, MINECRAFT_1_19_1)
-            );
-            this.serverBound.register(UseItem.class, UseItem::new,
-                    this.map(0x31, MINECRAFT_1_19),
-                    this.map(0x32, MINECRAFT_1_19_1)
-            );
-
-            this.clientBound.register(SpawnEntity.class,
-                    this.map(0x00, MINECRAFT_1_19),
-                    this.map(0x01, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(SpawnExperienceOrb.class,
-                    this.map(0x01, MINECRAFT_1_19),
-                    this.map(0x02, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(SpawnPlayer.class,
-                    this.map(0x02, MINECRAFT_1_19),
-                    this.map(0x03, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(EntityAnimation.class,
-                    this.map(0x03, MINECRAFT_1_19),
-                    this.map(0x04, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(AwardStatistics.class,
-                    this.map(0x04, MINECRAFT_1_19),
-                    this.map(0x05, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(BlockChange.class,
-                    this.map(0x05, MINECRAFT_1_19),
-                    this.map(0x06, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(BlockDestroyStage.class,
-                    this.map(0x06, MINECRAFT_1_19),
-                    this.map(0x07, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(BlockEntityData.class,
-                    this.map(0x07, MINECRAFT_1_19),
-                    this.map(0x08, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(BlockAction.class,
-                    this.map(0x08, MINECRAFT_1_19),
-                    this.map(0x09, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(BlockUpdate.class,
-                    this.map(0x09, MINECRAFT_1_19),
-                    this.map(0x0A, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(BossBar.class,
-                    this.map(0x0A, MINECRAFT_1_19),
-                    this.map(0x0B, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(ChangeDifficulty.class,
-                    this.map(0x0B, MINECRAFT_1_19),
-                    this.map(0x0C, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(ClearTitles.class,
-                    this.map(0x0D, MINECRAFT_1_19),
-                    this.map(0x0C, MINECRAFT_1_19_3),
-                    this.map(0x0D, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(CommandSuggestionsResponse.class,
-                    this.map(0x0E, MINECRAFT_1_19),
-                    this.map(0x0D, MINECRAFT_1_19_3),
-                    this.map(0x0F, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Commands.class,
-                    this.map(0x0F, MINECRAFT_1_19),
-                    this.map(0x0E, MINECRAFT_1_19_3),
-                    this.map(0x10, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(CloseContainer.class,
-                    this.map(0x10, MINECRAFT_1_19),
-                    this.map(0x0F, MINECRAFT_1_19_3),
-                    this.map(0x11, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(ContainerContent.class,
-                    this.map(0x11, MINECRAFT_1_19),
-                    this.map(0x10, MINECRAFT_1_19_3),
-                    this.map(0x12, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(ContainerProperty.class,
-                    this.map(0x12, MINECRAFT_1_19),
-                    this.map(0x11, MINECRAFT_1_19_3),
-                    this.map(0x13, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(ContainerSlot.class,
-                    this.map(0x13, MINECRAFT_1_19),
-                    this.map(0x12, MINECRAFT_1_19_3),
-                    this.map(0x14, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Cooldown.class,
-                    this.map(0x14, MINECRAFT_1_19),
-                    this.map(0x13, MINECRAFT_1_19_3),
-                    this.map(0x15, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(PluginMessage.class,
-                    this.map(0x15, MINECRAFT_1_19),
-                    this.map(0x16, MINECRAFT_1_19_1),
-                    this.map(0x15, MINECRAFT_1_19_3),
-                    this.map(0x17, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Disconnect.class,
-                    this.map(0x17, MINECRAFT_1_19),
-                    this.map(0x19, MINECRAFT_1_19_1),
-                    this.map(0x17, MINECRAFT_1_19_3),
-                    this.map(0x1A, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(EntityEvent.class,
-                    this.map(0x18, MINECRAFT_1_19),
-                    this.map(0x1A, MINECRAFT_1_19_1),
-                    this.map(0x19, MINECRAFT_1_19_3),
-                    this.map(0x1C, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(GameEvent.class,
-                    this.map(0x1B, MINECRAFT_1_19),
-                    this.map(0x1D, MINECRAFT_1_19_1),
-                    this.map(0x1C, MINECRAFT_1_19_3),
-                    this.map(0x1F, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(KeepAlive.class,
-                    this.map(0x21, MINECRAFT_1_18_2),
-                    this.map(0x1E, MINECRAFT_1_19),
-                    this.map(0x20, MINECRAFT_1_19_1),
-                    this.map(0x1F, MINECRAFT_1_19_3),
-                    this.map(0x23, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(ChunkDataAndUpdateLight.class,
-                    this.map(0x22, MINECRAFT_1_18_2),
-                    this.map(0x1F, MINECRAFT_1_19),
-                    this.map(0x21, MINECRAFT_1_19_1),
-                    this.map(0x20, MINECRAFT_1_19_3),
-                    this.map(0x24, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Login.class,
-                    this.map(0x26, MINECRAFT_1_18_2),
-                    this.map(0x23, MINECRAFT_1_19),
-                    this.map(0x25, MINECRAFT_1_19_1),
-                    this.map(0x24, MINECRAFT_1_19_3),
-                    this.map(0x28, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(EntityPosition.class,
-                    this.map(0x26, MINECRAFT_1_19),
-                    this.map(0x28, MINECRAFT_1_19_1),
-                    this.map(0x27, MINECRAFT_1_19_3),
-                    this.map(0x2B, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(EntityPositionAndRotation.class,
-                    this.map(0x27, MINECRAFT_1_19),
-                    this.map(0x29, MINECRAFT_1_19_1),
-                    this.map(0x28, MINECRAFT_1_19_3),
-                    this.map(0x2C, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(EntityRotation.class,
-                    this.map(0x28, MINECRAFT_1_19),
-                    this.map(0x2A, MINECRAFT_1_19_1),
-                    this.map(0x29, MINECRAFT_1_19_3),
-                    this.map(0x2D, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(OpenScreen.class,
-                    this.map(0x2B, MINECRAFT_1_19),
-                    this.map(0x2D, MINECRAFT_1_19_1),
-                    this.map(0x2C, MINECRAFT_1_19_3),
-                    this.map(0x30, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(PlayerInfo.class,
-                    this.map(0x34, MINECRAFT_1_19),
-                    this.map(0x37, MINECRAFT_1_19_1),
-                    this.map(0x36, MINECRAFT_1_19_3),
-                    this.map(0x3A, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(SynchronizePlayerPosition.class,
-                    this.map(0x38, MINECRAFT_1_18_2),
-                    this.map(0x36, MINECRAFT_1_19),
-                    this.map(0x39, MINECRAFT_1_19_1),
-                    this.map(0x38, MINECRAFT_1_19_3),
-                    this.map(0x3C, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(HeadRotation.class,
-                    this.map(0x3C, MINECRAFT_1_19),
-                    this.map(0x3F, MINECRAFT_1_19_1),
-                    this.map(0x3E, MINECRAFT_1_19_3),
-                    this.map(0x42, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(ActionBar.class,
-                    this.map(0x40, MINECRAFT_1_19),
-                    this.map(0x43, MINECRAFT_1_19_1),
-                    this.map(0x42, MINECRAFT_1_19_3),
-                    this.map(0x46, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(HeldItem.class,
-                    this.map(0x47, MINECRAFT_1_19),
-                    this.map(0x4A, MINECRAFT_1_19_1),
-                    this.map(0x49, MINECRAFT_1_19_3),
-                    this.map(0x4D, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(CenterChunk.class,
-                    this.map(0x48, MINECRAFT_1_19),
-                    this.map(0x4B, MINECRAFT_1_19_1),
-                    this.map(0x4A, MINECRAFT_1_19_3),
-                    this.map(0x4E, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(RenderDistance.class,
-                    this.map(0x49, MINECRAFT_1_19),
-                    this.map(0x4C, MINECRAFT_1_19_1),
-                    this.map(0x4B, MINECRAFT_1_19_3),
-                    this.map(0x4F, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(SpawnPosition.class,
-                    this.map(0x4B, MINECRAFT_1_18_2),
-                    this.map(0x4A, MINECRAFT_1_19),
-                    this.map(0x4D, MINECRAFT_1_19_1),
-                    this.map(0x4C, MINECRAFT_1_19_3),
-                    this.map(0x50, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(DisplayObjective.class,
-                    this.map(0x4C, MINECRAFT_1_19),
-                    this.map(0x4F, MINECRAFT_1_19_1),
-                    this.map(0x4D, MINECRAFT_1_19_3),
-                    this.map(0x51, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(EntityMetadata.class,
-                    this.map(0x4D, MINECRAFT_1_19),
-                    this.map(0x50, MINECRAFT_1_19_1),
-                    this.map(0x4E, MINECRAFT_1_19_3),
-                    this.map(0x52, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Experience.class,
-                    this.map(0x51, MINECRAFT_1_19),
-                    this.map(0x54, MINECRAFT_1_19_1),
-                    this.map(0x52, MINECRAFT_1_19_3),
-                    this.map(0x56, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Health.class,
-                    this.map(0x52, MINECRAFT_1_19),
-                    this.map(0x55, MINECRAFT_1_19_1),
-                    this.map(0x53, MINECRAFT_1_19_3),
-                    this.map(0x57, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(UpdateObjectives.class,
-                    this.map(0x53, MINECRAFT_1_19),
-                    this.map(0x56, MINECRAFT_1_19_1),
-                    this.map(0x54, MINECRAFT_1_19_3),
-                    this.map(0x58, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(UpdateScore.class,
-                    this.map(0x56, MINECRAFT_1_19),
-                    this.map(0x59, MINECRAFT_1_19_1),
-                    this.map(0x57, MINECRAFT_1_19_3),
-                    this.map(0x5B, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(SimulationDistance.class,
-                    this.map(0x57, MINECRAFT_1_19),
-                    this.map(0x5A, MINECRAFT_1_19_1),
-                    this.map(0x58, MINECRAFT_1_19_3),
-                    this.map(0x5C, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Subtitle.class,
-                    this.map(0x58, MINECRAFT_1_19),
-                    this.map(0x5B, MINECRAFT_1_19_1),
-                    this.map(0x59, MINECRAFT_1_19_3),
-                    this.map(0x5D, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(Title.class,
-                    this.map(0x5A, MINECRAFT_1_19),
-                    this.map(0x5D, MINECRAFT_1_19_1),
-                    this.map(0x5B, MINECRAFT_1_19_3),
-                    this.map(0x5F, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(TitleAnimationTimes.class,
-                    this.map(0x5B, MINECRAFT_1_19),
-                    this.map(0x5E, MINECRAFT_1_19_1),
-                    this.map(0x5C, MINECRAFT_1_19_3),
-                    this.map(0x60, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(SystemChatMessage.class,
-                    this.map(0x5F, MINECRAFT_1_19),
-                    this.map(0x62, MINECRAFT_1_19_1),
-                    this.map(0x60, MINECRAFT_1_19_3),
-                    this.map(0x64, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(TabListHeaderFooter.class,
-                    this.map(0x60, MINECRAFT_1_19),
-                    this.map(0x63, MINECRAFT_1_19_1),
-                    this.map(0x61, MINECRAFT_1_19_3),
-                    this.map(0x65, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(PickupItem.class,
-                    this.map(0x62, MINECRAFT_1_19),
-                    this.map(0x65, MINECRAFT_1_19_1),
-                    this.map(0x63, MINECRAFT_1_19_3),
-                    this.map(0x67, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(UpdateAttributes.class,
-                    this.map(0x64, MINECRAFT_1_18_2),
-                    this.map(0x65, MINECRAFT_1_19),
-                    this.map(0x68, MINECRAFT_1_19_1),
-                    this.map(0x66, MINECRAFT_1_19_3),
-                    this.map(0x6A, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(UpdateRecipes.class,
-                    this.map(0x67, MINECRAFT_1_19),
-                    this.map(0x6A, MINECRAFT_1_19_1),
-                    this.map(0x69, MINECRAFT_1_19_3),
-                    this.map(0x6D, MINECRAFT_1_19_4)
-            );
-            this.clientBound.register(UpdateTags.class,
-                    this.map(0x68, MINECRAFT_1_19),
-                    this.map(0x6B, MINECRAFT_1_19_1),
-                    this.map(0x6A, MINECRAFT_1_19_3),
-                    this.map(0x6E, MINECRAFT_1_19_4)
-            );
+            this.clientBound.skip(); // Bundle Delimiter
+            this.clientBound.register(SpawnEntity.class);
+            this.clientBound.register(SpawnExperienceOrb.class);
+            this.clientBound.register(SpawnPlayer.class);
+            this.clientBound.register(EntityAnimation.class);
+            this.clientBound.register(AwardStatistics.class);
+            this.clientBound.skip(); // Acknowledge Block Change
+            this.clientBound.skip(); // Block Destroy Stage
+            this.clientBound.register(BlockEntityData.class);
+            this.clientBound.register(BlockAction.class);
+            this.clientBound.register(BlockUpdate.class);
+            this.clientBound.register(BossBar.class);
+            this.clientBound.register(ChangeDifficulty.class);
+            this.clientBound.skip(); // Chunk Biomes
+            this.clientBound.register(ClearTitles.class);
+            this.clientBound.register(LoginPluginResponse.class);
+            this.clientBound.register(Commands.class);
+            this.clientBound.register(CloseContainer.class);
+            this.clientBound.register(ContainerContent.class);
+            this.clientBound.register(ContainerProperty.class);
+            this.clientBound.register(ContainerSlot.class);
+            this.clientBound.register(Cooldown.class);
+            this.clientBound.skip(); // Chat Suggestions
+            this.clientBound.register(PluginMessage.class);
+            this.clientBound.skip(); // Damage Event
+            this.clientBound.skip(); // Delete Message
+            this.clientBound.register(Disconnect.class);
+            this.clientBound.skip(); // Disguised Chat Message
+            this.clientBound.register(EntityEvent.class);
+            this.clientBound.skip(); // Explosion
+            this.clientBound.skip(); // Unload Chunk
+            this.clientBound.register(GameEvent.class);
+            this.clientBound.skip(); // Open Horse Screen
+            this.clientBound.skip(); // Hurt Animation
+            this.clientBound.skip(); // Initialize World Border
+            this.clientBound.register(KeepAlive.class);
+            this.clientBound.register(ChunkDataAndUpdateLight.class);
+            this.clientBound.skip(); // World Event
+            this.clientBound.skip(); // Particle
+            this.clientBound.skip(); // Update Light
+            this.clientBound.register(Login.class);
+            this.clientBound.skip(); // Map Data
+            this.clientBound.skip(); // Merchant Offers
+            this.clientBound.register(EntityPosition.class);
+            this.clientBound.register(EntityPositionAndRotation.class);
+            this.clientBound.register(EntityRotation.class);
+            this.clientBound.skip(); // Move Vehicle
+            this.clientBound.skip(); // Open Book
+            this.clientBound.register(OpenScreen.class);
+            this.clientBound.skip(); // Open Sign Editor
+            this.clientBound.skip(); // Ping
+            this.clientBound.skip(); // Place Ghost Recipe
+            this.clientBound.register(PlayerAbilities.class);
+            this.clientBound.skip(); // Player Chat Message
+            this.clientBound.skip(); // End Combat - was once used for Twitch
+            this.clientBound.skip(); // Enter Combat - was once used for Twitch
+            this.clientBound.skip(); // Combat Death
+            this.clientBound.register(PlayerInfoRemove.class);
+            this.clientBound.register(PlayerInfo.class);
+            this.clientBound.skip(); // Look At
+            this.clientBound.register(SynchronizePlayerPosition.class);
+            this.clientBound.skip(); // Update Recipe Book
+            this.clientBound.skip(); // Remove Entities
+            this.clientBound.skip(); // Remove Entity Effect
+            this.clientBound.skip(); // Resource Pack
+            this.clientBound.register(Respawn.class);
+            this.clientBound.register(HeadRotation.class);
+            this.clientBound.skip(); // Update Section Blocks
+            this.clientBound.skip(); // Select Advancements Tab
+            this.clientBound.skip(); // Server Data
+            this.clientBound.register(ActionBar.class);
+            this.clientBound.skip(); // Border Center
+            this.clientBound.skip(); // Border Lerp Size
+            this.clientBound.skip(); // Border Size
+            this.clientBound.skip(); // Border Warning Delay
+            this.clientBound.skip(); // Border Warning Distance
+            this.clientBound.skip(); // Set Camera
+            this.clientBound.register(HeldItem.class);
+            this.clientBound.register(CenterChunk.class);
+            this.clientBound.register(RenderDistance.class);
+            this.clientBound.register(SpawnPosition.class);
+            this.clientBound.register(DisplayObjective.class);
+            this.clientBound.register(EntityMetadata.class);
+            this.clientBound.skip(); // Link Entities
+            this.clientBound.skip(); // Entity Velocity
+            this.clientBound.skip(); // Equipment
+            this.clientBound.register(Experience.class);
+            this.clientBound.register(Health.class);
+            this.clientBound.register(UpdateObjectives.class);
+            this.clientBound.skip(); // Set Passengers
+            this.clientBound.skip(); // Update Teams
+            this.clientBound.register(UpdateScore.class);
+            this.clientBound.register(SimulationDistance.class);
+            this.clientBound.register(Subtitle.class);
+            this.clientBound.skip(); // Update Time
+            this.clientBound.register(Title.class);
+            this.clientBound.register(TitleAnimationTimes.class);
+            this.clientBound.skip(); // Entity Sound Effect
+            this.clientBound.skip(); // Sound Effect
+            this.clientBound.skip(); // Stop Sound
+            this.clientBound.register(SystemChatMessage.class);
+            this.clientBound.register(TabListHeaderFooter.class);
+            this.clientBound.skip(); // Tag Query Response
+            this.clientBound.register(PickupItem.class);
+            this.clientBound.skip(); // Teleport Entity
+            this.clientBound.skip(); // Update Advancements
+            this.clientBound.register(UpdateAttributes.class);
+            this.clientBound.skip(); // Feature Flags
+            this.clientBound.skip(); // Entity Effects
+            this.clientBound.register(UpdateRecipes.class);
+            this.clientBound.register(UpdateTags.class);
         }
     };
 
-    protected final PacketRegistry clientBound = new PacketRegistry(Direction.CLIENTBOUND);
-    protected final PacketRegistry serverBound = new PacketRegistry(Direction.SERVERBOUND);
+    protected final PacketRegistry clientBound = new PacketRegistry();
+    protected final PacketRegistry serverBound = new PacketRegistry();
 
     public static class PacketRegistry {
 
-        private final Map<Version, ProtocolRegistry> versions;
-        private boolean fallback = true;
+        protected final IntObjectMap<Supplier<? extends Packet>> packetIdToSupplier = new IntObjectHashMap<>(16, 0.5f);
+        protected final Object2IntMap<Class<? extends Packet>> packetClassToId = new Object2IntOpenHashMap<>(16, 0.5f);
+        protected int id;
 
-        PacketRegistry(Direction direction) {
-            final var mutableVersions = new EnumMap<Version, ProtocolRegistry>(Version.class);
-            for (final var version : Version.values()) {
-                mutableVersions.put(version, new ProtocolRegistry(version));
-            }
-
-            this.versions = Collections.unmodifiableMap(mutableVersions);
+        PacketRegistry() {
+            this.packetClassToId.defaultReturnValue(-1);
         }
 
-        protected ProtocolRegistry protocolRegistry(final Version version) {
-            final var registry = this.versions.get(version);
-            if (registry == null) {
-                if (this.fallback) {
-                    return this.protocolRegistry(MINIMUM_VERSION);
-                }
-                throw new IllegalArgumentException("Could not find data for protocol version " + version);
+        protected <P extends Packet> void register(final Class<P> clazz) {
+            this.register(clazz, null);
+        }
+
+        protected <P extends Packet> void register(final Class<P>... classes) {
+            for (final var clazz : classes) {
+                this.register(clazz);
             }
-            return registry;
         }
 
         protected <P extends Packet> void register(final Class<P> clazz,
-                                                   final MappedPacket... mappings) {
-            this.register(clazz, null, mappings);
+                                                   final Supplier<P> packetSupplier) {
+            final var id = this.id;
+            this.packetClassToId.put(clazz, id);
+            if (packetSupplier != null) {
+                this.packetIdToSupplier.put(id, packetSupplier);
+            }
+            this.id++;
         }
 
-        protected <P extends Packet> void register(final Class<P> clazz,
-                                                   final Supplier<P> packetSupplier,
-                                                   final MappedPacket... mappings) {
-            for (var i = 0; i < mappings.length; i++) {
-                final var current = mappings[i];
-                final var next = (i + 1 < mappings.length) ? mappings[i + 1] : current;
-                final var from = current.version();
-                final var lastValid = current.toVersion();
-
-                if (lastValid != null) {
-                    if (next != current) {
-                        throw new IllegalArgumentException("Cannot add a mapping after last valid mapping");
-                    }
-                    if (from.newer(lastValid)) {
-                        throw new IllegalArgumentException(
-                                "Last mapping version cannot be higher than highest mapping version");
-                    }
-                }
-                final var to = current == next ? lastValid != null
-                        ? lastValid : MAXIMUM_VERSION : next.version();
-
-                if (from.newerOr(to) && from != MAXIMUM_VERSION) {
-                    throw new IllegalArgumentException(String.format(
-                            "Next mapping version (%s) should be lower then current (%s)", to, from));
-                }
-
-                for (final var protocol : EnumSet.range(from, to)) {
-                    if (protocol == to && next != current) {
-                        break;
-                    }
-                    final var registry = this.versions.get(protocol);
-                    if (registry == null) {
-                        throw new IllegalArgumentException("Unknown protocol version "
-                                + current.version());
-                    }
-
-                    if (registry.packetIdToSupplier.containsKey(current.id())) {
-                        throw new IllegalArgumentException("Can not register class " + clazz.getSimpleName()
-                                + " with id " + current.id() + " for " + registry.version
-                                + " because another packet is already registered");
-                    }
-
-                    if (registry.packetClassToId.containsKey(clazz)) {
-                        throw new IllegalArgumentException(clazz.getSimpleName()
-                                + " is already registered for version " + registry.version);
-                    }
-
-                    if (packetSupplier != null) {
-                        registry.packetIdToSupplier.put(current.id(), packetSupplier);
-                    }
-                    registry.packetClassToId.put(clazz, current.id());
-                }
-            }
+        public void skip() {
+            this.id++;
         }
 
-        protected void disableFallback() {
-            this.fallback = false;
+        public Packet createPacket(final int id) {
+            final var supplier = this.packetIdToSupplier.get(id);
+            if (supplier != null) {
+                return supplier.get();
+            }
+            return null;
         }
 
-        public static class ProtocolRegistry {
-
-            public final Version version;
-            public final IntObjectMap<Supplier<? extends Packet>> packetIdToSupplier = new IntObjectHashMap<>(16, 0.5f);
-            protected final Object2IntMap<Class<? extends Packet>> packetClassToId = new Object2IntOpenHashMap<>(16, 0.5f);
-
-            ProtocolRegistry(final Version version) {
-                this.version = version;
-                this.packetClassToId.defaultReturnValue(-1);
+        public int getPacketId(final Packet packet) {
+            final var id = this.packetClassToId.getInt(packet.getClass());
+            if (id == Integer.MIN_VALUE) {
+                System.out.println("err min value dies das");
             }
-
-            public Packet createPacket(final int id) {
-                final var supplier = this.packetIdToSupplier.get(id);
-                if (supplier != null) {
-                    return supplier.get();
-                }
-                return null;
-            }
-
-            public int getPacketId(final Packet packet) {
-                final var id = this.packetClassToId.getInt(packet.getClass());
-                if (id == Integer.MIN_VALUE) {
-                    System.out.println("err min value dies das");
-                }
-                return id;
-            }
+            return id;
         }
-    }
-
-    protected MappedPacket map(final int id,
-                               final Version version) {
-        return new MappedPacket(id, version, null);
-    }
-
-    protected MappedPacket map(final int id,
-                               final Version version,
-                               final Version toVersion) {
-        return new MappedPacket(id, version, toVersion);
-    }
-
-    private record MappedPacket(
-            int id,
-            @NotNull Protocol.Version version,
-            @Nullable Protocol.Version toVersion
-    ) {
     }
 
 }

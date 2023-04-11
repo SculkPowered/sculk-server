@@ -4,12 +4,12 @@ import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
-import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public final class PlayerInfo implements Packet {
 
@@ -28,41 +28,19 @@ public final class PlayerInfo implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
-        if (version.newerOr(Protocol.Version.MINECRAFT_1_19_3)) {
-            final var actions = Action.class.getEnumConstants();
-            final var bitSet = new BitSet(actions.length);
-            for (var index = 0; index < actions.length; index++) {
-                bitSet.set(index, this.actions.contains(actions[index]));
-            }
-            buf.writeBytes(Arrays.copyOf(bitSet.toByteArray(), -Math.floorDiv(-actions.length, 8)));
+    public void encode(Buffer buf) {
+        final var actions = Action.class.getEnumConstants();
+        final var bitSet = new BitSet(actions.length);
+        for (var index = 0; index < actions.length; index++) {
+            bitSet.set(index, this.actions.contains(actions[index]));
+        }
+        buf.writeBytes(Arrays.copyOf(bitSet.toByteArray(), -Math.floorDiv(-actions.length, 8)));
 
-            buf.writeVarInt(this.entries.size());
-            for (final var entry : entries) {
-                buf.writeUniqueId(entry.getProfile().uniqueId());
-                for (final var action : this.actions) {
-                    action.writer.accept(buf, entry, version);
-                }
-            }
-        } else {
-            buf.writeVarInt(this.action);
-            buf.writeVarInt(this.entries.size());
-
-            for (final var entry : this.entries) {
-                buf.writeUniqueId(entry.getProfile().uniqueId());
-
-                switch (this.action) {
-                    case 0 -> {
-                        Action.ADD_PLAYER.writer.accept(buf, entry, version);
-                        Action.UPDATE_GAME_MODE.writer.accept(buf, entry, version);
-                        Action.UPDATE_LATENCY.writer.accept(buf, entry, version);
-                        Action.UPDATE_DISPLAY_NAME.writer.accept(buf, entry, version);
-                        buf.writeBoolean(false);
-                    }
-                    case 1 -> Action.UPDATE_GAME_MODE.writer.accept(buf, entry, version);
-                    case 2 -> Action.UPDATE_LATENCY.writer.accept(buf, entry, version);
-                    case 3 -> Action.UPDATE_DISPLAY_NAME.writer.accept(buf, entry, version);
-                }
+        buf.writeVarInt(this.entries.size());
+        for (final var entry : entries) {
+            buf.writeUniqueId(entry.getProfile().uniqueId());
+            for (final var action : this.actions) {
+                action.writer.accept(buf, entry);
             }
         }
     }
@@ -79,16 +57,8 @@ public final class PlayerInfo implements Packet {
         return add(List.of(entry), version);
     }
 
-    public static PlayerInfo remove(final List<? extends PlayerInfoEntry> entries) {
-        return new PlayerInfo(4, entries);
-    }
-
-    public static PlayerInfo remove(final PlayerInfoEntry entry) {
-        return remove(List.of(entry));
-    }
-
     public enum Action {
-        ADD_PLAYER((buf, entry, version) -> {
+        ADD_PLAYER((buf, entry) -> {
             final var profile = entry.getProfile();
             buf
                     .writeString(profile.name())
@@ -103,23 +73,24 @@ public final class PlayerInfo implements Packet {
                 }
             }
         }),
-        INITIALIZE_CHAT((buf, entry, version) -> {}),
-        UPDATE_GAME_MODE((buf, entry, version) -> buf.writeVarInt(entry.getGameMode().ordinal())),
-        UPDATE_LISTED((buf, entry, version) -> buf.writeBoolean(true)),
-        UPDATE_LATENCY((buf, entry, version) -> buf.writeVarInt(entry.getPing())),
-        UPDATE_DISPLAY_NAME((buf, entry, version) -> {
+        INITIALIZE_CHAT((buf, entry) -> {
+        }),
+        UPDATE_GAME_MODE((buf, entry) -> buf.writeVarInt(entry.getGameMode().ordinal())),
+        UPDATE_LISTED((buf, entry) -> buf.writeBoolean(true)),
+        UPDATE_LATENCY((buf, entry) -> buf.writeVarInt(entry.getPing())),
+        UPDATE_DISPLAY_NAME((buf, entry) -> {
             if (entry.getDisplayName() != null) {
                 buf
                         .writeBoolean(true)
-                        .writeComponent(entry.getDisplayName(), version);
+                        .writeComponent(entry.getDisplayName());
             } else {
                 buf.writeBoolean(false);
             }
         });
 
-        private final TriConsumer<Buffer, PlayerInfoEntry, Protocol.Version> writer;
+        private final BiConsumer<Buffer, PlayerInfoEntry> writer;
 
-        Action(final TriConsumer<Buffer, PlayerInfoEntry, Protocol.Version> writer) {
+        Action(final BiConsumer<Buffer, PlayerInfoEntry> writer) {
             this.writer = writer;
         }
     }

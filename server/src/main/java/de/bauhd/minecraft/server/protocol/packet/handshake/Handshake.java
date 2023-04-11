@@ -14,7 +14,7 @@ public final class Handshake implements Packet {
     private State nextStatus;
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf) {
         this.version = Protocol.Version.get(buf.readVarInt());
         this.serverAddress = buf.readString(256);
         this.port = buf.readUnsignedShort();

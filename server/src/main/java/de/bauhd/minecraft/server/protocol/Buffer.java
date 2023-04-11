@@ -158,6 +158,11 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return this;
     }
 
+    public @NotNull Buffer writeComponent(final Component component) {
+        this.writeString(AdvancedMinecraftServer.getGsonSerializer(Protocol.Version.MAXIMUM_VERSION).serialize(component));
+        return this;
+    }
+
     public @NotNull Buffer writeComponent(final Component component, final Protocol.Version version) {
         this.writeString(AdvancedMinecraftServer.getGsonSerializer(version).serialize(component));
         return this;

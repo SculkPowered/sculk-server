@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 public final class CloseContainer implements Packet {
@@ -15,12 +14,12 @@ public final class CloseContainer implements Packet {
     public CloseContainer() {}
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf) {
         this.id = buf.readUnsignedByte();
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf.writeUnsignedByte(this.id);
     }
 

@@ -101,8 +101,8 @@ public final class Protocol {
         SERVERBOUND,
         CLIENTBOUND;
 
-        public State.PacketRegistry.ProtocolRegistry getRegistry(final State state, final Version version) {
-            return (this == SERVERBOUND ? state.serverBound : state.clientBound).protocolRegistry(version);
+        public State.PacketRegistry getRegistry(final State state) {
+            return (this == SERVERBOUND ? state.serverBound : state.clientBound);
         }
     }
 

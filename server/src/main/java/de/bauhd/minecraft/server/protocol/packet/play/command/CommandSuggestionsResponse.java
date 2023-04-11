@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.command;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +23,7 @@ public final class CommandSuggestionsResponse implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
                 .writeVarInt(this.id)
                 .writeVarInt(this.start)
@@ -35,7 +34,7 @@ public final class CommandSuggestionsResponse implements Packet {
             if (match.toolTip != null) {
                 buf
                         .writeBoolean(true)
-                        .writeComponent(match.toolTip, version);
+                        .writeComponent(match.toolTip);
             } else {
                 buf.writeBoolean(false);
             }

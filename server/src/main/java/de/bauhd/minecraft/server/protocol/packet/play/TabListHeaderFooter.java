@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 
@@ -16,10 +15,10 @@ public final class TabListHeaderFooter implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
-                .writeComponent(this.header, version)
-                .writeComponent(this.footer, version);
+                .writeComponent(this.header)
+                .writeComponent(this.footer);
     }
 
     @Override

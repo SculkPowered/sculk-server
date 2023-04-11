@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 public final class EntityRotation implements Packet {
@@ -19,7 +18,7 @@ public final class EntityRotation implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
                 .writeVarInt(this.entityId)
                 .writeAngel(this.yaw)

@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.position;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
@@ -15,7 +14,7 @@ public final class PlayerPositionAndRotation implements Packet {
     private boolean onGround;
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf) {
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -37,6 +36,18 @@ public final class PlayerPositionAndRotation implements Packet {
     @Override
     public int maxLength() {
         return this.minLength();
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerPositionAndRotation{" +
+                "x=" + this.x +
+                ", y=" + this.y +
+                ", z=" + this.z +
+                ", yaw=" + this.yaw +
+                ", pitch=" + this.pitch +
+                ", onGround=" + this.onGround +
+                '}';
     }
 
     public double x() {

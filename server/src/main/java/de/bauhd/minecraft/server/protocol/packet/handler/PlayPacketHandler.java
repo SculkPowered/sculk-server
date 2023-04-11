@@ -216,6 +216,16 @@ public final class PlayPacketHandler extends PacketHandler {
     }
 
     @Override
+    public boolean handle(TeleportToEntity teleportToEntity) {
+        if (this.player.getGameMode() == GameMode.SPECTATOR) {
+            // TODO: teleport to entity
+        } else {
+            this.player.sendMessage(AdvancedMinecraftServer.SUS_COMPONENT);
+        }
+        return false;
+    }
+
+    @Override
     public boolean handle(UseItemOn useItemOn) {
         final var slot = this.player.getItem(this.player.getHeldItemSlot() + 36);
         if (slot == null) {

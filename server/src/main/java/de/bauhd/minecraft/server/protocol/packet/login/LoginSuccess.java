@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.login;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 import java.util.UUID;
@@ -17,7 +16,7 @@ public final class LoginSuccess implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
                 .writeUniqueId(this.uniqueId)
                 .writeString(this.username)

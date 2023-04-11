@@ -66,6 +66,10 @@ public abstract class PacketHandler {
         return false;
     }
 
+    public boolean handle(final CommandSuggestionsRequest commandSuggestionsRequest) {
+        return false;
+    }
+
     public boolean handle(final ClickContainerButton clickContainerButton) {
         return false;
     }
@@ -79,6 +83,10 @@ public abstract class PacketHandler {
     }
 
     public boolean handle(final PluginMessage pluginMessage) {
+        return false;
+    }
+
+    public boolean handle(final EditBook editBook) {
         return false;
     }
 
@@ -123,6 +131,10 @@ public abstract class PacketHandler {
     }
 
     public boolean handle(final SwingArm swingArm) {
+        return false;
+    }
+
+    public boolean handle(final TeleportToEntity teleportToEntity) {
         return false;
     }
 

@@ -2,7 +2,6 @@ package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 public final class ContainerSlot implements Packet {
@@ -20,7 +19,7 @@ public final class ContainerSlot implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
                 .writeByte(this.windowId)
                 .writeVarInt(this.stateId)

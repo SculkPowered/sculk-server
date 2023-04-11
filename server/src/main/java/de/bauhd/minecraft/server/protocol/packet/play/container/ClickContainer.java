@@ -2,7 +2,6 @@ package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.api.inventory.Slot;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -19,7 +18,7 @@ public final class ClickContainer implements Packet {
     private Slot carriedItem;
 
     @Override
-    public void decode(Buffer buf, Protocol.Version version) {
+    public void decode(Buffer buf) {
         this.windowId = buf.readUnsignedByte();
         this.stateId = buf.readVarInt();
         this.slot = buf.readShort();

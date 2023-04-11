@@ -3,19 +3,25 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
-public final class ConfirmTeleportation implements Packet {
+import java.util.UUID;
 
-    private int teleportId;
+public final class TeleportToEntity implements Packet {
+
+    private UUID target;
 
     @Override
     public void decode(Buffer buf) {
-        this.teleportId = buf.readVarInt();
+        this.target = buf.readUniqueId();
     }
 
     @Override
     public String toString() {
-        return "ConfirmTeleportation{" +
-                "teleportId=" + this.teleportId +
+        return "TeleportToEntity{" +
+                "target=" + this.target +
                 '}';
+    }
+
+    public UUID target() {
+        return this.target;
     }
 }

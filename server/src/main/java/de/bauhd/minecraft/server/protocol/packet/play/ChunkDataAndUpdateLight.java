@@ -1,11 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
-import java.util.Arrays;
 import java.util.BitSet;
 
 public final class ChunkDataAndUpdateLight implements Packet {
@@ -42,7 +40,7 @@ public final class ChunkDataAndUpdateLight implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
                 .writeInt(this.chunkX)
                 .writeInt(this.chunkZ)
@@ -64,12 +62,12 @@ public final class ChunkDataAndUpdateLight implements Packet {
                 "chunkX=" + this.chunkX +
                 ", chunkZ=" + this.chunkZ +
                 ", heightmaps=" + this.heightmaps +
-                ", data=" + Arrays.toString(this.data) +
+                ", data=byte[" + this.data.length + "]" +
                 ", trustEdges=" + this.trustEdges +
-                ", skyLightMask=" + this.skyLightMask +
-                ", blockLightMask=" + this.blockLightMask +
-                ", emptySkyLightMask=" + this.emptySkyLightMask +
-                ", emptyBlockLightMask=" + this.emptyBlockLightMask +
+                ", skyLightMask=BitSet[" + this.skyLightMask.length() + "]" +
+                ", blockLightMask=BitSet[" + this.blockLightMask.length() + "]" +
+                ", emptySkyLightMask=[" + this.emptySkyLightMask.length() + "]" +
+                ", emptyBlockLightMask=[" + this.emptyBlockLightMask.length() + "]" +
                 '}';
     }
 }

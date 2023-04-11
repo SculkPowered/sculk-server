@@ -2,7 +2,6 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 public final class SpawnPlayer implements Packet {
@@ -14,7 +13,7 @@ public final class SpawnPlayer implements Packet {
     }
 
     @Override
-    public void encode(Buffer buf, Protocol.Version version) {
+    public void encode(Buffer buf) {
         buf
                 .writeVarInt(this.player.getId())
                 .writeUniqueId(this.player.getUniqueId());
