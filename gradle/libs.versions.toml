@@ -6,7 +6,7 @@ shadow = "com.github.johnrengelman.shadow:8.1.1"
 
 [libraries]
 netty-bom = "io.netty:netty5-bom:5.0.0.Alpha5"
-adventure-bom = "net.kyori:adventure-bom:4.13.0"
+adventure-bom = "net.kyori:adventure-bom:4.13.1"
 jline = "org.jline:jline-reader:3.23.0"
 jansi = "org.fusesource.jansi:jansi:2.4.0"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
