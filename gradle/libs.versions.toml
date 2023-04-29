@@ -1,5 +1,5 @@
 [versions]
-log4j = "2.19.0"
+log4j = "2.20.0"
 
 [libraries]
 netty-bom = "io.netty:netty5-bom:5.0.0.Alpha5"
