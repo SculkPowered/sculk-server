@@ -8,7 +8,7 @@ jline = "org.jline:jline-reader:3.23.0"
 jansi = "org.fusesource.jansi:jansi:2.4.0"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
 gson = "com.google.code.gson:gson:2.10.1"
-brigadier = "com.mojang:brigadier:1.0.18"
+brigadier = "com.mojang:brigadier:1.0.500"
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j"}
 log4j-iostreams = { module = "org.apache.logging.log4j:log4j-iostreams", version.ref = "log4j"}
 log4j-jul = { module = "org.apache.logging.log4j:log4j-jul", version.ref = "log4j"}
