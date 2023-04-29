@@ -1,15 +1,6 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     id("java")
-}
-apply(plugin = "com.github.johnrengelman.shadow")
-
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = "de.bauhd.minecraft.server.Main"
-        attributes["Multi-Release"] = true
-    }
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
@@ -31,10 +22,19 @@ dependencies {
     implementation(libs.fastutil)
 }
 
-tasks.withType<ShadowJar> {
-    archiveFileName.set("minecraft-server.jar")
-}
+tasks {
+    jar {
+        manifest {
+            attributes["Main-Class"] = "de.bauhd.minecraft.server.Main"
+            attributes["Multi-Release"] = true
+        }
+    }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+    shadowJar {
+        archiveFileName.set("minecraft-server.jar")
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 }

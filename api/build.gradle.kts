@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-
     // adventure
     api(platform(libs.adventure.bom))
     api("net.kyori:adventure-api")
@@ -16,16 +15,17 @@ dependencies {
 
     api(libs.gson)
     api(libs.brigadier)
-
 }
 
-tasks.getByName<Javadoc>("javadoc") {
-    (options as StandardJavadocDocletOptions).links = listOf(
-        "https://docs.oracle.com/en/java/javase/17/docs/api/",
-        "https://jd.advntr.dev/api/${libs.adventure.bom.get().version}/"
-    )
-}
+tasks {
+    javadoc {
+        (options as StandardJavadocDocletOptions).links = listOf(
+            "https://docs.oracle.com/en/java/javase/17/docs/api/",
+            "https://jd.advntr.dev/api/${libs.adventure.bom.get().version}/"
+        )
+    }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+    test {
+        useJUnitPlatform()
+    }
 }

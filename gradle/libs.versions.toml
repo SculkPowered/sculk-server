@@ -1,6 +1,9 @@
 [versions]
 log4j = "2.19.0"
 
+[plugins]
+shadow = "com.github.johnrengelman.shadow:8.1.1"
+
 [libraries]
 netty-bom = "io.netty:netty5-bom:5.0.0.Alpha5"
 adventure-bom = "net.kyori:adventure-bom:4.13.0"
