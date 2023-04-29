@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+
 plugins {
     id("java")
     alias(libs.plugins.shadow)
@@ -5,6 +7,7 @@ plugins {
 
 dependencies {
     implementation(project(":api"))
+    implementation(project(":appender"))
 
     // netty
     implementation(platform(libs.netty.bom))
@@ -19,6 +22,7 @@ dependencies {
     runtimeOnly(libs.jansi)
 
     implementation(libs.bundles.log4j)
+    annotationProcessor(libs.log4j.core)
     implementation(libs.fastutil)
 }
 
@@ -32,6 +36,7 @@ tasks {
 
     shadowJar {
         archiveFileName.set("minecraft-server.jar")
+        transform(Log4j2PluginsCacheFileTransformer::class.java)
     }
 
     test {
