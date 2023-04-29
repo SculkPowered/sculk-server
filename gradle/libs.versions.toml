@@ -1,5 +1,5 @@
 [versions]
-log4j = "2.19.0"
+log4j = "2.20.0"
 
 [plugins]
 shadow = "com.github.johnrengelman.shadow:8.1.1"
