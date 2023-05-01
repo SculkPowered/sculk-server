@@ -1,13 +1,13 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.api.inventory.Slot;
+import de.bauhd.minecraft.server.inventory.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class EditBook implements Packet {
 
-    private Slot slot;
+    private ItemStack slot;
     private String[] entries;
     private String title;
 
@@ -38,7 +38,7 @@ public final class EditBook implements Packet {
                 '}';
     }
 
-    public Slot slot() {
+    public ItemStack slot() {
         return this.slot;
     }
 

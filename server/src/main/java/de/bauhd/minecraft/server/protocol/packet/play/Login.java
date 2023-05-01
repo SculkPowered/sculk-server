@@ -9,8 +9,8 @@ import net.kyori.adventure.nbt.TagStringIO;
 import java.io.IOException;
 import java.util.List;
 
-import static de.bauhd.minecraft.server.api.world.biome.Biome.PLAINS;
-import static de.bauhd.minecraft.server.api.world.dimension.Dimension.OVERWORLD;
+import static de.bauhd.minecraft.server.world.biome.Biome.PLAINS;
+import static de.bauhd.minecraft.server.world.dimension.Dimension.OVERWORLD;
 
 public final class Login implements Packet {
 

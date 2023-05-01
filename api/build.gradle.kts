@@ -24,8 +24,4 @@ tasks {
             "https://jd.advntr.dev/api/${libs.adventure.bom.get().version}/"
         )
     }
-
-    test {
-        useJUnitPlatform()
-    }
 }

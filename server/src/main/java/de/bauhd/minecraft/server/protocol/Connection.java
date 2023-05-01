@@ -2,12 +2,15 @@ package de.bauhd.minecraft.server.protocol;
 
 import com.google.gson.reflect.TypeToken;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.MinecraftConfig;
-import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
-import de.bauhd.minecraft.server.api.entity.player.GameProfile;
-import de.bauhd.minecraft.server.api.entity.player.PlayerInfoEntry;
-import de.bauhd.minecraft.server.api.world.MinecraftWorld;
-import de.bauhd.minecraft.server.api.world.chunk.MinecraftChunk;
+import de.bauhd.minecraft.server.MinecraftConfig;
+import de.bauhd.minecraft.server.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.player.GameProfile;
+import de.bauhd.minecraft.server.entity.player.PlayerInfoEntry;
+import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.inventory.item.Material;
+import de.bauhd.minecraft.server.protocol.packet.play.container.ContainerSlot;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
+import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.protocol.netty.codec.*;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -26,6 +29,8 @@ import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.util.ReferenceCountUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static de.bauhd.minecraft.server.api.entity.player.GameProfile.Property;
+import static de.bauhd.minecraft.server.entity.player.GameProfile.Property;
 
 public final class Connection extends ChannelHandlerAdapter {
 
@@ -140,6 +145,7 @@ public final class Connection extends ChannelHandlerAdapter {
         for (final var chunk : CHUNKS) {
             chunk.send(this.player);
         }
+        this.send(new CenterChunk());
 
         this.player.sendViewers(new SpawnPlayer(this.player));
         this.server.getAllPlayers().forEach(other -> {
@@ -149,6 +155,10 @@ public final class Connection extends ChannelHandlerAdapter {
                 this.player.send(new SpawnPlayer(otherPlayer));
             }
         });
+        this.send(new ContainerSlot((byte) 0, 0, (short) 39, new ItemStack(Material.STONE)
+                .amount(3)
+                .displayName(Component.text("dsudeiurehuier", NamedTextColor.BLUE))
+                .lore(Component.text("asd"), Component.text("fdsrfse"))));
     }
 
     public void send(final Packet packet) {

@@ -3,7 +3,7 @@ package de.bauhd.minecraft.server.util;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.entity.player.GameProfile;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

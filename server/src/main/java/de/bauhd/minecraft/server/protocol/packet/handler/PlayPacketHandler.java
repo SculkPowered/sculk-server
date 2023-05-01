@@ -2,9 +2,9 @@ package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
-import de.bauhd.minecraft.server.api.entity.player.GameMode;
-import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.player.GameMode;
+import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
@@ -167,7 +167,7 @@ public final class PlayPacketHandler extends PacketHandler {
             case 4:
                 final var itemInHand = this.player.getItemInMainHand();
                 if (itemInHand != null) {
-                    itemInHand.count(itemInHand.count() - 1);
+                    itemInHand.amount(itemInHand.amount() - 1);
                 }
                 break;
         }
@@ -240,7 +240,7 @@ public final class PlayPacketHandler extends PacketHandler {
             case WEST -> position.subtract(1, 0, 0);
             case EAST -> position.add(1, 0, 0);
         };
-        this.server.sendAll(new BlockUpdate(position, slot.materialId()));
+        this.server.sendAll(new BlockUpdate(position, slot.material().ordinal()));
         return false;
     }
 

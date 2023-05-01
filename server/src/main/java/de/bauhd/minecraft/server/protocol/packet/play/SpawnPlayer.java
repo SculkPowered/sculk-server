@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.api.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 

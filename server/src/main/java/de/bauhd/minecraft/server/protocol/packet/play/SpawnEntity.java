@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 

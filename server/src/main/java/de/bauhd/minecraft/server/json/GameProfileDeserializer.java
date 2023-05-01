@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.util.MojangUtil;
 
 import java.lang.reflect.Type;

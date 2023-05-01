@@ -3,10 +3,10 @@ package de.bauhd.minecraft.plugin.command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import de.bauhd.minecraft.server.api.command.BrigadierCommand;
-import de.bauhd.minecraft.server.api.command.CommandSender;
-import de.bauhd.minecraft.server.api.entity.player.GameMode;
-import de.bauhd.minecraft.server.api.entity.player.Player;
+import de.bauhd.minecraft.server.command.BrigadierCommand;
+import de.bauhd.minecraft.server.command.CommandSender;
+import de.bauhd.minecraft.server.entity.player.GameMode;
+import de.bauhd.minecraft.server.entity.player.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 

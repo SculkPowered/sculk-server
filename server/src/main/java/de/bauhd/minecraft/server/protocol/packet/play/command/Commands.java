@@ -5,7 +5,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import de.bauhd.minecraft.server.api.command.CommandSender;
+import de.bauhd.minecraft.server.command.CommandSender;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;

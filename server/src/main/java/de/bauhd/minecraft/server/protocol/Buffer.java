@@ -1,8 +1,9 @@
 package de.bauhd.minecraft.server.protocol;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.inventory.Slot;
-import de.bauhd.minecraft.server.api.world.Position;
+import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.inventory.item.Material;
+import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import de.bauhd.minecraft.server.util.Utf8;
 import io.netty5.buffer.BufferInputStream;
@@ -154,21 +155,18 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writeByteArray(final byte[] bytes) {
-        this.writeVarInt(bytes.length).writeBytes(bytes);
-        return this;
+        return this.writeVarInt(bytes.length).writeBytes(bytes);
     }
 
     public @NotNull Buffer writeComponent(final Component component) {
-        this.writeString(AdvancedMinecraftServer.getGsonSerializer(Protocol.Version.MAXIMUM_VERSION).serialize(component));
-        return this;
+        return this.writeString(AdvancedMinecraftServer.getGsonSerializer(Protocol.Version.MAXIMUM_VERSION).serialize(component));
     }
 
     public @NotNull Buffer writeComponent(final Component component, final Protocol.Version version) {
-        this.writeString(AdvancedMinecraftServer.getGsonSerializer(version).serialize(component));
-        return this;
+        return this.writeString(AdvancedMinecraftServer.getGsonSerializer(version).serialize(component));
     }
 
-    public CompoundBinaryTag readCompoundTag() {
+    public @NotNull CompoundBinaryTag readCompoundTag() {
         try {
             return BinaryTagIO.reader().read((DataInput) new BufferInputStream(buf.send()));
         } catch (IOException e) {
@@ -191,24 +189,23 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writeUniqueId(final UUID uniqueId) {
-        this.writeLong(uniqueId.getMostSignificantBits()).writeLong(uniqueId.getLeastSignificantBits());
-        return this;
+        return this.writeLong(uniqueId.getMostSignificantBits()).writeLong(uniqueId.getLeastSignificantBits());
     }
 
-    public Slot readSlot() {
+    public ItemStack readSlot() {
         if (!this.readBoolean()) {
             return null;
         }
-        return new Slot(this.readVarInt(), this.readByte(), this.readCompoundTag());
+        return new ItemStack(Material.class.getEnumConstants()[this.readVarInt()], this.readByte(), this.readCompoundTag());
     }
 
-    public @NotNull Buffer writeSlot(final @Nullable Slot slot) {
+    public @NotNull Buffer writeSlot(final @Nullable ItemStack slot) {
         if (slot != null) {
             this
                     .writeBoolean(true)
                     .writeVarInt(slot.material().ordinal())
-                    .writeByte((byte) slot.count())
-                    .writeCompoundTag(CompoundBinaryTag.empty());
+                    .writeByte((byte) slot.amount())
+                    .writeCompoundTag(slot.nbt());
         } else {
             this.buf.writeBoolean(false);
         }
@@ -221,8 +218,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writePosition(final @NotNull Position position) {
-        this.writeLong((((long) position.x() & 0x3FFFFFF) << 38) | (((long) position.z() & 0x3FFFFFF) << 12) | ((long) position.y() & 0xFFF));
-        return this;
+        return this.writeLong((((long) position.x() & 0x3FFFFFF) << 38) | (((long) position.z() & 0x3FFFFFF) << 12) | ((long) position.y() & 0xFFF));
     }
 
     public @NotNull Buffer writeLongArray(final long @NotNull [] longs) {
@@ -238,8 +234,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writeAngel(final float angel) {
-        this.writeByte((byte) (angel * 256 / 360));
-        return this;
+        return this.writeByte((byte) (angel * 256 / 360));
     }
 
     public void close() {

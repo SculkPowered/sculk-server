@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
-import de.bauhd.minecraft.server.api.inventory.Slot;
+import de.bauhd.minecraft.server.inventory.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -14,8 +14,8 @@ public final class ClickContainer implements Packet {
     private short slot;
     private byte button;
     private int mode;
-    private final Int2ObjectMap<Slot> slots = new Int2ObjectOpenHashMap<>();
-    private Slot carriedItem;
+    private final Int2ObjectMap<ItemStack> slots = new Int2ObjectOpenHashMap<>();
+    private ItemStack carriedItem;
 
     @Override
     public void decode(Buffer buf) {

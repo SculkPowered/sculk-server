@@ -4,7 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import de.bauhd.minecraft.server.api.entity.player.GameProfile;
+import de.bauhd.minecraft.server.entity.player.GameProfile;
 
 import java.lang.reflect.Type;
 

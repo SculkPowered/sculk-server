@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.MinecraftConfig;
+import de.bauhd.minecraft.server.MinecraftConfig;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.login.*;

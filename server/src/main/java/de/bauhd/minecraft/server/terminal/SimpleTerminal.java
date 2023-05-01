@@ -2,7 +2,7 @@ package de.bauhd.minecraft.server.terminal;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.api.command.CommandSender;
+import de.bauhd.minecraft.server.command.CommandSender;
 import net.kyori.adventure.chat.ChatType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
