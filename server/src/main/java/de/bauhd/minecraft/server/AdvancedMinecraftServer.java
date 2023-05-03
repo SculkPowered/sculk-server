@@ -10,6 +10,8 @@ import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.MinecraftEventHandler;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.plugin.MinecraftPluginHandler;
+import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.world.dimension.DimensionHandler;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
@@ -113,6 +115,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> this.shutdown(false), "Minecraft Shutdown Thread"));
 
         terminal.start();
+
+        if (this.configuration.compressionThreshold() != -1) {
+            Connection.COMPRESSION_PACKET = new CompressionPacket(this.configuration.compressionThreshold());
+        }
 
         new Worker(this).start();
     }

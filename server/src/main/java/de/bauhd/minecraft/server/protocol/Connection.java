@@ -6,11 +6,7 @@ import de.bauhd.minecraft.server.MinecraftConfig;
 import de.bauhd.minecraft.server.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.PlayerInfoEntry;
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
-import de.bauhd.minecraft.server.inventory.item.Material;
-import de.bauhd.minecraft.server.protocol.packet.play.container.ContainerSlot;
-import de.bauhd.minecraft.server.world.MinecraftWorld;
-import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
+import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
 import de.bauhd.minecraft.server.protocol.netty.codec.*;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -23,14 +19,14 @@ import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.util.MojangUtil;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
+import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.util.ReferenceCountUtil;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +34,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,19 +45,12 @@ public final class Connection extends ChannelHandlerAdapter {
     private static final Logger LOGGER = LogManager.getLogger(Connection.class);
 
     private static final PluginMessage BRAND_PACKET;
-    private static final CompressionPacket COMPRESSION_PACKET;
     private static final List<MinecraftChunk> CHUNKS;
+
+    public static CompressionPacket COMPRESSION_PACKET;
 
     static {
         BRAND_PACKET = new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
-
-        final var threshold = -1; // TODO configuration
-        if (threshold != -1) {
-            COMPRESSION_PACKET = new CompressionPacket(threshold);
-        } else {
-            COMPRESSION_PACKET = null;
-        }
-
         CHUNKS = new ArrayList<>();
         final var world = new MinecraftWorld();
         world.forChunksInRange(0, 0, 10, (x, z) -> CHUNKS.add(world.createChunk(x, z)));
@@ -116,11 +106,10 @@ public final class Connection extends ChannelHandlerAdapter {
                 final var properties = (Property[]) AdvancedMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
                 profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username, List.of(properties));
             } else {
-                final var skin = MojangUtil.getSkinFromName(this.username);
                 profile = new GameProfile(
                         UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.username).getBytes(StandardCharsets.UTF_8)),
                         this.username,
-                        skin != null ? List.of(skin) : List.of()
+                        List.of()
                 );
             }
         }
@@ -129,36 +118,34 @@ public final class Connection extends ChannelHandlerAdapter {
             this.addCompressionHandler();
         }
         this.send(new LoginSuccess(profile.uniqueId(), this.username));
-
         this.setState(State.PLAY);
         this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
         this.packetHandler = new PlayPacketHandler(this);
         this.send(new Login(this.player.getId()));
-        this.send(new SynchronizePlayerPosition(this.player.getPosition()));
 
         this.server.addPlayer(this.player);
 
-        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers(), this.version));
-        this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
+        this.server.getEventHandler().call(new PlayerJoinEvent(this.player));
+
         this.send(BRAND_PACKET);
+        this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
+        this.send(new SynchronizePlayerPosition(this.player.getPosition()));
+        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
+        this.send(new SpawnPosition(this.player.getPosition()));
 
         for (final var chunk : CHUNKS) {
             chunk.send(this.player);
         }
-        this.send(new CenterChunk());
 
+        final var playerInfo = PlayerInfo.add(Collections.singletonList(this.player));
         this.player.sendViewers(new SpawnPlayer(this.player));
         this.server.getAllPlayers().forEach(other -> {
             if (other != this.player) {
                 final var otherPlayer = (MinecraftPlayer) other;
-                otherPlayer.send(PlayerInfo.add(this.player, otherPlayer.getVersion()));
+                otherPlayer.send(playerInfo);
                 this.player.send(new SpawnPlayer(otherPlayer));
             }
         });
-        this.send(new ContainerSlot((byte) 0, 0, (short) 39, new ItemStack(Material.STONE)
-                .amount(3)
-                .displayName(Component.text("dsudeiurehuier", NamedTextColor.BLUE))
-                .lore(Component.text("asd"), Component.text("fdsrfse"))));
     }
 
     public void send(final Packet packet) {

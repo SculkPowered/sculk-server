@@ -9,7 +9,7 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.util.Set;
 
-@SupportedAnnotationTypes("de.bauhd.minecraft.server.api.plugin.PluginDescription")
+@SupportedAnnotationTypes("de.bauhd.minecraft.server.plugin.PluginDescription")
 public final class PluginAnnotationProcessor extends AbstractProcessor {
 
     @Override

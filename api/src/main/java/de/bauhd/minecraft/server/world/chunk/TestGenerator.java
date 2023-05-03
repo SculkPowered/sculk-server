@@ -13,7 +13,7 @@ public final class TestGenerator implements ChunkGenerator {
                 chunk.setBlock(x, 3, z, 1);
                 chunk.setBlock(x, 2, z, 1);
                 chunk.setBlock(x, 1, z, 1);
-                chunk.setBlock(x, 0, z, 74);
+                chunk.setBlock(x, 0, z, 79);
             }
         }
     }

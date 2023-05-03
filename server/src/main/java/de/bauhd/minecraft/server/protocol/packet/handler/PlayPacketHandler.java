@@ -4,7 +4,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.GameMode;
-import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
@@ -14,6 +13,7 @@ import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainerButton;
 import de.bauhd.minecraft.server.protocol.packet.play.container.CloseContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
+import de.bauhd.minecraft.server.world.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 

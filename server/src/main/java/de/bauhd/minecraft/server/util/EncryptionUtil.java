@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 
 public final class EncryptionUtil {
 
-
     public static byte[] decryptRsa(final KeyPair keyPair, final byte[] bytes)
             throws IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         final var cipher = Cipher.getInstance("RSA");

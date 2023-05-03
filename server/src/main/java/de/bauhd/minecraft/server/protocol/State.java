@@ -65,7 +65,7 @@ public enum State {
             this.serverBound.skip(); // Message Acknowledgment
             this.serverBound.register(ChatCommand.class, ChatCommand::new);
             this.serverBound.register(ChatMessage.class, ChatMessage::new);
-            this.serverBound.skip(); // Player Session
+            this.serverBound.register(PlayerSession.class, PlayerSession::new); // Player Session
             this.serverBound.register(ClientCommand.class, ClientCommand::new);
             this.serverBound.register(ClientInformation.class, ClientInformation::new);
             this.serverBound.register(CommandSuggestionsRequest.class, CommandSuggestionsRequest::new);
@@ -92,7 +92,7 @@ public enum State {
             this.serverBound.register(PlayerCommand.class, PlayerCommand::new);
             this.serverBound.skip(); // Player Input
             this.serverBound.skip(); // Pong
-            this.serverBound.skip(); // Change Recipe Book Settings
+            this.serverBound.register(RecipeBookSettings.class, RecipeBookSettings::new);
             this.serverBound.skip(); // Seen Recipe
             this.serverBound.skip(); // Rename Item
             this.serverBound.skip(); // Resource Pack
@@ -218,7 +218,7 @@ public enum State {
             this.clientBound.skip(); // Teleport Entity
             this.clientBound.skip(); // Update Advancements
             this.clientBound.register(UpdateAttributes.class);
-            this.clientBound.skip(); // Feature Flags
+            this.clientBound.register(FeatureFlags.class);
             this.clientBound.skip(); // Entity Effects
             this.clientBound.register(UpdateRecipes.class);
             this.clientBound.register(UpdateTags.class);

@@ -54,6 +54,7 @@ public final class MojangUtil {
         try (final var reader = new InputStreamReader(new URL(url).openConnection().getInputStream())) {
             return JsonParser.parseReader(reader).getAsJsonObject();
         } catch (IOException | IllegalStateException e) {
+            e.printStackTrace();
             return null;
         }
     }

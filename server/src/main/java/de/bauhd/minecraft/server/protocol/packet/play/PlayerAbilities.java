@@ -8,6 +8,14 @@ public final class PlayerAbilities implements Packet {
     private byte flags;
 
     @Override
+    public void encode(Buffer buf) {
+        buf
+                .writeByte(this.flags)
+                .writeFloat(0.05F)
+                .writeFloat(0.1F);
+    }
+
+    @Override
     public void decode(Buffer buf) {
         this.flags = buf.readByte();
     }

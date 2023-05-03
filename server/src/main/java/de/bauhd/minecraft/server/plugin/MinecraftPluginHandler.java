@@ -1,6 +1,9 @@
 package de.bauhd.minecraft.server.plugin;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,12 +13,14 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 
 public final class MinecraftPluginHandler implements PluginHandler {
 
+    private static final Logger LOGGER = LogManager.getLogger(PluginHandler.class);
     private static final Path PLUGINS_DIRECTORY = Path.of("plugins");
 
     private final AdvancedMinecraftServer server;
@@ -45,7 +50,7 @@ public final class MinecraftPluginHandler implements PluginHandler {
         try (final var jarFile = new JarFile(path.toFile())) {
             final var jarEntry = jarFile.getEntry("plugin");
             if (jarEntry == null) {
-                System.err.println(path.getFileName() + " has no plugin file");
+                LOGGER.error(path.getFileName() + " has no plugin file!");
                 return;
             }
 
@@ -65,5 +70,10 @@ public final class MinecraftPluginHandler implements PluginHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public @NotNull Collection<Plugin> plugins() {
+        return this.plugins.keySet();
     }
 }

@@ -58,6 +58,10 @@ public abstract class PacketHandler {
         return false;
     }
 
+    public boolean handle(final PlayerSession playerSession) {
+        return false;
+    }
+
     public boolean handle(final ClientCommand clientCommand) {
         return false;
     }
@@ -119,6 +123,10 @@ public abstract class PacketHandler {
     }
 
     public boolean handle(final PlayerCommand playerCommand) {
+        return false;
+    }
+
+    public boolean handle(final RecipeBookSettings recipeBookSettings) {
         return false;
     }
 

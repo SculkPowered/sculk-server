@@ -3,6 +3,7 @@ package de.bauhd.minecraft.server.entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.Player;
+import de.bauhd.minecraft.server.entity.player.Session;
 import de.bauhd.minecraft.server.inventory.item.ItemStack;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.Connection;
@@ -45,8 +46,9 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private boolean keepAlivePending;
     private GameMode gameMode = GameMode.CREATIVE;
     private Component displayName;
-    private Position position = new Position(8.5, 40, 8.5);
+    private Position position = new Position(8.5, 6, 8.5);
     private int heldItem;
+    private Session session;
     private final Int2ObjectMap<ItemStack> slots = new Int2ObjectOpenHashMap<>();
 
     public MinecraftPlayer(final Connection connection, final UUID uniqueId, final String name, final GameProfile profile) {

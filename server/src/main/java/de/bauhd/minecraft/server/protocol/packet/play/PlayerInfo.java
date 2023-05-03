@@ -2,7 +2,6 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 import java.util.Arrays;
@@ -13,14 +12,8 @@ import java.util.function.BiConsumer;
 
 public final class PlayerInfo implements Packet {
 
-    private Integer action;
-    private EnumSet<Action> actions;
+    private final EnumSet<Action> actions;
     private final List<? extends PlayerInfoEntry> entries;
-
-    public PlayerInfo(final int action, final List<? extends PlayerInfoEntry> entries) {
-        this.action = action;
-        this.entries = entries;
-    }
 
     public PlayerInfo(final EnumSet<Action> actions, final List<? extends PlayerInfoEntry> entries) {
         this.actions = actions;
@@ -45,16 +38,12 @@ public final class PlayerInfo implements Packet {
         }
     }
 
-    public static PlayerInfo add(final List<? extends PlayerInfoEntry> entries, final Protocol.Version version) {
-        if (version.newerOr(Protocol.Version.MINECRAFT_1_19_3)) {
-            return new PlayerInfo(EnumSet.of(Action.ADD_PLAYER, Action.UPDATE_GAME_MODE, Action.UPDATE_LISTED, Action.UPDATE_DISPLAY_NAME), entries);
-        } else {
-            return new PlayerInfo(0, entries);
-        }
+    public static PlayerInfo add(final List<? extends PlayerInfoEntry> entries) {
+        return new PlayerInfo(EnumSet.of(Action.ADD_PLAYER, Action.UPDATE_GAME_MODE, Action.UPDATE_LISTED, Action.UPDATE_DISPLAY_NAME, Action.INITIALIZE_CHAT), entries);
     }
 
-    public static PlayerInfo add(final PlayerInfoEntry entry, final Protocol.Version version) {
-        return add(List.of(entry), version);
+    public static PlayerInfo update(final PlayerInfoEntry entry, final Action action) {
+        return new PlayerInfo(EnumSet.of(action), List.of(entry));
     }
 
     public enum Action {
@@ -73,8 +62,7 @@ public final class PlayerInfo implements Packet {
                 }
             }
         }),
-        INITIALIZE_CHAT((buf, entry) -> {
-        }),
+        INITIALIZE_CHAT((buf, entry) -> buf.writeBoolean(false)),
         UPDATE_GAME_MODE((buf, entry) -> buf.writeVarInt(entry.getGameMode().ordinal())),
         UPDATE_LISTED((buf, entry) -> buf.writeBoolean(true)),
         UPDATE_LATENCY((buf, entry) -> buf.writeVarInt(entry.getPing())),
@@ -98,7 +86,7 @@ public final class PlayerInfo implements Packet {
     @Override
     public String toString() {
         return "PlayerInfo{" +
-                (this.action == null ? "actions=" + this.actions : "action=" + this.action) +
+                "actions=" + this.actions +
                 ", entries=" + this.entries +
                 '}';
     }

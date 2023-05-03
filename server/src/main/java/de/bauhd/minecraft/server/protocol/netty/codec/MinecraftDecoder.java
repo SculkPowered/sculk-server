@@ -58,7 +58,7 @@ public final class MinecraftDecoder implements ChannelHandler {
                         throw new DecoderException("Overflow after decode packet " +
                                 packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
                     }
-                    System.out.println("decoded " + packet + " - " + id);
+                    //System.out.println("decoded " + packet + " - " + id);
                     ctx.fireChannelRead(packet);
                 }
             }
