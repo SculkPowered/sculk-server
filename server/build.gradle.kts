@@ -37,6 +37,18 @@ tasks {
     shadowJar {
         archiveFileName.set("minecraft-server.jar")
         transform(Log4j2PluginsCacheFileTransformer::class.java)
+
+        // exclude some things we don't need to save space
+        exclude(
+            "it/unimi/dsi/fastutil/booleans/**",
+            "it/unimi/dsi/fastutil/bytes/**",
+            "it/unimi/dsi/fastutil/chars/**",
+            "it/unimi/dsi/fastutil/doubles/**",
+            "it/unimi/dsi/fastutil/floats/**",
+            "it/unimi/dsi/fastutil/io/**",
+            "it/unimi/dsi/fastutil/longs/**",
+            "it/unimi/dsi/fastutil/shorts/**"
+        )
     }
 
     test {
