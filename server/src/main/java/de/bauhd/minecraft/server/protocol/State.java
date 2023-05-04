@@ -242,12 +242,6 @@ public enum State {
             this.register(clazz, null);
         }
 
-        protected <P extends Packet> void register(final Class<P>... classes) {
-            for (final var clazz : classes) {
-                this.register(clazz);
-            }
-        }
-
         protected <P extends Packet> void register(final Class<P> clazz,
                                                    final Supplier<P> packetSupplier) {
             final var id = this.id;
