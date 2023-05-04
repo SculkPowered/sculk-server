@@ -31,6 +31,8 @@ tasks {
         manifest {
             attributes["Main-Class"] = "de.bauhd.minecraft.server.Main"
             attributes["Multi-Release"] = true
+            attributes["Implementation-Title"] = "Minecraft-Server"
+            attributes["Implementation-Version"] = project.version
         }
     }
 
