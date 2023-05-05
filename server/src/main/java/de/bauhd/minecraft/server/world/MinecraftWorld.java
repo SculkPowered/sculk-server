@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
@@ -11,10 +12,12 @@ import java.util.function.BiConsumer;
 
 public final class MinecraftWorld implements World {
 
+    private final AdvancedMinecraftServer server;
     private final Dimension dimension = Dimension.OVERWORLD;
     private final ChunkGenerator generator;
 
-    public MinecraftWorld() {
+    public MinecraftWorld(final AdvancedMinecraftServer server) {
+        this.server = server;
         this.generator = new TestGenerator();
     }
 
@@ -29,7 +32,7 @@ public final class MinecraftWorld implements World {
     }
 
     public MinecraftChunk createChunk(final int chunkX, final int chunkZ) {
-        final var chunk = new MinecraftChunk(this, chunkX, chunkZ);
+        final var chunk = new MinecraftChunk(this.server, this, chunkX, chunkZ);
         this.generator.generate(chunk);
         return chunk;
     }

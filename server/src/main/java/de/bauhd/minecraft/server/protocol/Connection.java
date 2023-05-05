@@ -52,8 +52,6 @@ public final class Connection extends ChannelHandlerAdapter {
     static {
         BRAND_PACKET = new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
         CHUNKS = new ArrayList<>();
-        final var world = new MinecraftWorld();
-        world.forChunksInRange(0, 0, 10, (x, z) -> CHUNKS.add(world.createChunk(x, z)));
 
     }
 
@@ -66,6 +64,9 @@ public final class Connection extends ChannelHandlerAdapter {
     private MinecraftPlayer player;
 
     public Connection(final AdvancedMinecraftServer server, final Channel channel) {
+        final var world = new MinecraftWorld(server);
+        world.forChunksInRange(0, 0, 10, (x, z) -> CHUNKS.add(world.createChunk(x, z)));
+
         this.server = server;
         this.channel = channel;
         this.packetHandler = new HandshakePacketHandler(this);

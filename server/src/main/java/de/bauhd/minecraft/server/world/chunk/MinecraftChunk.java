@@ -1,15 +1,17 @@
 package de.bauhd.minecraft.server.world.chunk;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.protocol.Buffer;
+import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import de.bauhd.minecraft.server.world.section.Section;
-import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import io.netty5.buffer.DefaultBufferAllocators;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.kyori.adventure.key.Key;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -21,13 +23,15 @@ public final class MinecraftChunk implements Chunk {
     private static final BitSet EMPTY_LIGHT = BitSet.valueOf(
             new long[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24});
 
+    private final AdvancedMinecraftServer server;
     private final Dimension dimension;
     private final int x;
     private final int z;
     private final List<Section> sections;
     private final Int2ObjectMap<Block> blocks = new Int2ObjectOpenHashMap<>();
 
-    public MinecraftChunk(final World world, final int chunkX, final int chunkZ) {
+    public MinecraftChunk(final AdvancedMinecraftServer server, final World world, final int chunkX, final int chunkZ) {
+        this.server = server;
         this.dimension = world.getDimension();
         this.x = chunkX;
         this.z = chunkZ;
@@ -50,9 +54,10 @@ public final class MinecraftChunk implements Chunk {
     }
 
     @Override
-    public void setBlock(int x, int y, int z, int stateId) {
+    public void setBlock(int x, int y, int z, Key key) {
         final var section = this.sections.get(this.chunkCoordinate(y) - this.dimension.minimumSections());
-        section.blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z), stateId);
+        section.blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z),
+                this.server.getBlockRegistry().getId(key));
     }
 
     public void send(MinecraftPlayer player) {

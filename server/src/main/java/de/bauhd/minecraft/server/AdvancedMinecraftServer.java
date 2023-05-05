@@ -13,6 +13,7 @@ import de.bauhd.minecraft.server.plugin.MinecraftPluginHandler;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.world.biome.BiomeHandler;
+import de.bauhd.minecraft.server.world.block.BlockRegistry;
 import de.bauhd.minecraft.server.world.dimension.DimensionHandler;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
@@ -77,6 +78,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private final MinecraftEventHandler eventHandler;
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
+    private final BlockRegistry registry;
     private final NettyServer nettyServer;
 
     AdvancedMinecraftServer() {
@@ -101,6 +103,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         this.eventHandler = new MinecraftEventHandler();
         this.commandHandler = new MinecraftCommandHandler(this);
         this.bossBarListener = new BossBarListener();
+        this.registry = new BlockRegistry();
 
         this.pluginHandler.loadPlugins();
 
@@ -215,6 +218,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     public BossBarListener getBossBarListener() {
         return this.bossBarListener;
+    }
+
+    public BlockRegistry getBlockRegistry() {
+        return this.registry;
     }
 
     public void sendAll(final Packet packet) {
