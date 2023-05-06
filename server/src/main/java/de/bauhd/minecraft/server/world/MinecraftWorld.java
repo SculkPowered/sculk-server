@@ -4,26 +4,37 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
-import de.bauhd.minecraft.server.world.chunk.TestGenerator;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.BiConsumer;
 
 public final class MinecraftWorld implements World {
 
     private final AdvancedMinecraftServer server;
-    private final Dimension dimension = Dimension.OVERWORLD;
+    private final String name;
+    private final Dimension dimension;
     private final ChunkGenerator generator;
 
-    public MinecraftWorld(final AdvancedMinecraftServer server) {
+    public MinecraftWorld(final AdvancedMinecraftServer server, final String name,
+                          final Dimension dimension, final ChunkGenerator generator) {
         this.server = server;
-        this.generator = new TestGenerator();
+        this.name = name;
+        this.dimension = dimension;
+        this.generator = generator;
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return this.name;
     }
 
     @Override
     public @NotNull Dimension getDimension() {
         return this.dimension;
+    }
+
+    @Override
+    public @NotNull ChunkGenerator getGenerator() {
+        return this.generator;
     }
 
     @Override
@@ -35,13 +46,5 @@ public final class MinecraftWorld implements World {
         final var chunk = new MinecraftChunk(this.server, this, chunkX, chunkZ);
         this.generator.generate(chunk);
         return chunk;
-    }
-
-    public void forChunksInRange(final int chunkX, final int chunkZ, final int range, final BiConsumer<Integer, Integer> chunk) {
-        for (var x = -range; x <= range; x++) {
-            for (var z = -range; z <= range; z++) {
-                chunk.accept(chunkX + x, chunkZ + z);
-            }
-        }
     }
 }

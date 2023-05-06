@@ -5,6 +5,7 @@ import de.bauhd.minecraft.server.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import de.bauhd.minecraft.server.world.World;
+import de.bauhd.minecraft.server.world.biome.Biome;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import de.bauhd.minecraft.server.world.section.Section;
@@ -12,6 +13,7 @@ import io.netty5.buffer.DefaultBufferAllocators;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.key.Key;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -54,10 +56,15 @@ public final class MinecraftChunk implements Chunk {
     }
 
     @Override
-    public void setBlock(int x, int y, int z, Key key) {
-        final var section = this.sections.get(this.chunkCoordinate(y) - this.dimension.minimumSections());
-        section.blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z),
+    public void setBlock(int x, int y, int z, @NotNull Key key) {
+        this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z),
                 this.server.getBlockRegistry().getId(key));
+    }
+
+    @Override
+    public void setBiome(int x, int y, int z, @NotNull Biome biome) {
+        this.section(y).biomes().set(this.relativeCoordinate(x) / 4, this.relativeCoordinate(y) / 4, this.relativeCoordinate(z) / 4,
+                biome.nbt().getInt("id"));
     }
 
     public void send(MinecraftPlayer player) {
@@ -72,6 +79,10 @@ public final class MinecraftChunk implements Chunk {
                 EMPTY_LIGHT,
                 EMPTY_LIGHT)
         );
+    }
+
+    private Section section(final int y) {
+        return this.sections.get(this.chunkCoordinate(y) - this.dimension.minimumSections());
     }
 
     private byte[] sectionsToData() {

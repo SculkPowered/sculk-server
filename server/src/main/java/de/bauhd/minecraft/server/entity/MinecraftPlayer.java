@@ -3,19 +3,16 @@ package de.bauhd.minecraft.server.entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.Player;
-import de.bauhd.minecraft.server.entity.player.Session;
 import de.bauhd.minecraft.server.inventory.item.ItemStack;
-import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
-import de.bauhd.minecraft.server.protocol.packet.play.ActionBar;
-import de.bauhd.minecraft.server.protocol.packet.play.GameEvent;
-import de.bauhd.minecraft.server.protocol.packet.play.SystemChatMessage;
-import de.bauhd.minecraft.server.protocol.packet.play.TabListHeaderFooter;
+import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
+import de.bauhd.minecraft.server.world.Position;
+import de.bauhd.minecraft.server.world.World;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.bossbar.BossBar;
@@ -46,9 +43,9 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private boolean keepAlivePending;
     private GameMode gameMode = GameMode.CREATIVE;
     private Component displayName;
-    private Position position = new Position(8.5, 6, 8.5);
+    private Position position = new Position(8.5, 7, 8.5);
     private int heldItem;
-    private Session session;
+    private World world;
     private final Int2ObjectMap<ItemStack> slots = new Int2ObjectOpenHashMap<>();
 
     public MinecraftPlayer(final Connection connection, final UUID uniqueId, final String name, final GameProfile profile) {
@@ -101,6 +98,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void setGameMode(@NotNull GameMode gameMode) {
+        if (!this.connection.afterLoginPacket()) return;
         if (gameMode != this.gameMode) {
             this.gameMode = gameMode;
             this.send(new GameEvent(3, gameMode.ordinal()));
@@ -120,6 +118,18 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public void setHeldItemSlot(int slot) {
         this.heldItem = slot;
+    }
+
+    @Override
+    public World getWorld() {
+        return this.world;
+    }
+
+    @Override
+    public void setWorld(@NotNull World world) {
+        this.world = world;
+        if (!this.connection.afterLoginPacket()) return;
+        this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));
     }
 
     @Override

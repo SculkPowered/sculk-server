@@ -99,6 +99,10 @@ public final class Dimension {
         return new Builder(name);
     }
 
+    public @NotNull Builder toBuilder(final String newName) {
+        return new Builder(newName, CompoundBinaryTag.builder().put(this.nbt.getCompound("element")));
+    }
+
     public @NotNull CompoundBinaryTag nbt() {
         return this.nbt;
     }
@@ -121,10 +125,14 @@ public final class Dimension {
         private final int id;
         private final CompoundBinaryTag.Builder builder;
 
-        private Builder(final String name) {
+        public Builder(String name) {
+            this(name, CompoundBinaryTag.builder());
+        }
+
+        private Builder(final String name, final CompoundBinaryTag.Builder builder) {
             this.name = name;
             this.id = CURRENT_ID++;
-            this.builder = CompoundBinaryTag.builder();
+            this.builder = builder;
         }
 
         public @NotNull Builder piglinSafe(boolean piglinSafe) {

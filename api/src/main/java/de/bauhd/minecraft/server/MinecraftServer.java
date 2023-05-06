@@ -4,7 +4,10 @@ import de.bauhd.minecraft.server.command.CommandHandler;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.EventHandler;
 import de.bauhd.minecraft.server.plugin.PluginHandler;
+import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.BiomeHandler;
+import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
+import de.bauhd.minecraft.server.world.dimension.Dimension;
 import de.bauhd.minecraft.server.world.dimension.DimensionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,4 +32,6 @@ public interface MinecraftServer {
     int getPlayerCount();
 
     @Nullable Player getPlayer(@NotNull UUID uniqueId);
+
+    @NotNull World createWorld(@NotNull String name, @NotNull Dimension dimension, @NotNull ChunkGenerator generator);
 }

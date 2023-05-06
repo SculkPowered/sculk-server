@@ -48,6 +48,25 @@ public class Position {
         return new Position(this.x - x, this.y - y, this.z - z, this.yaw, this.pitch);
     }
 
+    public Position setX(final double x) {
+        return new Position(x, this.y, this.z, this.yaw, this.pitch);
+    }
+    public Position setY(final double y) {
+        return new Position(this.x, y, this.z, this.yaw, this.pitch);
+    }
+
+    public Position setZ(final double z) {
+        return new Position(this.x, this.y, z, this.yaw, this.pitch);
+    }
+
+    public Position setYaw(final float yaw) {
+        return new Position(this.x, this.y, this.z, yaw, this.pitch);
+    }
+
+    public Position setPitch(final float pitch) {
+        return new Position(this.x, this.y, this.z, this.yaw, pitch);
+    }
+
     @Override
     public String toString() {
         return "Position{" +

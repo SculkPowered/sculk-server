@@ -3,14 +3,9 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.TagStringIO;
 
 import java.io.IOException;
-import java.util.List;
-
-import static de.bauhd.minecraft.server.world.biome.Biome.PLAINS;
-import static de.bauhd.minecraft.server.world.dimension.Dimension.OVERWORLD;
 
 public final class Login implements Packet {
 
@@ -52,42 +47,46 @@ public final class Login implements Packet {
     }
 
     private final int entityId;
+    private final byte gameMode;
+    private final CompoundBinaryTag biomeRegistry;
+    private final CompoundBinaryTag dimensionRegistry;
+    private final String dimensionType;
 
-    public Login(final int entityId) {
+    public Login(final int entityId, final byte gameMode, final CompoundBinaryTag biomeRegistry,
+                 final CompoundBinaryTag dimensionRegistry, final String dimensionType) {
         this.entityId = entityId;
+        this.biomeRegistry = biomeRegistry;
+        this.dimensionRegistry = dimensionRegistry;
+        this.gameMode = gameMode;
+        this.dimensionType = dimensionType;
     }
 
     @Override
     public void encode(Buffer buf) {
-        buf.writeInt(this.entityId); // Entity id
-        buf.writeBoolean(false); // Hardcode
-        buf.writeByte((byte) 1); // GameMode
-        buf.writeByte((byte) -1); // Previous GameMode
-        buf.writeVarInt(1); // Dimensions
-        buf.writeString("minecraft:world"); // Dimensions
-        final var registryCodec = CompoundBinaryTag.builder()
-                .put("minecraft:worldgen/biome", CompoundBinaryTag.builder()
-                        .putString("type", "minecraft:worldgen/biome")
-                        .put("value", ListBinaryTag.from(List.of(PLAINS.nbt())))
+        buf
+                .writeInt(this.entityId) // Entity id
+                .writeBoolean(false) // Hardcode
+                .writeByte(this.gameMode) // GameMode
+                .writeByte((byte) -1) // Previous GameMode
+                .writeVarInt(1) // Dimensions
+                .writeString("minecraft:world") // Dimensions
+                .writeCompoundTag(CompoundBinaryTag.builder()
+                        .put("minecraft:worldgen/biome", this.biomeRegistry)
+                        .put("minecraft:dimension_type", this.dimensionRegistry)
+                        .put("minecraft:chat_type", CHAT_REGISTRY)
+                        .put("minecraft:damage_type", DAMAGE_TYPE_REGISTRY)
                         .build())
-                .put("minecraft:dimension_type", CompoundBinaryTag.builder()
-                        .putString("type", "minecraft:dimension_type")
-                        .put("value", ListBinaryTag.from(List.of(OVERWORLD.nbt())))
-                        .build())
-                .put("minecraft:chat_type", CHAT_REGISTRY);
-        registryCodec.put("minecraft:damage_type", DAMAGE_TYPE_REGISTRY);
-        buf.writeCompoundTag(registryCodec.build());
-        buf.writeString("minecraft:overworld"); // Dimension Type
-        buf.writeString("minecraft:overworld"); // Dimension Name
-        buf.writeLong(34723587329438L); // Hashed Seed
-        buf.writeVarInt(20); // Max Players
-        buf.writeVarInt(18); // View Distance
-        buf.writeVarInt(10); // Simulation Distance
-        buf.writeBoolean(false); // Reduced Debug Info
-        buf.writeBoolean(false); // Enable respawn screen
-        buf.writeBoolean(false); // Debug
-        buf.writeBoolean(true); // Flat
-        buf.writeBoolean(false); // Death Location
+                .writeString(this.dimensionType) // Dimension Type
+                .writeString("minecraft:overworld") // Dimension Name
+                .writeLong(0) // Hashed Seed
+                .writeVarInt(20) // Max Players
+                .writeVarInt(18) // View Distance
+                .writeVarInt(10) // Simulation Distance
+                .writeBoolean(false) // Reduced Debug Info
+                .writeBoolean(false) // Enable respawn screen
+                .writeBoolean(false) // Debug
+                .writeBoolean(true) // Flat
+                .writeBoolean(false); // Death Location
     }
 
     @Override

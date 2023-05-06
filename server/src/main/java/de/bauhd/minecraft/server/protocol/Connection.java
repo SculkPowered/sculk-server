@@ -27,6 +27,8 @@ import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.util.ReferenceCountUtil;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 import static de.bauhd.minecraft.server.entity.player.GameProfile.Property;
 
@@ -44,16 +47,10 @@ public final class Connection extends ChannelHandlerAdapter {
 
     private static final Logger LOGGER = LogManager.getLogger(Connection.class);
 
-    private static final PluginMessage BRAND_PACKET;
-    private static final List<MinecraftChunk> CHUNKS;
+    private static final PluginMessage BRAND_PACKET =
+            new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
 
     public static CompressionPacket COMPRESSION_PACKET;
-
-    static {
-        BRAND_PACKET = new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
-        CHUNKS = new ArrayList<>();
-
-    }
 
     private final AdvancedMinecraftServer server;
     private final Channel channel;
@@ -62,11 +59,9 @@ public final class Connection extends ChannelHandlerAdapter {
     private String serverAddress;
     private String username;
     private MinecraftPlayer player;
+    private boolean afterLoginPacket;
 
     public Connection(final AdvancedMinecraftServer server, final Channel channel) {
-        final var world = new MinecraftWorld(server);
-        world.forChunksInRange(0, 0, 10, (x, z) -> CHUNKS.add(world.createChunk(x, z)));
-
         this.server = server;
         this.channel = channel;
         this.packetHandler = new HandshakePacketHandler(this);
@@ -122,30 +117,42 @@ public final class Connection extends ChannelHandlerAdapter {
         this.setState(State.PLAY);
         this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
         this.packetHandler = new PlayPacketHandler(this);
-        this.send(new Login(this.player.getId()));
-
         this.server.addPlayer(this.player);
-
-        this.server.getEventHandler().call(new PlayerJoinEvent(this.player));
-
-        this.send(BRAND_PACKET);
-        this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
-        this.send(new SynchronizePlayerPosition(this.player.getPosition()));
-        this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
-        this.send(new SpawnPosition(this.player.getPosition()));
-
-        for (final var chunk : CHUNKS) {
-            chunk.send(this.player);
-        }
-
-        final var playerInfo = PlayerInfo.add(Collections.singletonList(this.player));
-        this.player.sendViewers(new SpawnPlayer(this.player));
-        this.server.getAllPlayers().forEach(other -> {
-            if (other != this.player) {
-                final var otherPlayer = (MinecraftPlayer) other;
-                otherPlayer.send(playerInfo);
-                this.player.send(new SpawnPlayer(otherPlayer));
+        this.server.getEventHandler().call(new PlayerJoinEvent(this.player)).thenAcceptAsync((event) -> {
+            final var world = ((MinecraftWorld) this.player.getWorld());
+            if (world == null) {
+                this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));
+                return;
             }
+            this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
+                    this.server.getBiomeHandler().nbt(), this.server.getDimensionHandler().nbt(),
+                    world.getDimension().nbt().getString("name")));
+            this.afterLoginPacket = true;
+
+            this.send(BRAND_PACKET);
+            this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
+            this.send(new SynchronizePlayerPosition(this.player.getPosition()));
+            this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
+            this.send(new SpawnPosition(this.player.getPosition()));
+
+            final var chunks = new ArrayList<MinecraftChunk>();
+            this.forChunksInRange(0, 0, 10, (x, z) -> chunks.add(world.createChunk(x, z)));
+            for (final var chunk : chunks) {
+                chunk.send(this.player);
+            }
+
+            final var playerInfo = PlayerInfo.add(Collections.singletonList(this.player));
+            this.player.sendViewers(new SpawnPlayer(this.player));
+            for (final var other : this.server.getAllPlayers()) {
+                if (other != this.player) {
+                    final var otherPlayer = (MinecraftPlayer) other;
+                    otherPlayer.send(playerInfo);
+                    this.player.send(new SpawnPlayer(otherPlayer));
+                }
+            }
+        }, this.channel.executor()).exceptionally(throwable -> {
+            LOGGER.error("Exception during login of player {}", this.player.getUsername(), throwable);
+            return null;
         });
     }
 
@@ -214,5 +221,17 @@ public final class Connection extends ChannelHandlerAdapter {
 
     public MinecraftPlayer player() {
         return this.player;
+    }
+
+    public boolean afterLoginPacket() {
+        return this.afterLoginPacket;
+    }
+
+    private void forChunksInRange(final int chunkX, final int chunkZ, final int range, final BiConsumer<Integer, Integer> chunk) {
+        for (var x = -range; x <= range; x++) {
+            for (var z = -range; z <= range; z++) {
+                chunk.accept(chunkX + x, chunkZ + z);
+            }
+        }
     }
 }

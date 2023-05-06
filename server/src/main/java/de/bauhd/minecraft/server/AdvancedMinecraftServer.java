@@ -12,9 +12,10 @@ import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.plugin.MinecraftPluginHandler;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
-import de.bauhd.minecraft.server.world.biome.BiomeHandler;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
+import de.bauhd.minecraft.server.world.World;
+import de.bauhd.minecraft.server.world.biome.MinecraftBiomeHandler;
 import de.bauhd.minecraft.server.world.block.BlockRegistry;
-import de.bauhd.minecraft.server.world.dimension.DimensionHandler;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.protocol.Protocol;
@@ -22,6 +23,8 @@ import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.terminal.SimpleTerminal;
 import de.bauhd.minecraft.server.util.BossBarListener;
+import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
+import de.bauhd.minecraft.server.world.dimension.Dimension;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -72,8 +75,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private KeyPair keyPair;
 
     private final Map<UUID, MinecraftPlayer> players = new ConcurrentHashMap<>();
-    private final DimensionHandler dimensionHandler;
-    private final BiomeHandler biomeHandler;
+    private final MinecraftDimensionHandler dimensionHandler;
+    private final MinecraftBiomeHandler biomeHandler;
     private final MinecraftPluginHandler pluginHandler;
     private final MinecraftEventHandler eventHandler;
     private final MinecraftCommandHandler commandHandler;
@@ -98,7 +101,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         }
 
         this.dimensionHandler = new MinecraftDimensionHandler();
-        this.biomeHandler = null;
+        this.biomeHandler = new MinecraftBiomeHandler();
         this.pluginHandler = new MinecraftPluginHandler(this);
         this.eventHandler = new MinecraftEventHandler();
         this.commandHandler = new MinecraftCommandHandler(this);
@@ -165,12 +168,12 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     @Override
-    public @NotNull DimensionHandler getDimensionHandler() {
+    public @NotNull MinecraftDimensionHandler getDimensionHandler() {
         return this.dimensionHandler;
     }
 
     @Override
-    public @NotNull BiomeHandler getBiomeHandler() {
+    public @NotNull MinecraftBiomeHandler getBiomeHandler() {
         return this.biomeHandler;
     }
 
@@ -206,6 +209,11 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     @Override
     public @Nullable Player getPlayer(@NotNull UUID uniqueId) {
         return null;
+    }
+
+    @Override
+    public @NotNull World createWorld(@NotNull String name, @NotNull Dimension dimension, @NotNull ChunkGenerator generator) {
+        return new MinecraftWorld(this, name, dimension, generator);
     }
 
     public MinecraftConfiguration getConfiguration() {

@@ -10,12 +10,14 @@ public final class Respawn implements Packet {
     private final String dimensionName;
     private final long hashedSeed;
     private final GameMode gameMode;
+    private final byte dataKept;
 
-    public Respawn(final String dimensionType, final String dimensionName, final long hashedSeed, final GameMode gameMode) {
+    public Respawn(final String dimensionType, final String dimensionName, final long hashedSeed, final GameMode gameMode, final byte dataKept) {
         this.dimensionType = dimensionType;
         this.dimensionName = dimensionName;
         this.hashedSeed = hashedSeed;
         this.gameMode = gameMode;
+        this.dataKept = dataKept;
     }
 
     @Override
@@ -25,9 +27,10 @@ public final class Respawn implements Packet {
                 .writeString(this.dimensionType)
                 .writeLong(this.hashedSeed)
                 .writeUnsignedByte(this.gameMode.ordinal())
+                .writeByte((byte) -1)
                 .writeBoolean(false)
                 .writeBoolean(false)
-                .writeByte((byte) 0)
+                .writeByte((byte) this.dataKept)
                 .writeBoolean(false);
     }
 
