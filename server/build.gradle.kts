@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     implementation(project(":api"))
-    implementation(project(":appender"))
+    implementation(project(":server:appender"))
 
     // netty
     implementation(platform(libs.netty.bom))

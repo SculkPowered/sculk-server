@@ -2,6 +2,6 @@ rootProject.name = "minecraft-server"
 include(
     "api",
     "server",
-    "appender",
+    "server:appender",
     "test-plugin"
 )
