@@ -71,6 +71,7 @@ public final class VanillaLoader {
         private final boolean[] freeSectors;
 
         public RegionFile(final Path path) throws IOException {
+            this.chunks = new Long2ObjectOpenHashMap<>();
             this.accessFile = new RandomAccessFile(path.toFile(), "r");
             final var available = this.accessFile.length() / SECTOR_SIZE;
 
@@ -91,41 +92,6 @@ public final class VanillaLoader {
                     }
                 }
             }
-
-            this.chunks = new Long2ObjectOpenHashMap<>();
-            /*try (final var channel = FileChannel.open(path)) {
-                final var size = channel.size();
-                final var totalSectors = size >>> 12 + (-(size & 4095) >>> 63);
-                for (long sector = 2, maxSector = Math.min(Integer.MAX_VALUE >>> 8, totalSectors); sector < maxSector; ++sector) {
-                    var buf = ByteBuffer.allocate(4);
-                    channel.read(buf, sector * 4096L);
-                    final var length = buf.getInt(0);
-                    if (length < 0) continue;
-                    final var offset = sector * 4096L + 4L;
-                    if ((offset + length) > size) continue;
-                    buf = ByteBuffer.allocate(length);
-                    channel.read(buf, offset);
-                    buf.flip();
-                    final var compressionScheme = buf.get();
-                    if (compressionScheme < 0) continue;
-
-                    final BinaryTagIO.Compression compression = switch (compressionScheme) {
-                        case 1 -> BinaryTagIO.Compression.GZIP;
-                        case 2 -> BinaryTagIO.Compression.ZLIB;
-                        case 3 -> BinaryTagIO.Compression.NONE;
-                        default ->
-                                throw new IllegalStateException("Unexpected compression scheme: " + compressionScheme);
-                    };
-
-                    final var nbt = BinaryTagIO.reader(Integer.MAX_VALUE)
-                            .read(new ByteArrayInputStream(buf.array(), buf.position(), length - buf.position()), compression);
-
-
-                }
-            } catch (
-                    IOException e) {
-                throw new RuntimeException(e);
-            }*/
         }
 
         private MinecraftChunk getChunk(final int chunkX, final int chunkZ) throws IOException {

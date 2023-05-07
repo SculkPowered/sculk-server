@@ -57,8 +57,7 @@ public final class MinecraftChunk implements Chunk {
 
     @Override
     public void setBlock(int x, int y, int z, @NotNull Key key) {
-        this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z),
-                this.server.getBlockRegistry().getId(key));
+        this.setBlock(x, y, z, this.server.getBlockRegistry().getId(key));
     }
 
     public void setBlock(int x, int y, int z, int id) {
@@ -85,7 +84,7 @@ public final class MinecraftChunk implements Chunk {
         );
     }
 
-    private Section section(final int y) {
+    public Section section(final int y) {
         return this.sections.get(this.chunkCoordinate(y) - this.dimension.minimumSections());
     }
 

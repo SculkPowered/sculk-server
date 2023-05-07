@@ -2,7 +2,7 @@ package de.bauhd.minecraft.server.world.section;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
 
-public final class SingleValuedPalette implements Palette {
+final class SingleValuedPalette implements Palette {
 
     private final byte dimension;
     private final int value;
@@ -30,6 +30,9 @@ public final class SingleValuedPalette implements Palette {
     public void set(int x, int y, int z, int value) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void fill(int value) {}
 
     @Override
     public void write(Buffer buf) {

@@ -14,14 +14,19 @@ public interface Palette {
 
     void set(int x, int y, int z, int value);
 
+    void fill(int value);
+
     void write(final Buffer buf);
+
+    default int bitsToRepresent(final int i) {
+        return Integer.SIZE - Integer.numberOfLeadingZeros(i);
+    }
 
     default int sectionIndex(int x, int y, int z) {
         final var dimensionMask = this.dimension() - 1;
-        final var dimensionBitCount = Integer.SIZE - Integer.numberOfLeadingZeros(dimensionMask);
+        final var dimensionBitCount = this.bitsToRepresent(dimensionMask);
         return (y & dimensionMask) << (dimensionBitCount << 1) |
                 (z & dimensionMask) << dimensionBitCount |
                 (x & dimensionMask);
     }
-
 }
