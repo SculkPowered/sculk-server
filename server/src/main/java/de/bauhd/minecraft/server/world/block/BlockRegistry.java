@@ -37,4 +37,8 @@ public final class BlockRegistry {
     public int getId(final Key key) {
         return this.namespaceToId.get(key.asString());
     }
+
+    public int getId(final String key) {
+        return this.namespaceToId.get(key);
+    }
 }

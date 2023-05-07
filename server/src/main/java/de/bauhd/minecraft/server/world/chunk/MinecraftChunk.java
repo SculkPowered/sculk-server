@@ -61,6 +61,10 @@ public final class MinecraftChunk implements Chunk {
                 this.server.getBlockRegistry().getId(key));
     }
 
+    public void setBlock(int x, int y, int z, int id) {
+        this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z), id);
+    }
+
     @Override
     public void setBiome(int x, int y, int z, @NotNull Biome biome) {
         this.section(y).biomes().set(this.relativeCoordinate(x) / 4, this.relativeCoordinate(y) / 4, this.relativeCoordinate(z) / 4,
@@ -104,5 +108,14 @@ public final class MinecraftChunk implements Chunk {
 
     private int relativeCoordinate(final int coordinate) {
         return coordinate & 0xF;
+    }
+
+    @Override
+    public String toString() {
+        return "MinecraftChunk{" +
+                "dimension=" + this.dimension.getClass().getSimpleName() +
+                ", x=" + this.x +
+                ", z=" + this.z +
+                '}';
     }
 }

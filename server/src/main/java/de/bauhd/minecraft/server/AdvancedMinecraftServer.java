@@ -9,22 +9,22 @@ import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.MinecraftEventHandler;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
-import de.bauhd.minecraft.server.plugin.MinecraftPluginHandler;
-import de.bauhd.minecraft.server.protocol.Connection;
-import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
-import de.bauhd.minecraft.server.world.MinecraftWorld;
-import de.bauhd.minecraft.server.world.World;
-import de.bauhd.minecraft.server.world.biome.MinecraftBiomeHandler;
-import de.bauhd.minecraft.server.world.block.BlockRegistry;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
+import de.bauhd.minecraft.server.plugin.MinecraftPluginHandler;
+import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.terminal.SimpleTerminal;
 import de.bauhd.minecraft.server.util.BossBarListener;
-import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
-import de.bauhd.minecraft.server.world.dimension.Dimension;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
+import de.bauhd.minecraft.server.world.VanillaLoader;
+import de.bauhd.minecraft.server.world.VanillaWorld;
+import de.bauhd.minecraft.server.world.World;
+import de.bauhd.minecraft.server.world.biome.MinecraftBiomeHandler;
+import de.bauhd.minecraft.server.world.block.BlockRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -40,10 +40,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class AdvancedMinecraftServer implements MinecraftServer {
@@ -212,8 +209,16 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     @Override
-    public @NotNull World createWorld(@NotNull String name, @NotNull Dimension dimension, @NotNull ChunkGenerator generator) {
-        return new MinecraftWorld(this, name, dimension, generator);
+    public @NotNull World createWorld(World.@NotNull Builder builder) {
+        return new MinecraftWorld(this, Objects.requireNonNull(builder.name(), "a world requires a name"),
+                builder.dimension(), builder.generator(), builder.spawnPosition());
+    }
+
+    @Override
+    public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
+        final var vanillaLoader = new VanillaLoader(this, path);
+        return new VanillaWorld(this, Objects.requireNonNull(builder.name(), "a world requires a name"),
+                builder.dimension(), builder.generator(), builder.spawnPosition(), vanillaLoader);
     }
 
     public MinecraftConfiguration getConfiguration() {

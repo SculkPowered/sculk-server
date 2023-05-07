@@ -1,17 +1,18 @@
 package de.bauhd.minecraft.plugin;
 
 import de.bauhd.minecraft.plugin.command.GameModeCommand;
-import de.bauhd.minecraft.plugin.world.TestGenerator;
 import de.bauhd.minecraft.server.event.Subscribe;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
 import de.bauhd.minecraft.server.plugin.Plugin;
 import de.bauhd.minecraft.server.plugin.PluginDescription;
+import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.Biome;
-import de.bauhd.minecraft.server.world.dimension.Dimension;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+
+import java.nio.file.Path;
 
 @PluginDescription(name = "test", version = "1.0")
 public final class TestPlugin extends Plugin {
@@ -32,7 +33,10 @@ public final class TestPlugin extends Plugin {
                 )
                 .build();
         this.getServer().getBiomeHandler().registerBiome(testBiome);
-        this.world = this.getServer().createWorld("world", Dimension.OVERWORLD, new TestGenerator(testBiome));
+        this.world = this.getServer().loadWorld(World.builder()
+                        .name("test")
+                        .spawnPosition(new Position(0, 100, 0)),
+                Path.of("world"));
     }
 
     @Subscribe

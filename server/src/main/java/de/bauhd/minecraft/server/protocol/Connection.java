@@ -20,7 +20,6 @@ import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
-import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
@@ -35,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -131,15 +129,15 @@ public final class Connection extends ChannelHandlerAdapter {
 
             this.send(BRAND_PACKET);
             this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
-            this.send(new SynchronizePlayerPosition(this.player.getPosition()));
+            final var position = this.player.getPosition();
+            this.send(new SynchronizePlayerPosition(position));
             this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
-            this.send(new SpawnPosition(this.player.getPosition()));
+            this.send(new SpawnPosition(position));
 
-            final var chunks = new ArrayList<MinecraftChunk>();
-            this.forChunksInRange(0, 0, 10, (x, z) -> chunks.add(world.createChunk(x, z)));
-            for (final var chunk : chunks) {
-                chunk.send(this.player);
-            }
+            final var chunkX = (int) position.x() >> 4;
+            final var chunkZ = (int) position.z() >> 4;
+            this.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> world.createChunk(x, z).send(this.player));
+            this.send(new CenterChunk(chunkX, chunkZ));
 
             final var playerInfo = PlayerInfo.add(Collections.singletonList(this.player));
             this.player.sendViewers(new SpawnPlayer(this.player));
@@ -227,7 +225,7 @@ public final class Connection extends ChannelHandlerAdapter {
         return this.afterLoginPacket;
     }
 
-    private void forChunksInRange(final int chunkX, final int chunkZ, final int range, final BiConsumer<Integer, Integer> chunk) {
+    public void forChunksInRange(final int chunkX, final int chunkZ, final int range, final BiConsumer<Integer, Integer> chunk) {
         for (var x = -range; x <= range; x++) {
             for (var z = -range; z <= range; z++) {
                 chunk.accept(chunkX + x, chunkZ + z);

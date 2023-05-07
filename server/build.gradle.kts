@@ -48,7 +48,6 @@ tasks {
             "it/unimi/dsi/fastutil/doubles/**",
             "it/unimi/dsi/fastutil/floats/**",
             "it/unimi/dsi/fastutil/io/**",
-            "it/unimi/dsi/fastutil/longs/**",
             "it/unimi/dsi/fastutil/shorts/**"
         )
     }

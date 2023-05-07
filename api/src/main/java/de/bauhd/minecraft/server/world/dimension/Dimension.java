@@ -1,11 +1,10 @@
 package de.bauhd.minecraft.server.world.dimension;
 
+import de.bauhd.minecraft.server.world.chunk.Chunk;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 public final class Dimension {
-
-    private static final int CHUNK_SIZE = 16;
 
     private static final int[] MAGIC = {
             -1, -1, 0, Integer.MIN_VALUE, 0, 0, 1431655765, 1431655765, 0, Integer.MIN_VALUE,
@@ -69,7 +68,6 @@ public final class Dimension {
             .hasCeiling(false)
             .build();
 
-
     private final CompoundBinaryTag nbt;
     private final CompoundBinaryTag heightmaps;
     private final int minimumSections;
@@ -91,8 +89,8 @@ public final class Dimension {
                 .build();
 
         final var minY = this.nbt.getCompound("element").getInt("min_y");
-        this.minimumSections = minY / CHUNK_SIZE;
-        this.maximumSections = (minY + dimensionHeight) / CHUNK_SIZE;
+        this.minimumSections = minY / Chunk.CHUNK_SECTION_SIZE;
+        this.maximumSections = (minY + dimensionHeight) / Chunk.CHUNK_SECTION_SIZE;
     }
 
     public static @NotNull Builder builder(@NotNull String name) {

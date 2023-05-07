@@ -43,7 +43,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private boolean keepAlivePending;
     private GameMode gameMode = GameMode.CREATIVE;
     private Component displayName;
-    private Position position = new Position(8.5, 7, 8.5);
+    private Position position;
     private int heldItem;
     private World world;
     private final Int2ObjectMap<ItemStack> slots = new Int2ObjectOpenHashMap<>();
@@ -128,6 +128,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public void setWorld(@NotNull World world) {
         this.world = world;
+        this.position = world.getSpawnPosition();
         if (!this.connection.afterLoginPacket()) return;
         this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));
     }

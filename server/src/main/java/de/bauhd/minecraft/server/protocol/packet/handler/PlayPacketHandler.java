@@ -13,6 +13,7 @@ import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainerButton;
 import de.bauhd.minecraft.server.protocol.packet.play.container.CloseContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.Position;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -115,6 +116,7 @@ public final class PlayPacketHandler extends PacketHandler {
         this.player.sendViewers(new EntityPosition(this.player.getId(),
                 this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z), playerPosition.onGround()));
         this.player.setPosition(new Position(x, y, z, position.yaw(), position.pitch()));
+        this.calculateChunks(position, this.player.getPosition());
         return false;
     }
 
@@ -132,6 +134,7 @@ public final class PlayPacketHandler extends PacketHandler {
                         yaw, pitch, playerPositionAndRotation.onGround()),
                 new HeadRotation(this.player.getId(), yaw));
         this.player.setPosition(new Position(x, y, z, yaw, pitch));
+        this.calculateChunks(position, this.player.getPosition());
         return false;
     }
 
@@ -251,5 +254,18 @@ public final class PlayPacketHandler extends PacketHandler {
 
     private short delta(final double previous, final double current) {
         return (short) ((current * 32 - previous * 32) * 128);
+    }
+
+    private void calculateChunks(final Position from, final Position to) {
+        final var fromChunkX = (int) from.x() >> 4;
+        final var fromChunkZ = (int) from.z() >> 4;
+        final var chunkX = (int) to.x() >> 4;
+        final var chunkZ = (int) to.z() >> 4;
+        if (fromChunkX != chunkX || fromChunkZ != chunkZ) {
+            this.player.send(new CenterChunk(chunkX, chunkZ));
+            final var world = ((MinecraftWorld) this.player.getWorld());
+            // TODO: we send chunks that are already loaded
+            this.connection.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> world.createChunk(x, z).send(this.player));
+        }
     }
 }

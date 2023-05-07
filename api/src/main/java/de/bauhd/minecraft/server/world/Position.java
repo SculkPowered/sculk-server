@@ -2,6 +2,8 @@ package de.bauhd.minecraft.server.world;
 
 public class Position {
 
+    public static final Position ZERO = new Position(0, 0,0);
+
     private final double x;
     private final double y;
     private final double z;

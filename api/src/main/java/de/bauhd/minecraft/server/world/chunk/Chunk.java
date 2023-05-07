@@ -6,6 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Chunk {
 
+    int CHUNK_SIZE_X = 16;
+    int CHUNK_SIZE_Z = 16;
+    int CHUNK_SECTION_SIZE = 16;
+
     int getX();
 
     int getZ();

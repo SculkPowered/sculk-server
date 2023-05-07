@@ -7,19 +7,21 @@ import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import org.jetbrains.annotations.NotNull;
 
-public final class MinecraftWorld implements World {
+public class MinecraftWorld implements World {
 
     private final AdvancedMinecraftServer server;
     private final String name;
     private final Dimension dimension;
     private final ChunkGenerator generator;
+    private final Position spawnPosition;
 
     public MinecraftWorld(final AdvancedMinecraftServer server, final String name,
-                          final Dimension dimension, final ChunkGenerator generator) {
+                          final Dimension dimension, final ChunkGenerator generator, final Position spawnPosition) {
         this.server = server;
         this.name = name;
         this.dimension = dimension;
         this.generator = generator;
+        this.spawnPosition = spawnPosition;
     }
 
     @Override
@@ -35,6 +37,11 @@ public final class MinecraftWorld implements World {
     @Override
     public @NotNull ChunkGenerator getGenerator() {
         return this.generator;
+    }
+
+    @Override
+    public @NotNull Position getSpawnPosition() {
+        return this.spawnPosition;
     }
 
     @Override
