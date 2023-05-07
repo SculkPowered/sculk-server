@@ -8,7 +8,7 @@ public final class PaletteHolder implements Palette {
     private final byte dimension;
     private final byte maxBitsPerEntry;
     private final byte defaultBitsPerEntry;
-    public Palette palette;
+    private Palette palette;
 
     public PaletteHolder(final int dimension, final int maxBitsPerEntry, final int defaultBitsPerEntry, final Palette palette) {
         this.dimension = (byte) dimension;
@@ -38,7 +38,11 @@ public final class PaletteHolder implements Palette {
 
     @Override
     public void fill(int value) {
-        this.palette = new SingleValuedPalette(this.dimension, value);
+        if (this.palette instanceof SingleValuedPalette singleValuedPalette) {
+            singleValuedPalette.fill(value);
+        } else {
+            this.palette = new SingleValuedPalette(this.dimension, value);
+        }
     }
 
     @Override

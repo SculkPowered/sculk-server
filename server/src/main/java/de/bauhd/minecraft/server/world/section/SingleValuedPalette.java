@@ -5,7 +5,7 @@ import de.bauhd.minecraft.server.protocol.Buffer;
 final class SingleValuedPalette implements Palette {
 
     private final byte dimension;
-    private final int value;
+    private int value;
 
     public SingleValuedPalette(final int dimension, final int value) {
         this.dimension = (byte) dimension;
@@ -32,7 +32,9 @@ final class SingleValuedPalette implements Palette {
     }
 
     @Override
-    public void fill(int value) {}
+    public void fill(int value) {
+        this.value = value;
+    }
 
     @Override
     public void write(Buffer buf) {
