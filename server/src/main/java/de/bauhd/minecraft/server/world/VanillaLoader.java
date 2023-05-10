@@ -122,7 +122,7 @@ public final class VanillaLoader {
                                         throw new IllegalStateException("Unexpected compression scheme: " + compressionScheme);
                             });
 
-            chunk = new MinecraftChunk(VanillaLoader.this.server, VanillaLoader.this.world, chunkX, chunkZ);
+            chunk = new MinecraftChunk(VanillaLoader.this.server, (MinecraftWorld) VanillaLoader.this.world, chunkX, chunkZ);
 
             synchronized (chunk) {
                 for (final var section : nbt.getList("sections")) {

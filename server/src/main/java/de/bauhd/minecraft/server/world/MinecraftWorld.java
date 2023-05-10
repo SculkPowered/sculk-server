@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server.world;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.world.block.Block;
+import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
@@ -49,9 +50,23 @@ public class MinecraftWorld implements World {
         return null;
     }
 
+    @Override
+    public @NotNull Chunk getChunk(int chunkX, int chunkZ) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Chunk getChunkAt(int x, int z) {
+        return this.getChunk(this.chunkCoordinate(x), this.chunkCoordinate(z));
+    }
+
     public MinecraftChunk createChunk(final int chunkX, final int chunkZ) {
         final var chunk = new MinecraftChunk(this.server, this, chunkX, chunkZ);
         this.generator.generate(chunk);
         return chunk;
+    }
+
+    public int chunkCoordinate(final int coordinate) {
+        return coordinate >> 4;
     }
 }

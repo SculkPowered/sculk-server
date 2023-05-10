@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.world;
 
 import de.bauhd.minecraft.server.world.block.Block;
+import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.VoidGenerator;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
@@ -17,7 +18,15 @@ public interface World {
 
     @NotNull Position getSpawnPosition();
 
-    @NotNull Block getBlock(final int x, final int y, final int z);
+    @NotNull Block getBlock(int x, int y, int z);
+
+    @NotNull Chunk getChunk(int chunkX, int chunkZ);
+
+    @NotNull Chunk getChunkAt(int x, int z);
+
+    default @NotNull Chunk getChunkAt(@NotNull Position position) {
+        return this.getChunkAt((int) position.x(), (int) position.z());
+    }
 
     static Builder builder() {
         return new Builder();

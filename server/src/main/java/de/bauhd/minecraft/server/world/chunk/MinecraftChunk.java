@@ -4,20 +4,15 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
-import de.bauhd.minecraft.server.world.World;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.biome.Biome;
-import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import de.bauhd.minecraft.server.world.section.Section;
 import io.netty5.buffer.DefaultBufferAllocators;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.List;
 
 public final class MinecraftChunk implements Chunk {
 
@@ -26,22 +21,25 @@ public final class MinecraftChunk implements Chunk {
             new long[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24});
 
     private final AdvancedMinecraftServer server;
+    private final MinecraftWorld world;
     private final Dimension dimension;
     private final int x;
     private final int z;
-    private final List<Section> sections;
-    private final Int2ObjectMap<Block> blocks = new Int2ObjectOpenHashMap<>();
+    private final Section[] sections;
 
-    public MinecraftChunk(final AdvancedMinecraftServer server, final World world, final int chunkX, final int chunkZ) {
+    private ChunkDataAndUpdateLight packet;
+
+    public MinecraftChunk(final AdvancedMinecraftServer server, final MinecraftWorld world, final int chunkX, final int chunkZ) {
         this.server = server;
-        this.dimension = world.getDimension();
+        this.world = world;
+        this.dimension = this.world.getDimension();
         this.x = chunkX;
         this.z = chunkZ;
 
         final var capacity = this.dimension.maximumSections() - this.dimension.minimumSections();
-        this.sections = new ArrayList<>(capacity);
+        this.sections = new Section[capacity];
         for (int i = 0; i < capacity; i++) {
-            this.sections.add(new Section());
+            this.sections[i] = new Section();
         }
     }
 
@@ -62,35 +60,39 @@ public final class MinecraftChunk implements Chunk {
 
     public void setBlock(int x, int y, int z, int id) {
         this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z), id);
+        this.packet = null;
     }
 
     @Override
     public void setBiome(int x, int y, int z, @NotNull Biome biome) {
         this.section(y).biomes().set(this.relativeCoordinate(x) / 4, this.relativeCoordinate(y) / 4, this.relativeCoordinate(z) / 4,
                 biome.nbt().getInt("id"));
+        this.packet = null;
     }
 
     public void send(MinecraftPlayer player) {
-        player.send(new ChunkDataAndUpdateLight(
-                this.x,
-                this.z,
-                Dimension.OVERWORLD.heightmaps(),
-                this.sectionsToData(),
-                true,
-                EMPTY_BIT_SET,
-                EMPTY_BIT_SET,
-                EMPTY_LIGHT,
-                EMPTY_LIGHT)
-        );
+        if (this.packet == null) {
+            this.packet = new ChunkDataAndUpdateLight(
+                    this.x,
+                    this.z,
+                    Dimension.OVERWORLD.heightmaps(),
+                    this.sectionsToData(),
+                    true,
+                    EMPTY_BIT_SET,
+                    EMPTY_BIT_SET,
+                    EMPTY_LIGHT,
+                    EMPTY_LIGHT
+            );
+        }
+        player.send(this.packet);
     }
 
     public Section section(final int y) {
-        return this.sections.get(this.chunkCoordinate(y) - this.dimension.minimumSections());
+        return this.sections[this.world.chunkCoordinate(y) - this.dimension.minimumSections()];
     }
 
     private byte[] sectionsToData() {
-        final var buf = new Buffer(DefaultBufferAllocators.offHeapAllocator().allocate(0));
-
+        final var buf = new Buffer(DefaultBufferAllocators.offHeapAllocator().allocate(this.sections.length * 8)); // minimum amount
         for (final var section : this.sections) {
             buf.writeShort((short) section.blocks().size());
             section.blocks().write(buf);
@@ -99,10 +101,6 @@ public final class MinecraftChunk implements Chunk {
         final var data = buf.readAll();
         buf.close();
         return data;
-    }
-
-    private int chunkCoordinate(final int coordinate) {
-        return coordinate >> 4;
     }
 
     private int relativeCoordinate(final int coordinate) {
