@@ -110,7 +110,7 @@ public final class MinecraftChunk implements Chunk {
     @Override
     public String toString() {
         return "MinecraftChunk{" +
-                "dimension=" + this.dimension.getClass().getSimpleName() +
+                "dimension=" + this.dimension.nbt().getString("name") +
                 ", x=" + this.x +
                 ", z=" + this.z +
                 '}';
