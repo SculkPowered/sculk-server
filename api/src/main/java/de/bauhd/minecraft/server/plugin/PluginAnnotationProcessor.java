@@ -3,6 +3,7 @@ package de.bauhd.minecraft.server.plugin;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.StandardLocation;
@@ -33,5 +34,10 @@ public final class PluginAnnotationProcessor extends AbstractProcessor {
         });
 
         return false;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.RELEASE_17;
     }
 }
