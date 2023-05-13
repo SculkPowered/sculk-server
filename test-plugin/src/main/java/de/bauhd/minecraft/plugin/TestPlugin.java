@@ -35,7 +35,7 @@ public final class TestPlugin extends Plugin {
         this.getServer().getBiomeHandler().registerBiome(testBiome);
         this.world = this.getServer().loadWorld(World.builder()
                         .name("test")
-                        .spawnPosition(new Position(0, 100, 0)),
+                        .spawnPosition(new Position(0.5, 86, 0.5)),
                 Path.of("world"));
     }
 

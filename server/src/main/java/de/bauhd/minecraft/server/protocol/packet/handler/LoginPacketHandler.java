@@ -14,6 +14,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -50,12 +51,10 @@ public final class LoginPacketHandler extends PacketHandler {
         try {
             if (encryptionResponse.verifyToken() != null) {
                 final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.verifyToken());
-                if (!Arrays.equals(decryptedVerifyToken, this.verifyToken)) {
+                if (!MessageDigest.isEqual(decryptedVerifyToken, this.verifyToken)) {
                     this.connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
                     return false;
                 }
-            } else {
-                // TODO verify signature
             }
 
             final var decryptedSecret = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.sharedSecret());
