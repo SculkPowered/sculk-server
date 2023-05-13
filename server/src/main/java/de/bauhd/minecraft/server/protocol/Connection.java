@@ -87,6 +87,12 @@ public final class Connection extends ChannelHandlerAdapter {
         if (this.player != null) {
             this.server.removePlayer(this.player.getUniqueId());
             this.server.getBossBarListener().onDisconnect(this.player);
+
+            final var world = this.player.getWorld();
+            final var position = this.player.getPosition();
+            this.forChunksInRange(world.chunkCoordinate((int) position.x()), world.chunkCoordinate((int) position.z()),
+                    10, (x, z) -> world.getChunk(x, z).viewers().remove(this.player));
+
             LOGGER.info("Connection from " + this.player.getUsername() + " closed.");
         }
         ctx.close();
@@ -136,7 +142,11 @@ public final class Connection extends ChannelHandlerAdapter {
 
             final var chunkX = (int) position.x() >> 4;
             final var chunkZ = (int) position.z() >> 4;
-            this.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> world.createChunk(x, z).send(this.player));
+            this.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> {
+                final var chunk = world.getChunk(x, z);
+                chunk.send(this.player);
+                chunk.viewers().add(this.player);
+            });
             this.send(new CenterChunk(chunkX, chunkZ));
 
             final var playerInfo = PlayerInfo.add(Collections.singletonList(this.player));
