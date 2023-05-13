@@ -16,7 +16,6 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class LoginPacketHandler extends PacketHandler {
