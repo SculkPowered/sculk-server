@@ -1,11 +1,13 @@
 package de.bauhd.minecraft.server.world;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
 public class MinecraftWorld implements World {
@@ -15,6 +17,7 @@ public class MinecraftWorld implements World {
     private final Dimension dimension;
     private final ChunkGenerator generator;
     private final Position spawnPosition;
+    private final Long2ObjectMap<Chunk> chunks;
 
     public MinecraftWorld(final AdvancedMinecraftServer server, final String name,
                           final Dimension dimension, final ChunkGenerator generator, final Position spawnPosition) {
@@ -23,6 +26,7 @@ public class MinecraftWorld implements World {
         this.dimension = dimension;
         this.generator = generator;
         this.spawnPosition = spawnPosition;
+        this.chunks = new Long2ObjectOpenHashMap<>();
     }
 
     @Override
@@ -46,27 +50,43 @@ public class MinecraftWorld implements World {
     }
 
     @Override
-    public @NotNull Block getBlock(int x, int y, int z) {
-        return null;
+    public void setBlock(int x, int y, int z, Key key) {
+        final var chunk = this.getChunkAt(x, z);
+        synchronized (chunk) {
+            chunk.setBlock(x, y, z, key);
+        }
     }
 
     @Override
-    public @NotNull Chunk getChunk(int chunkX, int chunkZ) {
-        return null;
+    public @NotNull MinecraftChunk getChunk(int chunkX, int chunkZ) {
+        var chunk = this.chunks.get(this.chunkIndex(chunkX, chunkZ));
+        if (chunk == null) {
+            chunk = this.createChunk(chunkX, chunkZ);
+        }
+        return (MinecraftChunk) chunk;
     }
 
     @Override
-    public @NotNull Chunk getChunkAt(int x, int z) {
+    public @NotNull MinecraftChunk getChunkAt(int x, int z) {
         return this.getChunk(this.chunkCoordinate(x), this.chunkCoordinate(z));
     }
 
-    public MinecraftChunk createChunk(final int chunkX, final int chunkZ) {
+    protected MinecraftChunk createChunk(final int chunkX, final int chunkZ) {
         final var chunk = new MinecraftChunk(this.server, this, chunkX, chunkZ);
         this.generator.generate(chunk);
+        this.put(chunk);
         return chunk;
+    }
+
+    public void put(final MinecraftChunk chunk) {
+        this.chunks.put(this.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
     }
 
     public int chunkCoordinate(final int coordinate) {
         return coordinate >> 4;
+    }
+
+    public long chunkIndex(final int x, final int z) {
+        return ((((long) x) << 32) | (z & 0xFFFFFFFFL));
     }
 }

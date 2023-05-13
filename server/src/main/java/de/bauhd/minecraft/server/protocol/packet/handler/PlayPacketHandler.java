@@ -15,8 +15,12 @@ import de.bauhd.minecraft.server.protocol.packet.play.container.CloseContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.Position;
+import de.bauhd.minecraft.server.world.block.Block;
+import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+
+import java.util.ArrayList;
 
 public final class PlayPacketHandler extends PacketHandler {
 
@@ -160,19 +164,18 @@ public final class PlayPacketHandler extends PacketHandler {
     @Override
     public boolean handle(PlayerAction playerAction) {
         switch (playerAction.status()) {
-            case 0: // only if instant break
-                // TODO get chunk viewers
-                this.server.sendAll(new BlockUpdate(playerAction.position(), 0));
-                break;
-            case 3:
-
-                break;
-            case 4:
+            case 0 -> this.player.getWorld().setBlock(playerAction.position(), Block.AIR);  // only if instant break
+            case 3 -> this.player.setItem((short) (36 + this.player.getHeldItemSlot()), null); // TODO: inventory
+            case 4 -> {
                 final var itemInHand = this.player.getItemInMainHand();
                 if (itemInHand != null) {
                     itemInHand.amount(itemInHand.amount() - 1);
                 }
-                break;
+            }
+            case 5 -> {}
+            case 6 -> {
+                // TODO: inventory - swap item
+            }
         }
         return false;
     }
@@ -264,8 +267,23 @@ public final class PlayPacketHandler extends PacketHandler {
         if (fromChunkX != chunkX || fromChunkZ != chunkZ) {
             this.player.send(new CenterChunk(chunkX, chunkZ));
             final var world = ((MinecraftWorld) this.player.getWorld());
-            // TODO: we send chunks that are already loaded
-            this.connection.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> world.createChunk(x, z).send(this.player));
+            final var chunks = new ArrayList<MinecraftChunk>();
+            this.connection.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> {
+                final var chunk = world.getChunk(x, z);
+                chunks.add(chunk);
+                chunk.viewers().add(this.player); // new in range
+            });
+            this.connection.forChunksInRange(fromChunkX, fromChunkZ, 10, (x, z) -> {
+                final var chunk = world.getChunk(x, z);
+                if (!chunks.contains(chunk)) {
+                    chunk.viewers().remove(this.player); // chunk not in range
+                } else {
+                    chunks.remove(chunk); // already loaded
+                }
+            });
+            for (final var chunk : chunks) { // send all new chunks
+                chunk.send(this.player);
+            }
         }
     }
 }

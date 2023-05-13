@@ -4,6 +4,7 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
+import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.biome.Biome;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
@@ -13,6 +14,8 @@ import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class MinecraftChunk implements Chunk {
 
@@ -26,6 +29,7 @@ public final class MinecraftChunk implements Chunk {
     private final int x;
     private final int z;
     private final Section[] sections;
+    private final Set<MinecraftPlayer> viewers;
 
     private ChunkDataAndUpdateLight packet;
 
@@ -41,6 +45,7 @@ public final class MinecraftChunk implements Chunk {
         for (int i = 0; i < capacity; i++) {
             this.sections[i] = new Section();
         }
+        this.viewers = new HashSet<>();
     }
 
     @Override
@@ -61,6 +66,12 @@ public final class MinecraftChunk implements Chunk {
     public void setBlock(int x, int y, int z, int id) {
         this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z), id);
         this.packet = null;
+        if (this.viewers.size() != 0) {
+            final var packet = new BlockUpdate(x, y, z, id);
+            for (final var viewer : this.viewers) {
+                viewer.send(packet);
+            }
+        }
     }
 
     @Override
@@ -114,5 +125,9 @@ public final class MinecraftChunk implements Chunk {
                 ", x=" + this.x +
                 ", z=" + this.z +
                 '}';
+    }
+
+    public Set<MinecraftPlayer> viewers() {
+        return this.viewers;
     }
 }

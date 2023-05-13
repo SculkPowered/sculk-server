@@ -18,10 +18,12 @@ public final class VanillaWorld extends MinecraftWorld {
     }
 
     @Override
-    public MinecraftChunk createChunk(int chunkX, int chunkZ) {
+    protected MinecraftChunk createChunk(int chunkX, int chunkZ) {
         var chunk = this.loader.getChunk(chunkX, chunkZ);
         if (chunk == null) {
             chunk = super.createChunk(chunkX, chunkZ);
+        } else {
+            this.put(chunk);
         }
         return chunk;
     }

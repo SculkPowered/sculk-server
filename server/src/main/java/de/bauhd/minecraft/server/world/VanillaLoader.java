@@ -3,8 +3,6 @@ package de.bauhd.minecraft.server.world;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
@@ -26,7 +24,7 @@ public final class VanillaLoader {
     private final AdvancedMinecraftServer server;
     private final Path regionPath;
     private final Map<String, RegionFile> regionCache;
-    private World world;
+    private MinecraftWorld world;
 
     public VanillaLoader(final AdvancedMinecraftServer server, final Path path) {
         this.server = server;
@@ -51,7 +49,7 @@ public final class VanillaLoader {
         }
     }
 
-    public void setWorld(final World world) {
+    public void setWorld(final MinecraftWorld world) {
         this.world = world;
     }
 
@@ -59,19 +57,13 @@ public final class VanillaLoader {
         return (int) Math.floor((double) coordinate / 32);
     }
 
-    private long chunkIndex(final int x, final int z) {
-        return ((((long) x) << 32) | (z & 0xFFFFFFFFL));
-    }
-
     private final class RegionFile {
 
-        private final Long2ObjectMap<MinecraftChunk> chunks;
         private final RandomAccessFile accessFile;
         private final int[] locations = new int[1024];
         private final boolean[] freeSectors;
 
         public RegionFile(final Path path) throws IOException {
-            this.chunks = new Long2ObjectOpenHashMap<>();
             this.accessFile = new RandomAccessFile(path.toFile(), "r");
             final var available = this.accessFile.length() / SECTOR_SIZE;
 
@@ -95,12 +87,6 @@ public final class VanillaLoader {
         }
 
         private MinecraftChunk getChunk(final int chunkX, final int chunkZ) throws IOException {
-            final var index = VanillaLoader.this.chunkIndex(chunkX, chunkZ);
-            var chunk = this.chunks.get(index);
-            if (chunk != null) {
-                return chunk;
-            }
-
             final var offset = this.sectorOffset(this.locations[(chunkX & 31) + (chunkZ & 31) * 32]) * SECTOR_SIZE;
             var buf = ByteBuffer.allocate(5);
             this.accessFile.getChannel().read(buf, offset);
@@ -122,8 +108,8 @@ public final class VanillaLoader {
                                         throw new IllegalStateException("Unexpected compression scheme: " + compressionScheme);
                             });
 
-            chunk = new MinecraftChunk(VanillaLoader.this.server, (MinecraftWorld) VanillaLoader.this.world, chunkX, chunkZ);
 
+            final var chunk = new MinecraftChunk(VanillaLoader.this.server, VanillaLoader.this.world, chunkX, chunkZ);
             synchronized (chunk) {
                 for (final var section : nbt.getList("sections")) {
                     final var compound = ((CompoundBinaryTag) section);
@@ -151,7 +137,6 @@ public final class VanillaLoader {
                         }
                     }
                 }
-                this.chunks.put(index, chunk);
             }
             return chunk;
         }

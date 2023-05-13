@@ -11,6 +11,7 @@ import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.World;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -45,7 +46,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private Component displayName;
     private Position position;
     private int heldItem;
-    private World world;
+    private MinecraftWorld world;
     private final Int2ObjectMap<ItemStack> slots = new Int2ObjectOpenHashMap<>();
 
     public MinecraftPlayer(final Connection connection, final UUID uniqueId, final String name, final GameProfile profile) {
@@ -121,13 +122,13 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     }
 
     @Override
-    public World getWorld() {
+    public MinecraftWorld getWorld() {
         return this.world;
     }
 
     @Override
     public void setWorld(@NotNull World world) {
-        this.world = world;
+        this.world = (MinecraftWorld) world;
         this.position = world.getSpawnPosition();
         if (!this.connection.afterLoginPacket()) return;
         this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));

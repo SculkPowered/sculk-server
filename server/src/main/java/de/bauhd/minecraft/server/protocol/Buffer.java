@@ -218,7 +218,11 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writePosition(final @NotNull Position position) {
-        return this.writeLong((((long) position.x() & 0x3FFFFFF) << 38) | (((long) position.z() & 0x3FFFFFF) << 12) | ((long) position.y() & 0xFFF));
+        return this.writePosition(position.x(), position.y(), position.z());
+    }
+
+    public @NotNull Buffer writePosition(final double x, final double y, final double z) {
+        return this.writeLong((((long) x & 0x3FFFFFF) << 38) | (((long) z & 0x3FFFFFF) << 12) | ((long) y & 0xFFF));
     }
 
     public @NotNull Buffer writeLongArray(final long @NotNull [] longs) {
