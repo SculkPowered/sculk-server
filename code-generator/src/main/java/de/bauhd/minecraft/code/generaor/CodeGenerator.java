@@ -5,35 +5,46 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class CodeGenerator {
 
     private static final Gson GSON = new Gson();
+    private static final Type STRING_JSON_MAP = TypeToken.getParameterized(Map.class, String.class, JsonObject.class).getType();
 
     public static void main(String[] args) throws IOException {
-        new CodeGenerator().append();
+        final var path = Path.of("reports");
+        if (Files.notExists(path)) {
+            System.err.println("reports directory not found.");
+            return;
+        }
+
+        new CodeGenerator().generate(path);
     }
 
-    private void append() throws IOException {
-        this.generateBlocks();
+    private void generate(final Path reports) throws IOException {
+        final var path = Path.of("api", "src", "main", "java", "de", "bauhd", "minecraft", "server");
+
+        try (final var reader = Files.newBufferedReader(reports.resolve("blocks.json"))) {
+            this.generateBlocks(reader, path.resolve("world").resolve("block").resolve("Block.java"));
+        }
+        try (final var reader = Files.newBufferedReader(reports.resolve("registries.json"))) {
+            final var json = GSON.fromJson(reader, JsonObject.class);
+            this.generateRegistry(json.get("minecraft:item").getAsJsonObject(),
+                    path.resolve("inventory").resolve("item").resolve("Material.java"));
+            this.generateRegistry(json.get("minecraft:entity_type").getAsJsonObject(),
+                    path.resolve("entity").resolve("EntityType.java"));
+        }
     }
 
-    private void generateBlocks() throws IOException {
-        final var path = Path.of("api", "src", "main", "java", "de", "bauhd", "minecraft", "server", "world", "block", "Block.java");
-        final var mapStringJsonObject = TypeToken.getParameterized(Map.class, String.class, JsonObject.class).getType();
+    private void generateBlocks(final Reader reader, final Path path) throws IOException {
         this.append(path, list -> {
-            final Map<String, JsonObject> map = GSON.fromJson(
-                    new InputStreamReader(Objects.requireNonNull(CodeGenerator.class.getClassLoader()
-                            .getResourceAsStream("blocks.json"))), mapStringJsonObject);
+            final Map<String, JsonObject> map = GSON.fromJson(reader, STRING_JSON_MAP);
             map.forEach((key, json) -> {
                 final var states = GSON.fromJson(json.get("states"), JsonArray.class);
                 for (final var state : states) {
@@ -44,6 +55,15 @@ public final class CodeGenerator {
                                 " = new Block(\"" + key + "\", " + object.get("id") + ");");
                     }
                 }
+            });
+        });
+    }
+
+    private void generateRegistry(final JsonObject object, final Path path) throws IOException {
+        this.append(path, list -> {
+            final Map<String, JsonObject> map = GSON.fromJson(object.get("entries"), STRING_JSON_MAP);
+            map.forEach((key, json) -> {
+                list.add("    " + key.split(":")[1].toUpperCase() + "(" + json.get("protocol_id").getAsInt() + "),");
             });
         });
     }

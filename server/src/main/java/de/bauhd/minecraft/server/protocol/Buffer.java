@@ -196,7 +196,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         if (!this.readBoolean()) {
             return null;
         }
-        return new ItemStack(Material.class.getEnumConstants()[this.readVarInt()], this.readByte(), this.readCompoundTag());
+        return new ItemStack(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
     }
 
     public @NotNull Buffer writeSlot(final @Nullable ItemStack slot) {
