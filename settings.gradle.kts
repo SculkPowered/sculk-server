@@ -3,5 +3,6 @@ include(
     "api",
     "server",
     "server:appender",
-    "test-plugin"
+    "test-plugin",
+    "code-generator"
 )

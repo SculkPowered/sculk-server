@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.world;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import net.kyori.adventure.nbt.BinaryTagIO;
@@ -123,7 +124,7 @@ public final class VanillaLoader {
                     for (int i = 0; i < palette.length; i++) {
                         final var entry = blockPalette.getCompound(i);
                         final var block = entry.getString("Name");
-                        palette[i] = VanillaLoader.this.server.getBlockRegistry().getId(block);
+                        palette[i] = Block.get(block).stateId();
                         // ignore properties for now
                     }
 

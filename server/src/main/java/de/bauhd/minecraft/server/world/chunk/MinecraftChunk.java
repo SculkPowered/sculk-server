@@ -7,10 +7,10 @@ import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.biome.Biome;
+import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import de.bauhd.minecraft.server.world.section.Section;
 import io.netty5.buffer.DefaultBufferAllocators;
-import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.BitSet;
@@ -59,8 +59,8 @@ public final class MinecraftChunk implements Chunk {
     }
 
     @Override
-    public void setBlock(int x, int y, int z, @NotNull Key key) {
-        this.setBlock(x, y, z, this.server.getBlockRegistry().getId(key));
+    public void setBlock(int x, int y, int z, @NotNull Block block) {
+        this.setBlock(x, y, z, block.stateId());
     }
 
     public void setBlock(int x, int y, int z, int id) {

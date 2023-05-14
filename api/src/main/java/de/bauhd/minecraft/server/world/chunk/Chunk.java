@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.world.chunk;
 
 import de.bauhd.minecraft.server.world.biome.Biome;
-import net.kyori.adventure.key.Key;
+import de.bauhd.minecraft.server.world.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 public interface Chunk {
@@ -14,7 +14,7 @@ public interface Chunk {
 
     int getZ();
 
-    void setBlock(int x, int y, int z, @NotNull Key key);
+    void setBlock(int x, int y, int z, @NotNull Block block);
 
     void setBiome(int x, int y, int z, @NotNull Biome biome);
 

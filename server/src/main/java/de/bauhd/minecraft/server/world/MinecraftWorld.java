@@ -1,13 +1,13 @@
 package de.bauhd.minecraft.server.world;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 
 public class MinecraftWorld implements World {
@@ -50,10 +50,10 @@ public class MinecraftWorld implements World {
     }
 
     @Override
-    public void setBlock(int x, int y, int z, Key key) {
+    public void setBlock(int x, int y, int z, @NotNull Block block) {
         final var chunk = this.getChunkAt(x, z);
         synchronized (chunk) {
-            chunk.setBlock(x, y, z, key);
+            chunk.setBlock(x, y, z, block);
         }
     }
 

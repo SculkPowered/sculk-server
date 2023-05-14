@@ -1,10 +1,10 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.VoidGenerator;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
-import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,10 +18,10 @@ public interface World {
 
     @NotNull Position getSpawnPosition();
 
-    void setBlock(int x, int y, int z, Key key);
+    void setBlock(int x, int y, int z, @NotNull Block block);
 
-    default void setBlock(@NotNull Position position, @NotNull Key key) {
-        this.setBlock((int) position.x(), (int) position.y(), (int) position.z(), key);
+    default void setBlock(@NotNull Position position, @NotNull Block block) {
+        this.setBlock((int) position.x(), (int) position.y(), (int) position.z(), block);
     }
 
     @NotNull Chunk getChunk(int chunkX, int chunkZ);

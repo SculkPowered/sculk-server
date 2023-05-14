@@ -24,7 +24,6 @@ import de.bauhd.minecraft.server.world.VanillaLoader;
 import de.bauhd.minecraft.server.world.VanillaWorld;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.MinecraftBiomeHandler;
-import de.bauhd.minecraft.server.world.block.BlockRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -78,7 +77,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private final MinecraftEventHandler eventHandler;
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
-    private final BlockRegistry registry;
     private final NettyServer nettyServer;
 
     AdvancedMinecraftServer() {
@@ -103,7 +101,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         this.eventHandler = new MinecraftEventHandler();
         this.commandHandler = new MinecraftCommandHandler(this);
         this.bossBarListener = new BossBarListener();
-        this.registry = new BlockRegistry();
 
         this.pluginHandler.loadPlugins();
 
@@ -231,10 +228,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     public BossBarListener getBossBarListener() {
         return this.bossBarListener;
-    }
-
-    public BlockRegistry getBlockRegistry() {
-        return this.registry;
     }
 
     public void sendAll(final Packet packet) {
