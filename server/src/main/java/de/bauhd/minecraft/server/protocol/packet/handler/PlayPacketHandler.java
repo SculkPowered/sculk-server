@@ -69,8 +69,10 @@ public final class PlayPacketHandler extends PacketHandler {
     @Override
     public boolean handle(ClientInformation clientInformation) {
         if (this.clientInformation == null || this.clientInformation.skinParts() != clientInformation.skinParts()) {
-            this.player.sendViewersAndSelf(new EntityMetadata(this.player.getId(), buf ->
-                    buf.writeUnsignedByte(17).writeVarInt(0).writeByte((byte) clientInformation.skinParts())));
+            this.player.metadata.setByte(17, (byte) clientInformation.skinParts());
+        }
+        if (this.clientInformation == null || this.clientInformation.mainHand() != clientInformation.mainHand()) {
+            this.player.metadata.setByte(18, (byte) clientInformation.mainHand());
         }
         this.clientInformation = clientInformation;
         return false;

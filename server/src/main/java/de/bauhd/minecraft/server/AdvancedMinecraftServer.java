@@ -119,8 +119,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         if (this.configuration.compressionThreshold() != -1) {
             Connection.COMPRESSION_PACKET = new CompressionPacket(this.configuration.compressionThreshold());
         }
-
-        new Worker(this).start();
     }
 
     public void shutdown(final boolean runtime) {
@@ -189,10 +187,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     @Override
     public @NotNull Collection<Player> getAllPlayers() {
         return List.copyOf(this.players.values());
-    }
-
-    public Collection<MinecraftPlayer> getMinecraftPlayers() {
-        return this.players.values();
     }
 
     @Override

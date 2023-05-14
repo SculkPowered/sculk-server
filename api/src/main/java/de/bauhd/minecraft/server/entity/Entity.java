@@ -32,12 +32,17 @@ public interface Entity extends Viewable {
 
     void setCustomName(@Nullable Component customName);
 
+    boolean isCustomNameVisible();
+
+    void setCustomNameVisible(boolean visible);
+
+    boolean isSilent();
+
+    void setSilent(boolean silent);
+
     boolean hasGravity();
 
     void setGravity(boolean gravity);
-
-    @ApiStatus.Experimental
-    @NotNull Pose getPose();
 
     @ApiStatus.Experimental
     void setPose(@NotNull Pose pose);

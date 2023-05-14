@@ -128,7 +128,11 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void setWorld(@NotNull World world) {
+        if (this.world != null) {
+            this.world.entities().remove(this);
+        }
         this.world = (MinecraftWorld) world;
+        this.world.entities().add(this);
         this.position = world.getSpawnPosition();
         if (!this.connection.afterLoginPacket()) return;
         this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));
@@ -183,6 +187,25 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         return EntityType.PLAYER;
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        final var time = System.currentTimeMillis();
+
+        final var elapsedTime = System.currentTimeMillis() - this.lastSendKeepAlive;
+        if (this.keepAlivePending) {
+            if (elapsedTime > 30000) { // disconnect after 30 seconds
+                this.disconnect(Component.translatable("disconnect.timeout"));
+            }
+        } else {
+            if (elapsedTime > 15000) { // send all 15 seconds
+                this.keepAlivePending = true;
+                this.lastSendKeepAlive = time;
+                this.send(new KeepAlive(time));
+            }
+        }
+    }
+
     public void send(final Packet packet) {
         this.connection.send(packet);
     }
@@ -201,22 +224,6 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     public Protocol.Version getVersion() {
         return this.connection.version();
-    }
-
-    public long lastSendKeepAlive() {
-        return this.lastSendKeepAlive;
-    }
-
-    public void setLastSendKeepAlive(final long lastSendKeepAlive) {
-        this.lastSendKeepAlive = lastSendKeepAlive;
-    }
-
-    public boolean keepAlivePending() {
-        return this.keepAlivePending;
-    }
-
-    public void setKeepAlivePending(final boolean keepAlivePending) {
-        this.keepAlivePending = keepAlivePending;
     }
 
     // TODO change
@@ -242,5 +249,9 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public @NotNull Collection<Player> getViewers() {
         return this.connection.server().getAllPlayers().stream().filter(player -> player != this).toList();
+    }
+
+    public void setKeepAlivePending(boolean pending) {
+        this.keepAlivePending = pending;
     }
 }

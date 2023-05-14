@@ -114,6 +114,17 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return this;
     }
 
+    public @NotNull Buffer writeVarLong(long value) {
+        while (true) {
+            if ((value & ~((long) 0x7F)) == 0) {
+                this.writeByte((byte) value);
+                return this;
+            }
+            this.writeByte((byte) ((value & 0x7F) | 0x80));
+            value >>>= 7;
+        }
+    }
+
     public double readDouble() {
         return this.buf.readDouble();
     }

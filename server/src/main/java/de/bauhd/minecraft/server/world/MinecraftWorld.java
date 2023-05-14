@@ -1,6 +1,8 @@
 package de.bauhd.minecraft.server.world;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.Worker;
+import de.bauhd.minecraft.server.entity.AbstractEntity;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
@@ -10,6 +12,9 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MinecraftWorld implements World {
 
     private final AdvancedMinecraftServer server;
@@ -18,6 +23,7 @@ public class MinecraftWorld implements World {
     private final ChunkGenerator generator;
     private final Position spawnPosition;
     private final Long2ObjectMap<Chunk> chunks;
+    private final List<AbstractEntity> entities;
 
     public MinecraftWorld(final AdvancedMinecraftServer server, final String name,
                           final Dimension dimension, final ChunkGenerator generator, final Position spawnPosition) {
@@ -27,6 +33,8 @@ public class MinecraftWorld implements World {
         this.generator = generator;
         this.spawnPosition = spawnPosition;
         this.chunks = new Long2ObjectOpenHashMap<>();
+        this.entities = new ArrayList<>();
+        new Worker(this).start();
     }
 
     @Override
@@ -82,11 +90,19 @@ public class MinecraftWorld implements World {
         this.chunks.put(this.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
     }
 
+    public List<AbstractEntity> entities() {
+        return this.entities;
+    }
+
     public int chunkCoordinate(final int coordinate) {
         return coordinate >> 4;
     }
 
     public long chunkIndex(final int x, final int z) {
         return ((((long) x) << 32) | (z & 0xFFFFFFFFL));
+    }
+
+    public boolean isAlive() {
+        return true; // TODO
     }
 }
