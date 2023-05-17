@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
@@ -31,6 +32,8 @@ public interface World {
     default @NotNull Chunk getChunkAt(@NotNull Position position) {
         return this.getChunkAt((int) position.x(), (int) position.z());
     }
+
+    void spawnEntity(@NotNull Entity entity, @NotNull Position position);
 
     static Builder builder() {
         return new Builder();

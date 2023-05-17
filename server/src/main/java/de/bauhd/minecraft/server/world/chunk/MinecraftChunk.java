@@ -1,7 +1,8 @@
 package de.bauhd.minecraft.server.world.chunk;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.AbstractEntity;
+import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.play.ChunkDataAndUpdateLight;
 import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
@@ -13,9 +14,7 @@ import de.bauhd.minecraft.server.world.section.Section;
 import io.netty5.buffer.DefaultBufferAllocators;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public final class MinecraftChunk implements Chunk {
 
@@ -29,7 +28,8 @@ public final class MinecraftChunk implements Chunk {
     private final int x;
     private final int z;
     private final Section[] sections;
-    private final Set<MinecraftPlayer> viewers;
+    private final List<MinecraftPlayer> viewers;
+    private final List<AbstractEntity> entities;
 
     private ChunkDataAndUpdateLight packet;
 
@@ -45,7 +45,8 @@ public final class MinecraftChunk implements Chunk {
         for (int i = 0; i < capacity; i++) {
             this.sections[i] = new Section();
         }
-        this.viewers = new HashSet<>();
+        this.viewers = new ArrayList<>();
+        this.entities = new ArrayList<>();
     }
 
     @Override
@@ -127,7 +128,15 @@ public final class MinecraftChunk implements Chunk {
                 '}';
     }
 
-    public Set<MinecraftPlayer> viewers() {
+    public List<MinecraftPlayer> viewers() {
         return this.viewers;
+    }
+
+    public List<AbstractEntity> entities() {
+        return this.entities;
+    }
+
+    public void tick() {
+        this.entities.forEach(AbstractEntity::tick);
     }
 }

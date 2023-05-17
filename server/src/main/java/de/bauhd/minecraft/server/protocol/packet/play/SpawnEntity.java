@@ -32,7 +32,6 @@ public final class SpawnEntity implements Packet {
                 .writeAngel(this.position.yaw())
                 .writeAngel(this.position.pitch())
                 .writeAngel(0)
-                .writeAngel(0)
                 .writeVarInt(0)
                 .writeShort((short) 0)
                 .writeShort((short) 0)

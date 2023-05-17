@@ -1,6 +1,8 @@
 package de.bauhd.minecraft.server.entity;
 
 import de.bauhd.minecraft.server.Viewable;
+import de.bauhd.minecraft.server.world.Position;
+import de.bauhd.minecraft.server.world.World;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +13,12 @@ public interface Entity extends Viewable {
     int getId();
 
     @NotNull EntityType getType();
+
+    World getWorld();
+
+    void setWorld(@NotNull World world);
+
+    @NotNull Position getPosition();
 
     boolean isOnFire();
 
@@ -43,6 +51,9 @@ public interface Entity extends Viewable {
     boolean hasGravity();
 
     void setGravity(boolean gravity);
+
+    @ApiStatus.Experimental
+    @NotNull Pose getPose();
 
     @ApiStatus.Experimental
     void setPose(@NotNull Pose pose);

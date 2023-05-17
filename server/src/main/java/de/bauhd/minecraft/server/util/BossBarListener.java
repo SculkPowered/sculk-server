@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.util;
 
-import de.bauhd.minecraft.server.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;

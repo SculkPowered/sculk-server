@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server;
 
 import de.bauhd.minecraft.server.command.CommandHandler;
+import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.EventHandler;
 import de.bauhd.minecraft.server.plugin.PluginHandler;
@@ -35,4 +36,6 @@ public interface MinecraftServer {
     @NotNull World createWorld(@NotNull World.Builder builder);
 
     @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull Path path);
+
+    <T extends Entity> T createEntity(@NotNull Class<T> clazz);
 }

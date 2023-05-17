@@ -2,8 +2,9 @@ package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
+import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
@@ -13,14 +14,10 @@ import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainerButton;
 import de.bauhd.minecraft.server.protocol.packet.play.container.CloseContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
-import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.block.Block;
-import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-
-import java.util.ArrayList;
 
 public final class PlayPacketHandler extends PacketHandler {
 
@@ -122,7 +119,7 @@ public final class PlayPacketHandler extends PacketHandler {
         this.player.sendViewers(new EntityPosition(this.player.getId(),
                 this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z), playerPosition.onGround()));
         this.player.setPosition(new Position(x, y, z, position.yaw(), position.pitch()));
-        this.calculateChunks(position, this.player.getPosition());
+        this.connection.calculateChunks(position, this.player.getPosition());
         return false;
     }
 
@@ -140,7 +137,7 @@ public final class PlayPacketHandler extends PacketHandler {
                         yaw, pitch, playerPositionAndRotation.onGround()),
                 new HeadRotation(this.player.getId(), yaw));
         this.player.setPosition(new Position(x, y, z, yaw, pitch));
-        this.calculateChunks(position, this.player.getPosition());
+        this.connection.calculateChunks(position, this.player.getPosition());
         return false;
     }
 
@@ -184,19 +181,11 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(PlayerCommand playerCommand) {
-        /*if (this.action == Action.START_SNEAKING) {
-            final var packet = new EntityMetadata(connection.player().getId(), 6, 18, 5);
-            for (final var otherPlayer : Worker.PLAYERS) {
-                if (otherPlayer == player) continue;
-                otherPlayer.send(packet);
-            }
-        } else if (this.action == Action.STOP_SNEAKING) {
-            final var packet = new EntityMetadata(connection.player().getId(), 6, 18, 0);
-            for (final var otherPlayer : Worker.PLAYERS) {
-                if (otherPlayer == player) continue;
-                otherPlayer.send(packet);
-            }
-        }*/
+        if (playerCommand.action() == PlayerCommand.Action.START_SNEAKING) {
+            this.player.setPose(Entity.Pose.SNEAKING);
+        } else if (playerCommand.action() == PlayerCommand.Action.STOP_SNEAKING) {
+            this.player.setPose(Entity.Pose.STANDING);
+        }
         return false;
     }
 
@@ -259,33 +248,5 @@ public final class PlayPacketHandler extends PacketHandler {
 
     private short delta(final double previous, final double current) {
         return (short) ((current * 32 - previous * 32) * 128);
-    }
-
-    private void calculateChunks(final Position from, final Position to) {
-        final var fromChunkX = (int) from.x() >> 4;
-        final var fromChunkZ = (int) from.z() >> 4;
-        final var chunkX = (int) to.x() >> 4;
-        final var chunkZ = (int) to.z() >> 4;
-        if (fromChunkX != chunkX || fromChunkZ != chunkZ) {
-            this.player.send(new CenterChunk(chunkX, chunkZ));
-            final var world = ((MinecraftWorld) this.player.getWorld());
-            final var chunks = new ArrayList<MinecraftChunk>();
-            this.connection.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> {
-                final var chunk = world.getChunk(x, z);
-                chunks.add(chunk);
-                chunk.viewers().add(this.player); // new in range
-            });
-            this.connection.forChunksInRange(fromChunkX, fromChunkZ, 10, (x, z) -> {
-                final var chunk = world.getChunk(x, z);
-                if (!chunks.contains(chunk)) {
-                    chunk.viewers().remove(this.player); // chunk not in range
-                } else {
-                    chunks.remove(chunk); // already loaded
-                }
-            });
-            for (final var chunk : chunks) { // send all new chunks
-                chunk.send(this.player);
-            }
-        }
     }
 }

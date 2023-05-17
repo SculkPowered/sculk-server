@@ -67,12 +67,8 @@ public final class PlayerInfo implements Packet {
         UPDATE_LISTED((buf, entry) -> buf.writeBoolean(true)),
         UPDATE_LATENCY((buf, entry) -> buf.writeVarInt(entry.getPing())),
         UPDATE_DISPLAY_NAME((buf, entry) -> {
-            if (entry.getDisplayName() != null) {
-                buf
-                        .writeBoolean(true)
-                        .writeComponent(entry.getDisplayName());
-            } else {
-                buf.writeBoolean(false);
+            if (buf.writeOptional(entry.getDisplayName())) {
+                buf.writeComponent(entry.getDisplayName());
             }
         });
 

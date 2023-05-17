@@ -252,6 +252,12 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return this.writeByte((byte) (angel * 256 / 360));
     }
 
+    public boolean writeOptional(final @Nullable Object object) {
+        var b = object != null;
+        this.buf.writeBoolean(b);
+        return b;
+    }
+
     public void close() {
         this.buf.close();
     }

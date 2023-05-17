@@ -14,8 +14,7 @@ public interface ArmorStand extends LivingEntity {
 
     void setBasePlate(boolean basePlate);
 
-    boolean isMasker();
+    boolean isMarker();
 
     void setMarker(boolean marker);
-
 }

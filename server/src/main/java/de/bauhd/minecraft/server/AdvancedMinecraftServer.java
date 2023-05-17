@@ -4,7 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.bauhd.minecraft.server.command.MinecraftCommandHandler;
 import de.bauhd.minecraft.server.dimension.MinecraftDimensionHandler;
-import de.bauhd.minecraft.server.entity.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.*;
+import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.MinecraftEventHandler;
@@ -78,6 +79,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private final MinecraftCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
     private final NettyServer nettyServer;
+    private final EntityClassToSupplierMap entities = new EntityClassToSupplierMap();
 
     AdvancedMinecraftServer() {
         final var startTime = System.currentTimeMillis();
@@ -210,6 +212,16 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         final var vanillaLoader = new VanillaLoader(this, path);
         return new VanillaWorld(this, Objects.requireNonNull(builder.name(), "a world requires a name"),
                 builder.dimension(), builder.generator(), builder.spawnPosition(), vanillaLoader);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Entity> T createEntity(@NotNull Class<T> clazz) {
+        final var supplier = this.entities.get(clazz);
+        if (supplier == null) {
+            throw new NullPointerException("No supplier for class" + clazz + " found!");
+        }
+        return (T) supplier.get();
     }
 
     public MinecraftConfiguration getConfiguration() {

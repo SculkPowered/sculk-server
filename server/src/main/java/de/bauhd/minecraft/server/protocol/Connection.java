@@ -3,8 +3,8 @@ package de.bauhd.minecraft.server.protocol;
 import com.google.gson.reflect.TypeToken;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.MinecraftConfig;
-import de.bauhd.minecraft.server.entity.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
+import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
 import de.bauhd.minecraft.server.protocol.netty.codec.*;
@@ -20,6 +20,8 @@ import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.util.MojangUtil;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
+import de.bauhd.minecraft.server.world.Position;
+import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelFutureListeners;
@@ -34,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -91,7 +93,13 @@ public final class Connection extends ChannelHandlerAdapter {
             final var world = this.player.getWorld();
             final var position = this.player.getPosition();
             this.forChunksInRange(world.chunkCoordinate((int) position.x()), world.chunkCoordinate((int) position.z()),
-                    10, (x, z) -> world.getChunk(x, z).viewers().remove(this.player));
+                    10, (x, z) -> {
+                        final var chunk = world.getChunk(x, z);
+                        chunk.viewers().remove(this.player);
+                        for (final var entity : chunk.entities()) {
+                            entity.removeViewer(this.player);
+                        }
+                    });
 
             LOGGER.info("Connection from " + this.player.getUsername() + " closed.");
         }
@@ -136,20 +144,13 @@ public final class Connection extends ChannelHandlerAdapter {
             this.send(BRAND_PACKET);
             this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
             final var position = this.player.getPosition();
-            this.send(new SynchronizePlayerPosition(position));
-            this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
             this.send(new SpawnPosition(position));
+            this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
 
-            final var chunkX = (int) position.x() >> 4;
-            final var chunkZ = (int) position.z() >> 4;
-            this.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> {
-                final var chunk = world.getChunk(x, z);
-                chunk.send(this.player);
-                chunk.viewers().add(this.player);
-            });
-            this.send(new CenterChunk(chunkX, chunkZ));
+            this.calculateChunks(position, position, false);
+            this.send(new SynchronizePlayerPosition(position));
 
-            final var playerInfo = PlayerInfo.add(Collections.singletonList(this.player));
+            final var playerInfo = PlayerInfo.add(List.of(this.player));
             this.player.sendViewers(new SpawnPlayer(this.player));
             for (final var other : this.server.getAllPlayers()) {
                 if (other != this.player) {
@@ -240,6 +241,50 @@ public final class Connection extends ChannelHandlerAdapter {
             for (var z = -range; z <= range; z++) {
                 chunk.accept(chunkX + x, chunkZ + z);
             }
+        }
+    }
+
+    public void calculateChunks(final Position from, final Position to) {
+        this.calculateChunks(from, to, true);
+    }
+
+    private void calculateChunks(final Position from, final Position to, boolean check) {
+        final var fromChunkX = (int) from.x() >> 4;
+        final var fromChunkZ = (int) from.z() >> 4;
+        final var chunkX = (int) to.x() >> 4;
+        final var chunkZ = (int) to.z() >> 4;
+        if (check) {
+            if (fromChunkX == chunkX || fromChunkZ == chunkZ) {
+                return;
+            }
+        }
+
+        this.player.send(new CenterChunk(chunkX, chunkZ));
+        final var world = ((MinecraftWorld) this.player.getWorld());
+        final var chunks = new ArrayList<MinecraftChunk>();
+        this.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> {
+            final var chunk = world.getChunk(x, z);
+            chunks.add(chunk);
+            chunk.viewers().add(this.player); // new in range
+            for (final var entity : chunk.entities()) {
+                entity.addViewer(this.player);
+            }
+        });
+        if (check) {
+            this.forChunksInRange(fromChunkX, fromChunkZ, 10, (x, z) -> {
+                final var chunk = world.getChunk(x, z);
+                if (!chunks.contains(chunk)) {
+                    chunk.viewers().remove(this.player); // chunk not in range
+                    for (final var entity : chunk.entities()) {
+                        entity.removeViewer(this.player);
+                    }
+                } else {
+                    chunks.remove(chunk); // already loaded
+                }
+            });
+        }
+        for (final var chunk : chunks) { // send all new chunks
+            chunk.send(this.player);
         }
     }
 }

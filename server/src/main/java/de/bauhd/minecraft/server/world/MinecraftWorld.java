@@ -3,17 +3,14 @@ package de.bauhd.minecraft.server.world;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.entity.AbstractEntity;
+import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.world.block.Block;
-import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MinecraftWorld implements World {
 
@@ -22,8 +19,7 @@ public class MinecraftWorld implements World {
     private final Dimension dimension;
     private final ChunkGenerator generator;
     private final Position spawnPosition;
-    private final Long2ObjectMap<Chunk> chunks;
-    private final List<AbstractEntity> entities;
+    private final Long2ObjectMap<MinecraftChunk> chunks;
 
     public MinecraftWorld(final AdvancedMinecraftServer server, final String name,
                           final Dimension dimension, final ChunkGenerator generator, final Position spawnPosition) {
@@ -33,7 +29,6 @@ public class MinecraftWorld implements World {
         this.generator = generator;
         this.spawnPosition = spawnPosition;
         this.chunks = new Long2ObjectOpenHashMap<>();
-        this.entities = new ArrayList<>();
         new Worker(this).start();
     }
 
@@ -71,12 +66,19 @@ public class MinecraftWorld implements World {
         if (chunk == null) {
             chunk = this.createChunk(chunkX, chunkZ);
         }
-        return (MinecraftChunk) chunk;
+        return chunk;
     }
 
     @Override
     public @NotNull MinecraftChunk getChunkAt(int x, int z) {
         return this.getChunk(this.chunkCoordinate(x), this.chunkCoordinate(z));
+    }
+
+    @Override
+    public void spawnEntity(@NotNull Entity entity, @NotNull Position position) {
+        final var abstractEntity = (AbstractEntity) entity;
+        abstractEntity.setWorld(this);
+        abstractEntity.setPosition(position);
     }
 
     protected MinecraftChunk createChunk(final int chunkX, final int chunkZ) {
@@ -90,10 +92,6 @@ public class MinecraftWorld implements World {
         this.chunks.put(this.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
     }
 
-    public List<AbstractEntity> entities() {
-        return this.entities;
-    }
-
     public int chunkCoordinate(final int coordinate) {
         return coordinate >> 4;
     }
@@ -104,5 +102,9 @@ public class MinecraftWorld implements World {
 
     public boolean isAlive() {
         return true; // TODO
+    }
+
+    public Long2ObjectMap<MinecraftChunk> chunks() {
+        return this.chunks;
     }
 }

@@ -2,7 +2,6 @@ package de.bauhd.minecraft.server.entity.player;
 
 import de.bauhd.minecraft.server.command.CommandSender;
 import de.bauhd.minecraft.server.entity.LivingEntity;
-import de.bauhd.minecraft.server.world.World;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,8 +29,4 @@ public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry {
     int getHeldItemSlot();
 
     void setHeldItemSlot(int slot);
-
-    World getWorld();
-
-    void setWorld(@NotNull World world);
 }

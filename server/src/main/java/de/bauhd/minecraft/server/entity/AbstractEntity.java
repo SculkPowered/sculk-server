@@ -1,16 +1,19 @@
 package de.bauhd.minecraft.server.entity;
 
+import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.play.EntityMetadata;
+import de.bauhd.minecraft.server.protocol.packet.play.SpawnEntity;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
+import de.bauhd.minecraft.server.world.Position;
+import de.bauhd.minecraft.server.world.World;
+import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractEntity implements Entity {
@@ -20,11 +23,8 @@ public abstract class AbstractEntity implements Entity {
     private final int id = CURRENT_ID.getAndIncrement();
     public final Metadata metadata = new Metadata();
     private final Collection<MinecraftPlayer> viewers = new ArrayList<>();
-    private byte mask;
-    private Component customName = Component.empty();
-    private boolean customNameVisible;
-    private boolean silent;
-    private boolean gravity = true;
+    private MinecraftWorld world;
+    protected Position position = Position.ZERO;
 
     @Override
     public int getId() {
@@ -32,102 +32,116 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
+    public MinecraftWorld getWorld() {
+        return this.world;
+    }
+
+    @Override
+    public void setWorld(@NotNull World world) {
+        if (this.world != null) {
+            ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().remove(this);
+        }
+        this.world = (MinecraftWorld) world;
+        ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().add(this);
+    }
+
+    @Override
+    public @NotNull Position getPosition() {
+        return this.position;
+    }
+
+    public void setPosition(final Position position) {
+        ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().remove(this);
+        this.position = position;
+        ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().add(this);
+    }
+
+    @Override
     public boolean isOnFire() {
-        return (this.mask & 0x01) == 0x01;
+        return this.metadata.inMask(0, 0x01);
     }
 
     @Override
     public boolean isCrouching() {
-        return (this.mask & 0x02) == 0x02;
+        return this.metadata.inMask(0, 0x02);
     }
 
     @Override
     public boolean isSprinting() {
-        return (this.mask & 0x08) == 0x08;
+        return this.metadata.inMask(0, 0x08);
     }
 
     @Override
     public boolean isSwimming() {
-        return (this.mask & 0x10) == 0x10;
+        return this.metadata.inMask(0, 0x10);
     }
 
     @Override
     public boolean isInvisible() {
-        return (this.mask & 0x20) == 0x20;
+        return this.metadata.inMask(0, 0x20);
     }
 
     @Override
     public void setInvisible(boolean invisible) {
-        if (this.isInvisible() == invisible) return;
-        if (invisible) {
-            this.mask |= 0x20;
-        } else {
-            this.mask &= ~0x20;
-        }
-        this.metadata.setByte(0, this.mask);
+        this.metadata.setMask(0, 0x20, invisible);
     }
 
     @Override
     public boolean isGlowing() {
-        return (this.mask & 0x40) == 0x40;
+        return this.metadata.inMask(0, 0x40);
     }
 
     @Override
     public void setGlowing(boolean glowing) {
-        if (this.isGlowing() == glowing) return;
-        if (glowing) {
-            this.mask |= 0x20;
-        } else {
-            this.mask &= ~0x20;
-        }
-        this.metadata.setByte(0, this.mask);
+        this.metadata.setMask(0, 0x40, glowing);
     }
 
     @Override
     public @Nullable Component getCustomName() {
-        return this.customName;
+        return this.metadata.getComponent(2, Component.empty());
     }
 
     @Override
     public void setCustomName(@Nullable Component customName) {
-        this.customName = customName;
         this.metadata.setComponent(2, customName);
     }
 
     @Override
     public boolean isCustomNameVisible() {
-        return this.customNameVisible;
+        return this.metadata.getBoolean(3, false);
     }
 
     @Override
     public void setCustomNameVisible(boolean visible) {
         if (this.isCustomNameVisible() == visible) return;
-        this.customNameVisible = visible;
         this.metadata.setBoolean(3, visible);
     }
 
     @Override
     public boolean isSilent() {
-        return this.silent;
+        return this.metadata.getBoolean(4, false);
     }
 
     @Override
     public void setSilent(boolean silent) {
         if (this.isSilent() == silent) return;
-        this.silent = silent;
         this.metadata.setBoolean(4, silent);
     }
 
     @Override
     public boolean hasGravity() {
-        return this.gravity;
+        return !this.metadata.getBoolean(5, false);
     }
 
     @Override
     public void setGravity(boolean gravity) {
         if (this.hasGravity() == gravity) return;
-        this.gravity = gravity;
         this.metadata.setBoolean(5, !gravity);
+    }
+
+    @Override
+    public @NotNull Pose getPose() {
+        return this.metadata.get(6, Pose.STANDING);
     }
 
     @Override
@@ -142,7 +156,11 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void addViewer(@NotNull Player player) {
-        // TODO send add packets
+        final var mcPlayer = ((MinecraftPlayer) player);
+        mcPlayer.send(new SpawnEntity(this.id, UUID.randomUUID(), this.getType().protocolId(), this.position));
+        if (this.metadata.entries().isEmpty()) {
+            mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
+        }
     }
 
     @Override

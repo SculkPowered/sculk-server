@@ -37,6 +37,26 @@ public final class CodeGenerator {
             final var json = GSON.fromJson(reader, JsonObject.class);
             this.generateRegistry(json.get("minecraft:item").getAsJsonObject(),
                     path.resolve("inventory").resolve("item").resolve("Material.java"));
+            final var entityPath = path.resolve("entity");
+            final Map<String, JsonObject> map = GSON.fromJson(json.get("minecraft:entity_type").getAsJsonObject().get("entries"), STRING_JSON_MAP);
+            map.forEach((key, object) -> {
+                final var stringBuilder = new StringBuilder();
+                for (final var s : key.split(":")[1].split("_")) {
+                    stringBuilder.append(s.substring(0, 1).toUpperCase()).append(s.substring(1));
+                }
+                final var name = stringBuilder.toString();
+                final var entityTypePath = entityPath.resolve(name + ".java");
+                if (Files.notExists(entityTypePath)) {
+                    try (final var writer = Files.newBufferedWriter(entityTypePath)) {
+                        writer.write("package de.bauhd.minecraft.server.entity;\n");
+                        writer.write("\n");
+                        writer.write("public interface " + name + " extends Entity {}");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+
             this.generateRegistry(json.get("minecraft:entity_type").getAsJsonObject(),
                     path.resolve("entity").resolve("EntityType.java"));
         }
@@ -62,9 +82,8 @@ public final class CodeGenerator {
     private void generateRegistry(final JsonObject object, final Path path) throws IOException {
         this.append(path, list -> {
             final Map<String, JsonObject> map = GSON.fromJson(object.get("entries"), STRING_JSON_MAP);
-            map.forEach((key, json) -> {
-                list.add("    " + key.split(":")[1].toUpperCase() + "(" + json.get("protocol_id").getAsInt() + "),");
-            });
+            map.forEach((key, json) ->
+                    list.add("    " + key.split(":")[1].toUpperCase() + "(" + json.get("protocol_id").getAsInt() + "),"));
         });
     }
 

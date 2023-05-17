@@ -1,9 +1,7 @@
 package de.bauhd.minecraft.server;
 
-import de.bauhd.minecraft.server.entity.AbstractEntity;
-import de.bauhd.minecraft.server.protocol.packet.play.KeepAlive;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
-import net.kyori.adventure.text.Component;
+import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 
 public final class Worker extends Thread {
 
@@ -20,7 +18,7 @@ public final class Worker extends Thread {
     @Override
     public void run() {
         while (this.world.isAlive()) {
-            this.world.entities().forEach(AbstractEntity::tick);
+            this.world.chunks().values().forEach(MinecraftChunk::tick);
 
             try {
                 //noinspection BusyWait

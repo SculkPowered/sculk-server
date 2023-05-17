@@ -31,6 +31,18 @@ public final class PlayerCommand implements Packet {
                 '}';
     }
 
+    public int entityId() {
+        return this.entityId;
+    }
+
+    public Action action() {
+        return this.action;
+    }
+
+    public int jumpBoost() {
+        return this.jumpBoost;
+    }
+
     public enum Action {
 
         START_SNEAKING,
