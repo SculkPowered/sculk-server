@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.world;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
@@ -22,13 +21,11 @@ public final class VanillaLoader {
 
     private static final int SECTOR_SIZE = 4096;
 
-    private final AdvancedMinecraftServer server;
     private final Path regionPath;
     private final Map<String, RegionFile> regionCache;
     private MinecraftWorld world;
 
-    public VanillaLoader(final AdvancedMinecraftServer server, final Path path) {
-        this.server = server;
+    public VanillaLoader(final Path path) {
         this.regionPath = path.resolve("region");
         this.regionCache = new HashMap<>();
     }
@@ -62,28 +59,14 @@ public final class VanillaLoader {
 
         private final RandomAccessFile accessFile;
         private final int[] locations = new int[1024];
-        private final boolean[] freeSectors;
 
         public RegionFile(final Path path) throws IOException {
             this.accessFile = new RandomAccessFile(path.toFile(), "r");
-            final var available = this.accessFile.length() / SECTOR_SIZE;
-
-            this.freeSectors = new boolean[(int) available];
-            for (int i = 0; i < this.freeSectors.length; i++) {
-                this.freeSectors[i] = i != 0 && i != 1;
-            }
             this.accessFile.seek(0);
 
             for (int i = 0; i < this.locations.length; i++) {
                 final var location = this.accessFile.readInt();
                 this.locations[i] = location;
-
-                final var inSectors = this.sizeInSectors(location);
-                if (location != 0 && this.sectorOffset(location) + inSectors <= this.freeSectors.length) {
-                    for (int j = 0; j < inSectors; j++) {
-                        this.freeSectors[(int) (j + sectorOffset(location))] = false;
-                    }
-                }
             }
         }
 
@@ -110,7 +93,7 @@ public final class VanillaLoader {
                             });
 
 
-            final var chunk = new MinecraftChunk(VanillaLoader.this.server, VanillaLoader.this.world, chunkX, chunkZ);
+            final var chunk = new MinecraftChunk(VanillaLoader.this.world, chunkX, chunkZ);
             synchronized (chunk) {
                 for (final var section : nbt.getList("sections")) {
                     final var compound = ((CompoundBinaryTag) section);

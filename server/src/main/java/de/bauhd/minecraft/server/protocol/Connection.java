@@ -59,7 +59,7 @@ public final class Connection extends ChannelHandlerAdapter {
     private String serverAddress;
     private String username;
     private MinecraftPlayer player;
-    private boolean afterLoginPacket;
+    private boolean beforeLoginPacket = true;
 
     public Connection(final AdvancedMinecraftServer server, final Channel channel) {
         this.server = server;
@@ -139,7 +139,7 @@ public final class Connection extends ChannelHandlerAdapter {
             this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
                     this.server.getBiomeHandler().nbt(), this.server.getDimensionHandler().nbt(),
                     world.getDimension().nbt().getString("name")));
-            this.afterLoginPacket = true;
+            this.beforeLoginPacket = false;
 
             this.send(BRAND_PACKET);
             this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
@@ -232,8 +232,8 @@ public final class Connection extends ChannelHandlerAdapter {
         return this.player;
     }
 
-    public boolean afterLoginPacket() {
-        return this.afterLoginPacket;
+    public boolean beforeLoginPacket() {
+        return this.beforeLoginPacket;
     }
 
     public void forChunksInRange(final int chunkX, final int chunkZ, final int range, final BiConsumer<Integer, Integer> chunk) {

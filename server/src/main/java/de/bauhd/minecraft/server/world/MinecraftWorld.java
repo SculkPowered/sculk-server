@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.world;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.entity.AbstractEntity;
 import de.bauhd.minecraft.server.entity.Entity;
@@ -14,16 +13,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class MinecraftWorld implements World {
 
-    private final AdvancedMinecraftServer server;
     private final String name;
     private final Dimension dimension;
     private final ChunkGenerator generator;
     private final Position spawnPosition;
     private final Long2ObjectMap<MinecraftChunk> chunks;
 
-    public MinecraftWorld(final AdvancedMinecraftServer server, final String name,
-                          final Dimension dimension, final ChunkGenerator generator, final Position spawnPosition) {
-        this.server = server;
+    public MinecraftWorld(final String name, final Dimension dimension,
+                          final ChunkGenerator generator, final Position spawnPosition) {
         this.name = name;
         this.dimension = dimension;
         this.generator = generator;
@@ -82,7 +79,7 @@ public class MinecraftWorld implements World {
     }
 
     protected MinecraftChunk createChunk(final int chunkX, final int chunkZ) {
-        final var chunk = new MinecraftChunk(this.server, this, chunkX, chunkZ);
+        final var chunk = new MinecraftChunk(this, chunkX, chunkZ);
         this.generator.generate(chunk);
         this.put(chunk);
         return chunk;

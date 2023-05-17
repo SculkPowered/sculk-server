@@ -30,7 +30,7 @@ public final class Respawn implements Packet {
                 .writeByte((byte) -1)
                 .writeBoolean(false)
                 .writeBoolean(false)
-                .writeByte((byte) this.dataKept)
+                .writeByte(this.dataKept)
                 .writeBoolean(false);
     }
 

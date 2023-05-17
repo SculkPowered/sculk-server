@@ -198,20 +198,19 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     @Override
     public @Nullable Player getPlayer(@NotNull UUID uniqueId) {
-        return null;
+        return this.players.get(uniqueId);
     }
 
     @Override
     public @NotNull World createWorld(World.@NotNull Builder builder) {
-        return new MinecraftWorld(this, Objects.requireNonNull(builder.name(), "a world requires a name"),
+        return new MinecraftWorld(Objects.requireNonNull(builder.name(), "a world requires a name"),
                 builder.dimension(), builder.generator(), builder.spawnPosition());
     }
 
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
-        final var vanillaLoader = new VanillaLoader(this, path);
-        return new VanillaWorld(this, Objects.requireNonNull(builder.name(), "a world requires a name"),
-                builder.dimension(), builder.generator(), builder.spawnPosition(), vanillaLoader);
+        return new VanillaWorld(Objects.requireNonNull(builder.name(), "a world requires a name"),
+                builder.dimension(), builder.generator(), builder.spawnPosition(), new VanillaLoader(path));
     }
 
     @SuppressWarnings("unchecked")

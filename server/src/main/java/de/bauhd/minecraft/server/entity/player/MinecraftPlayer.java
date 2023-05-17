@@ -86,7 +86,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void setGameMode(@NotNull GameMode gameMode) {
-        if (!this.connection.afterLoginPacket()) return;
+        if (this.connection.beforeLoginPacket()) return;
         if (gameMode != this.gameMode) {
             this.gameMode = gameMode;
             this.send(new GameEvent(3, gameMode.ordinal()));
@@ -112,7 +112,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     public void setWorld(@NotNull World world) {
         super.setWorld(world);
         this.position = world.getSpawnPosition();
-        if (!this.connection.afterLoginPacket()) return;
+        if (this.connection.beforeLoginPacket()) return;
         this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));
     }
 

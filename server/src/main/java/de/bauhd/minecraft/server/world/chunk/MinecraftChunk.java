@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.world.chunk;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.AbstractEntity;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Buffer;
@@ -22,7 +21,6 @@ public final class MinecraftChunk implements Chunk {
     private static final BitSet EMPTY_LIGHT = BitSet.valueOf(
             new long[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24});
 
-    private final AdvancedMinecraftServer server;
     private final MinecraftWorld world;
     private final Dimension dimension;
     private final int x;
@@ -33,8 +31,7 @@ public final class MinecraftChunk implements Chunk {
 
     private ChunkDataAndUpdateLight packet;
 
-    public MinecraftChunk(final AdvancedMinecraftServer server, final MinecraftWorld world, final int chunkX, final int chunkZ) {
-        this.server = server;
+    public MinecraftChunk(final MinecraftWorld world, final int chunkX, final int chunkZ) {
         this.world = world;
         this.dimension = this.world.getDimension();
         this.x = chunkX;
