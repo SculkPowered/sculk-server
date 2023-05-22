@@ -10,12 +10,9 @@ dependencies {
     implementation(project(":server:appender"))
 
     // netty
-    implementation(platform(libs.netty.bom))
-    implementation("io.netty:netty5-transport")
-    implementation("io.netty:netty5-codec")
-    implementation("io.netty:netty5-transport-native-epoll")
-    implementation("io.netty:netty5-transport-native-epoll:linux-x86_64")
-    implementation("io.netty:netty5-transport-native-epoll:linux-aarch_64")
+    implementation(libs.bundles.netty)
+    implementation(variantOf(libs.netty.transport.epoll) { classifier("linux-x86_64") })
+    implementation(variantOf(libs.netty.transport.epoll) { classifier("linux-aarch_64") })
 
     // terminal
     implementation(libs.jline)
@@ -42,6 +39,8 @@ tasks {
 
         // exclude some things we don't need to save space
         exclude(
+            "it/unimi/dsi/fastutil/*Big*",
+            "it/unimi/dsi/fastutil/*Queue*",
             "it/unimi/dsi/fastutil/booleans/**",
             "it/unimi/dsi/fastutil/bytes/**",
             "it/unimi/dsi/fastutil/chars/**",
@@ -53,17 +52,22 @@ tasks {
             "it/unimi/dsi/fastutil/ints/*Char*",
             "it/unimi/dsi/fastutil/ints/*Double*",
             "it/unimi/dsi/fastutil/ints/*Long*",
+            "it/unimi/dsi/fastutil/ints/*Float*",
             "it/unimi/dsi/fastutil/ints/*Big*",
+            "it/unimi/dsi/fastutil/ints/*Tree*",
             "it/unimi/dsi/fastutil/longs/*Byte*",
             "it/unimi/dsi/fastutil/longs/*Char*",
             "it/unimi/dsi/fastutil/longs/*Double*",
             "it/unimi/dsi/fastutil/longs/*Int*",
             "it/unimi/dsi/fastutil/longs/*Big*",
+            "it/unimi/dsi/fastutil/longs/*Tree*",
+            "it/unimi/dsi/fastutil/longs/Long2Long*",
             "it/unimi/dsi/fastutil/objects/*Byte*",
             "it/unimi/dsi/fastutil/objects/*Char*",
             "it/unimi/dsi/fastutil/objects/*Double*",
             "it/unimi/dsi/fastutil/objects/*Long*",
-            "it/unimi/dsi/fastutil/objects/*Big*"
+            "it/unimi/dsi/fastutil/objects/*Big*",
+            "it/unimi/dsi/fastutil/objects/*Tree*"
         )
     }
 

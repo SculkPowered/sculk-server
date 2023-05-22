@@ -1,20 +1,43 @@
 [versions]
+netty = "5.0.0.Alpha5"
+adventure = "4.13.1"
+configurate = "4.1.2"
 log4j = "2.20.0"
 
 [plugins]
-shadow = "com.github.johnrengelman.shadow:8.1.1"
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 
 [libraries]
-netty-bom = "io.netty:netty5-bom:5.0.0.Alpha5"
-adventure-bom = "net.kyori:adventure-bom:4.13.1"
+netty-codec = { group = "io.netty", name = "netty5-codec", version.ref = "netty" }
+netty-transport = { group = "io.netty", name = "netty5-transport", version.ref = "netty" }
+netty-transport-epoll = { group = "io.netty", name = "netty5-transport-native-epoll", version.ref = "netty" }
+
+adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
+adventure-nbt = { group = "net.kyori", name = "adventure-nbt", version.ref = "adventure" }
+adventure-serializer-gson = { group = "net.kyori", name = "adventure-text-serializer-gson", version.ref = "adventure" }
+adventure-serializer-legacy = { group = "net.kyori", name = "adventure-text-serializer-legacy", version.ref = "adventure" }
+adventure-serializer-plain = { group = "net.kyori", name = "adventure-text-serializer-plain", version.ref = "adventure" }
+adventure-minimessage = { group = "net.kyori", name = "adventure-text-minimessage", version.ref = "adventure" }
+
+configurate-hocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
+configurate-gson = { group = "org.spongepowered", name = "configurate-gson", version.ref = "configurate" }
+configurate-yaml = { group = "org.spongepowered", name = "configurate-yaml", version.ref = "configurate" }
+
+log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j" }
+log4j-iostreams = { group = "org.apache.logging.log4j", name = "log4j-iostreams", version.ref = "log4j" }
+log4j-jul = { group = "org.apache.logging.log4j", name = "log4j-jul", version.ref = "log4j" }
+log4j-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j" }
+
+slf4j = "org.slf4j:slf4j-api:2.0.7"
 jline = "org.jline:jline-reader:3.23.0"
 jansi = "org.fusesource.jansi:jansi:2.4.0"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
 gson = "com.google.code.gson:gson:2.10.1"
 brigadier = "com.mojang:brigadier:1.0.18"
-log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j"}
-log4j-iostreams = { module = "org.apache.logging.log4j:log4j-iostreams", version.ref = "log4j"}
-log4j-jul = { module = "org.apache.logging.log4j:log4j-jul", version.ref = "log4j"}
 
 [bundles]
-log4j = ["log4j-core", "log4j-iostreams", "log4j-jul"]
+netty = ["netty-codec", "netty-transport", "netty-transport-epoll"]
+adventure = ["adventure-api", "adventure-nbt",
+    "adventure-serializer-gson", "adventure-serializer-legacy", "adventure-serializer-plain", "adventure-minimessage"]
+configurate = []
+log4j = ["log4j-core", "log4j-iostreams", "log4j-jul", "log4j-slf4j"]
