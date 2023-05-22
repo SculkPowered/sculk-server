@@ -10,7 +10,7 @@ import de.bauhd.minecraft.server.protocol.packet.status.StatusResponse;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
-import static de.bauhd.minecraft.server.protocol.Protocol.Version.MINIMUM_VERSION;
+import static de.bauhd.minecraft.server.protocol.Protocol.Version.CURRENT_VERSION;
 
 public final class StatusPacketHandler extends PacketHandler {
 
@@ -27,16 +27,16 @@ public final class StatusPacketHandler extends PacketHandler {
         final var version = this.connection.version();
         this.connection.send(new StatusResponse("{\"version\":{" +
                 "\"name\":\"not vanilla " + Protocol.Version.SUPPORTED_VERSIONS + "\"," +
-                "\"protocol\":" + (version.older(MINIMUM_VERSION) ? MINIMUM_VERSION.protocolId() : version.protocolId()) + "}," +
+                "\"protocol\":" + (version.older(CURRENT_VERSION) ? CURRENT_VERSION.protocolId() : version.protocolId()) + "}," +
                 "\"players\":{\"max\":50,\"online\":" + this.connection.server().getPlayerCount() + ",\"sample\":[]}," +
                 "\"description\":" + AdvancedMinecraftServer.getGsonSerializer(version).serialize(COMPONENT) + "," +
                 "\"previewsChat\":true}"));
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(StatusPing statusPing) {
         this.connection.sendAndClose(statusPing);
-        return false;
+        return true;
     }
 }

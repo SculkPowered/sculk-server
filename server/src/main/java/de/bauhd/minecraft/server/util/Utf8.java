@@ -6,8 +6,10 @@ public final class Utf8 {
         int utf16Length = sequence.length();
         int utf8Length = utf16Length;
 
-        int i;
-        for (i = 0; i < utf16Length && sequence.charAt(i) < 128; i++) {}
+        int i = 0;
+        while (i < utf16Length && sequence.charAt(i) < 128) {
+            i++;
+        }
 
         while (i < utf16Length) {
             var c = sequence.charAt(i);

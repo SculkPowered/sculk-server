@@ -134,6 +134,8 @@ public final class MinecraftChunk implements Chunk {
     }
 
     public void tick() {
-        this.entities.forEach(AbstractEntity::tick);
+        for (final var entity : this.entities) {
+            entity.tick();
+        }
     }
 }

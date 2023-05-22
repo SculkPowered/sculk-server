@@ -19,7 +19,7 @@ import org.jline.terminal.TerminalBuilder;
 
 import java.io.IOException;
 
-public final class SimpleTerminal extends Thread {
+public final class SimpleTerminal {
 
     private static final Logger LOGGER = LogManager.getLogger(SimpleTerminal.class);
     private static final String PROMPT = "> ";
@@ -40,7 +40,6 @@ public final class SimpleTerminal extends Thread {
     private final LineReader lineReader;
 
     public SimpleTerminal(final AdvancedMinecraftServer server) {
-        super("Minecraft Terminal Thread");
         this.server = server;
         try {
             this.lineReader = LineReaderBuilder.builder()
@@ -57,8 +56,7 @@ public final class SimpleTerminal extends Thread {
         }
     }
 
-    @Override
-    public void run() {
+    public void start() {
         System.setOut(IoBuilder.forLogger(LOGGER).setLevel(Level.INFO).buildPrintStream());
         System.setErr(IoBuilder.forLogger(LOGGER).setLevel(Level.ERROR).buildPrintStream());
 

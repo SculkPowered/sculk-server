@@ -3,6 +3,7 @@ package de.bauhd.minecraft.server.world;
 import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.entity.AbstractEntity;
 import de.bauhd.minecraft.server.entity.Entity;
+import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
@@ -17,14 +18,16 @@ public class MinecraftWorld implements World {
     private final Dimension dimension;
     private final ChunkGenerator generator;
     private final Position spawnPosition;
+    private final GameMode defaultGameMode;
     private final Long2ObjectMap<MinecraftChunk> chunks;
 
     public MinecraftWorld(final String name, final Dimension dimension,
-                          final ChunkGenerator generator, final Position spawnPosition) {
+                          final ChunkGenerator generator, final Position spawnPosition, final GameMode defaultGameMode) {
         this.name = name;
         this.dimension = dimension;
         this.generator = generator;
         this.spawnPosition = spawnPosition;
+        this.defaultGameMode = defaultGameMode;
         this.chunks = new Long2ObjectOpenHashMap<>();
         new Worker(this).start();
     }
@@ -47,6 +50,11 @@ public class MinecraftWorld implements World {
     @Override
     public @NotNull Position getSpawnPosition() {
         return this.spawnPosition;
+    }
+
+    @Override
+    public @NotNull GameMode getDefaultGameMode() {
+        return this.defaultGameMode;
     }
 
     @Override

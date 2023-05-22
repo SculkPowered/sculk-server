@@ -4,6 +4,7 @@ import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.play.EntityMetadata;
+import de.bauhd.minecraft.server.protocol.packet.play.RemoveEntities;
 import de.bauhd.minecraft.server.protocol.packet.play.SpawnEntity;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.Position;
@@ -22,7 +23,7 @@ public abstract class AbstractEntity implements Entity {
 
     private final int id = CURRENT_ID.getAndIncrement();
     public final Metadata metadata = new Metadata();
-    private final Collection<MinecraftPlayer> viewers = new ArrayList<>();
+    protected final Collection<MinecraftPlayer> viewers = new ArrayList<>();
     private MinecraftWorld world;
     protected Position position = Position.ZERO;
 
@@ -161,11 +162,16 @@ public abstract class AbstractEntity implements Entity {
         if (this.metadata.entries().isEmpty()) {
             mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
         }
+        this.viewers.add(mcPlayer);
     }
 
     @Override
     public void removeViewer(@NotNull Player player) {
-        // TODO send remove packets
+        final var mcPlayer = (MinecraftPlayer) player;
+        if (this.viewers.contains(mcPlayer)) {
+            mcPlayer.send(new RemoveEntities(this.getId()));
+            this.viewers.remove(mcPlayer);
+        }
     }
 
     public void tick() {

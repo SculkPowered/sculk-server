@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server.entity.player;
 
 import de.bauhd.minecraft.server.command.CommandSender;
 import de.bauhd.minecraft.server.entity.LivingEntity;
+import de.bauhd.minecraft.server.inventory.PlayerInventory;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +27,29 @@ public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry {
 
     void disconnect(@NotNull Component component);
 
+    @NotNull PlayerInventory getInventory();
+
     int getHeldItemSlot();
 
     void setHeldItemSlot(int slot);
+
+    boolean isFlying();
+
+    void setFlying(boolean flying);
+
+    boolean isAllowFlight();
+
+    void setAllowFight(boolean allowFight);
+
+    float getFlyingSpeed();
+
+    void setFlyingSpeed(float flyingSpeed);
+
+    boolean canInstantBreak();
+
+    void setInstantBreak(boolean instantBreak);
+
+    float getViewModifier();
+
+    void setViewModifier(float viewModifier);
 }

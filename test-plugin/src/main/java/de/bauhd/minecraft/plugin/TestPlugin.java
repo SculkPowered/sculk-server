@@ -4,13 +4,14 @@ import de.bauhd.minecraft.plugin.command.GameModeCommand;
 import de.bauhd.minecraft.server.event.Subscribe;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
+import de.bauhd.minecraft.server.event.player.PlayerSpawnEvent;
+import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.inventory.item.Material;
 import de.bauhd.minecraft.server.plugin.Plugin;
 import de.bauhd.minecraft.server.plugin.PluginDescription;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.Biome;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.nio.file.Path;
 
@@ -43,8 +44,17 @@ public final class TestPlugin extends Plugin {
     public void handle(final PlayerJoinEvent event) {
         final var player = event.player();
         player.setWorld(this.world);
-        player.sendMessage(Component.text("Welcome " + player.getUsername(), NamedTextColor.DARK_AQUA));
-        player.sendPlayerListHeaderAndFooter(Component.text("Header", NamedTextColor.RED), Component.text("Footer", NamedTextColor.DARK_RED));
+        //player.sendMessage(Component.text("Welcome " + player.getUsername(), NamedTextColor.DARK_AQUA));
     }
 
+    @Subscribe
+    public void handle(final PlayerSpawnEvent event) {
+        final var player = event.player();
+        player.setAllowFight(true);
+        player.setInstantBreak(true);
+        final var inventory = player.getInventory();
+        inventory.setItem(4, new ItemStack(Material.CHEST));
+        inventory.setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+        inventory.setItemInOffHand(new ItemStack(Material.SHIELD));
+    }
 }

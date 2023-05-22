@@ -53,6 +53,7 @@ public class Position {
     public Position setX(final double x) {
         return new Position(x, this.y, this.z, this.yaw, this.pitch);
     }
+
     public Position setY(final double y) {
         return new Position(this.x, y, this.z, this.yaw, this.pitch);
     }

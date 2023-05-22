@@ -16,7 +16,10 @@ public final class PlayerInfoRemove implements Packet {
 
     @Override
     public void encode(Buffer buf) {
-        this.entries.forEach(entry -> buf.writeUniqueId(entry.getProfile().uniqueId()));
+        buf.writeVarInt(this.entries.size());
+        for (final var entry : this.entries) {
+            buf.writeUniqueId(entry.getProfile().uniqueId());
+        }
     }
 
     @Override

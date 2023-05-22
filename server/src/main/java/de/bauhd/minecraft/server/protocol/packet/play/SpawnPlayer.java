@@ -17,10 +17,9 @@ public final class SpawnPlayer implements Packet {
         buf
                 .writeVarInt(this.player.getId())
                 .writeUniqueId(this.player.getUniqueId());
-
         final var position = this.player.getPosition();
-
-        buf.writeDouble(position.x())
+        buf
+                .writeDouble(position.x())
                 .writeDouble(position.y())
                 .writeDouble(position.z())
                 .writeAngel(position.yaw())

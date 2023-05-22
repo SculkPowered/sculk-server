@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.inventory;
 
+import de.bauhd.minecraft.server.inventory.item.ItemStack;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,10 @@ public interface Inventory {
     @Nullable Component title();
 
     @NotNull Type type();
+
+    void setItem(int index, ItemStack itemStack);
+
+    ItemStack getItem(int index);
 
     enum Type {
 

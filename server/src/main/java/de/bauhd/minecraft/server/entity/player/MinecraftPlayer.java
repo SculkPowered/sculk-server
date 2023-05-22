@@ -2,17 +2,15 @@ package de.bauhd.minecraft.server.entity.player;
 
 import de.bauhd.minecraft.server.entity.AbstractLivingEntity;
 import de.bauhd.minecraft.server.entity.EntityType;
+import de.bauhd.minecraft.server.inventory.MinePlayerInventory;
 import de.bauhd.minecraft.server.inventory.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Connection;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
 import de.bauhd.minecraft.server.world.World;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.pointer.Pointers;
@@ -22,7 +20,7 @@ import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.UUID;
 
 public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
@@ -37,12 +35,17 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
+    private final MinePlayerInventory inventory = new MinePlayerInventory(this);
     private long lastSendKeepAlive;
     private boolean keepAlivePending;
-    private GameMode gameMode = GameMode.CREATIVE;
+    private GameMode gameMode = GameMode.SURVIVAL;
     private Component displayName;
-    private int heldItem;
-    private final Int2ObjectMap<ItemStack> slots = new Int2ObjectOpenHashMap<>();
+    public int heldItem;
+    public boolean flying;
+    private boolean allowedFlight;
+    private float flyingSpeed = 0.05F;
+    private boolean instantBreak;
+    private float viewModifier = 0.01F;
 
     public MinecraftPlayer(final Connection connection, final UUID uniqueId, final String name, final GameProfile profile) {
         this.connection = connection;
@@ -99,6 +102,11 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     }
 
     @Override
+    public @NotNull MinePlayerInventory getInventory() {
+        return this.inventory;
+    }
+
+    @Override
     public int getHeldItemSlot() {
         return this.heldItem;
     }
@@ -106,12 +114,72 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public void setHeldItemSlot(int slot) {
         this.heldItem = slot;
+        this.send(new HeldItem((short) slot));
+    }
+
+    @Override
+    public boolean isFlying() {
+        return this.flying;
+    }
+
+    @Override
+    public void setFlying(boolean flying) {
+        this.flying = flying;
+        this.updateAttributes();
+    }
+
+    @Override
+    public boolean isAllowFlight() {
+        return this.allowedFlight;
+    }
+
+    @Override
+    public void setAllowFight(boolean allowFight) {
+        this.allowedFlight = allowFight;
+        if (!this.allowedFlight) {
+            this.flying = false;
+        }
+        this.updateAttributes();
+    }
+
+    @Override
+    public float getFlyingSpeed() {
+        return this.flyingSpeed;
+    }
+
+    @Override
+    public void setFlyingSpeed(float flyingSpeed) {
+        this.flyingSpeed = flyingSpeed;
+        this.updateAttributes();
+    }
+
+    @Override
+    public boolean canInstantBreak() {
+        return this.instantBreak;
+    }
+
+    @Override
+    public void setInstantBreak(boolean instantBreak) {
+        this.instantBreak = instantBreak;
+        this.updateAttributes();
+    }
+
+    @Override
+    public float getViewModifier() {
+        return this.viewModifier;
+    }
+
+    @Override
+    public void setViewModifier(float viewModifier) {
+        this.viewModifier = viewModifier;
+        this.updateAttributes();
     }
 
     @Override
     public void setWorld(@NotNull World world) {
         super.setWorld(world);
         this.position = world.getSpawnPosition();
+        this.gameMode = world.getDefaultGameMode();
         if (this.connection.beforeLoginPacket()) return;
         this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));
     }
@@ -166,6 +234,34 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     }
 
     @Override
+    public void addViewer(@NotNull Player player) {
+        if (player != this) {
+            final var mcPlayer = (MinecraftPlayer) player;
+            mcPlayer.send(new SpawnPlayer(this));
+            mcPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
+            final var inventory = this.getInventory();
+            final var equipment = new HashMap<Integer, ItemStack>();
+            if (inventory.getItemInMainHand() != null) {
+                equipment.put(0, inventory.getItemInMainHand());
+            } else if (inventory.getItemInOffHand() != null) {
+                equipment.put(1, inventory.getItemInOffHand());
+            } else if (inventory.getBoots() != null) {
+                equipment.put(2, inventory.getBoots());
+            } else if (inventory.getLeggings() != null) {
+                equipment.put(3, inventory.getLeggings());
+            } else if (inventory.getChestplate() != null) {
+                equipment.put(4, inventory.getChestplate());
+            } else if (inventory.getHelmet() != null) {
+                equipment.put(5, inventory.getHelmet());
+            }
+            if (!equipment.isEmpty()) {
+                mcPlayer.send(new Equipment(this.getId(), equipment));
+            }
+            this.viewers.add(mcPlayer);
+        }
+    }
+
+    @Override
     public void tick() {
         super.tick();
         final var time = System.currentTimeMillis();
@@ -188,48 +284,26 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         this.connection.send(packet);
     }
 
-    public ItemStack getItem(final int slot) {
-        return this.slots.get(slot);
-    }
-
-    public void setItem(final short slot, final ItemStack clickedItem) {
-        this.slots.put(slot, clickedItem);
-    }
-
-    public ItemStack getItemInMainHand() {
-        return this.slots.get(36 + this.heldItem);
-    }
-
-    public Protocol.Version getVersion() {
-        return this.connection.version();
-    }
-
-    // TODO change
-    @Override
-    public void sendViewers(Packet packet) {
-        this.getViewers().forEach(player -> ((MinecraftPlayer) player).connection.send(packet));
-    }
-
-    // TODO change
-    @Override
-    public void sendViewers(Packet packet1, Packet packet2) {
-        this.getViewers().forEach(player -> {
-            ((MinecraftPlayer) player).connection.send(packet1);
-            ((MinecraftPlayer) player).connection.send(packet2);
-        });
-    }
-
     public void sendViewersAndSelf(final Packet packet) {
         this.send(packet);
         this.sendViewers(packet);
     }
 
-    @Override
-    public @NotNull Collection<Player> getViewers() {
-        return this.connection.server().getAllPlayers().stream().filter(player -> player != this).toList();
-    }
-
     public void setKeepAlivePending(boolean pending) {
         this.keepAlivePending = pending;
+    }
+
+    private void updateAttributes() {
+        var flags = (byte) 0;
+        if (this.flying) {
+            flags |= 0x02;
+        }
+        if (this.allowedFlight) {
+            flags |= 0x04;
+        }
+        if (this.instantBreak) {
+            flags |= 0x08;
+        }
+        this.send(new PlayerAbilities(flags, this.flyingSpeed, this.viewModifier));
     }
 }

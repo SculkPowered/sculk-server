@@ -11,13 +11,10 @@ import io.netty5.handler.codec.DecoderException;
 public final class MinecraftDecoder implements ChannelHandler {
 
     private final Protocol.Direction direction;
-    private State state;
     private State.PacketRegistry registry;
 
     public MinecraftDecoder(Protocol.Direction direction) {
         this.direction = direction;
-        this.state = State.HANDSHAKE;
-        this.registry = direction.getRegistry(this.state);
     }
 
     @Override
@@ -67,13 +64,7 @@ public final class MinecraftDecoder implements ChannelHandler {
         }
     }
 
-    public void set(final State state) {
-        this.state = state;
+    public void setState(final State state) {
         this.registry = this.direction.getRegistry(state);
     }
-
-    public void setState(final State state) {
-        this.set(state);
-    }
-
 }

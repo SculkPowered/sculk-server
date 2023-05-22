@@ -12,6 +12,7 @@ import io.netty5.handler.codec.EncoderException;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +27,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public record Buffer(io.netty5.buffer.Buffer buf) {
 
     private static final int STRING_CAPACITY = 65536;
+    private static final GsonComponentSerializer SERIALIZER = AdvancedMinecraftServer.getGsonSerializer(Protocol.Version.CURRENT_VERSION);
 
     public int readUnsignedByte() {
         return this.buf.readUnsignedByte();
@@ -170,7 +172,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writeComponent(final Component component) {
-        return this.writeString(AdvancedMinecraftServer.getGsonSerializer(Protocol.Version.MAXIMUM_VERSION).serialize(component));
+        return this.writeString(SERIALIZER.serialize(component));
     }
 
     public @NotNull Buffer writeComponent(final Component component, final Protocol.Version version) {
@@ -214,7 +216,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         if (slot != null) {
             this
                     .writeBoolean(true)
-                    .writeVarInt(slot.material().ordinal())
+                    .writeVarInt(slot.material().protocolId())
                     .writeByte((byte) slot.amount())
                     .writeCompoundTag(slot.nbt());
         } else {
@@ -256,6 +258,10 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         var b = object != null;
         this.buf.writeBoolean(b);
         return b;
+    }
+
+    public int readableBytes() {
+        return this.buf.readableBytes();
     }
 
     public void close() {

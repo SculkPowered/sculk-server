@@ -25,8 +25,6 @@ import de.bauhd.minecraft.server.world.VanillaLoader;
 import de.bauhd.minecraft.server.world.VanillaWorld;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.MinecraftBiomeHandler;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +50,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             .registerTypeAdapter(GameProfile.class, new GameProfileDeserializer())
             .setPrettyPrinting()
             .create();
-    public static final Component SUS_COMPONENT = Component.text("Very sus!", NamedTextColor.RED);
 
     private static final GsonComponentSerializer PRE_1_16_SERIALIZER =
             GsonComponentSerializer.builder()
@@ -116,11 +113,11 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> this.shutdown(false), "Minecraft Shutdown Thread"));
 
-        terminal.start();
-
         if (this.configuration.compressionThreshold() != -1) {
             Connection.COMPRESSION_PACKET = new CompressionPacket(this.configuration.compressionThreshold());
         }
+
+        terminal.start();
     }
 
     public void shutdown(final boolean runtime) {
@@ -204,13 +201,13 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     @Override
     public @NotNull World createWorld(World.@NotNull Builder builder) {
         return new MinecraftWorld(Objects.requireNonNull(builder.name(), "a world requires a name"),
-                builder.dimension(), builder.generator(), builder.spawnPosition());
+                builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode());
     }
 
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
         return new VanillaWorld(Objects.requireNonNull(builder.name(), "a world requires a name"),
-                builder.dimension(), builder.generator(), builder.spawnPosition(), new VanillaLoader(path));
+                builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode(), new VanillaLoader(path));
     }
 
     @SuppressWarnings("unchecked")

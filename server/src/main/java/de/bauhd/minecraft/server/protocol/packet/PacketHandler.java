@@ -118,6 +118,10 @@ public abstract class PacketHandler {
         return false;
     }
 
+    public boolean handle(final PlayerAbilities playerAbilities) {
+        return false;
+    }
+
     public boolean handle(final PlayerAction playerAction) {
         return false;
     }

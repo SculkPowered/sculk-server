@@ -11,13 +11,10 @@ import io.netty5.handler.codec.MessageToByteEncoder;
 public final class MinecraftEncoder extends MessageToByteEncoder<Packet> {
 
     private final Protocol.Direction direction;
-    private State state;
     private State.PacketRegistry registry;
 
     public MinecraftEncoder(final Protocol.Direction direction) {
         this.direction = direction;
-        this.state = State.HANDSHAKE;
-        this.registry = direction.getRegistry(this.state);
     }
 
     @Override
@@ -33,12 +30,7 @@ public final class MinecraftEncoder extends MessageToByteEncoder<Packet> {
         return channelHandlerContext.bufferAllocator().allocate(0);
     }
 
-    public void set(final State state) {
-        this.state = state;
-        this.registry = this.direction.getRegistry(state);
-    }
-
     public void setState(final State state) {
-        this.set(state);
+        this.registry = this.direction.getRegistry(state);
     }
 }

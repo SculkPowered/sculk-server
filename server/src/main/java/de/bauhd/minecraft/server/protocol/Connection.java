@@ -5,8 +5,10 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.MinecraftConfig;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.entity.player.PlayerInfoEntry;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
+import de.bauhd.minecraft.server.event.player.PlayerSpawnEvent;
 import de.bauhd.minecraft.server.protocol.netty.codec.*;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -39,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 import static de.bauhd.minecraft.server.entity.player.GameProfile.Property;
@@ -54,6 +57,7 @@ public final class Connection extends ChannelHandlerAdapter {
 
     private final AdvancedMinecraftServer server;
     private final Channel channel;
+    private State state;
     private PacketHandler packetHandler;
     private Protocol.Version version;
     private String serverAddress;
@@ -64,15 +68,21 @@ public final class Connection extends ChannelHandlerAdapter {
     public Connection(final AdvancedMinecraftServer server, final Channel channel) {
         this.server = server;
         this.channel = channel;
-        this.packetHandler = new HandshakePacketHandler(this);
+        this.setState(State.HANDSHAKE);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object message) {
+        if (!ctx.channel().isActive()) {
+            return;
+        }
+
         try {
             if (message instanceof Packet packet) {
-                if (packet.handle(this.packetHandler)) {
-                    ctx.close();
+                if (!packet.handle(this.packetHandler)) {
+                    if (this.state == State.HANDSHAKE) {
+                        ctx.close();
+                    }
                 }
             }
         } finally {
@@ -92,18 +102,35 @@ public final class Connection extends ChannelHandlerAdapter {
 
             final var world = this.player.getWorld();
             final var position = this.player.getPosition();
-            this.forChunksInRange(world.chunkCoordinate((int) position.x()), world.chunkCoordinate((int) position.z()),
-                    10, (x, z) -> {
-                        final var chunk = world.getChunk(x, z);
-                        chunk.viewers().remove(this.player);
-                        for (final var entity : chunk.entities()) {
-                            entity.removeViewer(this.player);
-                        }
-                    });
+            if (world != null) {
+                this.forChunksInRange(world.chunkCoordinate((int) position.x()), world.chunkCoordinate((int) position.z()),
+                        10, (x, z) -> {
+                            final var chunk = world.getChunk(x, z);
+                            chunk.viewers().remove(this.player);
+                            for (final var entity : chunk.entities()) {
+                                entity.removeViewer(this.player);
+                            }
+                        });
+            }
+            this.player.sendViewers(new RemoveEntities(this.player.getId()));
+            this.server.sendAll(new PlayerInfoRemove(List.of(this.player)));
 
-            LOGGER.info("Connection from " + this.player.getUsername() + " closed.");
+            LOGGER.info(this.username + " has disconnected.");
         }
         ctx.close();
+    }
+
+    @Override
+    public void channelExceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (!ctx.channel().isActive()) {
+            return;
+        }
+
+        if (cause instanceof TimeoutException) {
+            LOGGER.error(this.username + " timed out");
+        } else {
+            super.channelExceptionCaught(ctx, cause);
+        }
     }
 
     public void play(GameProfile profile) {
@@ -122,13 +149,13 @@ public final class Connection extends ChannelHandlerAdapter {
             }
         }
         if (COMPRESSION_PACKET != null) {
-            this.send(COMPRESSION_PACKET);
+            this.channel.writeAndFlush(COMPRESSION_PACKET);
             this.addCompressionHandler();
         }
+
         this.send(new LoginSuccess(profile.uniqueId(), this.username));
-        this.setState(State.PLAY);
         this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
-        this.packetHandler = new PlayPacketHandler(this);
+        this.setState(State.PLAY);
         this.server.addPlayer(this.player);
         this.server.getEventHandler().call(new PlayerJoinEvent(this.player)).thenAcceptAsync((event) -> {
             final var world = ((MinecraftWorld) this.player.getWorld());
@@ -146,19 +173,18 @@ public final class Connection extends ChannelHandlerAdapter {
             final var position = this.player.getPosition();
             this.send(new SpawnPosition(position));
             this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
+            final var playerInfo = PlayerInfo.add(List.of(this.player));
+            for (final var other : this.server.getAllPlayers()) {
+                if (other != this.player) {
+                    ((MinecraftPlayer) other).send(playerInfo);
+                }
+            }
 
             this.calculateChunks(position, position, false);
             this.send(new SynchronizePlayerPosition(position));
 
-            final var playerInfo = PlayerInfo.add(List.of(this.player));
-            this.player.sendViewers(new SpawnPlayer(this.player));
-            for (final var other : this.server.getAllPlayers()) {
-                if (other != this.player) {
-                    final var otherPlayer = (MinecraftPlayer) other;
-                    otherPlayer.send(playerInfo);
-                    this.player.send(new SpawnPlayer(otherPlayer));
-                }
-            }
+
+            this.server.getEventHandler().call(new PlayerSpawnEvent(this.player));
         }, this.channel.executor()).exceptionally(throwable -> {
             LOGGER.error("Exception during login of player {}", this.player.getUsername(), throwable);
             return null;
@@ -173,18 +199,15 @@ public final class Connection extends ChannelHandlerAdapter {
         this.channel.writeAndFlush(packet).addListener(this.channel, ChannelFutureListeners.CLOSE);
     }
 
-    public void set(final State state) {
+    public void setState(final State state) {
+        this.state = state;
         this.packetHandler = switch (state) {
+            case HANDSHAKE -> new HandshakePacketHandler(this);
             case STATUS -> new StatusPacketHandler(this);
             case LOGIN -> new LoginPacketHandler(this);
-            default -> null;
+            case PLAY -> new PlayPacketHandler(this);
         };
 
-        this.channel.pipeline().get(MinecraftEncoder.class).set(state);
-        this.channel.pipeline().get(MinecraftDecoder.class).set(state);
-    }
-
-    public void setState(final State state) {
         this.channel.pipeline().get(MinecraftEncoder.class).setState(state);
         this.channel.pipeline().get(MinecraftDecoder.class).setState(state);
     }
@@ -198,10 +221,10 @@ public final class Connection extends ChannelHandlerAdapter {
     }
 
     private void addCompressionHandler() {
+        this.channel.pipeline().remove("frame-encoder");
         this.channel.pipeline()
-                .addAfter("frame-decoder", "compressor-decoder", new CompressorDecoder())
-                .addAfter("compressor-decoder", "compressor-encoder", new CompressorEncoder(this.server))
-                .remove("frame-decoder");
+                .addBefore("minecraft-decoder", "compressor-decoder", new CompressorDecoder())
+                .addBefore("minecraft-encoder", "compressor-encoder", new CompressorEncoder(this.server.getConfiguration()));
     }
 
     public void setVersion(final Protocol.Version version) {
@@ -236,6 +259,10 @@ public final class Connection extends ChannelHandlerAdapter {
         return this.beforeLoginPacket;
     }
 
+    public void close() {
+        this.channel.close();
+    }
+
     public void forChunksInRange(final int chunkX, final int chunkZ, final int range, final BiConsumer<Integer, Integer> chunk) {
         for (var x = -range; x <= range; x++) {
             for (var z = -range; z <= range; z++) {
@@ -267,6 +294,9 @@ public final class Connection extends ChannelHandlerAdapter {
             chunks.add(chunk);
             chunk.viewers().add(this.player); // new in range
             for (final var entity : chunk.entities()) {
+                if (entity instanceof Player viewer) {
+                    this.player.addViewer(viewer);
+                }
                 entity.addViewer(this.player);
             }
         });

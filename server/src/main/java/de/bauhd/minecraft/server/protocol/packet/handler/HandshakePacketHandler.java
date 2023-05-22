@@ -19,15 +19,16 @@ public final class HandshakePacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(Handshake handshake) {
-        this.connection.set(handshake.nextStatus());
+        this.connection.setState(handshake.nextStatus());
         if (handshake.nextStatus() == State.LOGIN
-                && (handshake.version().older(MINIMUM_VERSION) || handshake.version().newer(MAXIMUM_VERSION))) {
+                && (handshake.version() != CURRENT_VERSION)) {
             this.connection.send(new Disconnect(Component
                     .translatable("multiplayer.disconnect.outdated_client", Component.text(SUPPORTED_VERSIONS))));
+            this.connection.close();
             return true;
         }
         this.connection.setVersion(handshake.version());
         this.connection.setServerAddress(handshake.serverAddress());
-        return false;
+        return true;
     }
 }

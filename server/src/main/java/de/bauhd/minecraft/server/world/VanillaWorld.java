@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
@@ -10,8 +11,8 @@ public final class VanillaWorld extends MinecraftWorld {
 
     public VanillaWorld(final String name,
                         final Dimension dimension, final ChunkGenerator generator,
-                        final Position spawnPosition, final VanillaLoader loader) {
-        super(name, dimension, generator, spawnPosition);
+                        final Position spawnPosition, final GameMode defaultGameMode, final VanillaLoader loader) {
+        super(name, dimension, generator, spawnPosition, defaultGameMode);
         this.loader = loader;
         this.loader.setWorld(this);
     }

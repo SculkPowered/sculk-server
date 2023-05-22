@@ -42,7 +42,7 @@ public final class LoginPacketHandler extends PacketHandler {
         } else {
             this.connection.play(null);
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -52,12 +52,13 @@ public final class LoginPacketHandler extends PacketHandler {
                 final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.verifyToken());
                 if (!MessageDigest.isEqual(decryptedVerifyToken, this.verifyToken)) {
                     this.connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
-                    return false;
+                    return true;
                 }
             }
 
             final var decryptedSecret = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.sharedSecret());
-            final var gameProfile = MojangUtil.hasJoined(this.connection.username(), EncryptionUtil.generateServerId(this.server.getKeyPair(), decryptedSecret));
+            final var gameProfile = MojangUtil.hasJoined(this.connection.username(),
+                    EncryptionUtil.generateServerId(this.server.getKeyPair(), decryptedSecret));
 
             this.connection.enableEncryption(decryptedSecret);
             this.connection.play(gameProfile);
@@ -65,11 +66,11 @@ public final class LoginPacketHandler extends PacketHandler {
                  InvalidKeyException e) {
             throw new RuntimeException(e);
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(LoginPluginResponse pluginResponse) {
-        return super.handle(pluginResponse);
+        return true;
     }
 }

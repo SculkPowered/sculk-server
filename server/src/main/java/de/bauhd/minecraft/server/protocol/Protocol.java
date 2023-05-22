@@ -49,13 +49,12 @@ public final class Protocol {
         MINECRAFT_1_19_3(761, "1.19.3"),
         MINECRAFT_1_19_4(762, "1.19.4");
 
-        public static final Version MINIMUM_VERSION = MINECRAFT_1_19;
-        public static final Version MAXIMUM_VERSION = MINECRAFT_1_19_4;
+        public static final Version CURRENT_VERSION = MINECRAFT_1_19_4;
 
-        public static final Map<Integer, Version> PROTOCOL_VERSIONS;
+        private static final Map<Integer, Version> PROTOCOL_VERSIONS;
 
-        public static final String SUPPORTED_VERSIONS = MINIMUM_VERSION.versions[0]
-                + "-" + MAXIMUM_VERSION.versions[MAXIMUM_VERSION.versions.length - 1];
+        public static final String SUPPORTED_VERSIONS = CURRENT_VERSION.versions[0]
+                + "-" + CURRENT_VERSION.versions[CURRENT_VERSION.versions.length - 1];
 
         static {
             PROTOCOL_VERSIONS = new HashMap<>();

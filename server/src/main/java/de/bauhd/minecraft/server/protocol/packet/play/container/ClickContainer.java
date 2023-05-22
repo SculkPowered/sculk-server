@@ -14,7 +14,7 @@ public final class ClickContainer implements Packet {
     private short slot;
     private byte button;
     private int mode;
-    private final Int2ObjectMap<ItemStack> slots = new Int2ObjectOpenHashMap<>();
+    private Int2ObjectMap<ItemStack> slots;
     private ItemStack carriedItem;
 
     @Override
@@ -25,10 +25,13 @@ public final class ClickContainer implements Packet {
         this.button = buf.readByte();
         this.mode = buf.readVarInt();
         final var slotCount = buf.readVarInt();
+        this.slots = new Int2ObjectOpenHashMap<>(slotCount);
         for (int i = 0; i < slotCount; i++) {
             this.slots.put(buf.readShort(), buf.readSlot());
         }
-        this.carriedItem = buf.readSlot();
+        if (buf.readableBytes() != 0) {
+            this.carriedItem = buf.readSlot();
+        }
     }
 
     @Override

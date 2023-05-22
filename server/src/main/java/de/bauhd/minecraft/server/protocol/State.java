@@ -173,7 +173,7 @@ public enum State {
             this.clientBound.skip(); // Look At
             this.clientBound.register(SynchronizePlayerPosition.class);
             this.clientBound.skip(); // Update Recipe Book
-            this.clientBound.skip(); // Remove Entities
+            this.clientBound.register(RemoveEntities.class);
             this.clientBound.skip(); // Remove Entity Effect
             this.clientBound.skip(); // Resource Pack
             this.clientBound.register(Respawn.class);
@@ -196,7 +196,7 @@ public enum State {
             this.clientBound.register(EntityMetadata.class);
             this.clientBound.skip(); // Link Entities
             this.clientBound.skip(); // Entity Velocity
-            this.clientBound.skip(); // Equipment
+            this.clientBound.register(Equipment.class);
             this.clientBound.register(Experience.class);
             this.clientBound.register(Health.class);
             this.clientBound.register(UpdateObjectives.class);

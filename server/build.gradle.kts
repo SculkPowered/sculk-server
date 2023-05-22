@@ -48,7 +48,22 @@ tasks {
             "it/unimi/dsi/fastutil/doubles/**",
             "it/unimi/dsi/fastutil/floats/**",
             "it/unimi/dsi/fastutil/io/**",
-            "it/unimi/dsi/fastutil/shorts/**"
+            "it/unimi/dsi/fastutil/shorts/**",
+            "it/unimi/dsi/fastutil/ints/*Byte*",
+            "it/unimi/dsi/fastutil/ints/*Char*",
+            "it/unimi/dsi/fastutil/ints/*Double*",
+            "it/unimi/dsi/fastutil/ints/*Long*",
+            "it/unimi/dsi/fastutil/ints/*Big*",
+            "it/unimi/dsi/fastutil/longs/*Byte*",
+            "it/unimi/dsi/fastutil/longs/*Char*",
+            "it/unimi/dsi/fastutil/longs/*Double*",
+            "it/unimi/dsi/fastutil/longs/*Int*",
+            "it/unimi/dsi/fastutil/longs/*Big*",
+            "it/unimi/dsi/fastutil/objects/*Byte*",
+            "it/unimi/dsi/fastutil/objects/*Char*",
+            "it/unimi/dsi/fastutil/objects/*Double*",
+            "it/unimi/dsi/fastutil/objects/*Long*",
+            "it/unimi/dsi/fastutil/objects/*Big*"
         )
     }
 

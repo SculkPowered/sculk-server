@@ -8,7 +8,6 @@ import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
-import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.minecraft.server.protocol.packet.play.command.ChatCommand;
 import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainerButton;
@@ -18,8 +17,12 @@ import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.block.Block;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class PlayPacketHandler extends PacketHandler {
+
+    private static final Logger LOGGER = LogManager.getLogger(PlayPacketHandler.class);
 
     private final Connection connection;
     private final AdvancedMinecraftServer server;
@@ -35,7 +38,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ConfirmTeleportation confirmTeleportation) {
-        return super.handle(confirmTeleportation);
+        return true;
     }
 
     @Override
@@ -45,22 +48,22 @@ public final class PlayPacketHandler extends PacketHandler {
         } catch (CommandSyntaxException e) {
             this.player.sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(ChatMessage chatMessage) {
         this.server.sendAll(
                 new SystemChatMessage(Component.text(this.player.getUsername() + " - " + chatMessage.message()), false));
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(ClientCommand clientCommand) {
         if (clientCommand.actionId() == 1) {
-            connection.send(new AwardStatistics());
+            this.connection.send(new AwardStatistics());
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -72,22 +75,22 @@ public final class PlayPacketHandler extends PacketHandler {
             this.player.metadata.setByte(18, (byte) clientInformation.mainHand());
         }
         this.clientInformation = clientInformation;
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(ClickContainerButton clickContainerButton) {
-        return super.handle(clickContainerButton);
+        return true;
     }
 
     @Override
     public boolean handle(ClickContainer clickContainer) {
-        return super.handle(clickContainer);
+        return true;
     }
 
     @Override
     public boolean handle(CloseContainer closeContainer) {
-        return super.handle(closeContainer);
+        return true;
     }
 
     @Override
@@ -95,18 +98,18 @@ public final class PlayPacketHandler extends PacketHandler {
         /*final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(this.data.length);
         buf.writeBytes(this.data);
         System.out.println(PacketUtils.readString(buf))*/
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(Interact interact) {
-        return super.handle(interact);
+        return true;
     }
 
     @Override
     public boolean handle(KeepAlive keepAlive) {
         this.player.setKeepAlivePending(false);
-        return false;
+        return true;
     }
 
     @Override
@@ -120,7 +123,7 @@ public final class PlayPacketHandler extends PacketHandler {
                 this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z), playerPosition.onGround()));
         this.player.setPosition(new Position(x, y, z, position.yaw(), position.pitch()));
         this.connection.calculateChunks(position, this.player.getPosition());
-        return false;
+        return true;
     }
 
     @Override
@@ -132,13 +135,14 @@ public final class PlayPacketHandler extends PacketHandler {
         final var pitch = playerPositionAndRotation.pitch();
 
         final var position = this.player.getPosition();
-        this.player.sendViewers(new EntityPositionAndRotation(this.player.getId(),
+        this.player.sendViewers(
+                new EntityPositionAndRotation(this.player.getId(),
                         this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
                         yaw, pitch, playerPositionAndRotation.onGround()),
                 new HeadRotation(this.player.getId(), yaw));
         this.player.setPosition(new Position(x, y, z, yaw, pitch));
         this.connection.calculateChunks(position, this.player.getPosition());
-        return false;
+        return true;
     }
 
     @Override
@@ -152,31 +156,51 @@ public final class PlayPacketHandler extends PacketHandler {
                 new HeadRotation(this.player.getId(), yaw)
         );
         this.player.setPosition(new Position(position.x(), position.y(), position.z(), yaw, pitch));
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(PlayerOnGround playerOnGround) {
-        return super.handle(playerOnGround);
+        return true;
+    }
+
+    @Override
+    public boolean handle(PlayerAbilities playerAbilities) {
+        this.player.flying = playerAbilities.flags() == 2;
+        return true;
     }
 
     @Override
     public boolean handle(PlayerAction playerAction) {
         switch (playerAction.status()) {
-            case 0 -> this.player.getWorld().setBlock(playerAction.position(), Block.AIR);  // only if instant break
-            case 3 -> this.player.setItem((short) (36 + this.player.getHeldItemSlot()), null); // TODO: inventory
-            case 4 -> {
-                final var itemInHand = this.player.getItemInMainHand();
+            case 0 -> { // started digging
+                if (this.player.canInstantBreak()) {
+                    this.player.getWorld().setBlock(playerAction.position(), Block.AIR);
+                }
+            }
+            case 1 -> { // cancelled digging
+
+            }
+            case 2 -> this.player.getWorld().setBlock(playerAction.position(), Block.AIR); // finished digging
+            case 3 -> this.player.getInventory().setItem(this.player.getHeldItemSlot(), null); // drop stack
+            case 4 -> { // drop item
+                final var itemInHand = this.player.getInventory().getItemInMainHand();
                 if (itemInHand != null) {
                     itemInHand.amount(itemInHand.amount() - 1);
                 }
             }
-            case 5 -> {}
-            case 6 -> {
-                // TODO: inventory - swap item
+            case 5 -> { // shoot arrow / finish eating
+
+            }
+            case 6 -> { // swap item
+                final var inventory = this.player.getInventory();
+                final var itemInMainHand = inventory.getItemInMainHand();
+                final var itemInOffHand = inventory.getItemInOffHand();
+                inventory.setItem(this.player.getHeldItemSlot(), itemInOffHand);
+                inventory.setItemInOffHand(itemInMainHand);
             }
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -186,30 +210,38 @@ public final class PlayPacketHandler extends PacketHandler {
         } else if (playerCommand.action() == PlayerCommand.Action.STOP_SNEAKING) {
             this.player.setPose(Entity.Pose.STANDING);
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(HeldItem heldItem) {
-        this.player.setHeldItemSlot(heldItem.slot());
-        return false;
+        this.player.heldItem = heldItem.slot();
+        return true;
     }
 
     @Override
     public boolean handle(CreativeModeSlot creativeModeSlot) {
-        final var player = connection.player();
+        final var player = this.connection.player();
         if (player.getGameMode() != GameMode.CREATIVE) {
-            player.sendMessage(AdvancedMinecraftServer.SUS_COMPONENT);
+            LOGGER.info(this.player.getUsername() + " tried to set a slot, but is not in creative mode.");
             return false;
         }
-        player.setItem(creativeModeSlot.slot(), creativeModeSlot.clickedItem());
-        return false;
+        var index = creativeModeSlot.slot();
+        if (index < 9) {
+            index += 36;
+        } else if (index < 45) {
+            index -= 36;
+        } else if (index > 45) {
+            index -= 5;
+        }
+        player.getInventory().itemStacks.put(index, creativeModeSlot.clickedItem());
+        return true;
     }
 
     @Override
     public boolean handle(SwingArm swingArm) {
         this.player.sendViewers(new EntityAnimation(this.player.getId(), (byte) (swingArm.hand() == 1 ? 3 : 0)));
-        return false;
+        return true;
     }
 
     @Override
@@ -217,14 +249,14 @@ public final class PlayPacketHandler extends PacketHandler {
         if (this.player.getGameMode() == GameMode.SPECTATOR) {
             // TODO: teleport to entity
         } else {
-            this.player.sendMessage(AdvancedMinecraftServer.SUS_COMPONENT);
+            LOGGER.info(this.player.getUsername() + " tried to teleport, but is not in spectator mode.");
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean handle(UseItemOn useItemOn) {
-        final var slot = this.player.getItem(this.player.getHeldItemSlot() + 36);
+        final var slot = this.player.getInventory().getItemInMainHand();
         if (slot == null) {
             return false;
         }
@@ -237,13 +269,13 @@ public final class PlayPacketHandler extends PacketHandler {
             case WEST -> position.subtract(1, 0, 0);
             case EAST -> position.add(1, 0, 0);
         };
-        this.server.sendAll(new BlockUpdate(position, slot.material().ordinal()));
-        return false;
+        this.player.getWorld().setBlock(position, Block.get("minecraft:" + slot.material().name().toLowerCase()));
+        return true;
     }
 
     @Override
     public boolean handle(UseItem useItem) {
-        return super.handle(useItem);
+        return true;
     }
 
     private short delta(final double previous, final double current) {

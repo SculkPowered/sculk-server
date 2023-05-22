@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.world;
 
 import de.bauhd.minecraft.server.entity.Entity;
+import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
@@ -18,6 +19,8 @@ public interface World {
     @NotNull ChunkGenerator getGenerator();
 
     @NotNull Position getSpawnPosition();
+
+    @NotNull GameMode getDefaultGameMode();
 
     void setBlock(int x, int y, int z, @NotNull Block block);
 
@@ -45,6 +48,7 @@ public interface World {
         private Dimension dimension = Dimension.OVERWORLD;
         private ChunkGenerator generator = VoidGenerator.INSTANCE;
         private Position spawnPosition = Position.ZERO;
+        private GameMode defaultGameMode = GameMode.SURVIVAL;
 
         public Builder name(@NotNull String name) {
             this.name = name;
@@ -80,6 +84,15 @@ public interface World {
 
         public @NotNull Position spawnPosition() {
             return this.spawnPosition;
+        }
+
+        public Builder defaultGameMode(GameMode defaultGameMode) {
+            this.defaultGameMode = defaultGameMode;
+            return this;
+        }
+
+        public GameMode defaultGameMode() {
+            return this.defaultGameMode;
         }
     }
 }
