@@ -39,6 +39,7 @@ public final class CompressorEncoder extends MessageToByteEncoder<Buffer> {
             this.deflater.reset();
             final var length = out.readableBytes() - 3;
             final var offset = out.writerOffset();
+            out.writerOffset(0);
             out.writeMedium((length & 0x7F | 0x80) << 16 | ((length >>> 7) & 0x7F | 0x80) << 8 | (length >>> 14));
             out.writerOffset(offset);
         }

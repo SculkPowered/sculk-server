@@ -149,7 +149,7 @@ public final class Connection extends ChannelHandlerAdapter {
             }
         }
         if (COMPRESSION_PACKET != null) {
-            this.channel.writeAndFlush(COMPRESSION_PACKET);
+            this.send(COMPRESSION_PACKET);
             this.addCompressionHandler();
         }
 
