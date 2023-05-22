@@ -39,5 +39,5 @@ brigadier = "com.mojang:brigadier:1.0.18"
 netty = ["netty-codec", "netty-transport", "netty-transport-epoll"]
 adventure = ["adventure-api", "adventure-nbt",
     "adventure-serializer-gson", "adventure-serializer-legacy", "adventure-serializer-plain", "adventure-minimessage"]
-configurate = []
+configurate = ["configurate-hocon", "configurate-gson", "configurate-yaml"]
 log4j = ["log4j-core", "log4j-iostreams", "log4j-jul", "log4j-slf4j"]
