@@ -207,7 +207,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
         return new VanillaWorld(Objects.requireNonNull(builder.name(), "a world requires a name"),
-                builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode(), new VanillaLoader(path));
+                builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode(),
+                new VanillaLoader(this, path));
     }
 
     @SuppressWarnings("unchecked")

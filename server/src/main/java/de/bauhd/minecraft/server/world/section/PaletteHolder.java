@@ -47,16 +47,15 @@ public final class PaletteHolder implements Palette {
 
     @Override
     public void write(Buffer buf) {
-        final var currentPalette = this.palette;
         var palette = this.palette;
-        if (currentPalette instanceof DirectIndirectPalette directIndirectPalette) {
+        if (palette instanceof DirectIndirectPalette directIndirectPalette) {
             final var size = directIndirectPalette.size();
             if (size == 0) {
                 palette = new SingleValuedPalette(this.dimension, 0);
             } else {
                 final var entries = new IntOpenHashSet(directIndirectPalette.paletteToValue().size());
                 directIndirectPalette.getAll((x, y, z, value) -> entries.add(value));
-                final int currentBitsPerEntry = directIndirectPalette.bitsPerEntry();
+                final var currentBitsPerEntry = directIndirectPalette.bitsPerEntry();
                 final int bitsPerEntry;
                 if (entries.size() == 1) {
                     palette = new SingleValuedPalette(this.dimension, entries.iterator().nextInt());
@@ -72,5 +71,10 @@ public final class PaletteHolder implements Palette {
     @FunctionalInterface
     interface Consumer {
         void accept(final int x, final int y, final int z, final int result);
+    }
+
+    public void setIndirectPalette() {
+        this.palette = new DirectIndirectPalette(this.dimension, this.defaultBitsPerEntry, this.maxBitsPerEntry);
+        this.palette.fill(0);
     }
 }

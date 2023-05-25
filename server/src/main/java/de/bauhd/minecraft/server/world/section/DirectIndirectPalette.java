@@ -108,8 +108,8 @@ final class DirectIndirectPalette implements Palette {
             final var startIndex = i * valuesPerLong;
             final var endIndex = Math.min(startIndex + valuesPerLong, size);
             for (int index = startIndex; index < endIndex; index++) {
-                final int bitIndex = (index - startIndex) * bitsPerEntry;
-                final int paletteIndex = (int) (value >> bitIndex & magicMask);
+                final var bitIndex = (index - startIndex) * bitsPerEntry;
+                final var paletteIndex = (int) (value >> bitIndex & magicMask);
                 final var y = index >> shiftedDimensionBitCount;
                 final var z = index >> dimensionBitCount & dimensionMinus;
                 final var x = index & dimensionMinus;
@@ -132,10 +132,8 @@ final class DirectIndirectPalette implements Palette {
             this.resize((byte) (this.bitsPerEntry + 1));
             return this.index(value); // try again, after resize
         }
-        final int val = this.valueToPalette.putIfAbsent(value, lastIndex);
-        if (val != -1) {
-            return val;
-        }
+        final var val = this.valueToPalette.putIfAbsent(value, lastIndex);
+        if (val != -1) return val;
         // is new add
         this.paletteToValue.add(value);
         return lastIndex;

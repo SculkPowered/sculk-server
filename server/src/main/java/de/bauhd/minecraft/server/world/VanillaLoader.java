@@ -1,8 +1,10 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.world.block.Block;
-import de.bauhd.minecraft.server.world.chunk.Chunk;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
+import de.bauhd.minecraft.server.world.section.PaletteHolder;
+import de.bauhd.minecraft.server.world.section.Section;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
@@ -15,17 +17,19 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.bauhd.minecraft.server.world.chunk.Chunk.CHUNK_SECTION_SIZE;
+import static de.bauhd.minecraft.server.world.chunk.Chunk.*;
 
 public final class VanillaLoader {
 
     private static final int SECTOR_SIZE = 4096;
 
+    private final AdvancedMinecraftServer server;
     private final Path regionPath;
     private final Map<String, RegionFile> regionCache;
     private MinecraftWorld world;
 
-    public VanillaLoader(final Path path) {
+    public VanillaLoader(final AdvancedMinecraftServer server, final Path path) {
+        this.server = server;
         this.regionPath = path.resolve("region");
         this.regionCache = new HashMap<>();
     }
@@ -92,37 +96,74 @@ public final class VanillaLoader {
                                         throw new IllegalStateException("Unexpected compression scheme: " + compressionScheme);
                             });
 
+            final var sectionList = nbt.getList("sections");
+            final var sections = new Section[sectionList.size()];
+            for (var i = 0; i < sectionList.size(); i++) {
+                final var compound = (CompoundBinaryTag) sectionList.get(i);
+                final var states = compound.getCompound("block_states");
+                final var blockPalette = states.getList("palette");
+                if (blockPalette.equals(ListBinaryTag.empty())) continue;
+                final var section = new Section(false);
 
-            final var chunk = new MinecraftChunk(VanillaLoader.this.world, chunkX, chunkZ);
-            synchronized (chunk) {
-                for (final var section : nbt.getList("sections")) {
-                    final var compound = ((CompoundBinaryTag) section);
-                    final var yOffset = Chunk.CHUNK_SECTION_SIZE * compound.getByte("Y");
-                    final var states = compound.getCompound("block_states");
-                    final var blockPalette = states.getList("palette");
-                    if (blockPalette.equals(ListBinaryTag.empty())) continue;
-                    final var blockStates = this.uncompressedBlockStates(states);
+                // load blocks
+                {
+                    final var blocks = (PaletteHolder) section.blocks();
                     final var palette = new int[blockPalette.size()];
-
-                    for (int i = 0; i < palette.length; i++) {
-                        final var entry = blockPalette.getCompound(i);
+                    for (var k = 0; k < palette.length; k++) {
+                        final var entry = blockPalette.getCompound(k);
                         final var block = entry.getString("Name");
-                        palette[i] = Block.get(block).stateId();
+                        palette[k] = Block.get(block).stateId();
                         // ignore properties for now
                     }
-
-                    for (int y = 0; y < CHUNK_SECTION_SIZE; y++) {
-                        for (int z = 0; z < CHUNK_SECTION_SIZE; z++) {
-                            for (int x = 0; x < CHUNK_SECTION_SIZE; x++) {
-                                final var blockIndex = y * CHUNK_SECTION_SIZE * CHUNK_SECTION_SIZE + z * CHUNK_SECTION_SIZE + x;
-                                final var paletteIndex = blockStates[blockIndex];
-                                chunk.setBlock(x, y + yOffset, z, palette[paletteIndex]);
+                    if (palette.length == 1) {
+                        blocks.fill(palette[0]);
+                    } else {
+                        blocks.setIndirectPalette();
+                        final var blockStates = this.uncompressedBlockStates(states);
+                        for (var y = 0; y < CHUNK_SECTION_SIZE; y++) {
+                            for (var z = 0; z < CHUNK_SECTION_SIZE; z++) {
+                                for (var x = 0; x < CHUNK_SECTION_SIZE; x++) {
+                                    final var blockIndex = y * CHUNK_SECTION_SIZE * CHUNK_SECTION_SIZE + z * CHUNK_SECTION_SIZE + x;
+                                    final var paletteIndex = blockStates[blockIndex];
+                                    blocks.set(x, y, z, palette[paletteIndex]);
+                                }
                             }
                         }
                     }
                 }
+
+                // load biomes
+                {
+                    final var biomes = (PaletteHolder) section.biomes();
+                    final var biomesCompound = compound.getCompound("biomes");
+                    final var biomePalette = biomesCompound.getList("palette");
+                    final var palette = new int[biomePalette.size()];
+                    for (var k = 0; k < palette.length; k++) {
+                        final var entry = biomePalette.getCompound(k);
+                        palette[k] = VanillaLoader.this.server.getBiomeHandler().getBiome(entry.getString("value")).id();
+                    }
+                    if (palette.length == 1) {
+                        biomes.fill(palette[0]);
+                    } else {
+                        biomes.setIndirectPalette();
+                        final var biomeIndexes = this.uncompressedBiomeIndexes(biomesCompound, biomePalette.size());
+                        for (var y = 0; y < CHUNK_SECTION_SIZE; y++) {
+                            for (var z = 0; z < CHUNK_SIZE_Z; z++) {
+                                for (var x = 0; x < CHUNK_SIZE_X; x++) {
+                                    final var finalX = (chunkX * CHUNK_SIZE_X + x);
+                                    final var finalZ = (chunkZ * CHUNK_SIZE_Z + z);
+                                    final var finalY = (i * CHUNK_SECTION_SIZE + y);
+                                    final var index = x / 4 + (z / 4) * 4 + (y / 4) * 16;
+                                    biomes.set(finalX, finalY, finalZ, biomeIndexes[index]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                sections[i] = section;
             }
-            return chunk;
+            return new MinecraftChunk(VanillaLoader.this.world, chunkX, chunkZ, sections);
         }
 
         private int[] uncompressedBlockStates(CompoundBinaryTag states) {
@@ -140,7 +181,16 @@ public final class VanillaLoader {
                     return new int[4096];
                 }
             }
+            return this.uncompress(longs, sizeInBits);
+        }
 
+        private int[] uncompressedBiomeIndexes(CompoundBinaryTag biomes, final double size) {
+            final var compressedBiomes = biomes.getLongArray("data");
+            final var sizeInBits = (int) Math.ceil(Math.log(size) / Math.log(2));
+            return this.uncompress(compressedBiomes, sizeInBits);
+        }
+
+        private int[] uncompress(final long[] longs, final int sizeInBits) {
             final var intPerLong = Math.floor(64.0 / sizeInBits);
             final var intCount = (int) Math.ceil(longs.length * intPerLong);
             final var ints = new int[intCount];
@@ -153,10 +203,6 @@ public final class VanillaLoader {
                 ints[i] = value;
             }
             return ints;
-        }
-
-        private long sizeInSectors(final int location) {
-            return location & 0xFF;
         }
 
         private long sectorOffset(final int location) {

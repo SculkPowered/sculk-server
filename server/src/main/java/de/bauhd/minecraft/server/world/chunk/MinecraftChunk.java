@@ -26,8 +26,8 @@ public final class MinecraftChunk implements Chunk {
     private final int x;
     private final int z;
     private final Section[] sections;
-    private final List<MinecraftPlayer> viewers;
-    private final List<AbstractEntity> entities;
+    private final List<MinecraftPlayer> viewers = new ArrayList<>();
+    private final List<AbstractEntity> entities = new ArrayList<>();
 
     private ChunkDataAndUpdateLight packet;
 
@@ -42,8 +42,14 @@ public final class MinecraftChunk implements Chunk {
         for (int i = 0; i < capacity; i++) {
             this.sections[i] = new Section();
         }
-        this.viewers = new ArrayList<>();
-        this.entities = new ArrayList<>();
+    }
+
+    public MinecraftChunk(final MinecraftWorld world, final int chunkX, final int chunkZ, final Section[] sections) {
+        this.world = world;
+        this.dimension = this.world.getDimension();
+        this.x = chunkX;
+        this.z = chunkZ;
+        this.sections = sections;
     }
 
     @Override
@@ -75,7 +81,7 @@ public final class MinecraftChunk implements Chunk {
     @Override
     public void setBiome(int x, int y, int z, @NotNull Biome biome) {
         this.section(y).biomes().set(this.relativeCoordinate(x) / 4, this.relativeCoordinate(y) / 4, this.relativeCoordinate(z) / 4,
-                biome.nbt().getInt("id"));
+                biome.id());
         this.packet = null;
     }
 

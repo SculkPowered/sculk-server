@@ -5,30 +5,38 @@ import net.kyori.adventure.nbt.ListBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class MinecraftBiomeHandler implements BiomeHandler {
 
-    private CompoundBinaryTag nbt;
+    private final Map<String, Biome> biomes;
 
     public MinecraftBiomeHandler() {
-        this.nbt = CompoundBinaryTag.builder()
-                .putString("type", "minecraft:worldgen/biome")
-                .put("value", ListBinaryTag.from(List.of(Biome.PLAINS.nbt()))) // PLAINS as default dimension
-                .build();
+        this.biomes = new HashMap<>();
+        this.registerBiome(Biome.PLAINS);
     }
 
     @Override
     public void registerBiome(@NotNull Biome biome) {
-        this.nbt = this.nbt.put("value", this.nbt.getList("value").add(biome.nbt()));
+        this.biomes.put(biome.name(), biome);
     }
 
     @Override
     public @NotNull Collection<Biome> getBiomes() {
-        return null;
+        return this.biomes.values();
+    }
+
+    @Override
+    public @NotNull Biome getBiome(String name) {
+        final var biome = this.biomes.get(name);
+        return biome != null ? biome : Biome.PLAINS;
     }
 
     public CompoundBinaryTag nbt() {
-        return this.nbt;
+        return CompoundBinaryTag.builder()
+                .putString("type", "minecraft:worldgen/biome")
+                .put("value", ListBinaryTag.from(this.biomes.values().stream().map(Biome::nbt).toList()))
+                .build();
     }
 }
