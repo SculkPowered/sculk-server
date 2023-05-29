@@ -90,7 +90,7 @@ public final class MinecraftChunk implements Chunk {
             this.packet = new ChunkDataAndUpdateLight(
                     this.x,
                     this.z,
-                    Dimension.OVERWORLD.heightmaps(),
+                    this.world.getDimension().heightmaps(),
                     this.sectionsToData(),
                     true,
                     EMPTY_BIT_SET,
