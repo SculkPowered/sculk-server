@@ -6,10 +6,10 @@ public interface Palette {
 
     byte dimension();
 
-    int size();
+    short size();
 
-    default int maxSize() {
-        return this.dimension() * this.dimension() * this.dimension();
+    default short maxSize() {
+        return (short) (this.dimension() * this.dimension() * this.dimension());
     }
 
     void set(int x, int y, int z, int value);

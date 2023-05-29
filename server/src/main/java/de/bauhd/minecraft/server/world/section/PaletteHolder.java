@@ -23,7 +23,7 @@ public final class PaletteHolder implements Palette {
     }
 
     @Override
-    public int size() {
+    public short size() {
         return this.palette.size();
     }
 

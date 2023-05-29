@@ -16,7 +16,7 @@ final class DirectIndirectPalette implements Palette {
     private final List<Integer> paletteToValue;
     private final Int2IntMap valueToPalette;
     private long[] values;
-    private int size;
+    private short size;
 
     public DirectIndirectPalette(final byte dimension, final byte bitsPerEntry, final byte maxBitsPerEntry) {
         this.dimension = dimension;
@@ -37,7 +37,7 @@ final class DirectIndirectPalette implements Palette {
     }
 
     @Override
-    public int size() {
+    public short size() {
         return this.size;
     }
 

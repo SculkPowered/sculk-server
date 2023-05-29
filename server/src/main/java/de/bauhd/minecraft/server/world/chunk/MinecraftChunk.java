@@ -109,7 +109,7 @@ public final class MinecraftChunk implements Chunk {
     private byte[] sectionsToData() {
         final var buf = new Buffer(DefaultBufferAllocators.offHeapAllocator().allocate(this.sections.length * 8)); // minimum amount
         for (final var section : this.sections) {
-            buf.writeShort((short) section.blocks().size());
+            buf.writeShort(section.blocks().size());
             section.blocks().write(buf);
             section.biomes().write(buf);
         }

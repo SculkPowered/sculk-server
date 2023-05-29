@@ -22,7 +22,7 @@ final class SingleValuedPalette implements Palette {
     }
 
     @Override
-    public int size() {
+    public short size() {
         return this.value != 0 ? this.maxSize() : 0;
     }
 
