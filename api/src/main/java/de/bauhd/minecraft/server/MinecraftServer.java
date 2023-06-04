@@ -4,10 +4,12 @@ import de.bauhd.minecraft.server.command.CommandHandler;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.EventHandler;
+import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.plugin.PluginHandler;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.world.dimension.DimensionHandler;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,4 +40,6 @@ public interface MinecraftServer {
     @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull Path path);
 
     <T extends Entity> T createEntity(@NotNull Class<T> clazz);
+
+    @NotNull Container createContainer(@NotNull Container.Type type, @NotNull Component title);
 }

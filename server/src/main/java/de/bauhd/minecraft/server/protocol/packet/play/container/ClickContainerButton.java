@@ -37,4 +37,12 @@ public final class ClickContainerButton implements Packet {
                 ", buttonId=" + this.buttonId +
                 '}';
     }
+
+    public byte windowId() {
+        return this.windowId;
+    }
+
+    public byte buttonId() {
+        return this.buttonId;
+    }
 }

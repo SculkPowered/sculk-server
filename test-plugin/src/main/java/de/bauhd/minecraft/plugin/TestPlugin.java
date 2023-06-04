@@ -1,12 +1,14 @@
 package de.bauhd.minecraft.plugin;
 
+import de.bauhd.minecraft.plugin.command.AnvilCommand;
 import de.bauhd.minecraft.plugin.command.GameModeCommand;
+import de.bauhd.minecraft.server.container.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.Material;
 import de.bauhd.minecraft.server.event.Subscribe;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
+import de.bauhd.minecraft.server.event.player.PlayerClickContainerEvent;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
 import de.bauhd.minecraft.server.event.player.PlayerSpawnEvent;
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
-import de.bauhd.minecraft.server.inventory.item.Material;
 import de.bauhd.minecraft.server.plugin.Plugin;
 import de.bauhd.minecraft.server.plugin.PluginDescription;
 import de.bauhd.minecraft.server.world.Position;
@@ -22,7 +24,9 @@ public final class TestPlugin extends Plugin {
 
     @Subscribe
     public void handle(final ServerInitializeEvent event) {
-        this.getServer().getCommandHandler().register(new GameModeCommand());
+        this.getServer().getCommandHandler()
+                .register(new GameModeCommand())
+                .register(new AnvilCommand(this.getServer()));
 
         final var testBiome = Biome.PLAINS.toBuilder("test")
                 .effects(Biome.Effects.builder()
@@ -42,9 +46,7 @@ public final class TestPlugin extends Plugin {
 
     @Subscribe
     public void handle(final PlayerJoinEvent event) {
-        final var player = event.player();
-        player.setWorld(this.world);
-        //player.sendMessage(Component.text("Welcome " + player.getUsername(), NamedTextColor.DARK_AQUA));
+        event.player().setWorld(this.world);
     }
 
     @Subscribe
@@ -53,8 +55,13 @@ public final class TestPlugin extends Plugin {
         player.setAllowFight(true);
         player.setInstantBreak(true);
         final var inventory = player.getInventory();
-        inventory.setItem(4, new ItemStack(Material.CHEST));
-        inventory.setHelmet(new ItemStack(Material.DIAMOND_HELMET));
-        inventory.setItemInOffHand(new ItemStack(Material.SHIELD));
+        inventory.setItem(4, ItemStack.of(Material.CHEST));
+        inventory.setHelmet(ItemStack.of(Material.DIAMOND_HELMET));
+        inventory.setItemInOffHand(ItemStack.of(Material.SHIELD));
+    }
+
+    @Subscribe
+    public void handle(final PlayerClickContainerEvent event) {
+        event.setCancelled(true);
     }
 }

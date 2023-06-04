@@ -20,13 +20,12 @@ public final class CompressorDecoder extends MessageToMessageDecoder<Buffer> {
     @Override
     protected void decodeAndClose(ChannelHandlerContext ctx, Buffer buf) {
         final int size = PacketUtils.readVarInt(buf);
-
         if (size == 0) {
             ctx.fireChannelRead(buf);
             return;
         }
 
-        try {
+        try (buf) {
             final var bytes = new byte[buf.readableBytes()];
             buf.readBytes(bytes, 0, bytes.length);
             this.inflater.setInput(bytes);

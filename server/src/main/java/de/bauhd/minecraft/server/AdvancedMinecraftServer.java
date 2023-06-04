@@ -3,10 +3,12 @@ package de.bauhd.minecraft.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.bauhd.minecraft.server.command.MinecraftCommandHandler;
+import de.bauhd.minecraft.server.container.*;
 import de.bauhd.minecraft.server.dimension.MinecraftDimensionHandler;
-import de.bauhd.minecraft.server.entity.*;
-import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
+import de.bauhd.minecraft.server.entity.Entity;
+import de.bauhd.minecraft.server.entity.EntityClassToSupplierMap;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
+import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.MinecraftEventHandler;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
@@ -25,6 +27,7 @@ import de.bauhd.minecraft.server.world.VanillaLoader;
 import de.bauhd.minecraft.server.world.VanillaWorld;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.MinecraftBiomeHandler;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -219,6 +222,23 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             throw new NullPointerException("No supplier for class" + clazz + " found!");
         }
         return (T) supplier.get();
+    }
+
+    @Override
+    public @NotNull Container createContainer(Container.@NotNull Type type, @NotNull Component title) {
+        return switch (type) {
+            case GENERIC_9x1, GENERIC_9x2, GENERIC_9x3, GENERIC_9x6, GENERIC_9x5, GENERIC_9x4, GENERIC_3x3,
+                    CRAFTING, GRINDSTONE, HOPPER, LECTERN, MERCHANT, SHULKER_BOX, SMITHING, CARTOGRAPHY ->
+                    new GenericContainer(type, title);
+            case ANVIL -> new MineAnvilContainer(title);
+            case BEACON -> new MineBeaconContainer(title);
+            case BLAST_FURNACE, FURNACE, SMOKER -> new MineFurnaceContainer(title);
+            case BREWING_STAND -> new MineBrewingStandContainer(title);
+            case ENCHANTMENT -> new MineEnchantingTableContainer(title);
+            case LOOM -> new MineLoomContainer(title);
+            case STONECUTTER -> new MineStonecutterContainer(title);
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        };
     }
 
     public MinecraftConfiguration getConfiguration() {

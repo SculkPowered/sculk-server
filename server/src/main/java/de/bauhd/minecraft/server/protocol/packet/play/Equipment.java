@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
@@ -27,7 +27,7 @@ public final class Equipment implements Packet {
             }
             buf
                     .writeVarInt(key)
-                    .writeSlot(entry.getValue());
+                    .writeItem(entry.getValue());
             index++;
         }
     }

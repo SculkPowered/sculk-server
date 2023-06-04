@@ -1,8 +1,8 @@
 package de.bauhd.minecraft.server.protocol;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
-import de.bauhd.minecraft.server.inventory.item.Material;
+import de.bauhd.minecraft.server.container.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.Material;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import de.bauhd.minecraft.server.util.Utf8;
@@ -205,15 +205,13 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return this.writeLong(uniqueId.getMostSignificantBits()).writeLong(uniqueId.getLeastSignificantBits());
     }
 
-    public ItemStack readSlot() {
-        if (!this.readBoolean()) {
-            return null;
-        }
-        return new ItemStack(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
+    public @NotNull ItemStack readItem() {
+        if (!this.readBoolean()) return ItemStack.AIR;
+        return ItemStack.of(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
     }
 
-    public @NotNull Buffer writeSlot(final @Nullable ItemStack slot) {
-        if (slot != null) {
+    public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
+        if (slot.material() != Material.AIR) { // check for material not for ItemStack.AIR, but it should be used
             this
                     .writeBoolean(true)
                     .writeVarInt(slot.material().protocolId())

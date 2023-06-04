@@ -5,9 +5,15 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 
 public final class ContainerProperty implements Packet {
 
-    private int windowId;
-    private short property;
-    private short value;
+    private final int windowId;
+    private final short property;
+    private final short value;
+
+    public ContainerProperty(final int windowId, final short property, final short value) {
+        this.windowId = windowId;
+        this.property = property;
+        this.value = value;
+    }
 
     @Override
     public void encode(Buffer buf) {

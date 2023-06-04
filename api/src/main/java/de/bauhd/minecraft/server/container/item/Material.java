@@ -1,4 +1,4 @@
-package de.bauhd.minecraft.server.inventory.item;
+package de.bauhd.minecraft.server.container.item;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -1237,10 +1237,12 @@ public enum Material {
     // END
     ;
 
-    private static final Map<Integer, Material> MATERIALS = new HashMap<>();
+    private static final Map<Integer, Material> MATERIALS;
 
     static {
-        for (final var material : values()) {
+        final var values = values();
+        MATERIALS = new HashMap<>(values.length);
+        for (final var material : values) {
             MATERIALS.put(material.protocolId, material);
         }
     }

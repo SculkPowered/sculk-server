@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.entity;
 
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.world.Position;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -118,7 +118,7 @@ public final class Metadata {
     }
 
     public void setSlot(final int index, final ItemStack value) {
-        this.set(index, new Entry<>(SLOT_TYPE, value, Buffer::writeSlot));
+        this.set(index, new Entry<>(SLOT_TYPE, value, Buffer::writeItem));
     }
 
     public ItemStack getSlot(final int index, final ItemStack def) {

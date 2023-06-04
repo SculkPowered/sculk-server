@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -17,20 +17,22 @@ public final class ClickContainer implements Packet {
     private Int2ObjectMap<ItemStack> slots;
     private ItemStack carriedItem;
 
+    // something is not 100 percent correct  here
     @Override
     public void decode(Buffer buf) {
-        this.windowId = buf.readUnsignedByte();
+        this.windowId = buf.readByte();
         this.stateId = buf.readVarInt();
         this.slot = buf.readShort();
         this.button = buf.readByte();
         this.mode = buf.readVarInt();
         final var slotCount = buf.readVarInt();
         this.slots = new Int2ObjectOpenHashMap<>(slotCount);
-        for (int i = 0; i < slotCount; i++) {
-            this.slots.put(buf.readShort(), buf.readSlot());
+        for (var i = 0; i < slotCount; i++) {
+            if (buf.readableBytes() == 0) return; // I guess nothing is there
+            this.slots.put(buf.readShort(), buf.readItem());
         }
-        if (buf.readableBytes() != 0) {
-            this.carriedItem = buf.readSlot();
+        if (buf.readableBytes() != 0) { // I guess no carried item
+            this.carriedItem = buf.readItem();
         }
     }
 
@@ -50,5 +52,33 @@ public final class ClickContainer implements Packet {
                 ", slots=" + this.slots +
                 ", carriedItem=" + this.carriedItem +
                 '}';
+    }
+
+    public int windowId() {
+        return this.windowId;
+    }
+
+    public int stateId() {
+        return this.stateId;
+    }
+
+    public short slot() {
+        return this.slot;
+    }
+
+    public byte button() {
+        return this.button;
+    }
+
+    public int mode() {
+        return this.mode;
+    }
+
+    public Int2ObjectMap<ItemStack> slots() {
+        return this.slots;
+    }
+
+    public ItemStack carriedItem() {
+        return this.carriedItem;
     }
 }

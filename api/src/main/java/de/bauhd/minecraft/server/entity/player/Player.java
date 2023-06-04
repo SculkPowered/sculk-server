@@ -2,7 +2,8 @@ package de.bauhd.minecraft.server.entity.player;
 
 import de.bauhd.minecraft.server.command.CommandSender;
 import de.bauhd.minecraft.server.entity.LivingEntity;
-import de.bauhd.minecraft.server.inventory.PlayerInventory;
+import de.bauhd.minecraft.server.container.Container;
+import de.bauhd.minecraft.server.container.Inventory;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,9 +28,13 @@ public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry {
 
     void disconnect(@NotNull Component component);
 
-    @NotNull PlayerInventory getInventory();
+    @NotNull Inventory getInventory();
+
+    @Nullable Container getContainer();
 
     int getHeldItemSlot();
+
+    void openContainer(@NotNull Container container);
 
     void setHeldItemSlot(int slot);
 

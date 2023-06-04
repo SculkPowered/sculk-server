@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.world.block;
 
-import de.bauhd.minecraft.server.inventory.item.Material;
+import de.bauhd.minecraft.server.container.item.Material;
 
 public final class MinecraftBlock {
 

@@ -2,12 +2,16 @@ package de.bauhd.minecraft.server.entity.player;
 
 import de.bauhd.minecraft.server.entity.AbstractLivingEntity;
 import de.bauhd.minecraft.server.entity.EntityType;
-import de.bauhd.minecraft.server.inventory.MinePlayerInventory;
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.Container;
+import de.bauhd.minecraft.server.container.MineContainer;
+import de.bauhd.minecraft.server.container.MineInventory;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
+import de.bauhd.minecraft.server.protocol.packet.play.container.ContainerContent;
+import de.bauhd.minecraft.server.protocol.packet.play.container.OpenScreen;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
 import de.bauhd.minecraft.server.world.World;
@@ -35,7 +39,8 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
-    private final MinePlayerInventory inventory = new MinePlayerInventory(this);
+    private final MineInventory inventory = new MineInventory(this);
+    private MineContainer container;
     private long lastSendKeepAlive;
     private boolean keepAlivePending;
     private GameMode gameMode = GameMode.SURVIVAL;
@@ -102,8 +107,26 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     }
 
     @Override
-    public @NotNull MinePlayerInventory getInventory() {
+    public @NotNull MineInventory getInventory() {
         return this.inventory;
+    }
+
+    @Override
+    public @Nullable MineContainer getContainer() {
+        return this.container;
+    }
+
+    public void setContainer(final MineContainer container) {
+        this.container = container;
+    }
+
+    @Override
+    public void openContainer(@NotNull Container container) {
+        this.container = (MineContainer) container;
+        this.container.addViewer(this);
+        this.send(new OpenScreen(1, container.type().ordinal(), container.title()));
+        this.send(new ContainerContent((byte) 1, 1, ((MineContainer) container).items));
+        this.container.sendProperties(this);
     }
 
     @Override
@@ -241,17 +264,17 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
             mcPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
             final var inventory = this.getInventory();
             final var equipment = new HashMap<Integer, ItemStack>();
-            if (inventory.getItemInMainHand() != null) {
+            if (inventory.getItemInMainHand() != ItemStack.AIR) {
                 equipment.put(0, inventory.getItemInMainHand());
-            } else if (inventory.getItemInOffHand() != null) {
+            } else if (inventory.getItemInOffHand() != ItemStack.AIR) {
                 equipment.put(1, inventory.getItemInOffHand());
-            } else if (inventory.getBoots() != null) {
+            } else if (inventory.getBoots() != ItemStack.AIR) {
                 equipment.put(2, inventory.getBoots());
-            } else if (inventory.getLeggings() != null) {
+            } else if (inventory.getLeggings() != ItemStack.AIR) {
                 equipment.put(3, inventory.getLeggings());
-            } else if (inventory.getChestplate() != null) {
+            } else if (inventory.getChestplate() != ItemStack.AIR) {
                 equipment.put(4, inventory.getChestplate());
-            } else if (inventory.getHelmet() != null) {
+            } else if (inventory.getHelmet() != ItemStack.AIR) {
                 equipment.put(5, inventory.getHelmet());
             }
             if (!equipment.isEmpty()) {

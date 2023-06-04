@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -13,7 +13,7 @@ public final class EditBook implements Packet {
 
     @Override
     public void decode(Buffer buf) {
-        this.slot = buf.readSlot();
+        this.slot = buf.readItem();
         final var count = buf.readVarInt();
         this.entries = new String[count];
         for (int i = 0; i < count; i++) {

@@ -35,8 +35,16 @@ public final class CodeGenerator {
         }
         try (final var reader = Files.newBufferedReader(reports.resolve("registries.json"))) {
             final var json = GSON.fromJson(reader, JsonObject.class);
+
             this.generateRegistry(json.get("minecraft:item").getAsJsonObject(),
-                    path.resolve("inventory").resolve("item").resolve("Material.java"));
+                    path.resolve("container").resolve("item").resolve("Material.java"));
+
+            this.generateRegistry(json.get("minecraft:enchantment").getAsJsonObject(),
+                    path.resolve("enchantment").resolve("Enchantment.java"));
+
+            this.generateRegistry(json.get("minecraft:potion").getAsJsonObject(),
+                    path.resolve("potion").resolve("PotionEffect.java"));
+
             final var entityPath = path.resolve("entity");
             final Map<String, JsonObject> map = GSON.fromJson(json.get("minecraft:entity_type").getAsJsonObject().get("entries"), STRING_JSON_MAP);
             map.forEach((key, object) -> {

@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -13,7 +13,7 @@ public final class CreativeModeSlot implements Packet {
     @Override
     public void decode(Buffer buf) {
         this.slot = buf.readShort();
-        this.clickedItem = buf.readSlot();
+        this.clickedItem = buf.readItem();
     }
 
     @Override

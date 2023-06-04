@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server.protocol.packet.play.container;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class CloseContainer implements Packet {
 
@@ -21,6 +22,11 @@ public final class CloseContainer implements Packet {
     @Override
     public void encode(Buffer buf) {
         buf.writeUnsignedByte(this.id);
+    }
+
+    @Override
+    public boolean handle(PacketHandler handler) {
+        return handler.handle(this);
     }
 
     @Override

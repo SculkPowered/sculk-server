@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play.container;
 
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
@@ -24,7 +24,7 @@ public final class ContainerSlot implements Packet {
                 .writeByte(this.windowId)
                 .writeVarInt(this.stateId)
                 .writeShort(this.slot)
-                .writeSlot(this.slotData);
+                .writeItem(this.slotData);
     }
 
     @Override

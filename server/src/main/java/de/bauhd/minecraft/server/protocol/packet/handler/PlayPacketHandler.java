@@ -2,17 +2,20 @@ package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
+import de.bauhd.minecraft.server.event.player.PlayerClickContainerButtonEvent;
+import de.bauhd.minecraft.server.event.player.PlayerClickContainerEvent;
+import de.bauhd.minecraft.server.container.MineContainer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.ChatCommand;
-import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainer;
-import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainerButton;
-import de.bauhd.minecraft.server.protocol.packet.play.container.CloseContainer;
+import de.bauhd.minecraft.server.protocol.packet.play.container.*;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
+import de.bauhd.minecraft.server.util.ItemList;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.block.Block;
 import net.kyori.adventure.text.Component;
@@ -80,16 +83,55 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ClickContainerButton clickContainerButton) {
+        if (this.player.getContainer() == null) { // there should be a container
+            this.player.send(new CloseContainer(1));
+            return true;
+        }
+        this.server.getEventHandler().call(new PlayerClickContainerButtonEvent(this.player, clickContainerButton.buttonId()))
+                .exceptionally(throwable -> {
+            LOGGER.error("Exception while handling container click button for " + this.player.getUsername(), throwable);
+            return null;
+        });
         return true;
     }
 
     @Override
     public boolean handle(ClickContainer clickContainer) {
+        final var inventory = this.player.getInventory();
+        final var container = (this.player.getContainer() != null ? this.player.getContainer() : inventory);
+        this.server.getEventHandler().call(new PlayerClickContainerEvent(this.player, container, clickContainer.carriedItem(), clickContainer.slot()))
+                .thenAcceptAsync(event -> {
+                    if (event.isCancelled()) { // let's resend to override client prediction
+                        if (container == inventory) {
+                            this.player.send(new ContainerContent((byte) 0, 1, inventory.items));
+                        } else {
+                            final var mineContainer = (MineContainer) container;
+                            final var items = new ItemList(container.type().size() + 36);
+                            for (var i = 8; i < 44; i++) {
+                                items.set(i - 9 + container.type().size(), inventory.items.get(i));
+                            }
+                            for (var i = 0; i < mineContainer.items.size(); i++) {
+                                items.set(i, mineContainer.items.get(i));
+                            }
+                            this.player.send(new ContainerContent((byte) 1, 1, items));
+                        }
+                    } else {
+                        clickContainer.slots().forEach(inventory.items::set);
+                    }
+                }, this.connection.executor())
+                .exceptionally(throwable -> {
+                    LOGGER.error("Exception while handling container click for " + this.player.getUsername(), throwable);
+                    return null;
+                });
         return true;
     }
 
     @Override
     public boolean handle(CloseContainer closeContainer) {
+        if (this.player.getContainer() != null) {
+            this.player.getContainer().removeViewer(this.player);
+            this.player.setContainer(null);
+        }
         return true;
     }
 
@@ -185,7 +227,7 @@ public final class PlayPacketHandler extends PacketHandler {
             case 3 -> this.player.getInventory().setItem(this.player.getHeldItemSlot(), null); // drop stack
             case 4 -> { // drop item
                 final var itemInHand = this.player.getInventory().getItemInMainHand();
-                if (itemInHand != null) {
+                if (itemInHand != ItemStack.AIR) {
                     itemInHand.amount(itemInHand.amount() - 1);
                 }
             }
@@ -234,7 +276,7 @@ public final class PlayPacketHandler extends PacketHandler {
         } else if (index > 45) {
             index -= 5;
         }
-        player.getInventory().itemStacks.put(index, creativeModeSlot.clickedItem());
+        player.getInventory().items.add(index, creativeModeSlot.clickedItem());
         return true;
     }
 
@@ -257,9 +299,7 @@ public final class PlayPacketHandler extends PacketHandler {
     @Override
     public boolean handle(UseItemOn useItemOn) {
         final var slot = this.player.getInventory().getItemInMainHand();
-        if (slot == null) {
-            return false;
-        }
+        if (slot == ItemStack.AIR) return false;
         var position = useItemOn.position();
         position = switch (useItemOn.face()) {
             case BOTTOM -> position.subtract(0, 1, 0);

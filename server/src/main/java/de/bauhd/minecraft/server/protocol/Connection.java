@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
@@ -114,6 +115,9 @@ public final class Connection extends ChannelHandlerAdapter {
             }
             this.player.sendViewers(new RemoveEntities(this.player.getId()));
             this.server.sendAll(new PlayerInfoRemove(List.of(this.player)));
+            if (this.player.getContainer() != null) {
+                this.player.getContainer().removeViewer(this.player);
+            }
 
             LOGGER.info(this.username + " has disconnected.");
         }
@@ -197,6 +201,10 @@ public final class Connection extends ChannelHandlerAdapter {
 
     public void sendAndClose(final Packet packet) {
         this.channel.writeAndFlush(packet).addListener(this.channel, ChannelFutureListeners.CLOSE);
+    }
+
+    public Executor executor() {
+        return this.channel.executor();
     }
 
     public void setState(final State state) {

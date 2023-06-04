@@ -1,13 +1,12 @@
-package de.bauhd.minecraft.server.inventory;
+package de.bauhd.minecraft.server.container;
 
-import de.bauhd.minecraft.server.inventory.item.ItemStack;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public interface Inventory {
+public interface Container {
 
-    @Nullable Component title();
+    @NotNull Component title();
 
     @NotNull Type type();
 
@@ -40,7 +39,8 @@ public interface Inventory {
         SMITHING(3),
         SMOKER(3),
         CARTOGRAPHY(3),
-        STONECUTTER(2);
+        STONECUTTER(2),
+        PLAYER(46);
 
         private final int size;
 
@@ -52,5 +52,4 @@ public interface Inventory {
             return this.size;
         }
     }
-
 }
