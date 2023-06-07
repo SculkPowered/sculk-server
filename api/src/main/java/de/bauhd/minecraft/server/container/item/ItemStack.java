@@ -44,14 +44,14 @@ public class ItemStack {
     }
 
     public @NotNull ItemStack displayName(final Component displayName) {
-        this.display("Name", StringBinaryTag.of(GsonComponentSerializer.gson().serialize(displayName)));
+        this.display("Name", StringBinaryTag.stringBinaryTag(GsonComponentSerializer.gson().serialize(displayName)));
         return this;
     }
 
     public @NotNull ItemStack lore(final Component... lore) {
         final var list = ListBinaryTag.builder();
         for (final var component : lore) {
-            list.add(StringBinaryTag.of(GsonComponentSerializer.gson().serialize(component)));
+            list.add(StringBinaryTag.stringBinaryTag(GsonComponentSerializer.gson().serialize(component)));
         }
         this.display("Lore", list.build());
         return this;
