@@ -1,6 +1,6 @@
 [versions]
 netty = "5.0.0.Alpha5"
-adventure = "4.13.1"
+adventure = "4.14.0"
 configurate = "4.1.2"
 log4j = "2.20.0"
 
