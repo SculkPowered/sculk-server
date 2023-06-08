@@ -1,21 +1,20 @@
 package de.bauhd.minecraft.server.protocol.packet.handshake;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 
 public final class Handshake implements Packet {
 
-    private Protocol.Version version;
+    private int version;
     private String serverAddress;
     private int port;
     private State nextStatus;
 
     @Override
     public void decode(Buffer buf) {
-        this.version = Protocol.Version.get(buf.readVarInt());
+        this.version = buf.readVarInt();
         this.serverAddress = buf.readString(256);
         this.port = buf.readUnsignedShort();
         this.nextStatus = (buf.readVarInt() == 1 ? State.STATUS : State.LOGIN);
@@ -26,7 +25,7 @@ public final class Handshake implements Packet {
         return handler.handle(this);
     }
 
-    public Protocol.Version version() {
+    public int version() {
         return this.version;
     }
 

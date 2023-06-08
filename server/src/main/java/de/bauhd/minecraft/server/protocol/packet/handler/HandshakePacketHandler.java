@@ -1,13 +1,12 @@
 package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.handshake.Handshake;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import net.kyori.adventure.text.Component;
-
-import static de.bauhd.minecraft.server.protocol.Protocol.Version.*;
 
 public final class HandshakePacketHandler extends PacketHandler {
 
@@ -21,9 +20,9 @@ public final class HandshakePacketHandler extends PacketHandler {
     public boolean handle(Handshake handshake) {
         this.connection.setState(handshake.nextStatus());
         if (handshake.nextStatus() == State.LOGIN
-                && (handshake.version() != CURRENT_VERSION)) {
+                && (handshake.version() != Protocol.VERSION_PROTOCOL)) {
             this.connection.send(new Disconnect(Component
-                    .translatable("multiplayer.disconnect.outdated_client", Component.text(SUPPORTED_VERSIONS))));
+                    .translatable("multiplayer.disconnect.outdated_client", Component.text(Protocol.VERSION_NAME))));
             this.connection.close();
             return true;
         }

@@ -16,7 +16,6 @@ import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.plugin.MinecraftPluginHandler;
 import de.bauhd.minecraft.server.protocol.Connection;
-import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
@@ -54,13 +53,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             .setPrettyPrinting()
             .create();
 
-    private static final GsonComponentSerializer PRE_1_16_SERIALIZER =
-            GsonComponentSerializer.builder()
-                    .downsampleColors()
-                    .emitLegacyHoverEvent()
-                    .build();
-    private static final GsonComponentSerializer MODERN_SERIALIZER =
-            GsonComponentSerializer.gson();
+    private static final GsonComponentSerializer PRE_1_16_SERIALIZER = GsonComponentSerializer.colorDownsamplingGson();
+    private static final GsonComponentSerializer MODERN_SERIALIZER = GsonComponentSerializer.gson();
 
     static {
         System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
@@ -265,7 +259,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         this.players.remove(uniqueId);
     }
 
-    public static GsonComponentSerializer getGsonSerializer(final Protocol.Version version) {
-        return version.newerOr(Protocol.Version.MINECRAFT_1_16) ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
+    public static GsonComponentSerializer getGsonSerializer(final int version) {
+        return version >= 735 ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
     }
 }

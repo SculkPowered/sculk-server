@@ -2,8 +2,10 @@ package de.bauhd.minecraft.server.protocol.packet.play;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
+import de.bauhd.minecraft.server.world.chunk.LightData;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
+import java.util.Arrays;
 import java.util.BitSet;
 
 public final class ChunkDataAndUpdateLight implements Packet {
@@ -12,31 +14,18 @@ public final class ChunkDataAndUpdateLight implements Packet {
     private final int chunkZ;
     private final CompoundBinaryTag heightmaps;
     private final byte[] data;
-    private final boolean trustEdges;
-    private final BitSet skyLightMask;
-    private final BitSet blockLightMask;
-    private final BitSet emptySkyLightMask;
-    private final BitSet emptyBlockLightMask;
-    // TODO sky light block light
+    private final LightData lightData;
 
     public ChunkDataAndUpdateLight(final int chunkX,
                                    final int chunkZ,
                                    final CompoundBinaryTag heightmaps,
                                    final byte[] data,
-                                   final boolean trustEdges,
-                                   final BitSet skyLightMask,
-                                   final BitSet blockLightMask,
-                                   final BitSet emptySkyLightMask,
-                                   final BitSet emptyBlockLightMask) {
+                                   final LightData lightData) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.heightmaps = heightmaps;
         this.data = data;
-        this.trustEdges = trustEdges;
-        this.skyLightMask = skyLightMask;
-        this.blockLightMask = blockLightMask;
-        this.emptySkyLightMask = emptySkyLightMask;
-        this.emptyBlockLightMask = emptyBlockLightMask;
+        this.lightData = lightData;
     }
 
     @Override
@@ -46,14 +35,8 @@ public final class ChunkDataAndUpdateLight implements Packet {
                 .writeInt(this.chunkZ)
                 .writeCompoundTag(this.heightmaps)
                 .writeByteArray(this.data)
-                .writeVarInt(0) // Block entities
-                .writeBoolean(this.trustEdges)
-                .writeBitSet(this.skyLightMask) // Skylight Mask
-                .writeBitSet(this.blockLightMask) // Block Light Mask
-                .writeBitSet(this.emptySkyLightMask) // Empty Skylight Mask
-                .writeBitSet(this.emptyBlockLightMask) // Empty Block Light Mask
-                .writeVarInt(0) // Skylight Array
-                .writeVarInt(0); // Block Light Array // for 1.19
+                .writeVarInt(0); // Block entities
+        this.lightData.write(buf);
     }
 
     @Override
@@ -63,11 +46,7 @@ public final class ChunkDataAndUpdateLight implements Packet {
                 ", chunkZ=" + this.chunkZ +
                 ", heightmaps=" + this.heightmaps +
                 ", data=byte[" + this.data.length + "]" +
-                ", trustEdges=" + this.trustEdges +
-                ", skyLightMask=BitSet[" + this.skyLightMask.length() + "]" +
-                ", blockLightMask=BitSet[" + this.blockLightMask.length() + "]" +
-                ", emptySkyLightMask=[" + this.emptySkyLightMask.length() + "]" +
-                ", emptyBlockLightMask=[" + this.emptyBlockLightMask.length() + "]" +
+                ", lightData=" + this.lightData +
                 '}';
     }
 }

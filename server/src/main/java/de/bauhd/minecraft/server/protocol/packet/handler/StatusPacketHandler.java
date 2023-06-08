@@ -10,8 +10,6 @@ import de.bauhd.minecraft.server.protocol.packet.status.StatusResponse;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
-import static de.bauhd.minecraft.server.protocol.Protocol.Version.CURRENT_VERSION;
-
 public final class StatusPacketHandler extends PacketHandler {
 
     private static final Component COMPONENT = Component.text("Hello world!", TextColor.color(109, 331, 221));
@@ -24,12 +22,11 @@ public final class StatusPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(StatusRequest statusRequest) {
-        final var version = this.connection.version();
         this.connection.send(new StatusResponse("{\"version\":{" +
-                "\"name\":\"not vanilla " + Protocol.Version.SUPPORTED_VERSIONS + "\"," +
-                "\"protocol\":" + (version.older(CURRENT_VERSION) ? CURRENT_VERSION.protocolId() : version.protocolId()) + "}," +
+                "\"name\":\"not vanilla " + Protocol.VERSION_NAME + "\"," +
+                "\"protocol\":" + Protocol.VERSION_PROTOCOL + "}," +
                 "\"players\":{\"max\":50,\"online\":" + this.connection.server().getPlayerCount() + ",\"sample\":[]}," +
-                "\"description\":" + AdvancedMinecraftServer.getGsonSerializer(version).serialize(COMPONENT) + "," +
+                "\"description\":" + AdvancedMinecraftServer.getGsonSerializer(this.connection.version()).serialize(COMPONENT) + "," +
                 "\"previewsChat\":true}"));
         return true;
     }

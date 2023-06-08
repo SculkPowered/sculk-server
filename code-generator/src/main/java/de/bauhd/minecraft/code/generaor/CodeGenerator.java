@@ -18,36 +18,39 @@ public final class CodeGenerator {
     private static final Type STRING_JSON_MAP = TypeToken.getParameterized(Map.class, String.class, JsonObject.class).getType();
 
     public static void main(String[] args) throws IOException {
-        final var path = Path.of("reports");
+        final var path = Path.of("generated");
         if (Files.notExists(path)) {
-            System.err.println("reports directory not found.");
+            System.err.println("generated directory not found.");
             return;
         }
 
         new CodeGenerator().generate(path);
     }
 
-    private void generate(final Path reports) throws IOException {
-        final var path = Path.of("api", "src", "main", "java", "de", "bauhd", "minecraft", "server");
+    private void generate(final Path generated) throws IOException {
+        final var reports = generated.resolve("reports");
+        final var data = generated.resolve("data").resolve("minecraft");
+        final var apiPackage = Path.of("api", "src", "main", "java", "de", "bauhd", "minecraft", "server");
 
         try (final var reader = Files.newBufferedReader(reports.resolve("blocks.json"))) {
-            this.generateBlocks(reader, path.resolve("world").resolve("block").resolve("Block.java"));
+            this.generateBlocks(reader, apiPackage.resolve("world").resolve("block").resolve("Block.java"));
         }
         try (final var reader = Files.newBufferedReader(reports.resolve("registries.json"))) {
             final var json = GSON.fromJson(reader, JsonObject.class);
 
             this.generateRegistry(json.get("minecraft:item").getAsJsonObject(),
-                    path.resolve("container").resolve("item").resolve("Material.java"));
+                    apiPackage.resolve("container").resolve("item").resolve("Material.java"));
 
             this.generateRegistry(json.get("minecraft:enchantment").getAsJsonObject(),
-                    path.resolve("enchantment").resolve("Enchantment.java"));
+                    apiPackage.resolve("enchantment").resolve("Enchantment.java"));
 
             this.generateRegistry(json.get("minecraft:potion").getAsJsonObject(),
-                    path.resolve("potion").resolve("PotionEffect.java"));
+                    apiPackage.resolve("potion").resolve("PotionEffect.java"));
 
-            final var entityPath = path.resolve("entity");
+            final var entityPath = apiPackage.resolve("entity");
             final Map<String, JsonObject> map = GSON.fromJson(json.get("minecraft:entity_type").getAsJsonObject().get("entries"), STRING_JSON_MAP);
             map.forEach((key, object) -> {
+                if (key.equals("minecraft:marker") || key.equals("minecraft:player")) return;
                 final var stringBuilder = new StringBuilder();
                 for (final var s : key.split(":")[1].split("_")) {
                     stringBuilder.append(s.substring(0, 1).toUpperCase()).append(s.substring(1));
@@ -66,7 +69,7 @@ public final class CodeGenerator {
             });
 
             this.generateRegistry(json.get("minecraft:entity_type").getAsJsonObject(),
-                    path.resolve("entity").resolve("EntityType.java"));
+                    apiPackage.resolve("entity").resolve("EntityType.java"));
         }
     }
 

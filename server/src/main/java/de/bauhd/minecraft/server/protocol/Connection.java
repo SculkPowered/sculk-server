@@ -60,7 +60,7 @@ public final class Connection extends ChannelHandlerAdapter {
     private final Channel channel;
     private State state;
     private PacketHandler packetHandler;
-    private Protocol.Version version;
+    private int version;
     private String serverAddress;
     private String username;
     private MinecraftPlayer player;
@@ -235,7 +235,7 @@ public final class Connection extends ChannelHandlerAdapter {
                 .addBefore("minecraft-encoder", "compressor-encoder", new CompressorEncoder(this.server.getConfiguration()));
     }
 
-    public void setVersion(final Protocol.Version version) {
+    public void setVersion(final int version) {
         this.version = version;
     }
 
@@ -243,7 +243,7 @@ public final class Connection extends ChannelHandlerAdapter {
         return this.server;
     }
 
-    public Protocol.Version version() {
+    public int version() {
         return this.version;
     }
 

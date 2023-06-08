@@ -46,8 +46,8 @@ public enum PotionEffect {
     WATER(1),
     WATER_BREATHING(23),
     WEAKNESS(38),
-    ;
     // END
+    ;
 
     private final int protocolId;
 

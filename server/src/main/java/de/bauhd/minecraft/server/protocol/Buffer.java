@@ -27,7 +27,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public record Buffer(io.netty5.buffer.Buffer buf) {
 
     private static final int STRING_CAPACITY = 65536;
-    private static final GsonComponentSerializer SERIALIZER = AdvancedMinecraftServer.getGsonSerializer(Protocol.Version.CURRENT_VERSION);
+    private static final GsonComponentSerializer SERIALIZER = GsonComponentSerializer.gson();
 
     public int readUnsignedByte() {
         return this.buf.readUnsignedByte();
@@ -175,7 +175,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return this.writeString(SERIALIZER.serialize(component));
     }
 
-    public @NotNull Buffer writeComponent(final Component component, final Protocol.Version version) {
+    public @NotNull Buffer writeComponent(final Component component, final int version) {
         return this.writeString(AdvancedMinecraftServer.getGsonSerializer(version).serialize(component));
     }
 

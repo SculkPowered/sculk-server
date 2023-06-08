@@ -42,8 +42,8 @@ public enum Enchantment {
     THORNS(7),
     UNBREAKING(22),
     VANISHING_CURSE(38),
-    ;
     // END
+    ;
 
     private final int protocolId;
 

@@ -11,15 +11,12 @@ import de.bauhd.minecraft.server.world.block.Block;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import de.bauhd.minecraft.server.world.section.Section;
 import io.netty5.buffer.DefaultBufferAllocators;
+import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public final class MinecraftChunk implements Chunk {
-
-    private static final BitSet EMPTY_BIT_SET = new BitSet();
-    private static final BitSet EMPTY_LIGHT = BitSet.valueOf(
-            new long[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24});
 
     private final MinecraftWorld world;
     private final Dimension dimension;
@@ -36,10 +33,9 @@ public final class MinecraftChunk implements Chunk {
         this.dimension = this.world.getDimension();
         this.x = chunkX;
         this.z = chunkZ;
-
         final var capacity = this.dimension.maximumSections() - this.dimension.minimumSections();
         this.sections = new Section[capacity];
-        for (int i = 0; i < capacity; i++) {
+        for (var i = 0; i < capacity; i++) {
             this.sections[i] = new Section();
         }
     }
@@ -64,10 +60,7 @@ public final class MinecraftChunk implements Chunk {
 
     @Override
     public void setBlock(int x, int y, int z, @NotNull Block block) {
-        this.setBlock(x, y, z, block.stateId());
-    }
-
-    public void setBlock(int x, int y, int z, int id) {
+        final var id = block.stateId();
         this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z), id);
         this.packet = null;
         if (this.viewers.size() != 0) {
@@ -87,16 +80,13 @@ public final class MinecraftChunk implements Chunk {
 
     public void send(MinecraftPlayer player) {
         if (this.packet == null) {
+            final var data = this.sectionsToData();
             this.packet = new ChunkDataAndUpdateLight(
                     this.x,
                     this.z,
                     this.world.getDimension().heightmaps(),
-                    this.sectionsToData(),
-                    true,
-                    EMPTY_BIT_SET,
-                    EMPTY_BIT_SET,
-                    EMPTY_LIGHT,
-                    EMPTY_LIGHT
+                    data.left(),
+                    data.right()
             );
         }
         player.send(this.packet);
@@ -106,16 +96,38 @@ public final class MinecraftChunk implements Chunk {
         return this.sections[this.world.chunkCoordinate(y) - this.dimension.minimumSections()];
     }
 
-    private byte[] sectionsToData() {
+    private Pair<byte[], LightData> sectionsToData() {
         final var buf = new Buffer(DefaultBufferAllocators.offHeapAllocator().allocate(this.sections.length * 8)); // minimum amount
+        final var skyMask = new BitSet();
+        final var blockMask = new BitSet();
+        final var emptySkyMask = new BitSet();
+        final var emptyBlockMask = new BitSet();
+        final var skyLight = new ArrayList<byte[]>();
+        final var blockLight = new ArrayList<byte[]>();
+        var index = 0;
         for (final var section : this.sections) {
+            index++;
+
             buf.writeShort(section.blocks().size());
             section.blocks().write(buf);
             section.biomes().write(buf);
+
+            if (section.skyLight().length != 0) {
+                skyLight.add(section.skyLight());
+                skyMask.set(index);
+            } else {
+                emptySkyMask.set(index);
+            }
+            if (section.blockLight().length != 0) {
+                blockLight.add(section.blockLight());
+                blockMask.set(index);
+            } else {
+                emptyBlockMask.set(index);
+            }
         }
         final var data = buf.readAll();
         buf.close();
-        return data;
+        return Pair.of(data, new LightData(skyMask, blockMask, emptySkyMask, emptyBlockMask, skyLight, blockLight));
     }
 
     private int relativeCoordinate(final int coordinate) {

@@ -103,7 +103,7 @@ public final class VanillaLoader {
                 final var states = compound.getCompound("block_states");
                 final var blockPalette = states.getList("palette");
                 if (blockPalette.equals(ListBinaryTag.empty())) continue;
-                final var section = new Section(false);
+                final var section = new Section(compound.getByteArray("SkyLight"), compound.getByteArray("BlockLight"));
 
                 // load blocks
                 {

@@ -8,6 +8,7 @@ import de.bauhd.minecraft.server.protocol.packet.play.block.BlockAction;
 import de.bauhd.minecraft.server.protocol.packet.play.block.BlockEntityData;
 import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.minecraft.server.protocol.packet.play.command.ChatCommand;
+import de.bauhd.minecraft.server.protocol.packet.play.command.CommandSuggestionsResponse;
 import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.protocol.packet.play.container.*;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
@@ -126,7 +127,7 @@ public enum State {
             this.clientBound.register(ChangeDifficulty.class);
             this.clientBound.skip(); // Chunk Biomes
             this.clientBound.register(ClearTitles.class);
-            this.clientBound.register(LoginPluginResponse.class);
+            this.clientBound.register(CommandSuggestionsResponse.class);
             this.clientBound.register(Commands.class);
             this.clientBound.register(CloseContainer.class);
             this.clientBound.register(ContainerContent.class);

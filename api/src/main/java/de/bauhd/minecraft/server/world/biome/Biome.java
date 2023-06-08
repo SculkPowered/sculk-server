@@ -8,7 +8,7 @@ public final class Biome {
     private static int CURRENT_ID = 0;
 
     public static final Biome PLAINS = Biome.builder("minecraft:plains")
-            .precipitation("none")
+            .precipitation(true)
             .temperature(0.5F)
             .downfall(0.5F)
             .effects(Effects.builder()
@@ -61,9 +61,8 @@ public final class Biome {
             this.builder = builder;
         }
 
-        public @NotNull Builder precipitation(@NotNull String precipitation) {
-            this.builder.putString("precipitation", precipitation);
-            this.builder.putBoolean("has_precipitation", !precipitation.equals("none"));
+        public @NotNull Builder precipitation(boolean precipitation) {
+            this.builder.putBoolean("has_precipitation", precipitation);
             return this;
         }
 
