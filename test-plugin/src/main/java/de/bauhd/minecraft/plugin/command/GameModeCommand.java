@@ -7,6 +7,8 @@ import de.bauhd.minecraft.server.entity.player.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
+import java.util.concurrent.CompletableFuture;
+
 public final class GameModeCommand extends BrigadierCommand {
 
     public GameModeCommand() {
@@ -18,6 +20,12 @@ public final class GameModeCommand extends BrigadierCommand {
                             }
                             return 1;
                         })
+                        .suggests((context, builder) -> CompletableFuture.completedFuture(builder
+                                .suggest(0)
+                                .suggest(1)
+                                .suggest(2)
+                                .suggest(3)
+                                .build()))
                 )
                 .executes(context -> {
                     context.getSource().sendMessage(Component.text("/gamemode <0-3>", NamedTextColor.RED));

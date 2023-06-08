@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-public final class MinecraftEventHandler implements EventHandler {
+public final class MineEventHandler implements EventHandler {
 
     private final Map<Class<?>, List<Consumer<Object>>> consumers = new HashMap<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(

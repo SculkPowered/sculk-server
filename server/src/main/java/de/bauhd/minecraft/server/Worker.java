@@ -18,11 +18,13 @@ public final class Worker extends Thread {
     @Override
     public void run() {
         while (this.world.isAlive()) {
+            final var time = System.currentTimeMillis();
+
             this.world.chunks().values().forEach(MinecraftChunk::tick);
 
             try {
                 //noinspection BusyWait
-                Thread.sleep(MILLIS_BETWEEN_TICK);
+                Thread.sleep(MILLIS_BETWEEN_TICK - (System.currentTimeMillis() - time));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

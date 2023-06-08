@@ -18,6 +18,8 @@ public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry {
 
     @NotNull GameProfile getProfile();
 
+    @NotNull PlayerSettings getSettings();
+
     @NotNull GameMode getGameMode();
 
     void setGameMode(@NotNull GameMode gameMode);

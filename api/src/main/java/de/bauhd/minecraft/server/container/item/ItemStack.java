@@ -66,6 +66,10 @@ public class ItemStack {
         return this.nbt;
     }
 
+    public boolean isEmpty() {
+        return this == AIR || this.material == Material.AIR;
+    }
+
     @Override
     public String toString() {
         return "ItemStack{" +

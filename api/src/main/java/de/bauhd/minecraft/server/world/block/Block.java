@@ -8,6 +8,8 @@ import java.util.Map;
 @SuppressWarnings("unused") // I know - it looks better
 public final class Block {
 
+    // TODO: implement all blocks with properties
+
     private static final Map<String, Block> BLOCKS = new HashMap<>();
 
     // START

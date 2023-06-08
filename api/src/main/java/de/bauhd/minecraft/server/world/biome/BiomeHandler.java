@@ -19,7 +19,7 @@ public interface BiomeHandler {
 
     /**
      * gets a biome from its name
-     * @param name the name of the biom
+     * @param name the name of the biome
      * @return biome from name or plains if is doesn't exist
      */
     @NotNull Biome getBiome(String name);

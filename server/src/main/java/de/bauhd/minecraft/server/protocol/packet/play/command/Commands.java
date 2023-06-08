@@ -56,9 +56,9 @@ public final class Commands implements Packet {
 
         if (node instanceof LiteralCommandNode<?>) {
             flags |= 0x01;
-        } else if (node instanceof ArgumentCommandNode<?, ?>) {
+        } else if (node instanceof ArgumentCommandNode<?, ?> argumentCommandNode) {
             flags |= 0x02;
-            if (((ArgumentCommandNode<CommandSender, ?>) node).getCustomSuggestions() != null) {
+            if (argumentCommandNode.getCustomSuggestions() != null) {
                 flags |= 0x10;
             }
         }
@@ -80,12 +80,9 @@ public final class Commands implements Packet {
 
             if (node instanceof ArgumentCommandNode<?,?> argumentNode) {
                 final var type = argumentNode.getType();
-
-                // TODO make it better
-                if (type.getClass() == BoolArgumentType.class) {
+                if (type instanceof BoolArgumentType) {
                     buf.writeVarInt(0);
-                } else if (type.getClass() == FloatArgumentType.class) {
-                    final var argument = (FloatArgumentType) type;
+                } else if (type instanceof FloatArgumentType argument) {
                     final var hasMinimum = argument.getMinimum() != -Float.MAX_VALUE;
                     final var hasMaximum = argument.getMaximum() != Float.MAX_VALUE;
 
@@ -106,8 +103,7 @@ public final class Commands implements Packet {
                     if (hasMaximum) {
                         buf.writeFloat(argument.getMaximum());
                     }
-                } else if (type.getClass() == DoubleArgumentType.class) {
-                    final var argument = (DoubleArgumentType) type;
+                } else if (type instanceof DoubleArgumentType argument) {
                     final var hasMinimum = argument.getMinimum() != -Double.MAX_VALUE;
                     final var hasMaximum = argument.getMaximum() != Double.MAX_VALUE;
 
@@ -128,8 +124,7 @@ public final class Commands implements Packet {
                     if (hasMaximum) {
                         buf.writeDouble(argument.getMaximum());
                     }
-                } else if (type.getClass() == IntegerArgumentType.class) {
-                    final var argument = (IntegerArgumentType) type;
+                } else if (type instanceof IntegerArgumentType argument) {
                     final var hasMinimum = argument.getMinimum() != Integer.MIN_VALUE;
                     final var hasMaximum = argument.getMaximum() != Integer.MAX_VALUE;
 
@@ -150,8 +145,7 @@ public final class Commands implements Packet {
                     if (hasMaximum) {
                         buf.writeInt(argument.getMaximum());
                     }
-                } else if (type.getClass() == LongArgumentType.class) {
-                    final var argument = (LongArgumentType) type;
+                } else if (type instanceof LongArgumentType argument) {
                     final var hasMinimum = argument.getMinimum() != Long.MIN_VALUE;
                     final var hasMaximum = argument.getMaximum() != Long.MAX_VALUE;
 
@@ -172,8 +166,8 @@ public final class Commands implements Packet {
                     if (hasMaximum) {
                         buf.writeLong(argument.getMaximum());
                     }
-                } else if (type.getClass() == StringArgumentType.class) {
-                    buf.writeVarInt(4).writeVarInt(((StringArgumentType) type).getType().ordinal());
+                } else if (type instanceof StringArgumentType argument) {
+                    buf.writeVarInt(4).writeVarInt(argument.getType().ordinal());
                 }
 
                 // suggestion type

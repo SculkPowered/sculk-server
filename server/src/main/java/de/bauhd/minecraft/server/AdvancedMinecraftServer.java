@@ -2,19 +2,18 @@ package de.bauhd.minecraft.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.bauhd.minecraft.server.command.MinecraftCommandHandler;
+import de.bauhd.minecraft.server.command.MineCommandHandler;
 import de.bauhd.minecraft.server.container.*;
-import de.bauhd.minecraft.server.dimension.MinecraftDimensionHandler;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.EntityClassToSupplierMap;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.Player;
-import de.bauhd.minecraft.server.event.MinecraftEventHandler;
+import de.bauhd.minecraft.server.event.MineEventHandler;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
-import de.bauhd.minecraft.server.plugin.MinecraftPluginHandler;
+import de.bauhd.minecraft.server.plugin.MinePluginHandler;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
@@ -25,9 +24,9 @@ import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.VanillaLoader;
 import de.bauhd.minecraft.server.world.VanillaWorld;
 import de.bauhd.minecraft.server.world.World;
-import de.bauhd.minecraft.server.world.biome.MinecraftBiomeHandler;
+import de.bauhd.minecraft.server.world.biome.MineBiomeHandler;
+import de.bauhd.minecraft.server.world.dimension.MineDimensionHandler;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -53,9 +52,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             .setPrettyPrinting()
             .create();
 
-    private static final GsonComponentSerializer PRE_1_16_SERIALIZER = GsonComponentSerializer.colorDownsamplingGson();
-    private static final GsonComponentSerializer MODERN_SERIALIZER = GsonComponentSerializer.gson();
-
     static {
         System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
     }
@@ -66,11 +62,11 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private KeyPair keyPair;
 
     private final Map<UUID, MinecraftPlayer> players = new ConcurrentHashMap<>();
-    private final MinecraftDimensionHandler dimensionHandler;
-    private final MinecraftBiomeHandler biomeHandler;
-    private final MinecraftPluginHandler pluginHandler;
-    private final MinecraftEventHandler eventHandler;
-    private final MinecraftCommandHandler commandHandler;
+    private final MineDimensionHandler dimensionHandler;
+    private final MineBiomeHandler biomeHandler;
+    private final MinePluginHandler pluginHandler;
+    private final MineEventHandler eventHandler;
+    private final MineCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
     private final NettyServer nettyServer;
     private final EntityClassToSupplierMap entities = new EntityClassToSupplierMap();
@@ -91,11 +87,11 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             }
         }
 
-        this.dimensionHandler = new MinecraftDimensionHandler();
-        this.biomeHandler = new MinecraftBiomeHandler();
-        this.pluginHandler = new MinecraftPluginHandler(this);
-        this.eventHandler = new MinecraftEventHandler();
-        this.commandHandler = new MinecraftCommandHandler(this);
+        this.dimensionHandler = new MineDimensionHandler();
+        this.biomeHandler = new MineBiomeHandler();
+        this.pluginHandler = new MinePluginHandler(this);
+        this.eventHandler = new MineEventHandler();
+        this.commandHandler = new MineCommandHandler(this);
         this.bossBarListener = new BossBarListener();
 
         this.pluginHandler.loadPlugins();
@@ -145,7 +141,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
                     this.configuration = GSON.fromJson(reader, MinecraftConfiguration.class);
                 }
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -156,27 +151,27 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     @Override
-    public @NotNull MinecraftDimensionHandler getDimensionHandler() {
+    public @NotNull MineDimensionHandler getDimensionHandler() {
         return this.dimensionHandler;
     }
 
     @Override
-    public @NotNull MinecraftBiomeHandler getBiomeHandler() {
+    public @NotNull MineBiomeHandler getBiomeHandler() {
         return this.biomeHandler;
     }
 
     @Override
-    public @NotNull MinecraftPluginHandler getPluginHandler() {
+    public @NotNull MinePluginHandler getPluginHandler() {
         return this.pluginHandler;
     }
 
     @Override
-    public @NotNull MinecraftEventHandler getEventHandler() {
+    public @NotNull MineEventHandler getEventHandler() {
         return this.eventHandler;
     }
 
     @Override
-    public @NotNull MinecraftCommandHandler getCommandHandler() {
+    public @NotNull MineCommandHandler getCommandHandler() {
         return this.commandHandler;
     }
 
@@ -257,9 +252,5 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     public void removePlayer(final UUID uniqueId) {
         this.players.remove(uniqueId);
-    }
-
-    public static GsonComponentSerializer getGsonSerializer(final int version) {
-        return version >= 735 ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
     }
 }

@@ -8,11 +8,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MinecraftBiomeHandler implements BiomeHandler {
+public final class MineBiomeHandler implements BiomeHandler {
 
     private final Map<String, Biome> biomes;
 
-    public MinecraftBiomeHandler() {
+    public MineBiomeHandler() {
         this.biomes = new HashMap<>();
         this.registerBiome(Biome.PLAINS);
     }

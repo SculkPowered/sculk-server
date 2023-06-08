@@ -50,6 +50,11 @@ public final class MineInventory implements Inventory {
     }
 
     @Override
+    public void setItemInMainHand(@NotNull ItemStack item) {
+        this.setItem(this.player.getHeldItemSlot(), item);
+    }
+
+    @Override
     public @NotNull ItemStack getItemInOffHand() {
         return this.items.get(45);
     }

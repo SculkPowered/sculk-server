@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
 
-public final class MinecraftPluginHandler implements PluginHandler {
+public final class MinePluginHandler implements PluginHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(PluginHandler.class);
     private static final Path PLUGINS_DIRECTORY = Path.of("plugins");
@@ -26,7 +26,7 @@ public final class MinecraftPluginHandler implements PluginHandler {
     private final AdvancedMinecraftServer server;
     private final Map<Plugin, Path> plugins = new HashMap<>();
 
-    public MinecraftPluginHandler(final AdvancedMinecraftServer server) {
+    public MinePluginHandler(final AdvancedMinecraftServer server) {
         this.server = server;
         try {
             if (Files.notExists(PLUGINS_DIRECTORY)) {

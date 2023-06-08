@@ -105,6 +105,14 @@ public final class Dimension {
         return this.nbt;
     }
 
+    public @NotNull String name() {
+        return this.nbt.getString("name");
+    }
+
+    public int id() {
+        return this.nbt.getInt("id");
+    }
+
     public @NotNull CompoundBinaryTag heightmaps() {
         return this.heightmaps;
     }

@@ -39,6 +39,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
+    private final ClientInformationWrapper settings = new ClientInformationWrapper();
     private final MineInventory inventory = new MineInventory(this);
     private MineContainer container;
     private long lastSendKeepAlive;
@@ -70,6 +71,11 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public @NotNull GameProfile getProfile() {
         return this.profile;
+    }
+
+    @Override
+    public @NotNull ClientInformationWrapper getSettings() {
+        return this.settings;
     }
 
     @Override
@@ -178,7 +184,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public boolean canInstantBreak() {
-        return this.instantBreak;
+        return this.instantBreak || this.gameMode == GameMode.CREATIVE;
     }
 
     @Override
@@ -231,7 +237,9 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         } else if (part == TitlePart.TIMES) {
             final var times = (Title.Times) value;
 
-            this.send(new TitleAnimationTimes(times.fadeIn().getNano(), times.stay().getNano(), times.fadeOut().getNano())); // TODO to ticks
+            this.send(new TitleAnimationTimes((int) (times.fadeIn().toMillis() / 50),
+                    (int) (times.stay().toMillis() / 50),
+                    (int) (times.fadeOut().toMillis() / 20)));
         }
     }
 
@@ -264,17 +272,17 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
             mcPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
             final var inventory = this.getInventory();
             final var equipment = new HashMap<Integer, ItemStack>();
-            if (inventory.getItemInMainHand() != ItemStack.AIR) {
+            if (!inventory.getItemInMainHand().isEmpty()) {
                 equipment.put(0, inventory.getItemInMainHand());
-            } else if (inventory.getItemInOffHand() != ItemStack.AIR) {
+            } else if (!inventory.getItemInOffHand().isEmpty()) {
                 equipment.put(1, inventory.getItemInOffHand());
-            } else if (inventory.getBoots() != ItemStack.AIR) {
+            } else if (!inventory.getBoots().isEmpty()) {
                 equipment.put(2, inventory.getBoots());
-            } else if (inventory.getLeggings() != ItemStack.AIR) {
+            } else if (!inventory.getLeggings().isEmpty()) {
                 equipment.put(3, inventory.getLeggings());
-            } else if (inventory.getChestplate() != ItemStack.AIR) {
+            } else if (!inventory.getChestplate().isEmpty()) {
                 equipment.put(4, inventory.getChestplate());
-            } else if (inventory.getHelmet() != ItemStack.AIR) {
+            } else if (!inventory.getHelmet().isEmpty()) {
                 equipment.put(5, inventory.getHelmet());
             }
             if (!equipment.isEmpty()) {

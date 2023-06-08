@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class MinecraftCommandHandler implements CommandHandler {
+public final class MineCommandHandler implements CommandHandler {
 
     private final CommandDispatcher<CommandSender> dispatcher;
     private final Map<String, BrigadierCommand> commands = new HashMap<>();
 
-    public MinecraftCommandHandler(final AdvancedMinecraftServer server) {
+    public MineCommandHandler(final AdvancedMinecraftServer server) {
         this.dispatcher = new CommandDispatcher<>();
 
         // register default commands

@@ -7,6 +7,8 @@ public interface Inventory extends Container {
 
     @NotNull ItemStack getItemInMainHand();
 
+    void setItemInMainHand(@NotNull ItemStack item);
+
     @NotNull ItemStack getItemInOffHand();
 
     void setItemInOffHand(@NotNull ItemStack item);

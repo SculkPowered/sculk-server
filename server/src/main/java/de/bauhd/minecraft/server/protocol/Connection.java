@@ -111,6 +111,7 @@ public final class Connection extends ChannelHandlerAdapter {
                             for (final var entity : chunk.entities()) {
                                 entity.removeViewer(this.player);
                             }
+                            chunk.entities().remove(this.player);
                         });
             }
             this.player.sendViewers(new RemoveEntities(this.player.getId()));
@@ -302,6 +303,7 @@ public final class Connection extends ChannelHandlerAdapter {
             chunks.add(chunk);
             chunk.viewers().add(this.player); // new in range
             for (final var entity : chunk.entities()) {
+                if (entity == this.player) continue;
                 if (entity instanceof Player viewer) {
                     this.player.addViewer(viewer);
                 }

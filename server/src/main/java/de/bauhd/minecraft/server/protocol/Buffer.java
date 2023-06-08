@@ -1,11 +1,10 @@
 package de.bauhd.minecraft.server.protocol;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.container.item.Material;
-import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.protocol.packet.PacketUtils;
 import de.bauhd.minecraft.server.util.Utf8;
+import de.bauhd.minecraft.server.world.Position;
 import io.netty5.buffer.BufferInputStream;
 import io.netty5.buffer.BufferOutputStream;
 import io.netty5.handler.codec.EncoderException;
@@ -27,7 +26,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public record Buffer(io.netty5.buffer.Buffer buf) {
 
     private static final int STRING_CAPACITY = 65536;
-    private static final GsonComponentSerializer SERIALIZER = GsonComponentSerializer.gson();
+    private static final GsonComponentSerializer PRE_1_16_SERIALIZER = GsonComponentSerializer.colorDownsamplingGson();
+    private static final GsonComponentSerializer MODERN_SERIALIZER = GsonComponentSerializer.gson();
 
     public int readUnsignedByte() {
         return this.buf.readUnsignedByte();
@@ -172,11 +172,11 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writeComponent(final Component component) {
-        return this.writeString(SERIALIZER.serialize(component));
+        return this.writeString(MODERN_SERIALIZER.serialize(component));
     }
 
     public @NotNull Buffer writeComponent(final Component component, final int version) {
-        return this.writeString(AdvancedMinecraftServer.getGsonSerializer(version).serialize(component));
+        return this.writeString(getGsonSerializer(version).serialize(component));
     }
 
     public @NotNull CompoundBinaryTag readCompoundTag() {
@@ -211,7 +211,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
-        if (slot.material() != Material.AIR) { // check for material not for ItemStack.AIR, but it should be used
+        if (!slot.isEmpty()) {
             this
                     .writeBoolean(true)
                     .writeVarInt(slot.material().protocolId())
@@ -258,11 +258,19 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
         return b;
     }
 
+    public <T extends Enum<T>> T readEnum(final Class<T> enumClass) {
+        return enumClass.getEnumConstants()[this.readVarInt()];
+    }
+
     public int readableBytes() {
         return this.buf.readableBytes();
     }
 
     public void close() {
         this.buf.close();
+    }
+
+    public static GsonComponentSerializer getGsonSerializer(final int version) {
+        return version >= 735 ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
     }
 }

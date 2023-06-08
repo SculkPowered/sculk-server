@@ -43,4 +43,12 @@ public final class PluginMessage implements Packet {
                 ", data=" + Arrays.toString(this.data) +
                 '}';
     }
+
+    public String identifier() {
+        return this.identifier;
+    }
+
+    public byte[] data() {
+        return this.data;
+    }
 }

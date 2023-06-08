@@ -27,4 +27,12 @@ public final class UseItem implements Packet {
                 ", sequence=" + this.sequence +
                 '}';
     }
+
+    public int hand() {
+        return this.hand;
+    }
+
+    public int sequence() {
+        return this.sequence;
+    }
 }

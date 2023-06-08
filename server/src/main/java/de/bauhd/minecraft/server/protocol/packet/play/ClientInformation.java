@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.play;
 
+import de.bauhd.minecraft.server.entity.player.PlayerSettings;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -8,10 +9,10 @@ public final class ClientInformation implements Packet {
 
     private String locale;
     private byte viewDistance;
-    private int chatMode;
+    private PlayerSettings.ChatMode chatMode;
     private boolean chatColors;
     private int skinParts;
-    private int mainHand;
+    private PlayerSettings.Hand mainHand;
     private boolean enableTextFiltering;
     private boolean allowServerListings;
 
@@ -19,10 +20,10 @@ public final class ClientInformation implements Packet {
     public void decode(Buffer buf) {
         this.locale = buf.readString(16);
         this.viewDistance = buf.readByte();
-        this.chatMode = buf.readVarInt();
+        this.chatMode = buf.readEnum(PlayerSettings.ChatMode.class);
         this.chatColors = buf.readBoolean();
         this.skinParts = buf.readUnsignedByte();
-        this.mainHand = buf.readVarInt();
+        this.mainHand = buf.readEnum(PlayerSettings.Hand.class);
         this.enableTextFiltering = buf.readBoolean();
         this.allowServerListings = buf.readBoolean();
     }
@@ -54,7 +55,7 @@ public final class ClientInformation implements Packet {
         return this.viewDistance;
     }
 
-    public int chatMode() {
+    public PlayerSettings.ChatMode chatMode() {
         return this.chatMode;
     }
 
@@ -66,7 +67,7 @@ public final class ClientInformation implements Packet {
         return this.skinParts;
     }
 
-    public int mainHand() {
+    public PlayerSettings.Hand mainHand() {
         return this.mainHand;
     }
 

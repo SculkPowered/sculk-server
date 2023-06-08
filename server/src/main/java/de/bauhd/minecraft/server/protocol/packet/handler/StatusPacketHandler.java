@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.handler;
 
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -26,7 +26,7 @@ public final class StatusPacketHandler extends PacketHandler {
                 "\"name\":\"not vanilla " + Protocol.VERSION_NAME + "\"," +
                 "\"protocol\":" + Protocol.VERSION_PROTOCOL + "}," +
                 "\"players\":{\"max\":50,\"online\":" + this.connection.server().getPlayerCount() + ",\"sample\":[]}," +
-                "\"description\":" + AdvancedMinecraftServer.getGsonSerializer(this.connection.version()).serialize(COMPONENT) + "," +
+                "\"description\":" + Buffer.getGsonSerializer(this.connection.version()).serialize(COMPONENT) + "," +
                 "\"previewsChat\":true}"));
         return true;
     }

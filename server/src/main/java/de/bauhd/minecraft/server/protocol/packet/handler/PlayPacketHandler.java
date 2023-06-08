@@ -2,18 +2,21 @@ package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.container.item.ItemStack;
+import de.bauhd.minecraft.server.container.MineContainer;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerButtonEvent;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerEvent;
-import de.bauhd.minecraft.server.container.MineContainer;
+import de.bauhd.minecraft.server.event.player.PlayerUseItemEvent;
 import de.bauhd.minecraft.server.protocol.Connection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.ChatCommand;
-import de.bauhd.minecraft.server.protocol.packet.play.container.*;
+import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainer;
+import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainerButton;
+import de.bauhd.minecraft.server.protocol.packet.play.container.CloseContainer;
+import de.bauhd.minecraft.server.protocol.packet.play.container.ContainerContent;
 import de.bauhd.minecraft.server.protocol.packet.play.position.*;
 import de.bauhd.minecraft.server.util.ItemList;
 import de.bauhd.minecraft.server.world.Position;
@@ -30,8 +33,6 @@ public final class PlayPacketHandler extends PacketHandler {
     private final Connection connection;
     private final AdvancedMinecraftServer server;
     private final MinecraftPlayer player;
-
-    private ClientInformation clientInformation;
 
     public PlayPacketHandler(final Connection connection) {
         this.connection = connection;
@@ -71,13 +72,20 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ClientInformation clientInformation) {
-        if (this.clientInformation == null || this.clientInformation.skinParts() != clientInformation.skinParts()) {
+        final var old = this.player.getSettings().clientInformation();
+        if (old == null || old.skinParts() != clientInformation.skinParts()) {
             this.player.metadata.setByte(17, (byte) clientInformation.skinParts());
         }
-        if (this.clientInformation == null || this.clientInformation.mainHand() != clientInformation.mainHand()) {
-            this.player.metadata.setByte(18, (byte) clientInformation.mainHand());
+        if (old == null || old.mainHand() != clientInformation.mainHand()) {
+            this.player.metadata.setByte(18, (byte) clientInformation.mainHand().ordinal());
         }
-        this.clientInformation = clientInformation;
+        this.player.getSettings().setClientInformation(clientInformation);
+        return true;
+    }
+
+    @Override
+    public boolean handle(CommandSuggestionsRequest commandSuggestionsRequest) {
+        // TODO: implement suggestion response
         return true;
     }
 
@@ -89,9 +97,9 @@ public final class PlayPacketHandler extends PacketHandler {
         }
         this.server.getEventHandler().call(new PlayerClickContainerButtonEvent(this.player, clickContainerButton.buttonId()))
                 .exceptionally(throwable -> {
-            LOGGER.error("Exception while handling container click button for " + this.player.getUsername(), throwable);
-            return null;
-        });
+                    LOGGER.error("Exception while handling container click button for " + this.player.getUsername(), throwable);
+                    return null;
+                });
         return true;
     }
 
@@ -137,9 +145,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(PluginMessage pluginMessage) {
-        /*final var buf = DefaultBufferAllocators.offHeapAllocator().allocate(this.data.length);
-        buf.writeBytes(this.data);
-        System.out.println(PacketUtils.readString(buf))*/
+        // TODO: implement plugin message system
         return true;
     }
 
@@ -227,7 +233,7 @@ public final class PlayPacketHandler extends PacketHandler {
             case 3 -> this.player.getInventory().setItem(this.player.getHeldItemSlot(), null); // drop stack
             case 4 -> { // drop item
                 final var itemInHand = this.player.getInventory().getItemInMainHand();
-                if (itemInHand != ItemStack.AIR) {
+                if (!itemInHand.isEmpty()) {
                     itemInHand.amount(itemInHand.amount() - 1);
                 }
             }
@@ -247,10 +253,9 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(PlayerCommand playerCommand) {
-        if (playerCommand.action() == PlayerCommand.Action.START_SNEAKING) {
-            this.player.setPose(Entity.Pose.SNEAKING);
-        } else if (playerCommand.action() == PlayerCommand.Action.STOP_SNEAKING) {
-            this.player.setPose(Entity.Pose.STANDING);
+        switch (playerCommand.action()) {
+            case START_SNEAKING -> this.player.setPose(Entity.Pose.SNEAKING);
+            case STOP_SNEAKING -> this.player.setPose(Entity.Pose.STANDING);
         }
         return true;
     }
@@ -268,15 +273,7 @@ public final class PlayPacketHandler extends PacketHandler {
             LOGGER.info(this.player.getUsername() + " tried to set a slot, but is not in creative mode.");
             return false;
         }
-        var index = creativeModeSlot.slot();
-        if (index < 9) {
-            index += 36;
-        } else if (index < 45) {
-            index -= 36;
-        } else if (index > 45) {
-            index -= 5;
-        }
-        player.getInventory().items.add(index, creativeModeSlot.clickedItem());
+        player.getInventory().items.set(creativeModeSlot.slot(), creativeModeSlot.clickedItem());
         return true;
     }
 
@@ -289,7 +286,22 @@ public final class PlayPacketHandler extends PacketHandler {
     @Override
     public boolean handle(TeleportToEntity teleportToEntity) {
         if (this.player.getGameMode() == GameMode.SPECTATOR) {
-            // TODO: teleport to entity
+            final var target = this.server.getPlayer(teleportToEntity.target());
+            if (target != null) {
+                if (target.getWorld() != this.player.getWorld()) {
+                    this.player.setWorld(target.getWorld());
+                }
+                final var old = this.player.getPosition();
+                final var position = target.getPosition();
+                this.player.send(new EntityPositionAndRotation(this.player.getId(),
+                        this.delta(old.x(), position.x()),
+                        this.delta(old.y(), position.y()),
+                        this.delta(old.y(), position.y()),
+                        position.yaw(),
+                        position.pitch(),
+                        true
+                ));
+            }
         } else {
             LOGGER.info(this.player.getUsername() + " tried to teleport, but is not in spectator mode.");
         }
@@ -298,23 +310,38 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(UseItemOn useItemOn) {
-        final var slot = this.player.getInventory().getItemInMainHand();
-        if (slot == ItemStack.AIR) return false;
-        var position = useItemOn.position();
-        position = switch (useItemOn.face()) {
-            case BOTTOM -> position.subtract(0, 1, 0);
-            case TOP -> position.add(0, 1, 0);
-            case NORTH -> position.subtract(0, 0, 1);
-            case SOUTH -> position.add(0, 0, 1);
-            case WEST -> position.subtract(1, 0, 0);
-            case EAST -> position.add(1, 0, 0);
-        };
-        this.player.getWorld().setBlock(position, Block.get("minecraft:" + slot.material().name().toLowerCase()));
+        final var inventory = this.player.getInventory();
+        final var slot = (useItemOn.hand() == 0 ? inventory.getItemInMainHand() : inventory.getItemInOffHand());
+        this.server.getEventHandler().call(new PlayerUseItemEvent(this.player, slot)).thenAcceptAsync(event -> {
+            if (slot.isEmpty()) return;
+            var position = useItemOn.position();
+            position = switch (useItemOn.face()) {
+                case BOTTOM -> position.subtract(0, 1, 0);
+                case TOP -> position.add(0, 1, 0);
+                case NORTH -> position.subtract(0, 0, 1);
+                case SOUTH -> position.add(0, 0, 1);
+                case WEST -> position.subtract(1, 0, 0);
+                case EAST -> position.add(1, 0, 0);
+            };
+            if (this.player.getContainer() != null) {
+                this.player.getWorld().getChunkAt((int) position.x(), (int) position.z()).send(this.player); // TODO: not send the complete chunk
+                if (useItemOn.hand() == 0) {
+                    inventory.setItemInMainHand(slot);
+                } else {
+                    inventory.setItemInOffHand(slot);
+                }
+                return;
+            }
+            this.player.getWorld().setBlock(position, Block.get("minecraft:" + slot.material().name().toLowerCase()));
+        }, this.connection.executor());
         return true;
     }
 
     @Override
     public boolean handle(UseItem useItem) {
+        final var inventory = this.player.getInventory();
+        this.server.getEventHandler().call(new PlayerUseItemEvent(this.player,
+                (useItem.hand() == 0 ? inventory.getItemInMainHand() : inventory.getItemInOffHand())));
         return true;
     }
 

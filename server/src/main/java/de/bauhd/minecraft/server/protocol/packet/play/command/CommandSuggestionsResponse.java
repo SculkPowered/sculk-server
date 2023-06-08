@@ -1,10 +1,9 @@
 package de.bauhd.minecraft.server.protocol.packet.play.command;
 
+import com.mojang.brigadier.suggestion.Suggestion;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -13,9 +12,9 @@ public final class CommandSuggestionsResponse implements Packet {
     private final int id;
     private final int start;
     private final int length;
-    private final List<Match> matches;
+    private final List<Suggestion> matches;
 
-    public CommandSuggestionsResponse(final int id, final int start, final int length, final List<Match> matches) {
+    public CommandSuggestionsResponse(final int id, final int start, final int length, final List<Suggestion> matches) {
         this.id = id;
         this.start = start;
         this.length = length;
@@ -30,11 +29,11 @@ public final class CommandSuggestionsResponse implements Packet {
                 .writeVarInt(this.length)
                 .writeVarInt(this.matches.size());
         for (final var match : this.matches) {
-            buf.writeString(match.match);
-            if (match.toolTip != null) {
+            buf.writeString(match.getText());
+            if (match.getTooltip() != null) {
                 buf
                         .writeBoolean(true)
-                        .writeComponent(match.toolTip);
+                        .writeComponent(Component.text(match.getTooltip().getString()));
             } else {
                 buf.writeBoolean(false);
             }
@@ -50,9 +49,4 @@ public final class CommandSuggestionsResponse implements Packet {
                 ", matches=" + this.matches +
                 '}';
     }
-
-    public record Match(
-            @NotNull String match,
-            @Nullable Component toolTip) {}
-
 }
