@@ -239,7 +239,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
             this.send(new TitleAnimationTimes((int) (times.fadeIn().toMillis() / 50),
                     (int) (times.stay().toMillis() / 50),
-                    (int) (times.fadeOut().toMillis() / 20)));
+                    (int) (times.fadeOut().toMillis() / 50)));
         }
     }
 
