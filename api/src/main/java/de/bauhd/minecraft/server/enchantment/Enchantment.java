@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.enchantment;
 
+@SuppressWarnings("unused")
 public enum Enchantment {
 
     // START

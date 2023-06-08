@@ -29,7 +29,6 @@ public final class CodeGenerator {
 
     private void generate(final Path generated) throws IOException {
         final var reports = generated.resolve("reports");
-        final var data = generated.resolve("data").resolve("minecraft");
         final var apiPackage = Path.of("api", "src", "main", "java", "de", "bauhd", "minecraft", "server");
 
         try (final var reader = Files.newBufferedReader(reports.resolve("blocks.json"))) {

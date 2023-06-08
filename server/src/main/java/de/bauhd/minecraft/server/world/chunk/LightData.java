@@ -2,7 +2,6 @@ package de.bauhd.minecraft.server.world.chunk;
 
 import de.bauhd.minecraft.server.protocol.Buffer;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 

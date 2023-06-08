@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.potion;
 
+@SuppressWarnings("unused")
 public enum PotionEffect {
 
     // START

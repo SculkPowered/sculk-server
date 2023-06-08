@@ -5,9 +5,6 @@ import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.world.chunk.LightData;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
-import java.util.Arrays;
-import java.util.BitSet;
-
 public final class ChunkDataAndUpdateLight implements Packet {
 
     private final int chunkX;
