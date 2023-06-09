@@ -56,10 +56,12 @@ public final class SimpleTerminal {
         }
     }
 
-    public void start() {
+    public void setupStreams() {
         System.setOut(IoBuilder.forLogger(LOGGER).setLevel(Level.INFO).buildPrintStream());
         System.setErr(IoBuilder.forLogger(LOGGER).setLevel(Level.ERROR).buildPrintStream());
+    }
 
+    public void start() {
         while (this.server.isRunning()) {
             try {
                 final var line = this.lineReader.readLine(PROMPT).trim();

@@ -74,6 +74,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     AdvancedMinecraftServer() {
         final var startTime = System.currentTimeMillis();
         final var terminal = new SimpleTerminal(this);
+        terminal.setupStreams();
 
         this.loadConfig();
 
