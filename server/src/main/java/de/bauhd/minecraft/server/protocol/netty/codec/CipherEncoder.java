@@ -1,6 +1,5 @@
-package de.bauhd.minecraft.server.protocol;
+package de.bauhd.minecraft.server.protocol.netty.codec;
 
-import de.bauhd.minecraft.server.protocol.netty.codec.JavaCipher;
 import io.netty5.buffer.Buffer;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.handler.codec.MessageToMessageEncoder;
