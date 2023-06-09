@@ -56,6 +56,16 @@ final class DirectIndirectPalette implements Palette {
     }
 
     @Override
+    public int get(int x, int y, int z) {
+        final var sectionIndex = this.sectionIndex(x, y, z);
+        final var valuesPerLong = 64 / this.bitsPerEntry;
+        final var index = sectionIndex / valuesPerLong;
+        final var bitIndex = (sectionIndex - index * valuesPerLong) * this.bitsPerEntry;
+        final var value = (int) (this.values[index] >> bitIndex) & ((1 << this.bitsPerEntry) - 1);
+        return this.isIndirect() ? this.paletteToValue.get(value) : value;
+    }
+
+    @Override
     public void fill(int value) {
         if (value == 0) {
             Arrays.fill(this.values, 0);

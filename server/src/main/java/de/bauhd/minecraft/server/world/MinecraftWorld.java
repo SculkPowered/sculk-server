@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.world;
 
-import de.bauhd.minecraft.server.Worker;
 import de.bauhd.minecraft.server.entity.AbstractEntity;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
@@ -63,6 +62,11 @@ public class MinecraftWorld implements World {
         synchronized (chunk) {
             chunk.setBlock(x, y, z, block);
         }
+    }
+
+    @Override
+    public @NotNull Block getBlock(int x, int y, int z) {
+        return this.getChunkAt(x, z).getBlock(x, y, z);
     }
 
     @Override

@@ -1,6 +1,5 @@
-package de.bauhd.minecraft.server;
+package de.bauhd.minecraft.server.world;
 
-import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 
 public final class Worker extends Thread {

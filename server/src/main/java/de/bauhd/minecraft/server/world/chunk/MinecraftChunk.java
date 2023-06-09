@@ -72,6 +72,12 @@ public final class MinecraftChunk implements Chunk {
     }
 
     @Override
+    public @NotNull Block getBlock(int x, int y, int z) {
+        return Block.get(this.section(y).blocks()
+                .get(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z)));
+    }
+
+    @Override
     public void setBiome(int x, int y, int z, @NotNull Biome biome) {
         this.section(y).biomes().set(this.relativeCoordinate(x) / 4, this.relativeCoordinate(y) / 4, this.relativeCoordinate(z) / 4,
                 biome.id());

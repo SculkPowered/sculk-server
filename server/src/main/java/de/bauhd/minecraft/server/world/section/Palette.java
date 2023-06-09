@@ -14,6 +14,8 @@ public interface Palette {
 
     void set(int x, int y, int z, int value);
 
+    int get(int x, int y, int z);
+
     void fill(int value);
 
     void write(final Buffer buf);

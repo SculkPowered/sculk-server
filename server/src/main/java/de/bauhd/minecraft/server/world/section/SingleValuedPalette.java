@@ -32,6 +32,11 @@ final class SingleValuedPalette implements Palette {
     }
 
     @Override
+    public int get(int x, int y, int z) {
+        return this.value;
+    }
+
+    @Override
     public void fill(int value) {
         this.value = value;
     }

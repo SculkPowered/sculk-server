@@ -28,6 +28,12 @@ public interface World {
         this.setBlock((int) position.x(), (int) position.y(), (int) position.z(), block);
     }
 
+    @NotNull Block getBlock(int x, int y, int z);
+
+    default @NotNull Block setBlock(@NotNull Position position) {
+        return this.getBlock((int) position.x(), (int) position.y(), (int) position.z());
+    }
+
     @NotNull Chunk getChunk(int chunkX, int chunkZ);
 
     @NotNull Chunk getChunkAt(int x, int z);

@@ -37,6 +37,11 @@ public final class PaletteHolder implements Palette {
     }
 
     @Override
+    public int get(int x, int y, int z) {
+        return this.palette.get(x, y, z);
+    }
+
+    @Override
     public void fill(int value) {
         if (this.palette instanceof SingleValuedPalette singleValuedPalette) {
             singleValuedPalette.fill(value);

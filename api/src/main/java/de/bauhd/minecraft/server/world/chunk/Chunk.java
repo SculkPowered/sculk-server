@@ -16,6 +16,8 @@ public interface Chunk {
 
     void setBlock(int x, int y, int z, @NotNull Block block);
 
+    @NotNull Block getBlock(int x, int y, int z);
+
     void setBiome(int x, int y, int z, @NotNull Biome biome);
 
 }

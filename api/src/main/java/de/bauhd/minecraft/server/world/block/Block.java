@@ -10,7 +10,8 @@ public final class Block {
 
     // TODO: implement all blocks with properties
 
-    private static final Map<String, Block> BLOCKS = new HashMap<>();
+    private static final Map<String, Block> BLOCKS_BY_NAME = new HashMap<>();
+    private static final Map<Integer, Block> BLOCKS_BY_ID = new HashMap<>();
 
     // START
     public static final Block ACACIA_BUTTON = new Block("minecraft:acacia_button", 8716);
@@ -1024,7 +1025,8 @@ public final class Block {
     private Block(String name, int stateId) {
         this.name = name;
         this.stateId = stateId;
-        BLOCKS.put(name, this);
+        BLOCKS_BY_NAME.put(name, this);
+        BLOCKS_BY_ID.put(stateId, this);
     }
 
     public String name() {
@@ -1036,7 +1038,11 @@ public final class Block {
     }
 
     public static Block get(final @NotNull String name) {
-        return BLOCKS.get(name);
+        return BLOCKS_BY_NAME.get(name);
+    }
+
+    public static Block get(final int id) {
+        return BLOCKS_BY_ID.get(id);
     }
 
     public enum Face {
