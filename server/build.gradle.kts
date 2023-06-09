@@ -19,7 +19,6 @@ dependencies {
     runtimeOnly(libs.jansi)
 
     implementation(libs.bundles.log4j)
-    annotationProcessor(libs.log4j.core)
     implementation(libs.fastutil)
 }
 
