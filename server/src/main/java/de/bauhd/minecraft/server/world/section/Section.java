@@ -1,8 +1,16 @@
 package de.bauhd.minecraft.server.world.section;
 
+import java.util.Arrays;
+
 public final class Section {
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    static final EmptyPalette EMPTY_PALETTE = new EmptyPalette();
+    private static final byte[] SKY_LIGHT = new byte[2048];
+    private static final byte[] BLOCK_LIGHT = new byte[0];
+
+    static {
+        Arrays.fill(SKY_LIGHT, (byte) -1);
+    }
 
     private final Palette blocks;
     private final Palette biomes;
@@ -10,8 +18,7 @@ public final class Section {
     private final byte[] blockLight;
 
     public Section() {
-        this(new SingleValuedPalette(16, 0), new SingleValuedPalette(4, 0),
-                EMPTY_BYTE_ARRAY, EMPTY_BYTE_ARRAY);
+        this(EMPTY_PALETTE, EMPTY_PALETTE, SKY_LIGHT, BLOCK_LIGHT);
     }
 
     public Section(final byte[] skyLight, final byte[] blockLight) {

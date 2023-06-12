@@ -16,6 +16,22 @@ public final class ClientInformation implements Packet {
     private boolean enableTextFiltering;
     private boolean allowServerListings;
 
+    public ClientInformation(final String locale, final byte viewDistance, final PlayerSettings.ChatMode chatMode,
+                             final boolean chatColors, final int skinParts,
+                             final PlayerSettings.Hand mainHand,
+                             final boolean enableTextFiltering, final boolean allowServerListings) {
+        this.locale = locale;
+        this.viewDistance = viewDistance;
+        this.chatMode = chatMode;
+        this.chatColors = chatColors;
+        this.skinParts = skinParts;
+        this.mainHand = mainHand;
+        this.enableTextFiltering = enableTextFiltering;
+        this.allowServerListings = allowServerListings;
+    }
+
+    public ClientInformation() {}
+
     @Override
     public void decode(Buffer buf) {
         this.locale = buf.readString(16);

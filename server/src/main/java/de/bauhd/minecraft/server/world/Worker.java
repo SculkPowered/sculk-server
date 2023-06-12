@@ -1,7 +1,5 @@
 package de.bauhd.minecraft.server.world;
 
-import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
-
 public final class Worker extends Thread {
 
     private static final int TPS = 20;
@@ -19,13 +17,19 @@ public final class Worker extends Thread {
         while (this.world.isAlive()) {
             final var time = System.currentTimeMillis();
 
-            this.world.chunks().values().forEach(MinecraftChunk::tick);
+            // tick over chunks -> and entities
+            for (final var chunk : this.world.chunks().values()) {
+                chunk.tick();
+            }
 
-            try {
-                //noinspection BusyWait
-                Thread.sleep(MILLIS_BETWEEN_TICK - (System.currentTimeMillis() - time));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            final var elapsed = System.currentTimeMillis() - time;
+            if (elapsed < MILLIS_BETWEEN_TICK) {
+                try {
+                    //noinspection BusyWait
+                    Thread.sleep(MILLIS_BETWEEN_TICK - elapsed);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

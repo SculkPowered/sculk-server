@@ -1,15 +1,20 @@
 package de.bauhd.minecraft.server.entity.player;
 
 import de.bauhd.minecraft.server.protocol.packet.play.ClientInformation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
 public final class ClientInformationWrapper implements PlayerSettings {
 
-    private ClientInformation clientInformation;
+    private static final ClientInformation DEFAULT =
+            new ClientInformation("en_US", (byte) 10, ChatMode.ENABLED, true,
+                    127, Hand.RIGHT, true, false);
+
+    private ClientInformation clientInformation = DEFAULT;
     private Locale locale;
 
-    public ClientInformation clientInformation() {
+    public @NotNull ClientInformation clientInformation() {
         return this.clientInformation;
     }
 
@@ -57,5 +62,9 @@ public final class ClientInformationWrapper implements PlayerSettings {
     @Override
     public boolean allowServerListings() {
         return this.clientInformation.allowServerListings();
+    }
+
+    public boolean isDefault() {
+        return this.clientInformation == DEFAULT;
     }
 }

@@ -105,7 +105,7 @@ public final class Connection extends ChannelHandlerAdapter {
             final var position = this.player.getPosition();
             if (world != null) {
                 this.forChunksInRange(world.chunkCoordinate((int) position.x()), world.chunkCoordinate((int) position.z()),
-                        10, (x, z) -> {
+                        this.player.getSettings().getViewDistance(), (x, z) -> {
                             final var chunk = world.getChunk(x, z);
                             chunk.viewers().remove(this.player);
                             for (final var entity : chunk.entities()) {
@@ -185,7 +185,7 @@ public final class Connection extends ChannelHandlerAdapter {
                 }
             }
 
-            this.calculateChunks(position, position, false);
+            this.calculateChunks(position, position, false, false);
             this.send(new SynchronizePlayerPosition(position));
 
 
@@ -281,24 +281,30 @@ public final class Connection extends ChannelHandlerAdapter {
     }
 
     public void calculateChunks(final Position from, final Position to) {
-        this.calculateChunks(from, to, true);
+        this.calculateChunks(from, to, true, true);
     }
 
-    private void calculateChunks(final Position from, final Position to, boolean check) {
+    public void calculateChunks(final Position from, final Position to, boolean check, boolean checkAlreadyLoaded) {
+        final var viewDistance = this.player.getSettings().getViewDistance();
+        this.calculateChunks(from, to, check, checkAlreadyLoaded, viewDistance, viewDistance);
+    }
+
+    public void calculateChunks(final Position from, final Position to,
+                                boolean check, boolean checkAlreadyLoaded,
+                                int range, int oldRange) {
         final var fromChunkX = (int) from.x() >> 4;
         final var fromChunkZ = (int) from.z() >> 4;
         final var chunkX = (int) to.x() >> 4;
         final var chunkZ = (int) to.z() >> 4;
         if (check) {
-            if (fromChunkX == chunkX || fromChunkZ == chunkZ) {
+            if (fromChunkX == chunkX && fromChunkZ == chunkZ) {
                 return;
             }
+            this.player.send(new CenterChunk(chunkX, chunkZ));
         }
-
-        this.player.send(new CenterChunk(chunkX, chunkZ));
-        final var world = ((MinecraftWorld) this.player.getWorld());
+        final var world = this.player.getWorld();
         final var chunks = new ArrayList<MinecraftChunk>();
-        this.forChunksInRange(chunkX, chunkZ, 10, (x, z) -> {
+        this.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
             final var chunk = world.getChunk(x, z);
             chunks.add(chunk);
             chunk.viewers().add(this.player); // new in range
@@ -310,8 +316,8 @@ public final class Connection extends ChannelHandlerAdapter {
                 entity.addViewer(this.player);
             }
         });
-        if (check) {
-            this.forChunksInRange(fromChunkX, fromChunkZ, 10, (x, z) -> {
+        if (checkAlreadyLoaded) {
+            this.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
                 final var chunk = world.getChunk(x, z);
                 if (!chunks.contains(chunk)) {
                     chunk.viewers().remove(this.player); // chunk not in range

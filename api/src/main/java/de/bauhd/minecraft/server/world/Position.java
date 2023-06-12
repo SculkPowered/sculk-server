@@ -2,7 +2,7 @@ package de.bauhd.minecraft.server.world;
 
 public class Position {
 
-    public static final Position ZERO = new Position(0, 0,0);
+    public static final Position ZERO = new Position(0, 0, 0);
 
     private final double x;
     private final double y;
@@ -68,6 +68,16 @@ public class Position {
 
     public Position setPitch(final float pitch) {
         return new Position(this.x, this.y, this.z, this.yaw, pitch);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Position other)) return false;
+        return (other.x == this.x
+                || other.y == this.y
+                || other.z == this.z
+                || other.yaw == this.yaw
+                || other.pitch == this.pitch);
     }
 
     @Override

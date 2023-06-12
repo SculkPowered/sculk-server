@@ -19,7 +19,7 @@ public final class TestGenerator implements ChunkGenerator {
     public void generate(@NotNull Chunk chunk) {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                chunk.setBlock(x, 5, z, GRASS);
+                chunk.setBlock(x, 5, z, GRASS_BLOCK);
                 chunk.setBlock(x, 4, z, DIRT);
                 chunk.setBlock(x, 3, z, STONE);
                 chunk.setBlock(x, 2, z, STONE);

@@ -4,6 +4,13 @@ import io.netty5.buffer.Buffer;
 
 public final class PacketUtils {
 
+    private static final byte[] VARINT_EXACT_BYTE_LENGTHS =
+            {5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1};
+
+    public static int varIntLength(final int value) {
+        return VARINT_EXACT_BYTE_LENGTHS[Integer.numberOfLeadingZeros(value)];
+    }
+
     // https://steinborn.me/posts/performance/how-fast-can-you-write-a-varint/
     public static void writeVarInt(final Buffer buf, int value) {
         if ((value & (0xFFFFFFFF << 7)) == 0) {

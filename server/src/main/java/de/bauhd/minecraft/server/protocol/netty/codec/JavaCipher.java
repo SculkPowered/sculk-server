@@ -29,6 +29,6 @@ public final class JavaCipher {
         final var bytes = new byte[buf.readableBytes()];
         buf.readBytes(bytes, 0, bytes.length);
         this.cipher.update(bytes, 0, bytes.length, bytes, 0);
-        return (ctx.bufferAllocator().copyOf(bytes));
+        return ctx.bufferAllocator().copyOf(bytes);
     }
 }

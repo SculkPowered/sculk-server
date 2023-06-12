@@ -32,6 +32,9 @@ public final class PaletteHolder implements Palette {
         if (this.palette instanceof SingleValuedPalette singleValued) { // not possible with single value palette
             this.palette = new DirectIndirectPalette(this.dimension, this.defaultBitsPerEntry, this.maxBitsPerEntry);
             this.palette.fill(singleValued.value());
+        } else if (this.palette instanceof EmptyPalette) {
+            this.palette = new DirectIndirectPalette(this.dimension, this.defaultBitsPerEntry, this.maxBitsPerEntry);
+            this.palette.fill(0);
         }
         this.palette.set(x, y, z, value);
     }
@@ -43,7 +46,9 @@ public final class PaletteHolder implements Palette {
 
     @Override
     public void fill(int value) {
-        if (this.palette instanceof SingleValuedPalette singleValuedPalette) {
+        if (value == 0) {
+            this.palette = Section.EMPTY_PALETTE;
+        } else if (this.palette instanceof SingleValuedPalette singleValuedPalette) {
             singleValuedPalette.fill(value);
         } else {
             this.palette = new SingleValuedPalette(this.dimension, value);
@@ -56,7 +61,7 @@ public final class PaletteHolder implements Palette {
         if (palette instanceof DirectIndirectPalette directIndirectPalette) {
             final var size = directIndirectPalette.size();
             if (size == 0) {
-                palette = new SingleValuedPalette(this.dimension, 0);
+                palette = Section.EMPTY_PALETTE;
             } else {
                 final var entries = new IntOpenHashSet(directIndirectPalette.paletteToValue().size());
                 directIndirectPalette.getAll((x, y, z, value) -> entries.add(value));

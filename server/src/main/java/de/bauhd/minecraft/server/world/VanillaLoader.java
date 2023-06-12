@@ -13,7 +13,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +41,12 @@ public final class VanillaLoader {
                 "." + this.toRegionCoordinate(z) + ".mca";
         if (!this.regionCache.containsKey(fileName)) {
             try {
-                this.regionCache.put(fileName, new RegionFile(this.regionPath.resolve(fileName)));
+                final var file = this.regionPath.resolve(fileName);
+                if (Files.exists(file)) {
+                    this.regionCache.put(fileName, new RegionFile(file));
+                } else {
+                    return null;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -103,6 +110,7 @@ public final class VanillaLoader {
                 final var states = compound.getCompound("block_states");
                 final var blockPalette = states.getList("palette");
                 if (blockPalette.equals(ListBinaryTag.empty())) continue;
+                System.out.println(compound.getInt("Y") + " " + i + " " + Arrays.toString(compound.getByteArray("SkyLight")));
                 final var section = new Section(compound.getByteArray("SkyLight"), compound.getByteArray("BlockLight"));
 
                 // load blocks

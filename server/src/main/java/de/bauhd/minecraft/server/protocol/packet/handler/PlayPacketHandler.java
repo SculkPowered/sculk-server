@@ -72,12 +72,18 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ClientInformation clientInformation) {
-        final var old = this.player.getSettings().clientInformation();
-        if (old == null || old.skinParts() != clientInformation.skinParts()) {
+        final var settings = this.player.getSettings();
+        final var old = settings.clientInformation();
+        if (settings.isDefault() || old.skinParts() != clientInformation.skinParts()) {
             this.player.metadata.setByte(17, (byte) clientInformation.skinParts());
         }
-        if (old == null || old.mainHand() != clientInformation.mainHand()) {
+        if (settings.isDefault() || old.mainHand() != clientInformation.mainHand()) {
             this.player.metadata.setByte(18, (byte) clientInformation.mainHand().ordinal());
+        }
+        if (!settings.isDefault() && old.viewDistance() != clientInformation.viewDistance()) {
+            this.connection
+                    .calculateChunks(this.player.getPosition(), this.player.getPosition(), false, true,
+                            clientInformation.viewDistance(), old.viewDistance());
         }
         this.player.getSettings().setClientInformation(clientInformation);
         return true;

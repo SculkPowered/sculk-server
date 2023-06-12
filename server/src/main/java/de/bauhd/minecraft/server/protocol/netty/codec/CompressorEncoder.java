@@ -47,7 +47,13 @@ public final class CompressorEncoder extends MessageToByteEncoder<Buffer> {
 
     @Override
     protected Buffer allocateBuffer(ChannelHandlerContext channelHandlerContext, Buffer buf) {
-        return channelHandlerContext.bufferAllocator().allocate(buf.readableBytes() + 1);
+        var size = buf.readableBytes();
+        if (size < this.threshold) {
+            size += 1 + PacketUtils.varIntLength(size + 1);
+        } else {
+            size += 2 + PacketUtils.varIntLength(size);
+        }
+        return channelHandlerContext.bufferAllocator().allocate(size);
     }
 
     @Override

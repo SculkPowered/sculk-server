@@ -27,7 +27,8 @@ public final class MinecraftEncoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected Buffer allocateBuffer(ChannelHandlerContext channelHandlerContext, Packet packet) {
-        return channelHandlerContext.bufferAllocator().allocate(0);
+        return channelHandlerContext.bufferAllocator()
+                .allocate(PacketUtils.varIntLength(this.registry.getPacketId(packet)) + packet.minLength());
     }
 
     public void setState(final State state) {
