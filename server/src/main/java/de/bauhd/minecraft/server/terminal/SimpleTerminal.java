@@ -27,7 +27,9 @@ public final class SimpleTerminal {
 
         @Override
         public void sendMessage(@NotNull Component message) {
-            LOGGER.info(PlainTextComponentSerializer.plainText().serialize(message));
+            for (final var child : message.children()) {
+                LOGGER.info(PlainTextComponentSerializer.plainText().serialize(child));
+            }
         }
 
         @Override

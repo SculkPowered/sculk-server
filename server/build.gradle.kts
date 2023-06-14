@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+import java.io.ByteArrayOutputStream
 
 plugins {
     id("java")
@@ -28,7 +29,16 @@ tasks {
             attributes["Main-Class"] = "de.bauhd.minecraft.server.Main"
             attributes["Multi-Release"] = true
             attributes["Implementation-Title"] = "Minecraft-Server"
-            attributes["Implementation-Version"] = project.version
+
+            val gitCommit = ByteArrayOutputStream().use {
+                exec {
+                    executable = "git"
+                    standardOutput = it
+                    args = listOf("rev-parse", "HEAD")
+                }
+                it.toString().trim().substring(0, 8)
+            }
+            attributes["Implementation-Version"] = "${project.version} (git-$gitCommit)"
         }
     }
 

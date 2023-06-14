@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import net.kyori.adventure.text.Component;
 
 import java.lang.management.ManagementFactory;
@@ -17,10 +18,12 @@ public final class InfoCommand {
                     final var systemMXBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
                     final var memoryMXBean = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
 
-                    sender.sendMessage(Component.text("CPU: " + DECIMAL_FORMAT.format(systemMXBean.getCpuLoad() * 100) + "%"));
-                    sender.sendMessage(Component.text("RAM: " +
-                            this.toMB(memoryMXBean.getUsed()) + "/" + this.toMB(memoryMXBean.getMax())));
-                    context.getSource().sendMessage(Component.text("Threads: " + Thread.getAllStackTraces().keySet().size()));
+                    sender.sendMessage(Component.text()
+                                    .append(Component.text("Version: " + AdvancedMinecraftServer.class.getPackage().getImplementationVersion()))
+                            .append(Component.text("CPU: " + DECIMAL_FORMAT.format(systemMXBean.getCpuLoad() * 100) + "%"))
+                            .append(Component.text("RAM: " +
+                                    this.toMB(memoryMXBean.getUsed()) + "/" + this.toMB(memoryMXBean.getMax())))
+                            .append(Component.text("Threads: " + Thread.getAllStackTraces().keySet().size())));
                     return 0;
                 })
                 .build());
