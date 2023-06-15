@@ -80,7 +80,7 @@ public final class PlayPacketHandler extends PacketHandler {
         if (settings.isDefault() || old.mainHand() != clientInformation.mainHand()) {
             this.player.metadata.setByte(18, (byte) clientInformation.mainHand().ordinal());
         }
-        if (!settings.isDefault() && old.viewDistance() != clientInformation.viewDistance()) {
+        if (old.viewDistance() != clientInformation.viewDistance()) {
             this.connection
                     .calculateChunks(this.player.getPosition(), this.player.getPosition(), false, true,
                             clientInformation.viewDistance(), old.viewDistance());
