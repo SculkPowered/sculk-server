@@ -8,8 +8,8 @@ import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.entity.player.PlayerInfoEntry;
+import de.bauhd.minecraft.server.event.player.PlayerInitialEvent;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
-import de.bauhd.minecraft.server.event.player.PlayerSpawnEvent;
 import de.bauhd.minecraft.server.protocol.netty.codec.*;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -22,7 +22,6 @@ import de.bauhd.minecraft.server.protocol.packet.login.LoginSuccess;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.Commands;
 import de.bauhd.minecraft.server.util.MojangUtil;
-import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import io.netty5.buffer.Buffer;
@@ -66,7 +65,6 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
     private String serverAddress;
     private String username;
     private MinecraftPlayer player;
-    private boolean beforeLoginPacket = true;
 
     public MineConnection(final AdvancedMinecraftServer server, final Channel channel) {
         this.server = server;
@@ -160,38 +158,42 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             this.addCompressionHandler();
         }
 
-        this.send(new LoginSuccess(profile.uniqueId(), this.username));
-        this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
+        this.send(new LoginSuccess(profile));
         this.setState(State.PLAY);
+        this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
         this.server.addPlayer(this.player);
-        this.server.getEventHandler().call(new PlayerJoinEvent(this.player)).thenAcceptAsync((event) -> {
-            final var world = ((MinecraftWorld) this.player.getWorld());
+        this.server.getEventHandler().call(new PlayerInitialEvent(this.player)).thenAcceptAsync(event -> {
+            final var world = event.getWorld();
+            var position = event.getPosition();
             if (world == null) {
                 this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));
                 return;
             }
+            if (event.getGameMode() == null) {
+                event.setGameMode(world.getDefaultGameMode());
+            }
+            if (position == null) {
+                position = world.getSpawnPosition();
+            }
+            this.player.init(event.getGameMode(), position, world);
+
             this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
                     this.server.getBiomeHandler().nbt(), this.server.getDimensionHandler().nbt(),
-                    world.getDimension().nbt().getString("name")));
-            this.beforeLoginPacket = false;
+                    world.getDimension().name()));
 
             this.send(BRAND_PACKET);
             this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
-            final var position = this.player.getPosition();
             this.send(new SpawnPosition(position));
             this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
             final var playerInfo = PlayerInfo.add(List.of(this.player));
             for (final var other : this.server.getAllPlayers()) {
-                if (other != this.player) {
-                    ((MinecraftPlayer) other).send(playerInfo);
-                }
+                if (other != this.player) ((MinecraftPlayer) other).send(playerInfo);
             }
 
             this.calculateChunks(position, position, false, false);
             this.send(new SynchronizePlayerPosition(position));
 
-
-            this.server.getEventHandler().call(new PlayerSpawnEvent(this.player));
+            this.server.getEventHandler().justCall(new PlayerJoinEvent(this.player));
         }, this.channel.executor()).exceptionally(throwable -> {
             LOGGER.error("Exception during login of player {}", this.player.getUsername(), throwable);
             return null;
@@ -264,10 +266,6 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
 
     public MinecraftPlayer player() {
         return this.player;
-    }
-
-    public boolean beforeLoginPacket() {
-        return this.beforeLoginPacket;
     }
 
     public void close() {

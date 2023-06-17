@@ -14,6 +14,7 @@ import de.bauhd.minecraft.server.protocol.packet.play.container.ContainerContent
 import de.bauhd.minecraft.server.protocol.packet.play.container.OpenScreen;
 import de.bauhd.minecraft.server.protocol.packet.play.title.Subtitle;
 import de.bauhd.minecraft.server.protocol.packet.play.title.TitleAnimationTimes;
+import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.World;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
@@ -101,7 +102,6 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void setGameMode(@NotNull GameMode gameMode) {
-        if (this.connection.beforeLoginPacket()) return;
         if (gameMode != this.gameMode) {
             this.gameMode = gameMode;
             this.send(new GameEvent(3, gameMode.ordinal()));
@@ -207,10 +207,9 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void setWorld(@NotNull World world) {
-        super.setWorld(world);
         this.position = world.getSpawnPosition();
         this.gameMode = world.getDefaultGameMode();
-        if (this.connection.beforeLoginPacket()) return;
+        super.setWorld(world);
         this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));
     }
 
@@ -320,6 +319,12 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     @Override
     public SocketAddress getAddress() {
         return this.connection.getAddress();
+    }
+
+    public void init(final GameMode gameMode, final Position position, final World world) {
+        this.gameMode = gameMode;
+        this.position = position;
+        super.setWorld(world);
     }
 
     public void send(final Packet packet) {

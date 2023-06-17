@@ -6,11 +6,11 @@ import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.container.item.Material;
 import de.bauhd.minecraft.server.event.Subscribe;
+import de.bauhd.minecraft.server.event.player.PlayerInitialEvent;
 import de.bauhd.minecraft.server.event.connection.ServerPingEvent;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerEvent;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
-import de.bauhd.minecraft.server.event.player.PlayerSpawnEvent;
 import de.bauhd.minecraft.server.event.player.PlayerUseItemEvent;
 import de.bauhd.minecraft.server.plugin.Plugin;
 import de.bauhd.minecraft.server.plugin.PluginDescription;
@@ -61,13 +61,13 @@ public final class TestPlugin extends Plugin {
     }
 
     @Subscribe
-    public void handle(final PlayerJoinEvent event) {
-        event.player().setWorld(this.world);
+    public void handle(final PlayerInitialEvent event) {
+        event.setWorld(this.world);
     }
 
     @Subscribe
-    public void handle(final PlayerSpawnEvent event) {
-        final var player = event.player();
+    public void handle(final PlayerJoinEvent event) {
+        final var player = event.getPlayer();
         player.setAllowFight(true);
         final var inventory = player.getInventory();
         inventory.setItem(4, ItemStack.of(Material.CHEST));

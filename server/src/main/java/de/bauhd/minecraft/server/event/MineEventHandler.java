@@ -56,6 +56,13 @@ public final class MineEventHandler implements EventHandler {
     }
 
     @Override
+    public <E> void justCall(E event) {
+        if (this.consumers.containsKey(event.getClass())) {
+            this.executor.execute(() -> this.call(event, null));
+        }
+    }
+
+    @Override
     public <E> E callSync(E event) {
         if (this.consumers.containsKey(event.getClass())) {
             this.call(event, null);

@@ -13,5 +13,7 @@ public interface EventHandler {
 
     <E> CompletableFuture<E> call(E event);
 
+    <E> void justCall(E event);
+
     <E> E callSync(E event);
 }
