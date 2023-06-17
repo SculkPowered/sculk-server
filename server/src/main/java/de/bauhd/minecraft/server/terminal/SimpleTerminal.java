@@ -19,7 +19,7 @@ public final class SimpleTerminal {
 
     private static final Logger LOGGER = LogManager.getLogger(SimpleTerminal.class);
     private static final String PROMPT = "> ";
-    private static final CommandSender CONSOLE_COMMAND_SENDER = new TerminalCommandSender(LOGGER);
+    private static final CommandSender CONSOLE_COMMAND_SENDER = new TerminalCommandSender();
 
     private final AdvancedMinecraftServer server;
     private final LineReader lineReader;

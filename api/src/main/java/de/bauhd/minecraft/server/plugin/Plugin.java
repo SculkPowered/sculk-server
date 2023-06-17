@@ -1,19 +1,18 @@
 package de.bauhd.minecraft.server.plugin;
 
 import de.bauhd.minecraft.server.MinecraftServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 
 public abstract class Plugin {
 
     private MinecraftServer server;
     private PluginDescription description;
-    private Logger logger;
+    private ComponentLogger logger;
 
     final void init(final MinecraftServer server) {
         this.server = server;
         this.description = this.getClass().getAnnotation(PluginDescription.class);
-        this.logger = LoggerFactory.getLogger(this.description.name());
+        this.logger = ComponentLogger.logger(this.description.name());
     }
 
     public final MinecraftServer getServer() {
@@ -24,7 +23,7 @@ public abstract class Plugin {
         return this.description;
     }
 
-    public Logger getLogger() {
+    public ComponentLogger getLogger() {
         return this.logger;
     }
 }

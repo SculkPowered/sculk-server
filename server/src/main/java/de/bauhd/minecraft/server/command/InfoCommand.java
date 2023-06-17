@@ -19,10 +19,10 @@ public final class InfoCommand {
                     final var memoryMXBean = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
 
                     sender.sendMessage(Component.text()
-                                    .append(Component.text("Version: " + AdvancedMinecraftServer.class.getPackage().getImplementationVersion()))
-                            .append(Component.text("CPU: " + DECIMAL_FORMAT.format(systemMXBean.getCpuLoad() * 100) + "%"))
+                            .append(Component.text("Version: " + AdvancedMinecraftServer.class.getPackage().getImplementationVersion())).appendNewline()
+                            .append(Component.text("CPU: " + DECIMAL_FORMAT.format(systemMXBean.getCpuLoad() * 100) + "%")).appendNewline()
                             .append(Component.text("RAM: " +
-                                    this.toMB(memoryMXBean.getUsed()) + "/" + this.toMB(memoryMXBean.getMax())))
+                                    this.toMB(memoryMXBean.getUsed()) + "/" + this.toMB(memoryMXBean.getMax()))).appendNewline()
                             .append(Component.text("Threads: " + Thread.getAllStackTraces().keySet().size())));
                     return 0;
                 })
