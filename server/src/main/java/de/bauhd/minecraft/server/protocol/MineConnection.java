@@ -3,6 +3,7 @@ package de.bauhd.minecraft.server.protocol;
 import com.google.gson.reflect.TypeToken;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.MinecraftConfig;
+import de.bauhd.minecraft.server.connection.Connection;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.Player;
@@ -37,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +49,9 @@ import java.util.function.BiConsumer;
 
 import static de.bauhd.minecraft.server.entity.player.GameProfile.Property;
 
-public final class Connection extends ChannelHandlerAdapter {
+public final class MineConnection extends ChannelHandlerAdapter implements Connection {
 
-    private static final Logger LOGGER = LogManager.getLogger(Connection.class);
+    private static final Logger LOGGER = LogManager.getLogger(MineConnection.class);
 
     private static final PluginMessage BRAND_PACKET =
             new PluginMessage("minecraft:brand", new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
@@ -66,7 +68,7 @@ public final class Connection extends ChannelHandlerAdapter {
     private MinecraftPlayer player;
     private boolean beforeLoginPacket = true;
 
-    public Connection(final AdvancedMinecraftServer server, final Channel channel) {
+    public MineConnection(final AdvancedMinecraftServer server, final Channel channel) {
         this.server = server;
         this.channel = channel;
         this.setState(State.HANDSHAKE);
@@ -332,5 +334,15 @@ public final class Connection extends ChannelHandlerAdapter {
         for (final var chunk : chunks) { // send all new chunks
             chunk.send(this.player);
         }
+    }
+
+    @Override
+    public int getProtocolVersion() {
+        return this.version;
+    }
+
+    @Override
+    public SocketAddress getAddress() {
+        return this.channel.remoteAddress();
     }
 }

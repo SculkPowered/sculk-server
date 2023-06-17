@@ -55,11 +55,21 @@ public final class MineEventHandler implements EventHandler {
         return future;
     }
 
+    @Override
+    public <E> E callSync(E event) {
+        if (this.consumers.containsKey(event.getClass())) {
+            this.call(event, null);
+        }
+        return event;
+    }
+
     private <E> void call(E event, CompletableFuture<E> future) {
         for (final var consumer : this.consumers.get(event.getClass())) {
             consumer.accept(event);
         }
-        future.complete(event);
+        if (future != null) {
+            future.complete(event);
+        }
     }
 
     private List<Method> findMethods(final Class<?> clazz) {

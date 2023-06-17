@@ -2,7 +2,7 @@ package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.MinecraftConfig;
-import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.login.*;
 import de.bauhd.minecraft.server.util.EncryptionUtil;
@@ -20,12 +20,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class LoginPacketHandler extends PacketHandler {
 
-    private final Connection connection;
+    private final MineConnection connection;
     private final AdvancedMinecraftServer server;
 
     private byte[] verifyToken;
 
-    public LoginPacketHandler(final Connection connection) {
+    public LoginPacketHandler(final MineConnection connection) {
         this.connection = connection;
         this.server = connection.server();
     }

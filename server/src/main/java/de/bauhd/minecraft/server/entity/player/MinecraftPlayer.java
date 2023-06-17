@@ -6,7 +6,7 @@ import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.MineContainer;
 import de.bauhd.minecraft.server.container.MineInventory;
 import de.bauhd.minecraft.server.container.item.ItemStack;
-import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
@@ -24,6 +24,7 @@ import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
             .withDynamic(Identity.DISPLAY_NAME, this::getDisplayName)
             .build();
 
-    private final Connection connection;
+    private final MineConnection connection;
     private final UUID uniqueId;
     private final String name;
     private final GameProfile profile;
@@ -53,7 +54,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private boolean instantBreak;
     private float viewModifier = 0.01F;
 
-    public MinecraftPlayer(final Connection connection, final UUID uniqueId, final String name, final GameProfile profile) {
+    public MinecraftPlayer(final MineConnection connection, final UUID uniqueId, final String name, final GameProfile profile) {
         this.connection = connection;
         this.uniqueId = uniqueId;
         this.name = name;
@@ -309,6 +310,16 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
                 this.send(new KeepAlive(time));
             }
         }
+    }
+
+    @Override
+    public int getProtocolVersion() {
+        return this.connection.getProtocolVersion();
+    }
+
+    @Override
+    public SocketAddress getAddress() {
+        return this.connection.getAddress();
     }
 
     public void send(final Packet packet) {

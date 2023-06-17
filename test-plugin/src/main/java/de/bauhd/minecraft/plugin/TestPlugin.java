@@ -6,6 +6,7 @@ import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.container.item.Material;
 import de.bauhd.minecraft.server.event.Subscribe;
+import de.bauhd.minecraft.server.event.connection.ServerPingEvent;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerEvent;
 import de.bauhd.minecraft.server.event.player.PlayerJoinEvent;
@@ -18,6 +19,8 @@ import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.Biome;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 
 import java.nio.file.Path;
 
@@ -44,6 +47,17 @@ public final class TestPlugin extends Plugin {
                         .name("test")
                         .spawnPosition(new Position(0.5, 86, 0.5)),
                 Path.of("world"));
+    }
+
+    private final Component description = Component.text("Hello world!")
+            .style(Style.style(NamedTextColor.RED, TextDecoration.BOLD));
+
+    @Subscribe
+    public void handle(final ServerPingEvent event) {
+        event.setResponse(ServerPingEvent.response()
+                .name("not vanilla")
+                .max(10)
+                .description(this.description));
     }
 
     @Subscribe

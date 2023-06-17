@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.protocol.netty;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.minecraft.server.protocol.netty.codec.MinecraftEncoder;
@@ -26,7 +26,7 @@ public final class NettyServerInitializer extends ChannelInitializer<Channel> {
                 .addLast("frame-encoder", VarIntLengthEncoder.INSTANCE)
                 .addLast("minecraft-decoder", new MinecraftDecoder(Protocol.Direction.SERVERBOUND))
                 .addLast("minecraft-encoder", new MinecraftEncoder(Protocol.Direction.CLIENTBOUND))
-                .addLast("handler", new Connection(this.server, channel));
+                .addLast("handler", new MineConnection(this.server, channel));
     }
 
     @Override

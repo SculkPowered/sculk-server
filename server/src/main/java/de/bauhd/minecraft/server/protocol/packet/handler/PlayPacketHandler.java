@@ -9,7 +9,7 @@ import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerButtonEvent;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerEvent;
 import de.bauhd.minecraft.server.event.player.PlayerUseItemEvent;
-import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
 import de.bauhd.minecraft.server.protocol.packet.play.command.ChatCommand;
@@ -30,11 +30,11 @@ public final class PlayPacketHandler extends PacketHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(PlayPacketHandler.class);
 
-    private final Connection connection;
+    private final MineConnection connection;
     private final AdvancedMinecraftServer server;
     private final MinecraftPlayer player;
 
-    public PlayPacketHandler(final Connection connection) {
+    public PlayPacketHandler(final MineConnection connection) {
         this.connection = connection;
         this.server = connection.server();
         this.player = connection.player();

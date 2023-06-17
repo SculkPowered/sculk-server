@@ -1,6 +1,7 @@
 package de.bauhd.minecraft.server.entity.player;
 
 import de.bauhd.minecraft.server.command.CommandSender;
+import de.bauhd.minecraft.server.connection.Connection;
 import de.bauhd.minecraft.server.entity.LivingEntity;
 import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.Inventory;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry {
+public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry, Connection {
 
     @NotNull UUID getUniqueId();
 

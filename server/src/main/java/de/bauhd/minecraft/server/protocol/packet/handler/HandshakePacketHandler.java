@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.protocol.packet.handler;
 
-import de.bauhd.minecraft.server.protocol.Connection;
+import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.Protocol;
 import de.bauhd.minecraft.server.protocol.State;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
@@ -10,9 +10,9 @@ import net.kyori.adventure.text.Component;
 
 public final class HandshakePacketHandler extends PacketHandler {
 
-    private final Connection connection;
+    private final MineConnection connection;
 
-    public HandshakePacketHandler(final Connection connection) {
+    public HandshakePacketHandler(final MineConnection connection) {
         this.connection = connection;
     }
 
