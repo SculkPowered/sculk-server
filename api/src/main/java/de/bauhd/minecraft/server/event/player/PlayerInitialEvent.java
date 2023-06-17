@@ -5,6 +5,7 @@ import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.World;
+import net.kyori.adventure.permission.PermissionChecker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +15,7 @@ public final class PlayerInitialEvent {
     private @Nullable World world;
     private @Nullable GameMode gameMode;
     private @Nullable Position position;
+    private @Nullable PermissionChecker permissionChecker;
 
     public PlayerInitialEvent(@NotNull Player player) {
         this.player = player;
@@ -45,5 +47,13 @@ public final class PlayerInitialEvent {
 
     public void setPosition(@Nullable Position position) {
         this.position = position;
+    }
+
+    public @Nullable PermissionChecker getPermissionChecker() {
+        return permissionChecker;
+    }
+
+    public void setPermissionChecker(@Nullable PermissionChecker permissionChecker) {
+        this.permissionChecker = permissionChecker;
     }
 }

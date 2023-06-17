@@ -18,6 +18,7 @@ import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.World;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.pointer.Pointers;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -35,6 +36,8 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
             .withDynamic(Identity.NAME, this::getUsername)
             .withDynamic(Identity.UUID, this::getUniqueId)
             .withDynamic(Identity.DISPLAY_NAME, this::getDisplayName)
+            .withDynamic(Identity.LOCALE, () -> this.getSettings().getLocale())
+            .withDynamic(PermissionChecker.POINTER, () -> this.permissionChecker)
             .build();
 
     private final MineConnection connection;
@@ -47,6 +50,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private long lastSendKeepAlive;
     private boolean keepAlivePending;
     private GameMode gameMode = GameMode.SURVIVAL;
+    private PermissionChecker permissionChecker;
     private Component displayName;
     public int heldItem;
     public boolean flying;
@@ -321,10 +325,16 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         return this.connection.getAddress();
     }
 
-    public void init(final GameMode gameMode, final Position position, final World world) {
+    @Override
+    public boolean hasPermission(@NotNull String permission) {
+        return this.permissionChecker.test(permission);
+    }
+
+    public void init(final GameMode gameMode, final Position position, final World world, final PermissionChecker permissionChecker) {
         this.gameMode = gameMode;
         this.position = position;
         super.setWorld(world);
+        this.permissionChecker = permissionChecker;
     }
 
     public void send(final Packet packet) {

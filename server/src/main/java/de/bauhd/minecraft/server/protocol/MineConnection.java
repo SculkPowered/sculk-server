@@ -30,8 +30,10 @@ import io.netty5.channel.ChannelFutureListeners;
 import io.netty5.channel.ChannelHandlerAdapter;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.util.ReferenceCountUtil;
+import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.util.TriState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -159,9 +161,9 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         }
 
         this.send(new LoginSuccess(profile));
-        this.setState(State.PLAY);
         this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
         this.server.addPlayer(this.player);
+        this.setState(State.PLAY);
         this.server.getEventHandler().call(new PlayerInitialEvent(this.player)).thenAcceptAsync(event -> {
             final var world = event.getWorld();
             var position = event.getPosition();
@@ -175,7 +177,10 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             if (position == null) {
                 position = world.getSpawnPosition();
             }
-            this.player.init(event.getGameMode(), position, world);
+            if (event.getPermissionChecker() == null) {
+                event.setPermissionChecker(PermissionChecker.always(TriState.NOT_SET));
+            }
+            this.player.init(event.getGameMode(), position, world, event.getPermissionChecker());
 
             this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
                     this.server.getBiomeHandler().nbt(), this.server.getDimensionHandler().nbt(),
