@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Represents a profile of a player.
+ */
 public record GameProfile(
         @NotNull UUID uniqueId,
         @NotNull String name,

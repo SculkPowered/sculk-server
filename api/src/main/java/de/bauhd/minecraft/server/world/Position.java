@@ -1,5 +1,8 @@
 package de.bauhd.minecraft.server.world;
 
+/**
+ * Represent a position.
+ */
 public class Position {
 
     public static final Position ZERO = new Position(0, 0, 0);

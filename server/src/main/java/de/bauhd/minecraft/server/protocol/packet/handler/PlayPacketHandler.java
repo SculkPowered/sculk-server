@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.protocol.packet.handler;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.container.MineContainer;
 import de.bauhd.minecraft.server.entity.Entity;
@@ -22,7 +21,6 @@ import de.bauhd.minecraft.server.util.ItemList;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.block.Block;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,11 +45,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ChatCommand chatCommand) {
-        try {
-            this.server.getCommandHandler().dispatcher().execute(chatCommand.command(), this.player);
-        } catch (CommandSyntaxException e) {
-            this.player.sendMessage(Component.text(e.getMessage(), NamedTextColor.RED));
-        }
+        this.server.getCommandHandler().execute(this.player, chatCommand.command());
         return true;
     }
 

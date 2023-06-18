@@ -1,5 +1,8 @@
 package de.bauhd.minecraft.server.potion;
 
+/**
+ * An enum of all supported potion effects.
+ */
 @SuppressWarnings("unused")
 public enum PotionEffect {
 

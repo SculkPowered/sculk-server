@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * Represents an event that fires when the client clicks at a container button.
+ */
 public final class PlayerClickContainerButtonEvent {
 
     private final @NotNull Player player;

@@ -5,6 +5,9 @@ import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents an event that fires when the client clicks at an item in a container.
+ */
 public final class PlayerClickContainerEvent {
 
     private final @NotNull Player player;

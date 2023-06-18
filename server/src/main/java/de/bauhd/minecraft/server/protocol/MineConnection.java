@@ -161,7 +161,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         }
 
         this.send(new LoginSuccess(profile));
-        this.player = new MinecraftPlayer(this, profile.uniqueId(), this.username, profile);
+        this.player = new MinecraftPlayer(this, profile);
         this.server.addPlayer(this.player);
         this.setState(State.PLAY);
         this.server.getEventHandler().call(new PlayerInitialEvent(this.player)).thenAcceptAsync(event -> {
@@ -187,7 +187,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
                     world.getDimension().name()));
 
             this.send(BRAND_PACKET);
-            this.send(new Commands(this.server.getCommandHandler().dispatcher().getRoot()));
+            this.send(new Commands(this.server.getCommandHandler().root()));
             this.send(new SpawnPosition(position));
             this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
             final var playerInfo = PlayerInfo.add(List.of(this.player));

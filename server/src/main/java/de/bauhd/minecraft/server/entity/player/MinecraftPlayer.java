@@ -1,11 +1,11 @@
 package de.bauhd.minecraft.server.entity.player;
 
-import de.bauhd.minecraft.server.entity.AbstractLivingEntity;
-import de.bauhd.minecraft.server.entity.EntityType;
 import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.MineContainer;
 import de.bauhd.minecraft.server.container.MineInventory;
 import de.bauhd.minecraft.server.container.item.ItemStack;
+import de.bauhd.minecraft.server.entity.AbstractLivingEntity;
+import de.bauhd.minecraft.server.entity.EntityType;
 import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.Disconnect;
@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.SocketAddress;
 import java.util.HashMap;
-import java.util.UUID;
 
 public final class MinecraftPlayer extends AbstractLivingEntity implements Player {
 
@@ -41,8 +40,6 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
             .build();
 
     private final MineConnection connection;
-    private final UUID uniqueId;
-    private final String name;
     private final GameProfile profile;
     private final ClientInformationWrapper settings = new ClientInformationWrapper();
     private final MineInventory inventory = new MineInventory(this);
@@ -59,19 +56,14 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private boolean instantBreak;
     private float viewModifier = 0.01F;
 
-    public MinecraftPlayer(final MineConnection connection, final UUID uniqueId, final String name, final GameProfile profile) {
+    public MinecraftPlayer(final MineConnection connection, final GameProfile profile) {
+        super(profile.uniqueId());
         this.connection = connection;
-        this.uniqueId = uniqueId;
-        this.name = name;
         this.profile = profile;
     }
 
-    public @NotNull UUID getUniqueId() {
-        return this.uniqueId;
-    }
-
     public @NotNull String getUsername() {
-        return this.name;
+        return this.profile.name();
     }
 
     @Override

@@ -4,6 +4,7 @@ import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public final class MinePluginHandler implements PluginHandler {
     private static final Path PLUGINS_DIRECTORY = Path.of("plugins");
 
     private final AdvancedMinecraftServer server;
-    private final Map<Plugin, Path> plugins = new HashMap<>();
+    private final Map<String, Plugin> plugins = new HashMap<>();
 
     public MinePluginHandler(final AdvancedMinecraftServer server) {
         this.server = server;
@@ -59,7 +60,7 @@ public final class MinePluginHandler implements PluginHandler {
                 final var classLoader = new URLClassLoader(new URL[]{path.toUri().toURL()});
                 final var plugin = (Plugin) Class.forName(main, true, classLoader).getConstructor().newInstance();
                 plugin.init(this.server);
-                this.plugins.put(plugin, path);
+                this.plugins.put(plugin.getDescription().name(), plugin);
                 this.server.getEventHandler().register(plugin, plugin);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -73,7 +74,17 @@ public final class MinePluginHandler implements PluginHandler {
     }
 
     @Override
-    public @NotNull Collection<Plugin> plugins() {
-        return this.plugins.keySet();
+    public @Nullable Plugin getPlugin(@NotNull String name) {
+        return this.plugins.get(name);
+    }
+
+    @Override
+    public boolean isLoaded(@NotNull String name) {
+        return this.plugins.containsKey(name);
+    }
+
+    @Override
+    public @NotNull Collection<Plugin> getPlugins() {
+        return this.plugins.values();
     }
 }

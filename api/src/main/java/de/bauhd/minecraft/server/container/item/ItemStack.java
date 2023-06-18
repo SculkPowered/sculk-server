@@ -8,8 +8,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents an item.
+ */
 public class ItemStack {
 
+    /**
+     * The default item.
+     */
     public static final ItemStack AIR = ItemStack.of(Material.AIR, 0);
 
     private final Material material;
@@ -30,24 +36,44 @@ public class ItemStack {
         this.nbt = nbt;
     }
 
+    /**
+     * Gets the material of an item.
+     * @return the material of item
+     */
     public Material material() {
         return this.material;
     }
 
+    /**
+     * Gets the amount of items.
+     * @return the amount of items
+     */
     public int amount() {
         return this.amount;
     }
 
+    /**
+     * Sets the amount of items.
+     * @return the same item
+     */
     public @NotNull ItemStack amount(final int amount) {
         this.amount = amount;
         return this;
     }
 
+    /**
+     * Sets the display name of item.
+     * @return the same item
+     */
     public @NotNull ItemStack displayName(final Component displayName) {
         this.display("Name", StringBinaryTag.stringBinaryTag(GsonComponentSerializer.gson().serialize(displayName)));
         return this;
     }
 
+    /**
+     * Sets the lore of item.
+     * @return the same item
+     */
     public @NotNull ItemStack lore(final Component... lore) {
         final var list = ListBinaryTag.builder();
         for (final var component : lore) {
@@ -57,15 +83,27 @@ public class ItemStack {
         return this;
     }
 
+    /**
+     * Sets the item unbreakable or not.
+     * @return the same item
+     */
     public @NotNull ItemStack unbreakable(final boolean unbreakable) {
         this.nbt = this.nbt.putBoolean("Unbreakable", unbreakable);
         return this;
     }
 
+    /**
+     * Gets the nbt of item.
+     * @return the nbt of item
+     */
     public @NotNull CompoundBinaryTag nbt() {
         return this.nbt;
     }
 
+    /**
+     * Returns true if this item is air.
+     * @return true if it is empty.
+     */
     public boolean isEmpty() {
         return this == AIR || this.material == Material.AIR;
     }

@@ -1,6 +1,14 @@
 package de.bauhd.minecraft.server.entity;
 
+import java.util.UUID;
+
 public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
+
+    public AbstractLivingEntity() {}
+
+    public AbstractLivingEntity(UUID uuid) {
+        super(uuid);
+    }
 
     @Override
     public float getHealth() {

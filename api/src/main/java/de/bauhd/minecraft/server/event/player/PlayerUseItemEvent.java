@@ -4,6 +4,9 @@ import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents an event that fires when the client uses an item.
+ */
 public final class PlayerUseItemEvent {
 
     private final @NotNull Player player;

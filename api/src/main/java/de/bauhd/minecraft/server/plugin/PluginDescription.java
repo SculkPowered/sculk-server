@@ -3,6 +3,9 @@ package de.bauhd.minecraft.server.plugin;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * The annotation that describe a plugin.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PluginDescription {
 

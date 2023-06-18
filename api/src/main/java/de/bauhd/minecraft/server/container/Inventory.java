@@ -3,6 +3,9 @@ package de.bauhd.minecraft.server.container;
 import de.bauhd.minecraft.server.container.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents an inventory of a player.
+ */
 public interface Inventory extends Container {
 
     @NotNull ItemStack getItemInMainHand();

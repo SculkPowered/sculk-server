@@ -3,6 +3,9 @@ package de.bauhd.minecraft.server.container.item;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An enum of all materials supported.
+ */
 public enum Material {
 
     // START

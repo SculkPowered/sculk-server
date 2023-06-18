@@ -11,9 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * Represents a player.
+ */
 public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry, Connection {
-
-    @NotNull UUID getUniqueId();
 
     @NotNull String getUsername();
 

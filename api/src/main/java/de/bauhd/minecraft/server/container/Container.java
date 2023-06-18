@@ -4,6 +4,9 @@ import de.bauhd.minecraft.server.container.item.ItemStack;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents a container of items.
+ */
 public interface Container {
 
     @NotNull Component title();

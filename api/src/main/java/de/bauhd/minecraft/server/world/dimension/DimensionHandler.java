@@ -7,20 +7,21 @@ import java.util.Collection;
 public interface DimensionHandler {
 
     /**
-     * registers a dimension
+     * Registers the specified {@link Dimension}.
      * @param dimension the dimension to register
      */
-    void registerDimension(@NotNull Dimension dimension);
+    void register(@NotNull Dimension dimension);
 
     /**
+     * Gets all registered dimensions.
      * @return a collection with all registered dimensions
      */
     @NotNull Collection<Dimension> getDimensions();
 
     /**
-     * gets a dimension from its name
+     * Gets a dimension from its name.
      * @param name the name of the dimension
-     * @return dimension from name or plains if is doesn't exist
+     * @return dimension from name or {@code Dimension.OVERWORLD} if is does not exist
      */
-    @NotNull Dimension getDimension(String name);
+    @NotNull Dimension getDimension(@NotNull String name);
 }

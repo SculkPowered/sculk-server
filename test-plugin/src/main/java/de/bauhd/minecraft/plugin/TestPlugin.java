@@ -42,7 +42,7 @@ public final class TestPlugin extends Plugin {
                         .waterColor(4159204)
                 )
                 .build();
-        this.getServer().getBiomeHandler().registerBiome(testBiome);
+        this.getServer().getBiomeHandler().register(testBiome);
         this.world = this.getServer().loadWorld(World.builder()
                         .name("test")
                         .spawnPosition(new Position(0.5, 86, 0.5)),

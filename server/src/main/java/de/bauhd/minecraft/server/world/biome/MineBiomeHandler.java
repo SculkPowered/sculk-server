@@ -14,11 +14,11 @@ public final class MineBiomeHandler implements BiomeHandler {
 
     public MineBiomeHandler() {
         this.biomes = new HashMap<>();
-        this.registerBiome(Biome.PLAINS);
+        this.register(Biome.PLAINS);
     }
 
     @Override
-    public void registerBiome(@NotNull Biome biome) {
+    public void register(@NotNull Biome biome) {
         this.biomes.put(biome.name(), biome);
     }
 
@@ -28,7 +28,7 @@ public final class MineBiomeHandler implements BiomeHandler {
     }
 
     @Override
-    public @NotNull Biome getBiome(String name) {
+    public @NotNull Biome getBiome(@NotNull String name) {
         final var biome = this.biomes.get(name);
         return biome != null ? biome : Biome.PLAINS;
     }

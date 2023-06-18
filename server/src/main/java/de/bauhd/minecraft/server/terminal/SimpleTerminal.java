@@ -1,6 +1,5 @@
 package de.bauhd.minecraft.server.terminal;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.command.CommandSender;
 import org.apache.logging.log4j.Level;
@@ -51,11 +50,7 @@ public final class SimpleTerminal {
             try {
                 final var line = this.lineReader.readLine(PROMPT).trim();
                 if (!line.isEmpty()) {
-                    try {
-                        this.server.getCommandHandler().dispatcher().execute(line, CONSOLE_COMMAND_SENDER);
-                    } catch (CommandSyntaxException e) {
-                        LOGGER.warn(e.getMessage());
-                    }
+                    this.server.getCommandHandler().execute(CONSOLE_COMMAND_SENDER, line);
                 }
             } catch (EndOfFileException ignored) {
             } catch (UserInterruptException e) {

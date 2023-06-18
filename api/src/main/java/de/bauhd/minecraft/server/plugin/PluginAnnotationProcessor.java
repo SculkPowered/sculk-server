@@ -10,6 +10,9 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Represents an annotation processor that creates the plugin file for a plugin.
+ */
 @SupportedAnnotationTypes("de.bauhd.minecraft.server.plugin.PluginDescription")
 public final class PluginAnnotationProcessor extends AbstractProcessor {
 

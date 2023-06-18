@@ -62,6 +62,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private KeyPair keyPair;
 
     private final Map<UUID, MinecraftPlayer> players = new ConcurrentHashMap<>();
+    private final Map<String, MinecraftWorld> worlds = new ConcurrentHashMap<>();
     private final MineDimensionHandler dimensionHandler;
     private final MineBiomeHandler biomeHandler;
     private final MinePluginHandler pluginHandler;
@@ -193,15 +194,25 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     @Override
     public @NotNull World createWorld(World.@NotNull Builder builder) {
-        return new MinecraftWorld(Objects.requireNonNull(builder.name(), "a world requires a name"),
+        final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
+        final var world = new MinecraftWorld(name,
                 builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode());
+        this.worlds.put(name, world);
+        return world;
     }
 
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
-        return new VanillaWorld(Objects.requireNonNull(builder.name(), "a world requires a name"),
-                builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode(),
-                new VanillaLoader(this, path));
+        final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
+        final var world = new VanillaWorld(name, builder.dimension(), builder.generator(), builder.spawnPosition(),
+                builder.defaultGameMode(), new VanillaLoader(this, path));
+        this.worlds.put(name, world);
+        return world;
+    }
+
+    @Override
+    public @Nullable World getWorld(@NotNull String name) {
+        return this.worlds.get(name);
     }
 
     @SuppressWarnings("unchecked")

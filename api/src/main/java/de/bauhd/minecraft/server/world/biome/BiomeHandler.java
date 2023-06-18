@@ -4,23 +4,27 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
+/**
+ * Handles the registration of biomes.
+ */
 public interface BiomeHandler {
 
     /**
-     * registers a biome
+     * Registers the specified {@link Biome}.
      * @param biome the biome to register
      */
-    void registerBiome(@NotNull Biome biome);
+    void register(@NotNull Biome biome);
 
     /**
+     * Gets all registered biomes.
      * @return a collection with all registered biomes
      */
     @NotNull Collection<Biome> getBiomes();
 
     /**
-     * gets a biome from its name
+     * Gets a biome from its name.
      * @param name the name of the biome
-     * @return biome from name or plains if is doesn't exist
+     * @return biome from name or {@code Biome.PLAINS} if is does not exist
      */
-    @NotNull Biome getBiome(String name);
+    @NotNull Biome getBiome(@NotNull String name);
 }

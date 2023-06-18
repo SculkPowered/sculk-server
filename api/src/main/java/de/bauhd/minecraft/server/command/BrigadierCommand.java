@@ -6,6 +6,9 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A command that uses Mojang's Brigadier for parsing
+ */
 public class BrigadierCommand {
 
     private final LiteralCommandNode<CommandSender> node;

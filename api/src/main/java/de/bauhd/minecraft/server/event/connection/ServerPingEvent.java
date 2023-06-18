@@ -4,6 +4,9 @@ import de.bauhd.minecraft.server.connection.Connection;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents an event that fires when a client requests a status response from the server.
+ */
 public final class ServerPingEvent {
 
     private final @NotNull Connection connection;

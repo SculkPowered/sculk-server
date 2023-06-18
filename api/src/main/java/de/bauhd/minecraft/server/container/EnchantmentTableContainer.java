@@ -3,6 +3,9 @@ package de.bauhd.minecraft.server.container;
 import de.bauhd.minecraft.server.enchantment.Enchantment;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents a container of an enchantment table.
+ */
 public interface EnchantmentTableContainer extends Container {
 
     void setRequirementForTopEnchantment(int requirement);

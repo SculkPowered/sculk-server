@@ -9,6 +9,9 @@ import net.kyori.adventure.permission.PermissionChecker;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents an event that fires when the client .
+ */
 public final class PlayerInitialEvent {
 
     private final @NotNull Player player;

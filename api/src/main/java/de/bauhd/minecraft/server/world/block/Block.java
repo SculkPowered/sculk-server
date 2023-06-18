@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represent all supported blocks.
+ */
 @SuppressWarnings("unused") // I know - it looks better
 public final class Block {
 

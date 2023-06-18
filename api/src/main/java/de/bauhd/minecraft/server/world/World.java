@@ -10,6 +10,9 @@ import de.bauhd.minecraft.server.world.dimension.Dimension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a world.
+ */
 public interface World {
 
     @NotNull String getName();

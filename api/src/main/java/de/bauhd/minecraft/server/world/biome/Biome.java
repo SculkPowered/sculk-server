@@ -3,6 +3,9 @@ package de.bauhd.minecraft.server.world.biome;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents a biome.
+ */
 public final class Biome {
 
     private static int CURRENT_ID = 0;

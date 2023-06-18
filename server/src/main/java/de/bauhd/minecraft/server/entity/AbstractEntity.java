@@ -21,11 +21,25 @@ public abstract class AbstractEntity implements Entity {
 
     private static final AtomicInteger CURRENT_ID = new AtomicInteger(0);
 
+    private final UUID uniqueId;
     private final int id = CURRENT_ID.getAndIncrement();
     public final Metadata metadata = new Metadata();
     protected final Collection<MinecraftPlayer> viewers = new ArrayList<>();
     private MinecraftWorld world;
     protected Position position = Position.ZERO;
+
+    public AbstractEntity() {
+        this(UUID.randomUUID());
+    }
+
+    public AbstractEntity(UUID uniqueId) {
+        this.uniqueId = uniqueId;
+    }
+
+    @Override
+    public @NotNull UUID getUniqueId() {
+        return this.uniqueId;
+    }
 
     @Override
     public int getId() {
@@ -158,7 +172,7 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public void addViewer(@NotNull Player player) {
         final var mcPlayer = ((MinecraftPlayer) player);
-        mcPlayer.send(new SpawnEntity(this.id, UUID.randomUUID(), this.getType().protocolId(), this.position));
+        mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().protocolId(), this.position));
         if (this.metadata.entries().isEmpty()) {
             mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
         }

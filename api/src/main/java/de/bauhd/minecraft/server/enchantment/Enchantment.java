@@ -1,5 +1,8 @@
 package de.bauhd.minecraft.server.enchantment;
 
+/**
+ * An enum of all enchantments supported.
+ */
 @SuppressWarnings("unused")
 public enum Enchantment {
 
