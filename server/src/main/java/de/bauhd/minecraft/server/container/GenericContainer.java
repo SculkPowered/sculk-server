@@ -14,7 +14,7 @@ public final class GenericContainer extends MineContainer {
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return this.type;
     }
 

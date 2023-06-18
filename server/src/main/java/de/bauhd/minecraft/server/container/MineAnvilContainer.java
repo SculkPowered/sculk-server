@@ -24,7 +24,7 @@ public final class MineAnvilContainer extends MineContainer implements AnvilCont
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.ANVIL;
     }
 

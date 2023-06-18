@@ -24,7 +24,7 @@ public final class MineLoomContainer extends MineContainer implements LoomContai
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.LOOM;
     }
 

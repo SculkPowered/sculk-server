@@ -50,7 +50,7 @@ public final class MineBeaconContainer extends MineContainer implements BeaconCo
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.BEACON;
     }
 

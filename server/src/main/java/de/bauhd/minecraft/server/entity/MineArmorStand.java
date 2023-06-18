@@ -10,6 +10,20 @@ public final class MineArmorStand extends AbstractLivingEntity implements ArmorS
     }
 
     @Override
+    public void setSmall() {
+        this.setSmall(true);
+    }
+
+    @Override
+    public boolean isBig() {
+        return !this.isSmall();
+    }
+
+    @Override
+    public void setBig() {
+        this.setSmall(false);
+    }
+
     public void setSmall(boolean small) {
         this.setMask(0x01, small);
     }

@@ -37,7 +37,7 @@ public final class MineBrewingStandContainer extends MineContainer implements Br
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.BREWING_STAND;
     }
 

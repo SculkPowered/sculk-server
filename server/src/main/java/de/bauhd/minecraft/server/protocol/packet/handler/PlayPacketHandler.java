@@ -91,7 +91,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ClickContainerButton clickContainerButton) {
-        if (this.player.getContainer() == null) { // there should be a container
+        if (this.player.getOpenedContainer() == null) { // there should be a container
             this.player.send(new CloseContainer(1));
             return true;
         }
@@ -106,7 +106,7 @@ public final class PlayPacketHandler extends PacketHandler {
     @Override
     public boolean handle(ClickContainer clickContainer) {
         final var inventory = this.player.getInventory();
-        final var container = (this.player.getContainer() != null ? this.player.getContainer() : inventory);
+        final var container = (this.player.getOpenedContainer() != null ? this.player.getOpenedContainer() : inventory);
         this.server.getEventHandler().call(new PlayerClickContainerEvent(this.player, container, clickContainer.carriedItem(), clickContainer.slot()))
                 .thenAcceptAsync(event -> {
                     if (event.isCancelled()) { // let's resend to override client prediction
@@ -114,9 +114,9 @@ public final class PlayPacketHandler extends PacketHandler {
                             this.player.send(new ContainerContent((byte) 0, 1, inventory.items));
                         } else {
                             final var mineContainer = (MineContainer) container;
-                            final var items = new ItemList(container.type().size() + 36);
+                            final var items = new ItemList(container.getType().size() + 36);
                             for (var i = 8; i < 44; i++) {
-                                items.set(i - 9 + container.type().size(), inventory.items.get(i));
+                                items.set(i - 9 + container.getType().size(), inventory.items.get(i));
                             }
                             for (var i = 0; i < mineContainer.items.size(); i++) {
                                 items.set(i, mineContainer.items.get(i));
@@ -136,8 +136,8 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(CloseContainer closeContainer) {
-        if (this.player.getContainer() != null) {
-            this.player.getContainer().removeViewer(this.player);
+        if (this.player.getOpenedContainer() != null) {
+            this.player.getOpenedContainer().removeViewer(this.player);
             this.player.setContainer(null);
         }
         return true;
@@ -323,7 +323,7 @@ public final class PlayPacketHandler extends PacketHandler {
                 case WEST -> position.subtract(1, 0, 0);
                 case EAST -> position.add(1, 0, 0);
             };
-            if (this.player.getContainer() != null) {
+            if (this.player.getOpenedContainer() != null) {
                 this.player.getWorld().getChunkAt((int) position.x(), (int) position.z()).send(this.player); // TODO: not send the complete chunk
                 if (useItemOn.hand() == 0) {
                     inventory.setItemInMainHand(slot);

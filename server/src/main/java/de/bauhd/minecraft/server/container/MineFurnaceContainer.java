@@ -60,7 +60,7 @@ public final class MineFurnaceContainer extends MineContainer implements Furnace
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.FURNACE;
     }
 

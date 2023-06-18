@@ -1,5 +1,8 @@
 package de.bauhd.minecraft.server.entity;
 
+/**
+ * All entity types possible.
+ */
 public enum EntityType {
 
     // START

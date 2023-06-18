@@ -118,8 +118,8 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             }
             this.player.sendViewers(new RemoveEntities(this.player.getId()));
             this.server.sendAll(new PlayerInfoRemove(List.of(this.player)));
-            if (this.player.getContainer() != null) {
-                this.player.getContainer().removeViewer(this.player);
+            if (this.player.getOpenedContainer() != null) {
+                this.player.getOpenedContainer().removeViewer(this.player);
             }
 
             LOGGER.info(this.username + " has disconnected.");

@@ -24,7 +24,7 @@ public final class MineLecternContainer extends MineContainer implements Lectern
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.LECTERN;
     }
 

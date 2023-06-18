@@ -185,7 +185,6 @@ public final class Biome {
         public CompoundBinaryTag build() {
             return this.builder.build();
         }
-
     }
 
     public static class Music {
@@ -215,7 +214,6 @@ public final class Biome {
         public CompoundBinaryTag build() {
             return this.builder.build();
         }
-
     }
 
 }

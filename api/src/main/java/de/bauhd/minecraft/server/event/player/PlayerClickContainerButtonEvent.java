@@ -24,7 +24,7 @@ public final class PlayerClickContainerButtonEvent {
     }
 
     public @NotNull Container getContainer() {
-        return Objects.requireNonNull(this.player.getContainer());
+        return Objects.requireNonNull(this.player.getOpenedContainer());
     }
 
     public int getButton() {

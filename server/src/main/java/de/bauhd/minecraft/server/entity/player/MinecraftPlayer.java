@@ -115,7 +115,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     }
 
     @Override
-    public @Nullable MineContainer getContainer() {
+    public @Nullable MineContainer getOpenedContainer() {
         return this.container;
     }
 
@@ -127,7 +127,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     public void openContainer(@NotNull Container container) {
         this.container = (MineContainer) container;
         this.container.addViewer(this);
-        this.send(new OpenScreen(1, container.type().ordinal(), container.title()));
+        this.send(new OpenScreen(1, container.getType().ordinal(), container.getTitle()));
         this.send(new ContainerContent((byte) 1, 1, ((MineContainer) container).items));
         this.container.sendProperties(this);
     }

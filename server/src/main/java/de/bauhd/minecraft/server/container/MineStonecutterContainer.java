@@ -24,7 +24,7 @@ public final class MineStonecutterContainer extends MineContainer implements Sto
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.STONECUTTER;
     }
 

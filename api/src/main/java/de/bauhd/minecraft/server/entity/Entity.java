@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * Represents an entity.
+ */
 public interface Entity extends Viewable {
 
     @NotNull UUID getUniqueId();

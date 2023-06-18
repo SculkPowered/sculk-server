@@ -12,7 +12,7 @@ import java.util.Map;
 
 public final class MineInventory implements Inventory {
 
-    public final ItemList items = new ItemList(this.type().size());
+    public final ItemList items = new ItemList(this.getType().size());
     private final MinecraftPlayer player;
 
     public MineInventory(final MinecraftPlayer player) {
@@ -33,7 +33,7 @@ public final class MineInventory implements Inventory {
     }
 
     @Override
-    public ItemStack getItem(int index) {
+    public @NotNull ItemStack getItem(int index) {
         if (index < 9) {
             index += 36;
         } else if (index > 39) {
@@ -109,12 +109,12 @@ public final class MineInventory implements Inventory {
     }
 
     @Override
-    public @NotNull Component title() {
+    public @NotNull Component getTitle() {
         return Component.empty();
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.PLAYER;
     }
 }

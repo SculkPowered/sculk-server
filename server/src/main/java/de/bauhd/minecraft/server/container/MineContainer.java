@@ -16,7 +16,7 @@ import java.util.List;
 
 public abstract class MineContainer implements Container, Viewable {
 
-    public final ItemList items = new ItemList(this.type().size());
+    public final ItemList items = new ItemList(this.getType().size());
     private final Component title;
     private final List<Player> viewers = new ArrayList<>();
 
@@ -25,7 +25,7 @@ public abstract class MineContainer implements Container, Viewable {
     }
 
     @Override
-    public @NotNull Component title() {
+    public @NotNull Component getTitle() {
         return this.title;
     }
 
@@ -35,7 +35,7 @@ public abstract class MineContainer implements Container, Viewable {
     }
 
     @Override
-    public ItemStack getItem(int index) {
+    public @NotNull ItemStack getItem(int index) {
         return this.items.get(index);
     }
 

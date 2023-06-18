@@ -9,14 +9,35 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface Container {
 
-    @NotNull Component title();
+    /**
+     * Gets the title of the container.
+     * @return the title of the container
+     */
+    @NotNull Component getTitle();
 
-    @NotNull Type type();
+    /**
+     * Gets the type of the container
+     * @return the type of the container
+     */
+    @NotNull Type getType();
 
-    void setItem(int index, ItemStack itemStack);
+    /**
+     * Sets the item at the specified index.
+     * @param index the index of the item
+     * @param item the item to set
+     */
+    void setItem(int index, ItemStack item);
 
-    ItemStack getItem(int index);
+    /**
+     * Gets an item by its index.
+     * @param index the index of the item
+     * @return the item at the specified index
+     */
+    @NotNull ItemStack getItem(int index);
 
+    /**
+     * All possible types a container can have.
+     */
     enum Type {
 
         GENERIC_9x1(9),
@@ -51,6 +72,10 @@ public interface Container {
             this.size = size;
         }
 
+        /**
+         * Gets the size of a container of this type.
+         * @return the size of the container type
+         */
         public int size() {
             return this.size;
         }

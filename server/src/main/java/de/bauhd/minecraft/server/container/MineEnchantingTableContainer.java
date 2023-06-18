@@ -133,7 +133,7 @@ public final class MineEnchantingTableContainer extends MineContainer implements
     }
 
     @Override
-    public @NotNull Type type() {
+    public @NotNull Type getType() {
         return Type.ENCHANTMENT;
     }
 

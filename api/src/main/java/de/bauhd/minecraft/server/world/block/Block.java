@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Represent all supported blocks.
  */
-@SuppressWarnings("unused") // I know - it looks better
+@SuppressWarnings({"unused"}) // I know - it looks better
 public final class Block {
 
     // TODO: implement all blocks with properties
@@ -1032,31 +1032,50 @@ public final class Block {
         BLOCKS_BY_ID.put(stateId, this);
     }
 
+    /**
+     * Gets the name of the block.
+     * @return the name
+     */
     public String name() {
         return this.name;
     }
 
+    /**
+     * Gets the state id of the block.
+     * @return the state id
+     */
     public int stateId() {
         return this.stateId;
     }
 
+    /**
+     * Gets a block by its name.
+     * @param name the name of the block
+     * @return the block of the name
+     */
     public static Block get(final @NotNull String name) {
         return BLOCKS_BY_NAME.get(name);
     }
 
+    /**
+     * Gets a block by its state id.
+     * @param id the id of the block
+     * @return the block of the id
+     */
     public static Block get(final int id) {
         return BLOCKS_BY_ID.get(id);
     }
 
+    /**
+     * The faces a block can have.
+     */
     public enum Face {
-
         BOTTOM,
         TOP,
         NORTH,
         SOUTH,
         WEST,
         EAST
-
     }
 
 }

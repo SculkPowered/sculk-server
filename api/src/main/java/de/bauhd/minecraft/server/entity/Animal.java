@@ -1,7 +1,6 @@
 package de.bauhd.minecraft.server.entity;
 
-public interface Animal extends Mob, Ageable {
-
-
-
-}
+/**
+ * Represents an animal.
+ */
+public interface Animal extends Mob, Ageable {}
