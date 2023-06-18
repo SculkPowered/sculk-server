@@ -1,10 +1,8 @@
 name: Deploy static content to Pages
 
 on:
-  workflow_run:
-    workflows: ["Java CI with Gradle"]
-    types:
-      - completed
+  push:
+    branches: [ "master" ]
 
 permissions:
   contents: read
@@ -24,16 +22,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Build Java Documentation
+        run: |
+            chmod +x gradlew;
+            ./gradlew javadoc;
+
       - name: Setup Pages
         uses: actions/configure-pages@v3
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.1.1
-        with:
-          name: Java Documentation
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: '.'
+          path: api/build/docs
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
