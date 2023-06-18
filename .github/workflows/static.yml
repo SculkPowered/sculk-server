@@ -33,7 +33,7 @@ jobs:
       - name: Build Java Documentation
         run: |
             chmod +x gradlew;
-            ./gradlew javadoc;
+            ./gradlew api:javadoc;
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
