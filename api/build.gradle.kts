@@ -15,8 +15,7 @@ tasks {
     javadoc {
         (options as StandardJavadocDocletOptions).links = listOf(
             "https://docs.oracle.com/en/java/javase/17/docs/api/",
-            "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/",
-            "https://www.slf4j.org/apidocs/"
+            "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/"
         )
     }
 }
