@@ -27,7 +27,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.1.1
+        uses: dawidd6/action-download-artifact@v2.27.0
         with:
           name: Java Documentation
       - name: Upload artifact
