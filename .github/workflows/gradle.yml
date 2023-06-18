@@ -5,6 +5,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,11 +25,17 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        run: chmod +x gradlew
-        run: ./gradlew build test shadowJar
-
+        run: |
+            chmod +x gradlew;
+            ./gradlew build test javadoc shadowJar;
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: Minecraft-Server
-          path: build/libs
+          path: server/build/libs
+      - name: Upload java doc artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Java Documentation
+          path: api/build/docs
+
