@@ -27,15 +27,10 @@ jobs:
       - name: Build with Gradle
         run: |
             chmod +x gradlew;
-            ./gradlew build test javadoc shadowJar;
+            ./gradlew build test shadowJar;
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: Minecraft-Server
           path: server/build/libs
-      - name: Upload java doc artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: Java Documentation
-          path: api/build/docs
 
