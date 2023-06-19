@@ -21,6 +21,8 @@ dependencies {
 
     implementation(libs.bundles.log4j)
     implementation(libs.fastutil)
+
+    testImplementation(libs.junit)
 }
 
 tasks {

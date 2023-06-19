@@ -77,6 +77,7 @@ public final class TestPlugin extends Plugin {
 
     @Subscribe
     public void handle(final PlayerUseItemEvent event) {
+        this.getServer().getEventHandler().unregister(this);
         if (event.getItem().material() == Material.CHEST) {
             final var container = (AnvilContainer) this.getServer().createContainer(Container.Type.ANVIL, Component.text("No"));
             container.setRepairCost(4);

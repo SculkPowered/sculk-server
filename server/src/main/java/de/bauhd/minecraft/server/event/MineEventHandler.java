@@ -1,40 +1,46 @@
 package de.bauhd.minecraft.server.event;
 
 import de.bauhd.minecraft.server.plugin.Plugin;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public final class MineEventHandler implements EventHandler {
 
-    private final Map<Class<?>, List<Consumer<Object>>> consumers = new HashMap<>();
+    private static final Logger LOGGER = LogManager.getLogger(MineEventHandler.class);
+
+    private final Map<Class<?>, Registration[]> registrations = new HashMap<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(
             Runtime.getRuntime().availableProcessors(), new EventThreadFactory());
+    private final Comparator<Registration> orderComparator = Comparator.comparingInt(Registration::order);
 
     @Override
     public void register(@NotNull Plugin plugin, @NotNull Object listener) {
-        for (final var method : this.findMethods(listener.getClass())) {
-            final var clazz = method.getParameters()[0].getType();
-            final boolean create = !this.consumers.containsKey(clazz);
-            if (create) {
-                this.consumers.put(clazz, new ArrayList<>());
-            }
-            this.consumers.get(clazz).add(object -> {
-                try {
-                    method.invoke(listener, object);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
+        for (final var method : listener.getClass().getMethods()) {
+            final var annotation = method.getAnnotation(Subscribe.class);
+            if (annotation != null) {
+                if (method.getParameterCount() == 1) {
+                    this.register(plugin, method.getParameters()[0].getType(), annotation.order(), listener, object -> {
+                        try {
+                            method.invoke(listener, object);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                } else {
+                    LOGGER.error("Plugin {} tried to register a listener method with multiple parameters. {}",
+                            plugin.getDescription().name(), method);
                 }
-            });
+            }
         }
     }
 
@@ -46,8 +52,44 @@ public final class MineEventHandler implements EventHandler {
     }
 
     @Override
+    public <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, @NotNull EventOrder eventOrder, @NotNull Consumer<E> eventConsumer) {
+        this.register(plugin, event, eventOrder, eventConsumer, eventConsumer);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, @NotNull EventOrder order,
+                              @NotNull Object instance, @NotNull Consumer<E> eventConsumer) {
+        final var registrations = new ArrayList<Registration>();
+        final var array = this.registrations.get(event);
+        if (array != null) {
+            Collections.addAll(registrations, array);
+        }
+        registrations.add(new Registration(plugin, order.ordinal(), instance, (Consumer<Object>) eventConsumer));
+        registrations.sort(this.orderComparator);
+        this.registrations.put(event, registrations.toArray(new Registration[0]));
+    }
+
+    @Override
+    public void unregister(@NotNull Plugin plugin) {
+        this.unregisterIf(registration -> registration.plugin == plugin);
+    }
+
+    @Override
+    public void unregister(@NotNull Plugin plugin, @NotNull Object listener) {
+        this.unregisterIf(registration -> registration.plugin == plugin && registration.instance == listener);
+    }
+
+    private void unregisterIf(final Predicate<Registration> predicate) {
+        for (final var entry : this.registrations.entrySet()) {
+            final var list = new ArrayList<>(List.of(entry.getValue()));
+            list.removeIf(predicate);
+            this.registrations.put(entry.getKey(), list.toArray(new Registration[0]));
+        }
+    }
+
+    @Override
     public <E> CompletableFuture<E> call(E event) {
-        if (!this.consumers.containsKey(event.getClass())) {
+        if (!this.registrations.containsKey(event.getClass())) {
             return CompletableFuture.completedFuture(event);
         }
         final var future = new CompletableFuture<E>();
@@ -57,37 +99,33 @@ public final class MineEventHandler implements EventHandler {
 
     @Override
     public <E> void justCall(E event) {
-        if (this.consumers.containsKey(event.getClass())) {
+        if (this.registrations.containsKey(event.getClass())) {
             this.executor.execute(() -> this.call(event, null));
         }
     }
 
     @Override
     public <E> E callSync(E event) {
-        if (this.consumers.containsKey(event.getClass())) {
+        if (this.registrations.containsKey(event.getClass())) {
             this.call(event, null);
         }
         return event;
     }
 
+    public boolean shutdown() throws InterruptedException {
+        this.executor.shutdown();
+        return this.executor.awaitTermination(10, TimeUnit.SECONDS);
+    }
+
     private <E> void call(E event, CompletableFuture<E> future) {
-        for (final var consumer : this.consumers.get(event.getClass())) {
-            consumer.accept(event);
+        for (final var registration : this.registrations.get(event.getClass())) {
+            registration.consumer.accept(event);
         }
         if (future != null) {
             future.complete(event);
         }
     }
 
-    private List<Method> findMethods(final Class<?> clazz) {
-        final var list = new ArrayList<Method>();
-        for (final var method : clazz.getMethods()) {
-            if (method.isAnnotationPresent(Subscribe.class)) {
-                if (method.getParameterCount() == 1) {
-                    list.add(method);
-                }
-            }
-        }
-        return list;
-    }
+    private record Registration(Plugin plugin, int order, Object instance, Consumer<Object> consumer) {}
+
 }
