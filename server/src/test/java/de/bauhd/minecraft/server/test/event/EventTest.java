@@ -34,11 +34,11 @@ public final class EventTest {
             listener2.set(System.nanoTime());
         };
         EVENT_HANDLER.register(PLUGIN, ServerInitializeEvent.class, consumer);
-        EVENT_HANDLER.call(initEvent);
+        EVENT_HANDLER.call(initEvent).join();
         EVENT_HANDLER.unregister(PLUGIN, consumer);
-        EVENT_HANDLER.call(initEvent);
+        EVENT_HANDLER.call(initEvent).join();
         EVENT_HANDLER.unregister(PLUGIN);
-        EVENT_HANDLER.call(initEvent);
+        EVENT_HANDLER.call(initEvent).join();
 
         assertEquals(3, calls.get());
         assertTrue(listener1.get() > listener2.get());
