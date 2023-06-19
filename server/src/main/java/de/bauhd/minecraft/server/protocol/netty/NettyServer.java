@@ -48,7 +48,7 @@ public final class NettyServer {
                 });
     }
 
-    public void close() {
+    public void close() throws InterruptedException {
         this.channelFuture.cancel();
     }
 

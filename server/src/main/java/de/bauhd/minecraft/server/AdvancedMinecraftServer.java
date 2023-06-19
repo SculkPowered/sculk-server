@@ -3,6 +3,8 @@ package de.bauhd.minecraft.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.bauhd.minecraft.server.command.MineCommandHandler;
+import de.bauhd.minecraft.server.command.defaults.InfoCommand;
+import de.bauhd.minecraft.server.command.defaults.ShutdownCommand;
 import de.bauhd.minecraft.server.container.*;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.EntityClassToSupplierMap;
@@ -11,6 +13,7 @@ import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.MineEventHandler;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
+import de.bauhd.minecraft.server.event.lifecycle.ServerShutdownEvent;
 import de.bauhd.minecraft.server.json.GameProfileDeserializer;
 import de.bauhd.minecraft.server.json.GameProfilePropertyDeserializer;
 import de.bauhd.minecraft.server.plugin.MinePluginHandler;
@@ -27,6 +30,7 @@ import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.MineBiomeHandler;
 import de.bauhd.minecraft.server.world.dimension.MineDimensionHandler;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -93,7 +97,9 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
         this.biomeHandler = new MineBiomeHandler();
         this.pluginHandler = new MinePluginHandler(this);
         this.eventHandler = new MineEventHandler();
-        this.commandHandler = new MineCommandHandler(this);
+        this.commandHandler = (MineCommandHandler) new MineCommandHandler() // register defaults
+                .register(new ShutdownCommand(this))
+                .register(new InfoCommand());
         this.bossBarListener = new BossBarListener();
 
         this.pluginHandler.loadPlugins();
@@ -116,12 +122,27 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     public void shutdown(final boolean runtime) {
-        LOGGER.info("Shutdown!");
+        LOGGER.info("Shutting down...");
         this.running = false;
 
-        LogManager.shutdown(false);
+        try {
+            this.nettyServer.close();
 
-        this.nettyServer.close();
+            final var component = Component.text("Shutting down...", NamedTextColor.RED);
+            for (final var player : this.players.values()) {
+                player.disconnect(component);
+            }
+
+            this.eventHandler.call(new ServerShutdownEvent()).join();
+
+            if (!this.eventHandler.shutdown()) {
+                LOGGER.info("Something took over 10 seconds to shutdown!");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        LogManager.shutdown(false);
 
         if (runtime) {
             Runtime.getRuntime().exit(0);
@@ -195,7 +216,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     @Override
     public @NotNull World createWorld(World.@NotNull Builder builder) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new MinecraftWorld(name,
+        final var world = new MinecraftWorld(this, name,
                 builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode());
         this.worlds.put(name, world);
         return world;
@@ -204,7 +225,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new VanillaWorld(name, builder.dimension(), builder.generator(), builder.spawnPosition(),
+        final var world = new VanillaWorld(this, name, builder.dimension(), builder.generator(), builder.spawnPosition(),
                 builder.defaultGameMode(), new VanillaLoader(this, path));
         this.worlds.put(name, world);
         return world;
@@ -240,6 +261,11 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             case STONECUTTER -> new MineStonecutterContainer(title);
             default -> throw new IllegalStateException("Unexpected value: " + type);
         };
+    }
+
+    @Override
+    public void shutdown() {
+        this.shutdown(true);
     }
 
     public MinecraftConfiguration getConfiguration() {

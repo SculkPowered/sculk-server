@@ -3,8 +3,6 @@ package de.bauhd.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.RootCommandNode;
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
-import de.bauhd.minecraft.server.command.defaults.ShutdownCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
@@ -17,13 +15,8 @@ public final class MineCommandHandler implements CommandHandler {
     private final CommandDispatcher<CommandSender> dispatcher;
     private final Map<String, BrigadierCommand> commands = new HashMap<>();
 
-    public MineCommandHandler(final AdvancedMinecraftServer server) {
+    public MineCommandHandler() {
         this.dispatcher = new CommandDispatcher<>();
-
-        // register default commands
-        this
-                .register(new ShutdownCommand(server))
-                .register(new InfoCommand().get());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
@@ -9,10 +10,10 @@ public final class VanillaWorld extends MinecraftWorld {
 
     private final VanillaLoader loader;
 
-    public VanillaWorld(final String name,
+    public VanillaWorld(final AdvancedMinecraftServer server, final String name,
                         final Dimension dimension, final ChunkGenerator generator,
                         final Position spawnPosition, final GameMode defaultGameMode, final VanillaLoader loader) {
-        super(name, dimension, generator, spawnPosition, defaultGameMode);
+        super(server, name, dimension, generator, spawnPosition, defaultGameMode);
         this.loader = loader;
         this.loader.setWorld(this);
     }

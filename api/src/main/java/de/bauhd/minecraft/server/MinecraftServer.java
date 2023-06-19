@@ -105,4 +105,9 @@ public interface MinecraftServer {
      * @return a new instance of the container
      */
     @NotNull Container createContainer(@NotNull Container.Type type, @NotNull Component title);
+
+    /**
+     * Shutdowns the server.
+     */
+    void shutdown();
 }

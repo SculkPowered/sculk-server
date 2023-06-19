@@ -1,36 +1,36 @@
-package de.bauhd.minecraft.server.command;
+package de.bauhd.minecraft.server.command.defaults;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.MinecraftServer;
+import de.bauhd.minecraft.server.command.BrigadierCommand;
 import net.kyori.adventure.text.Component;
 
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 
-public final class InfoCommand {
+public final class InfoCommand extends BrigadierCommand {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
-    public BrigadierCommand get() {
-        return new BrigadierCommand(LiteralArgumentBuilder.<CommandSender>literal("info")
+    public InfoCommand() {
+        super(literal("info")
+                .requires(commandSender -> commandSender.hasPermission("server.command.info"))
                 .executes(context -> {
                     final var sender = context.getSource();
                     final var systemMXBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
                     final var memoryMXBean = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
 
                     sender.sendMessage(Component.text()
-                            .append(Component.text("Version: " + AdvancedMinecraftServer.class.getPackage().getImplementationVersion())).appendNewline()
+                            .append(Component.text("Version: " + MinecraftServer.class.getPackage().getImplementationVersion())).appendNewline()
                             .append(Component.text("CPU: " + DECIMAL_FORMAT.format(systemMXBean.getCpuLoad() * 100) + "%")).appendNewline()
                             .append(Component.text("RAM: " +
-                                    this.toMB(memoryMXBean.getUsed()) + "/" + this.toMB(memoryMXBean.getMax()))).appendNewline()
+                                    toMB(memoryMXBean.getUsed()) + "/" + toMB(memoryMXBean.getMax()))).appendNewline()
                             .append(Component.text("Threads: " + Thread.getAllStackTraces().keySet().size())));
-                    return 0;
+                    return 1;
                 })
                 .build());
     }
 
-    private int toMB(final long bytes) {
+    private static int toMB(final long bytes) {
         return (int) (bytes / 1048576);
     }
-
 }

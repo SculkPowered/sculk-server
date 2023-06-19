@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.AbstractEntity;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MinecraftWorld implements World {
 
+    private final AdvancedMinecraftServer server;
     private final String name;
     private final Dimension dimension;
     private final ChunkGenerator generator;
@@ -20,8 +22,9 @@ public class MinecraftWorld implements World {
     private final GameMode defaultGameMode;
     private final Long2ObjectMap<MinecraftChunk> chunks;
 
-    public MinecraftWorld(final String name, final Dimension dimension,
+    public MinecraftWorld(final AdvancedMinecraftServer server, final String name, final Dimension dimension,
                           final ChunkGenerator generator, final Position spawnPosition, final GameMode defaultGameMode) {
+        this.server = server;
         this.name = name;
         this.dimension = dimension;
         this.generator = generator;
@@ -110,7 +113,7 @@ public class MinecraftWorld implements World {
     }
 
     public boolean isAlive() {
-        return true; // TODO
+        return this.server.isRunning(); // TODO
     }
 
     public Long2ObjectMap<MinecraftChunk> chunks() {
