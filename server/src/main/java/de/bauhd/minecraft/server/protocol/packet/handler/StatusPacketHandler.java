@@ -37,7 +37,7 @@ public final class StatusPacketHandler extends PacketHandler {
                     "\"name\":\"" + response.name() + "\"," + "\"protocol\":" + response.protocol() + "}," +
                     "\"players\":{" +
                     "\"max\":" + response.max() + ",\"online\":" + response.online() + ",\"sample\":[]}," +
-                    "\"description\":" + Buffer.getGsonSerializer(this.connection.version()).serialize(response.description()) +
+                    "\"description\":" + Buffer.getGsonSerializer(this.connection.getProtocolVersion()).serialize(response.description()) +
                     "}"));
         } else {
             this.connection.close();

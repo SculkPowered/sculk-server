@@ -14,7 +14,7 @@ public final class PlayerJoinEvent {
         this.player = player;
     }
 
-    public Player getPlayer() {
+    public @NotNull Player getPlayer() {
         return this.player;
     }
 }

@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import de.bauhd.minecraft.server.command.MineCommandHandler;
 import de.bauhd.minecraft.server.command.defaults.InfoCommand;
 import de.bauhd.minecraft.server.command.defaults.ShutdownCommand;
@@ -24,10 +24,12 @@ import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
 import de.bauhd.minecraft.server.terminal.SimpleTerminal;
 import de.bauhd.minecraft.server.util.BossBarListener;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
-import de.bauhd.minecraft.server.world.VanillaLoader;
-import de.bauhd.minecraft.server.world.VanillaWorld;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.MineBiomeHandler;
+import de.bauhd.minecraft.server.world.block.*;
+import de.bauhd.minecraft.server.world.chunk.loader.DefaultChunkLoader;
+import de.bauhd.minecraft.server.world.chunk.loader.ChunkLoader;
+import de.bauhd.minecraft.server.world.chunk.loader.VanillaLoader;
 import de.bauhd.minecraft.server.world.dimension.MineDimensionHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyPair;
@@ -45,6 +48,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public final class AdvancedMinecraftServer implements MinecraftServer {
 
@@ -102,6 +106,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
                 .register(new InfoCommand());
         this.bossBarListener = new BossBarListener();
 
+        this.loadBlocks();
+
         this.pluginHandler.loadPlugins();
 
         this.eventHandler.call(new ServerInitializeEvent()).join();
@@ -131,6 +137,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             final var component = Component.text("Shutting down...", NamedTextColor.RED);
             for (final var player : this.players.values()) {
                 player.disconnect(component);
+            }
+
+            for (final var world : this.worlds.values()) {
+                world.setAlive(false);
             }
 
             this.eventHandler.call(new ServerShutdownEvent()).join();
@@ -164,6 +174,45 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
                     this.configuration = GSON.fromJson(reader, MinecraftConfiguration.class);
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // I don't like this solution so much...
+    private void loadBlocks() {
+        try (final var resource = this.getClass().getClassLoader().getResourceAsStream("registries/blocks.json")) {
+            final var byName = new HashMap<String, BlockState>();
+            final var byId = new HashMap<Integer, BlockState>();
+            assert resource != null;
+            final var stringJsonMap = TypeToken.getParameterized(Map.class, String.class, JsonObject.class).getType();
+            final var stringStringMap = TypeToken.getParameterized(Map.class, String.class, String.class).getType();
+            final var jsonArray = TypeToken.getArray(JsonObject.class).getType();
+            final Map<String, JsonObject> map = GSON.fromJson(new InputStreamReader(resource), stringJsonMap);
+            for (final var entry : map.entrySet()) {
+                final var key = entry.getKey();
+                final var value = entry.getValue();
+                final var block = new BlockParent();
+                final JsonObject[] states = GSON.fromJson(value.get("states"), jsonArray);
+                final var stateArray = new MineBlockState[states.length];
+                for (var i = 0; i < states.length; i++) {
+                    final var state = states[i];
+                    final var id = state.get("id").getAsInt();
+                    Map<String, String> properties;
+                    if (state.has("properties")) {
+                        properties = Map.copyOf(GSON.fromJson(state.get("properties"), stringStringMap));
+                    } else {
+                        properties = Map.of();
+                    }
+                    final var blockState = new MineBlockState(block, id, properties);
+                    if (state.has("default") && state.get("default").getAsBoolean()) {
+                        byName.put(key, blockState);
+                    }
+                    stateArray[i] = blockState;
+                }
+                block.setStates(stateArray);
+            }
+            BlockParent.set(byName, byId);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -215,18 +264,23 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     @Override
     public @NotNull World createWorld(World.@NotNull Builder builder) {
-        final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new MinecraftWorld(this, name,
-                builder.dimension(), builder.generator(), builder.spawnPosition(), builder.defaultGameMode());
-        this.worlds.put(name, world);
-        return world;
+        return this.createWorld(builder, new DefaultChunkLoader(builder.generator()));
     }
 
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
+        return this.createWorld(builder, new VanillaLoader(this, builder.generator(), path));
+    }
+
+    @Override
+    public void loadWorld(@NotNull World world) {
+        ((MinecraftWorld) world).load();
+    }
+
+    private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new VanillaWorld(this, name, builder.dimension(), builder.generator(), builder.spawnPosition(),
-                builder.defaultGameMode(), new VanillaLoader(this, path));
+        final var world = new MinecraftWorld(name, builder.dimension(), chunkLoader,
+                builder.spawnPosition(), builder.defaultGameMode());
         this.worlds.put(name, world);
         return world;
     }
@@ -234,6 +288,12 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     @Override
     public @Nullable World getWorld(@NotNull String name) {
         return this.worlds.get(name);
+    }
+
+    @Override
+    public void unloadWorld(@NotNull World world, @NotNull Consumer<Player> consumer) {
+        ((MinecraftWorld) world).unload(consumer);
+        this.worlds.remove(world.getName());
     }
 
     @SuppressWarnings("unchecked")

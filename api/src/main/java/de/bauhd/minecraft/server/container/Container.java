@@ -26,7 +26,7 @@ public interface Container {
      * @param index the index of the item
      * @param item the item to set
      */
-    void setItem(int index, ItemStack item);
+    void setItem(int index, @NotNull ItemStack item);
 
     /**
      * Gets an item by its index.

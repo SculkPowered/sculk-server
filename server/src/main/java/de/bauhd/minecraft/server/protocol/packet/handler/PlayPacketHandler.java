@@ -2,6 +2,7 @@ package de.bauhd.minecraft.server.protocol.packet.handler;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.container.MineContainer;
+import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
@@ -32,10 +33,10 @@ public final class PlayPacketHandler extends PacketHandler {
     private final AdvancedMinecraftServer server;
     private final MinecraftPlayer player;
 
-    public PlayPacketHandler(final MineConnection connection) {
+    public PlayPacketHandler(final MineConnection connection, final MinecraftPlayer player) {
         this.connection = connection;
         this.server = connection.server();
-        this.player = connection.player();
+        this.player = player;
     }
 
     @Override
@@ -230,7 +231,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
             }
             case 2 -> this.player.getWorld().setBlock(playerAction.position(), Block.AIR); // finished digging
-            case 3 -> this.player.getInventory().setItem(this.player.getHeldItemSlot(), null); // drop stack
+            case 3 -> this.player.getInventory().setItem(this.player.getHeldItemSlot(), ItemStack.AIR); // drop stack
             case 4 -> { // drop item
                 final var itemInHand = this.player.getInventory().getItemInMainHand();
                 if (!itemInHand.isEmpty()) {
@@ -268,12 +269,11 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(CreativeModeSlot creativeModeSlot) {
-        final var player = this.connection.player();
-        if (player.getGameMode() != GameMode.CREATIVE) {
+        if (this.player.getGameMode() != GameMode.CREATIVE) {
             LOGGER.info(this.player.getUsername() + " tried to set a slot, but is not in creative mode.");
             return false;
         }
-        player.getInventory().items.set(creativeModeSlot.slot(), creativeModeSlot.clickedItem());
+        this.player.getInventory().items.set(creativeModeSlot.slot(), creativeModeSlot.clickedItem());
         return true;
     }
 
@@ -332,7 +332,20 @@ public final class PlayPacketHandler extends PacketHandler {
                 }
                 return;
             }
-            this.player.getWorld().setBlock(position, Block.get("minecraft:" + slot.material().name().toLowerCase()));
+
+            var block = Block.get(slot.material().key());
+            if (block.hasProperty("facing")) { // let's set the correct facing
+                final var rotation = (int) Math.floor(this.player.getPosition().yaw() / 90.0D + 0.5D) & 3;
+                final var facing = switch (rotation % 4) {
+                    case 0 -> Block.Facing.SOUTH;
+                    case 1 -> Block.Facing.WEST;
+                    case 2 -> Block.Facing.NORTH;
+                    case 3 -> Block.Facing.EAST;
+                    default -> null;
+                };
+                block = block.facing(facing);
+            }
+            this.player.getWorld().setBlock(position, block);
         }, this.connection.executor());
         return true;
     }

@@ -10,14 +10,19 @@ import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.BiomeHandler;
 import de.bauhd.minecraft.server.world.dimension.DimensionHandler;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface MinecraftServer {
+
+    Consumer<Player> DEFAULT_WORLD_UNLOAD = player ->
+            player.disconnect(Component.text("The world was unloaded!", NamedTextColor.RED));
 
     /**
      * Gets the {@link DimensionHandler} instance
@@ -84,11 +89,32 @@ public interface MinecraftServer {
     @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull Path path);
 
     /**
+     * Loads the specified world.
+     * @param world the world to load
+     */
+    void loadWorld(@NotNull World world);
+
+    /**
      * Gets a world by its name.
      * @param name the name of the world
      * @return the world or null
      */
     @Nullable World getWorld(@NotNull String name);
+
+    /**
+     * Unloads the specified world.
+     * @param world the world to unload
+     * @param consumer the consumer to consume all players in the world
+     */
+    void unloadWorld(@NotNull World world, @NotNull Consumer<Player> consumer);
+
+    /**
+     * Unloads the specified world.
+     * @param world the world to unload
+     */
+    default void unloadWorld(@NotNull World world) {
+        this.unloadWorld(world, DEFAULT_WORLD_UNLOAD);
+    }
 
     /**
      * Creates an entity by its class.

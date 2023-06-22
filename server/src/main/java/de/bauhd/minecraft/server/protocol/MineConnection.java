@@ -167,7 +167,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         this.server.getEventHandler().call(new PlayerInitialEvent(this.player)).thenAcceptAsync(event -> {
             final var world = event.getWorld();
             var position = event.getPosition();
-            if (world == null) {
+            if (world == null || !world.isAlive()) {
                 this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));
                 return;
             }
@@ -223,7 +223,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             case HANDSHAKE -> new HandshakePacketHandler(this);
             case STATUS -> new StatusPacketHandler(this);
             case LOGIN -> new LoginPacketHandler(this);
-            case PLAY -> new PlayPacketHandler(this);
+            case PLAY -> new PlayPacketHandler(this, this.player);
         };
 
         this.channel.pipeline().get(MinecraftEncoder.class).setState(state);
@@ -253,10 +253,6 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         return this.server;
     }
 
-    public int version() {
-        return this.version;
-    }
-
     public void setServerAddress(final String serverAddress) {
         this.serverAddress = serverAddress;
     }
@@ -267,10 +263,6 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
 
     public void setUsername(final String username) {
         this.username = username;
-    }
-
-    public MinecraftPlayer player() {
-        return this.player;
     }
 
     public void close() {
@@ -305,7 +297,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             if (fromChunkX == chunkX && fromChunkZ == chunkZ) {
                 return;
             }
-            this.player.send(new CenterChunk(chunkX, chunkZ));
+            this.send(new CenterChunk(chunkX, chunkZ));
         }
         final var world = this.player.getWorld();
         final var chunks = new ArrayList<MinecraftChunk>();

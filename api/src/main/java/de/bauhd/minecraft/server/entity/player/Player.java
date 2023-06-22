@@ -124,8 +124,8 @@ public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry, Co
     float getFlyingSpeed();
 
     /**
-     *
-     * @param flyingSpeed
+     * Sets the flying speed of the player
+     * @param flyingSpeed the flying speed to set
      */
     void setFlyingSpeed(float flyingSpeed);
 

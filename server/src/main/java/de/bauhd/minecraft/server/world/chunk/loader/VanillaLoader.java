@@ -1,13 +1,17 @@
-package de.bauhd.minecraft.server.world;
+package de.bauhd.minecraft.server.world.chunk.loader;
 
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.block.Block;
+import de.bauhd.minecraft.server.world.chunk.ChunkGenerator;
 import de.bauhd.minecraft.server.world.chunk.MinecraftChunk;
 import de.bauhd.minecraft.server.world.section.PaletteHolder;
 import de.bauhd.minecraft.server.world.section.Section;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
+import net.kyori.adventure.nbt.StringBinaryTag;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,45 +24,41 @@ import java.util.Map;
 
 import static de.bauhd.minecraft.server.world.chunk.Chunk.*;
 
-public final class VanillaLoader {
+public final class VanillaLoader extends DefaultChunkLoader {
 
     private static final int SECTOR_SIZE = 4096;
 
     private final AdvancedMinecraftServer server;
     private final Path regionPath;
     private final Map<String, RegionFile> regionCache;
-    private MinecraftWorld world;
 
-    public VanillaLoader(final AdvancedMinecraftServer server, final Path path) {
+    public VanillaLoader(final AdvancedMinecraftServer server, final ChunkGenerator generator, final Path path) {
+        super(generator);
         this.server = server;
         this.regionPath = path.resolve("region");
         this.regionCache = new HashMap<>();
     }
 
-    public MinecraftChunk getChunk(final int x, final int z) {
+    @Override
+    public @NotNull MinecraftChunk loadChunk(final MinecraftWorld world, final int x, final int z) {
         final var fileName = "r." + this.toRegionCoordinate(x) +
                 "." + this.toRegionCoordinate(z) + ".mca";
-        if (!this.regionCache.containsKey(fileName)) {
-            try {
+        try {
+            MinecraftChunk chunk;
+            if (!this.regionCache.containsKey(fileName)) {
                 final var file = this.regionPath.resolve(fileName);
                 if (Files.exists(file)) {
                     this.regionCache.put(fileName, new RegionFile(file));
-                } else {
-                    return null;
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-        }
-        try {
-            return this.regionCache.get(fileName).getChunk(x, z);
+            chunk = this.regionCache.get(fileName).getChunk(world, x, z);
+            if (chunk == null) {
+                chunk = super.loadChunk(world, x, z);
+            }
+            return chunk;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void setWorld(final MinecraftWorld world) {
-        this.world = world;
     }
 
     private int toRegionCoordinate(final int coordinate) {
@@ -74,13 +74,13 @@ public final class VanillaLoader {
             this.accessFile = new RandomAccessFile(path.toFile(), "r");
             this.accessFile.seek(0);
 
-            for (int i = 0; i < this.locations.length; i++) {
+            for (var i = 0; i < this.locations.length; i++) {
                 final var location = this.accessFile.readInt();
                 this.locations[i] = location;
             }
         }
 
-        private MinecraftChunk getChunk(final int chunkX, final int chunkZ) throws IOException {
+        private MinecraftChunk getChunk(final MinecraftWorld world, final int chunkX, final int chunkZ) throws IOException {
             final var offset = this.sectorOffset(this.locations[(chunkX & 31) + (chunkZ & 31) * 32]) * SECTOR_SIZE;
             var buf = ByteBuffer.allocate(5);
             this.accessFile.getChannel().read(buf, offset);
@@ -118,8 +118,16 @@ public final class VanillaLoader {
                     for (var k = 0; k < palette.length; k++) {
                         final var entry = blockPalette.getCompound(k);
                         final var block = entry.getString("Name");
-                        palette[k] = Block.get(block).stateId();
-                        // ignore properties for now
+                        final var properties = entry.getCompound("Properties");
+                        if (!properties.equals(CompoundBinaryTag.empty())) {
+                            final var map = new HashMap<String, String>();
+                            for (final var property : entry.getCompound("Properties")) {
+                                map.put(property.getKey(), ((StringBinaryTag) property.getValue()).value());
+                            }
+                            palette[k] = Block.get(block).properties(map).getId();
+                        } else {
+                            palette[k] = Block.get(block).getId();
+                        }
                     }
                     if (palette.length == 1) {
                         blocks.fill(palette[0]);
@@ -169,7 +177,7 @@ public final class VanillaLoader {
 
                 sections[i] = section;
             }
-            return new MinecraftChunk(VanillaLoader.this.world, chunkX, chunkZ, sections);
+            return new MinecraftChunk(world, chunkX, chunkZ, sections);
         }
 
         private int[] uncompressedBlockStates(CompoundBinaryTag states) {

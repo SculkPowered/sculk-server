@@ -30,7 +30,7 @@ public abstract class MineContainer implements Container, Viewable {
     }
 
     @Override
-    public void setItem(int index, ItemStack itemStack) {
+    public void setItem(int index, @NotNull ItemStack itemStack) {
         this.items.set(index, itemStack);
     }
 

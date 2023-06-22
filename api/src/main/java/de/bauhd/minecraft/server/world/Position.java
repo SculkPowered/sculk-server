@@ -1,5 +1,7 @@
 package de.bauhd.minecraft.server.world;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represent a position.
  */
@@ -77,10 +79,16 @@ public class Position {
     public boolean equals(Object obj) {
         if (!(obj instanceof Position other)) return false;
         return (other.x == this.x
-                || other.y == this.y
-                || other.z == this.z
-                || other.yaw == this.yaw
-                || other.pitch == this.pitch);
+                && other.y == this.y
+                && other.z == this.z
+                && other.yaw == this.yaw
+                && other.pitch == this.pitch);
+    }
+
+    public boolean pointEquals(@NotNull Position position) {
+        return ((int) position.x == (int) this.x
+                && (int) position.y == (int) this.y
+                && (int) position.z == (int) this.z);
     }
 
     @Override

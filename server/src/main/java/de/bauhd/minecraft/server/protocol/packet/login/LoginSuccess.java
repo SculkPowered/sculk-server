@@ -4,8 +4,6 @@ import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 
-import java.util.UUID;
-
 public final class LoginSuccess implements Packet {
 
     private final GameProfile profile;
@@ -20,7 +18,7 @@ public final class LoginSuccess implements Packet {
                 .writeUniqueId(this.profile.uniqueId())
                 .writeString(this.profile.name())
                 .writeVarInt(this.profile.properties().size());
-        for (final var property : profile.properties()) {
+        for (final var property : this.profile.properties()) {
             buf.writeString(property.key()).writeString(property.value());
             if (property.signature() != null) {
                 buf.writeBoolean(true);

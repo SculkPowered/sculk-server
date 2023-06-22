@@ -7,7 +7,15 @@ import java.net.SocketAddress;
  */
 public interface Connection {
 
+    /**
+     * Gets the protocol version of the client connection.
+     * @return the protocol version
+     */
     int getProtocolVersion();
 
+    /**
+     * Gets the address of the connection.
+     * @return the address
+     */
     SocketAddress getAddress();
 }

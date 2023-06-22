@@ -19,6 +19,8 @@ public final class NettyServer {
     private final AdvancedMinecraftServer server;
 
     private Future<Void> channelFuture;
+    private EventLoopGroup bossLoopGroup;
+    private EventLoopGroup workerLoopGroup;
 
     public NettyServer(final AdvancedMinecraftServer server) {
         this.server = server;
@@ -26,10 +28,12 @@ public final class NettyServer {
 
     public void connect(final String host, final int port) {
         final var factory = Epoll.isAvailable() ? EpollHandler.newFactory() : NioHandler.newFactory();
+        this.bossLoopGroup = new MultithreadEventLoopGroup(factory);
+        this.workerLoopGroup = new MultithreadEventLoopGroup(factory);
 
         new ServerBootstrap()
                 .channelFactory(Epoll.isAvailable() ? EpollServerSocketChannel::new : NioServerSocketChannel::new)
-                .group(new MultithreadEventLoopGroup(factory), new MultithreadEventLoopGroup(factory))
+                .group(this.bossLoopGroup, this.workerLoopGroup)
                 .childHandler(new NettyServerInitializer(this.server))
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.IP_TOS, 24)
@@ -48,8 +52,10 @@ public final class NettyServer {
                 });
     }
 
-    public void close() throws InterruptedException {
+    public void close() {
         this.channelFuture.cancel();
+        this.bossLoopGroup.shutdownGracefully();
+        this.workerLoopGroup.shutdownGracefully();
     }
 
 }

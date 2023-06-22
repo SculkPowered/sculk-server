@@ -20,7 +20,7 @@ public final class MineInventory implements Inventory {
     }
 
     @Override
-    public void setItem(int index, ItemStack itemStack) {
+    public void setItem(int index, @NotNull ItemStack itemStack) {
         if (index < 9) {
             index += 36;
         } else if (index > 39) {

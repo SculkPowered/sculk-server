@@ -10,7 +10,7 @@ public final class UseItemOn implements Packet {
 
     private int hand;
     private Position position;
-    private Block.Face face;
+    private Block.Facing face;
     private float x;
     private float y;
     private float z;
@@ -21,7 +21,7 @@ public final class UseItemOn implements Packet {
     public void decode(Buffer buf) {
         this.hand = buf.readVarInt();
         this.position = buf.readPosition();
-        this.face = buf.readEnum(Block.Face.class);
+        this.face = buf.readEnum(Block.Facing.class);
         this.x = buf.readFloat();
         this.y = buf.readFloat();
         this.z = buf.readFloat();
@@ -56,7 +56,7 @@ public final class UseItemOn implements Packet {
         return this.position;
     }
 
-    public Block.Face face() {
+    public Block.Facing face() {
         return this.face;
     }
 

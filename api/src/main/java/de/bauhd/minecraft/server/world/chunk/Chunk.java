@@ -1,7 +1,7 @@
 package de.bauhd.minecraft.server.world.chunk;
 
 import de.bauhd.minecraft.server.world.biome.Biome;
-import de.bauhd.minecraft.server.world.block.Block;
+import de.bauhd.minecraft.server.world.block.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,7 +32,7 @@ public interface Chunk {
      * @param z the z coordinate
      * @param block the block to set
      */
-    void setBlock(int x, int y, int z, @NotNull Block block);
+    void setBlock(int x, int y, int z, @NotNull BlockState block);
 
     /**
      * Gets a block from his coordinates.
@@ -41,7 +41,7 @@ public interface Chunk {
      * @param z the z coordinate
      * @return the block at the specified coordinates.
      */
-    @NotNull Block getBlock(int x, int y, int z);
+    @NotNull BlockState getBlock(int x, int y, int z);
 
     /**
      * Sets the biome at the specified coordinates.

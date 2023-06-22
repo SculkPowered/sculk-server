@@ -8,6 +8,7 @@ import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.biome.Biome;
 import de.bauhd.minecraft.server.world.block.Block;
+import de.bauhd.minecraft.server.world.block.BlockState;
 import de.bauhd.minecraft.server.world.dimension.Dimension;
 import de.bauhd.minecraft.server.world.section.Section;
 import io.netty5.buffer.DefaultBufferAllocators;
@@ -59,8 +60,8 @@ public final class MinecraftChunk implements Chunk {
     }
 
     @Override
-    public void setBlock(int x, int y, int z, @NotNull Block block) {
-        final var id = block.stateId();
+    public void setBlock(int x, int y, int z, @NotNull BlockState block) {
+        final var id = block.getId();
         this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z), id);
         this.packet = null;
         if (this.viewers.size() != 0) {
@@ -72,7 +73,7 @@ public final class MinecraftChunk implements Chunk {
     }
 
     @Override
-    public @NotNull Block getBlock(int x, int y, int z) {
+    public @NotNull BlockState getBlock(int x, int y, int z) {
         return Block.get(this.section(y).blocks()
                 .get(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z)));
     }

@@ -1,15 +1,18 @@
 package de.bauhd.minecraft.code.generaor;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public final class CodeGenerator {
@@ -73,27 +76,21 @@ public final class CodeGenerator {
     }
 
     private void generateBlocks(final Reader reader, final Path path) throws IOException {
-        this.append(path, list -> {
-            final Map<String, JsonObject> map = GSON.fromJson(reader, STRING_JSON_MAP);
-            map.forEach((key, json) -> {
-                final var states = GSON.fromJson(json.get("states"), JsonArray.class);
-                for (final var state : states) {
-                    final var object = state.getAsJsonObject();
-                    final var def = object.get("default");
-                    if (def != null && def.getAsBoolean()) {
-                        list.add("    public static final Block " + (key.split(":")[1].toUpperCase()) +
-                                " = new Block(\"" + key + "\", " + object.get("id") + ");");
-                    }
-                }
-            });
-        });
+        final Map<String, JsonObject> map = GSON.fromJson(reader, STRING_JSON_MAP);
+        this.append(path, list -> map.forEach((key, json) -> list.add("    public static BlockState " +
+                (key.split(":")[1].toUpperCase()) + " = get(\"" + key + "\");")));
+        final var blocksFile = Path.of("server", "src", "main", "resources", "registries", "blocks.json");
+        if (Files.exists(blocksFile)) Files.delete(blocksFile);
+        try (final var writer = Files.newBufferedWriter(blocksFile, StandardOpenOption.CREATE)) {
+            GSON.toJson(map, writer);
+        }
     }
 
     private void generateRegistry(final JsonObject object, final Path path) throws IOException {
         this.append(path, list -> {
             final Map<String, JsonObject> map = GSON.fromJson(object.get("entries"), STRING_JSON_MAP);
             map.forEach((key, json) ->
-                    list.add("    " + key.split(":")[1].toUpperCase() + "(" + json.get("protocol_id").getAsInt() + "),"));
+                    list.add("    " + key.split(":")[1].toUpperCase() + "(\"" + key + "\", " + json.get("protocol_id").getAsInt() + "),"));
         });
     }
 
