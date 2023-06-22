@@ -1,11 +1,19 @@
 package de.bauhd.minecraft.server.world.block;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Map;
 
-public final class Blocks {
+/**
+ * This class is only for internal use!
+ */
+@ApiStatus.Internal
+final class Blocks {
 
     private static Map<String, BlockState> BLOCKS_BY_NAME;
     private static Map<Integer, BlockState> BLOCKS_BY_ID;
+
+    private Blocks() {}
 
     static BlockState get(final String name) {
         return BLOCKS_BY_NAME.get(name);

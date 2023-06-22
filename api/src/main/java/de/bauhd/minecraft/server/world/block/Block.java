@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
  * Represent all supported blocks.
  */
 @SuppressWarnings({"unused"}) // I know - it looks better
-public abstract class Block implements BlockState {
+public final class Block {
 
     // START
     public static BlockState ACACIA_BUTTON = get("minecraft:acacia_button");
@@ -1014,20 +1014,7 @@ public abstract class Block implements BlockState {
     public static BlockState ZOMBIE_WALL_HEAD = get("minecraft:zombie_wall_head");
     // END
 
-    private final String name;
-
-    Block(final String name) {
-        this.name = name;
-    }
-
-    /**
-     * Gets the name of the block.
-     *
-     * @return the name
-     */
-    public String name() {
-        return this.name;
-    }
+    private Block() {}
 
     /**
      * Gets a block by its name.

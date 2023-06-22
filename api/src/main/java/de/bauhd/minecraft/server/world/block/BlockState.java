@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+/**
+ * Represents a state of a block.
+ */
 public interface BlockState {
 
     /**
