@@ -11,25 +11,25 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BrigadierCommand {
 
-    private final LiteralCommandNode<CommandSender> node;
+    private final LiteralCommandNode<CommandSource> node;
 
-    public BrigadierCommand(final @NotNull LiteralArgumentBuilder<CommandSender> argumentBuilder) {
+    public BrigadierCommand(final @NotNull LiteralArgumentBuilder<CommandSource> argumentBuilder) {
         this(argumentBuilder.build());
     }
 
-    public BrigadierCommand(final @NotNull LiteralCommandNode<CommandSender> commandNode) {
+    public BrigadierCommand(final @NotNull LiteralCommandNode<CommandSource> commandNode) {
         this.node = commandNode;
     }
 
-    public LiteralCommandNode<CommandSender> node() {
+    public LiteralCommandNode<CommandSource> node() {
         return this.node;
     }
 
-    public static LiteralArgumentBuilder<CommandSender> literal(final @NotNull String name) {
+    public static LiteralArgumentBuilder<CommandSource> literal(final @NotNull String name) {
         return LiteralArgumentBuilder.literal(name);
     }
 
-    public static <T> RequiredArgumentBuilder<CommandSender, T> argument(final @NotNull String name, final @NotNull ArgumentType<T> type) {
+    public static <T> RequiredArgumentBuilder<CommandSource, T> argument(final @NotNull String name, final @NotNull ArgumentType<T> type) {
         return RequiredArgumentBuilder.argument(name, type);
     }
 }

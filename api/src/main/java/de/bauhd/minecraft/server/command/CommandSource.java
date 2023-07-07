@@ -4,9 +4,9 @@ import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents an object that can send a command.
+ * Represents an object that is a source of a command.
  */
-public interface CommandSender extends Audience {
+public interface CommandSource extends Audience {
 
     boolean hasPermission(@NotNull String permission);
 }

@@ -15,9 +15,9 @@ public interface CommandHandler {
     @NotNull CommandHandler register(@NotNull BrigadierCommand command);
 
     /**
-     * Executes the command as the specified {@link CommandSender}.
-     * @param sender the sender of the command
+     * Executes the command as the specified {@link CommandSource}.
+     * @param source the source of the command
      * @param command the command to run
      */
-    void execute(@NotNull CommandSender sender, @NotNull String command);
+    void execute(@NotNull CommandSource source, @NotNull String command);
 }

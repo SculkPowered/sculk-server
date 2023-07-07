@@ -1,4 +1,4 @@
-package de.bauhd.minecraft.code.generaor;
+package de.bauhd.minecraft.code.generator;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -32,6 +32,7 @@ public final class CodeGenerator {
 
     private void generate(final Path generated) throws IOException {
         final var reports = generated.resolve("reports");
+        final var data = generated.resolve("data").resolve("minecraft");
         final var apiPackage = Path.of("api", "src", "main", "java", "de", "bauhd", "minecraft", "server");
 
         try (final var reader = Files.newBufferedReader(reports.resolve("blocks.json"))) {
@@ -72,12 +73,47 @@ public final class CodeGenerator {
 
             this.generateRegistry(json.get("minecraft:entity_type").getAsJsonObject(),
                     apiPackage.resolve("entity").resolve("EntityType.java"));
+
+        }
+
+        try (final var stream = Files.walk(data.resolve("damage_type"), 1)) {
+            this.append(apiPackage.resolve("damage").resolve("DamageType.java"), list -> {
+                stream.forEach(path -> {
+                    if (Files.isDirectory(path)) return;
+                    final var name = path.getFileName().toString().split("\\.")[0];
+                    try (final var reader = Files.newBufferedReader(path)) {
+                        final var damageData = GSON.fromJson(reader, JsonObject.class);
+                        final var stringBuilder = new StringBuilder("    public static final DamageType " + name.toUpperCase() + " = builder(Key.key(\"" + name + "\"))");
+                        if (damageData.has("exhaustion")) {
+                            stringBuilder.append(".exhaustion(").append(damageData.get("exhaustion").getAsDouble()).append(")");
+                        }
+                        if (damageData.has("effects")) {
+                            stringBuilder.append(".effects(").append("\"").append(damageData.get("effects").getAsString()).append("\"").append(")");
+                        }
+                        if (damageData.has("message_id")) {
+                            stringBuilder.append(".messageId(").append("\"").append(damageData.get("message_id").getAsString()).append("\"").append(")");
+                        }
+                        if (damageData.has("scaling")) {
+                            stringBuilder.append(".scaling(").append("\"").append(damageData.get("scaling").getAsString()).append("\"").append(")");
+                        }
+                        if (damageData.has("death_message_type")) {
+                            stringBuilder.append(".deathMessageType(").append("\"").append(damageData.get("death_message_type").getAsString()).append("\"").append(")");
+                        }
+                        stringBuilder.append(".build();");
+                        list.add(stringBuilder.toString());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     private void generateBlocks(final Reader reader, final Path path) throws IOException {
         final Map<String, JsonObject> map = GSON.fromJson(reader, STRING_JSON_MAP);
-        this.append(path, list -> map.forEach((key, json) -> list.add("    public static BlockState " +
+        this.append(path, list -> map.forEach((key, json) -> list.add("    public static final BlockState " +
                 (key.split(":")[1].toUpperCase()) + " = get(\"" + key + "\");")));
         final var blocksFile = Path.of("server", "src", "main", "resources", "registries", "blocks.json");
         if (Files.exists(blocksFile)) Files.delete(blocksFile);

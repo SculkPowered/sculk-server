@@ -13,5 +13,4 @@ public final class Protocol {
             return (this == SERVERBOUND ? state.serverBound : state.clientBound);
         }
     }
-
 }

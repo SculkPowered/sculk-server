@@ -52,19 +52,19 @@ public final class MineEventHandler implements EventHandler {
     }
 
     @Override
-    public <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, @NotNull EventOrder eventOrder, @NotNull Consumer<E> eventConsumer) {
+    public <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, short eventOrder, @NotNull Consumer<E> eventConsumer) {
         this.register(plugin, event, eventOrder, eventConsumer, eventConsumer);
     }
 
     @SuppressWarnings("unchecked")
-    private <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, @NotNull EventOrder order,
+    private <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, short order,
                               @NotNull Object instance, @NotNull Consumer<E> eventConsumer) {
         final var registrations = new ArrayList<Registration>();
         final var array = this.registrations.get(event);
         if (array != null) {
             Collections.addAll(registrations, array);
         }
-        registrations.add(new Registration(plugin, order.ordinal(), instance, (Consumer<Object>) eventConsumer));
+        registrations.add(new Registration(plugin, order, instance, (Consumer<Object>) eventConsumer));
         registrations.sort(this.orderComparator);
         this.registrations.put(event, registrations.toArray(new Registration[0]));
     }
@@ -126,6 +126,5 @@ public final class MineEventHandler implements EventHandler {
         }
     }
 
-    private record Registration(Plugin plugin, int order, Object instance, Consumer<Object> consumer) {}
-
+    private record Registration(Plugin plugin, short order, Object instance, Consumer<Object> consumer) {}
 }

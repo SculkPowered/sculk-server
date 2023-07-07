@@ -6,12 +6,16 @@ import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
+import de.bauhd.minecraft.server.event.block.BlockBreakEvent;
+import de.bauhd.minecraft.server.event.block.BlockPlaceEvent;
+import de.bauhd.minecraft.server.event.player.PlayerChatEvent;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerButtonEvent;
 import de.bauhd.minecraft.server.event.player.PlayerClickContainerEvent;
 import de.bauhd.minecraft.server.event.player.PlayerUseItemEvent;
 import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.packet.PacketHandler;
 import de.bauhd.minecraft.server.protocol.packet.play.*;
+import de.bauhd.minecraft.server.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.minecraft.server.protocol.packet.play.command.ChatCommand;
 import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainer;
 import de.bauhd.minecraft.server.protocol.packet.play.container.ClickContainerButton;
@@ -21,7 +25,6 @@ import de.bauhd.minecraft.server.protocol.packet.play.position.*;
 import de.bauhd.minecraft.server.util.ItemList;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.block.Block;
-import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,9 +36,9 @@ public final class PlayPacketHandler extends PacketHandler {
     private final AdvancedMinecraftServer server;
     private final MinecraftPlayer player;
 
-    public PlayPacketHandler(final MineConnection connection, final MinecraftPlayer player) {
+    public PlayPacketHandler(final MineConnection connection, final AdvancedMinecraftServer server, final MinecraftPlayer player) {
         this.connection = connection;
-        this.server = connection.server();
+        this.server = server;
         this.player = player;
     }
 
@@ -52,8 +55,10 @@ public final class PlayPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(ChatMessage chatMessage) {
-        this.server.sendAll(
-                new SystemChatMessage(Component.text(this.player.getUsername() + " - " + chatMessage.message()), false));
+        this.server.getEventHandler().call(new PlayerChatEvent(this.player, chatMessage.message())).exceptionally(throwable -> {
+            LOGGER.error("Exception while handling PlayerChatEvent for " + this.player.getUsername(), throwable);
+            return null;
+        });
         return true;
     }
 
@@ -110,7 +115,7 @@ public final class PlayPacketHandler extends PacketHandler {
         final var container = (this.player.getOpenedContainer() != null ? this.player.getOpenedContainer() : inventory);
         this.server.getEventHandler().call(new PlayerClickContainerEvent(this.player, container, clickContainer.carriedItem(), clickContainer.slot()))
                 .thenAcceptAsync(event -> {
-                    if (event.isCancelled()) { // let's resend to override client prediction
+                    if (event.getResult().isDenied()) { // let's resend to override client prediction
                         if (container == inventory) {
                             this.player.send(new ContainerContent((byte) 0, 1, inventory.items));
                         } else {
@@ -224,14 +229,14 @@ public final class PlayPacketHandler extends PacketHandler {
         switch (playerAction.status()) {
             case 0 -> { // started digging
                 if (this.player.canInstantBreak()) {
-                    this.player.getWorld().setBlock(playerAction.position(), Block.AIR);
+                    this.callBlockBreak(playerAction.position());
                 }
             }
             case 1 -> { // cancelled digging
 
             }
-            case 2 -> this.player.getWorld().setBlock(playerAction.position(), Block.AIR); // finished digging
-            case 3 -> this.player.getInventory().setItem(this.player.getHeldItemSlot(), ItemStack.AIR); // drop stack
+            case 2 -> this.callBlockBreak(playerAction.position()); // finished digging
+            case 3 -> this.player.getInventory().setItem(this.player.getHeldItemSlot(), ItemStack.empty()); // drop stack
             case 4 -> { // drop item
                 final var itemInHand = this.player.getInventory().getItemInMainHand();
                 if (!itemInHand.isEmpty()) {
@@ -250,6 +255,21 @@ public final class PlayPacketHandler extends PacketHandler {
             }
         }
         return true;
+    }
+
+    private void callBlockBreak(Position position) {
+        this.server.getEventHandler().call(new BlockBreakEvent(this.player, position, this.player.getWorld().getBlock(position)))
+                .thenAcceptAsync(event -> {
+                    if (event.getResult().isAllowed()) {
+                        this.player.getWorld().setBlock(position, Block.AIR);
+                    } else {
+                        this.player.getWorld().getChunkAt((int) position.x(), (int) position.y()).send(this.player);
+                    }
+                }, this.connection.executor())
+                .exceptionally(throwable -> {
+                    LOGGER.error("Exception while block break from " + this.player.getUsername(), throwable);
+                    return null;
+                });
     }
 
     @Override
@@ -336,16 +356,24 @@ public final class PlayPacketHandler extends PacketHandler {
             var block = Block.get(slot.material().key());
             if (block.hasProperty("facing")) { // let's set the correct facing
                 final var rotation = (int) Math.floor(this.player.getPosition().yaw() / 90.0D + 0.5D) & 3;
-                final var facing = switch (rotation % 4) {
+                block = block.facing(switch (rotation % 4) {
                     case 0 -> Block.Facing.SOUTH;
                     case 1 -> Block.Facing.WEST;
                     case 2 -> Block.Facing.NORTH;
                     case 3 -> Block.Facing.EAST;
                     default -> null;
-                };
-                block = block.facing(facing);
+                });
             }
-            this.player.getWorld().setBlock(position, block);
+            this.server.getEventHandler().call(new BlockPlaceEvent(this.player, position, block)).thenAcceptAsync(placeEvent -> {
+                if (placeEvent.getResult().isAllowed()) {
+                    this.player.getWorld().setBlock(placeEvent.getPosition(), placeEvent.getBlock());
+                } else {
+                    this.player.send(new BlockUpdate(placeEvent.getPosition(), this.player.getWorld().getBlock(placeEvent.getPosition()).getId()));
+                }
+            }, this.connection.executor()).exceptionally(throwable -> {
+                LOGGER.error("Exception while handling block place for " + this.player.getUsername(), throwable);
+                return null;
+            });
         }, this.connection.executor());
         return true;
     }

@@ -113,10 +113,6 @@ public final class Metadata {
         }));
     }
 
-    public @Nullable Component getOptComponent(final int index, final Component def) {
-        return this.get(index, def);
-    }
-
     public void setSlot(final int index, final ItemStack value) {
         this.set(index, new Entry<>(SLOT_TYPE, value, Buffer::writeItem));
     }
@@ -145,10 +141,6 @@ public final class Metadata {
         this.set(index, new Entry<>(OPT_POSITION_TYPE, value, (buf, position) -> {
             if (buf.writeOptional(position)) buf.writePosition(position);
         }));
-    }
-
-    public @Nullable Position getOptPosition(final int index, final Position def) {
-        return this.get(index, def);
     }
 
     public void setOptUUID(final int index, final UUID value) {

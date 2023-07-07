@@ -1,6 +1,6 @@
 package de.bauhd.minecraft.server.entity.player;
 
-import de.bauhd.minecraft.server.command.CommandSender;
+import de.bauhd.minecraft.server.command.CommandSource;
 import de.bauhd.minecraft.server.connection.Connection;
 import de.bauhd.minecraft.server.entity.LivingEntity;
 import de.bauhd.minecraft.server.container.Container;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents a player.
  */
-public interface Player extends LivingEntity, CommandSender, PlayerInfoEntry, Connection {
+public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Connection {
 
     /**
      * Gets the name of the player.

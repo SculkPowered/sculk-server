@@ -1,5 +1,7 @@
 package de.bauhd.minecraft.server.world;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
+import de.bauhd.minecraft.server.MinecraftServer;
 import de.bauhd.minecraft.server.entity.AbstractEntity;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.GameMode;
@@ -15,8 +17,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
+import static de.bauhd.minecraft.server.util.CoordinateUtil.chunkCoordinate;
+import static de.bauhd.minecraft.server.util.CoordinateUtil.chunkIndex;
+
 public class MinecraftWorld implements World {
 
+    private final AdvancedMinecraftServer server;
     private final String name;
     private final Dimension dimension;
     private final ChunkLoader loader;
@@ -26,8 +32,9 @@ public class MinecraftWorld implements World {
     private Worker worker;
     private boolean alive;
 
-    public MinecraftWorld(final String name, final Dimension dimension,
+    public MinecraftWorld(final AdvancedMinecraftServer server, final String name, final Dimension dimension,
                           final ChunkLoader loader, final Position spawnPosition, final GameMode defaultGameMode) {
+        this.server = server;
         this.name = name;
         this.dimension = dimension;
         this.loader = loader;
@@ -77,7 +84,7 @@ public class MinecraftWorld implements World {
 
     @Override
     public @NotNull MinecraftChunk getChunk(int chunkX, int chunkZ) {
-        var chunk = this.chunks.get(this.chunkIndex(chunkX, chunkZ));
+        var chunk = this.chunks.get(chunkIndex(chunkX, chunkZ));
         if (chunk == null) {
             chunk = this.loadChunk(chunkX, chunkZ);
         }
@@ -86,7 +93,7 @@ public class MinecraftWorld implements World {
 
     @Override
     public @NotNull MinecraftChunk getChunkAt(int x, int z) {
-        return this.getChunk(this.chunkCoordinate(x), this.chunkCoordinate(z));
+        return this.getChunk(chunkCoordinate(x), chunkCoordinate(z));
     }
 
     @Override
@@ -103,16 +110,8 @@ public class MinecraftWorld implements World {
 
     protected MinecraftChunk loadChunk(final int chunkX, final int chunkZ) {
         final var chunk = this.loader.loadChunk(this, chunkX, chunkZ);
-        this.chunks.put(this.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
+        this.chunks.put(chunkIndex(chunk.getX(), chunk.getZ()), chunk);
         return chunk;
-    }
-
-    public int chunkCoordinate(final int coordinate) {
-        return coordinate >> 4;
-    }
-
-    public long chunkIndex(final int x, final int z) {
-        return ((((long) x) << 32) | (z & 0xFFFFFFFFL));
     }
 
     public void setAlive(boolean alive) {
@@ -144,5 +143,9 @@ public class MinecraftWorld implements World {
         }
         this.chunks.clear();
         this.worker = null;
+    }
+
+    public MinecraftServer server() {
+        return this.server;
     }
 }

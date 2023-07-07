@@ -206,7 +206,7 @@ public record Buffer(io.netty5.buffer.Buffer buf) {
     }
 
     public @NotNull ItemStack readItem() {
-        if (!this.readBoolean()) return ItemStack.AIR;
+        if (!this.readBoolean()) return ItemStack.empty();
         return ItemStack.of(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
     }
 

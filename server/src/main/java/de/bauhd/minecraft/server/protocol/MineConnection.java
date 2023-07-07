@@ -1,8 +1,10 @@
 package de.bauhd.minecraft.server.protocol;
 
 import com.google.gson.reflect.TypeToken;
+import com.mojang.brigadier.tree.RootCommandNode;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.MinecraftConfig;
+import de.bauhd.minecraft.server.command.CommandSource;
 import de.bauhd.minecraft.server.connection.Connection;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
 import de.bauhd.minecraft.server.entity.player.MinecraftPlayer;
@@ -49,6 +51,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 import static de.bauhd.minecraft.server.entity.player.GameProfile.Property;
+import static de.bauhd.minecraft.server.util.CoordinateUtil.chunkCoordinate;
 
 public final class MineConnection extends ChannelHandlerAdapter implements Connection {
 
@@ -106,7 +109,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             final var world = this.player.getWorld();
             final var position = this.player.getPosition();
             if (world != null) {
-                this.forChunksInRange(world.chunkCoordinate((int) position.x()), world.chunkCoordinate((int) position.z()),
+                this.forChunksInRange(chunkCoordinate((int) position.x()), chunkCoordinate((int) position.z()),
                         this.player.getSettings().getViewDistance(), (x, z) -> {
                             final var chunk = world.getChunk(x, z);
                             chunk.viewers().remove(this.player);
@@ -142,7 +145,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
 
     public void play(GameProfile profile) {
         if (profile == null) {
-            if (this.server.getConfiguration().mode() == MinecraftConfig.Mode.BUNGEECORD) {
+            if (this.server.getConfig().mode() == MinecraftConfig.Mode.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
                 this.serverAddress = arguments[0];
                 final var properties = (Property[]) AdvancedMinecraftServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
@@ -161,7 +164,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         }
 
         this.send(new LoginSuccess(profile));
-        this.player = new MinecraftPlayer(this, profile);
+        this.player = new MinecraftPlayer(this.server, this, profile);
         this.server.addPlayer(this.player);
         this.setState(State.PLAY);
         this.server.getEventHandler().call(new PlayerInitialEvent(this.player)).thenAcceptAsync(event -> {
@@ -183,11 +186,12 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             this.player.init(event.getGameMode(), position, world, event.getPermissionChecker());
 
             this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
-                    this.server.getBiomeHandler().nbt(), this.server.getDimensionHandler().nbt(),
+                    this.server.getBiomeRegistry(), this.server.getDimensionRegistry(),
+                    this.server.getDamageTypeRegistry(),
                     world.getDimension().name()));
 
             this.send(BRAND_PACKET);
-            this.send(new Commands(this.server.getCommandHandler().root()));
+            this.sendCommands();
             this.send(new SpawnPosition(position));
             this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
             final var playerInfo = PlayerInfo.add(List.of(this.player));
@@ -203,6 +207,16 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             LOGGER.error("Exception during login of player {}", this.player.getUsername(), throwable);
             return null;
         });
+    }
+
+    private void sendCommands() {
+        final var rootNode = new RootCommandNode<CommandSource>();
+        for (final var child : this.server.getCommandHandler().root().getChildren()) {
+            if (child.canUse(this.player)) {
+                rootNode.addChild(child);
+            }
+        }
+        this.send(new Commands(rootNode));
     }
 
     public void send(final Packet packet) {
@@ -221,11 +235,10 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         this.state = state;
         this.packetHandler = switch (state) {
             case HANDSHAKE -> new HandshakePacketHandler(this);
-            case STATUS -> new StatusPacketHandler(this);
-            case LOGIN -> new LoginPacketHandler(this);
-            case PLAY -> new PlayPacketHandler(this, this.player);
+            case STATUS -> new StatusPacketHandler(this, this.server);
+            case LOGIN -> new LoginPacketHandler(this, this.server);
+            case PLAY -> new PlayPacketHandler(this, this.server, this.player);
         };
-
         this.channel.pipeline().get(MinecraftEncoder.class).setState(state);
         this.channel.pipeline().get(MinecraftDecoder.class).setState(state);
     }
@@ -242,15 +255,11 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         this.channel.pipeline().remove("frame-encoder");
         this.channel.pipeline()
                 .addBefore("minecraft-decoder", "compressor-decoder", new CompressorDecoder())
-                .addBefore("minecraft-encoder", "compressor-encoder", new CompressorEncoder(this.server.getConfiguration()));
+                .addBefore("minecraft-encoder", "compressor-encoder", new CompressorEncoder(this.server.getConfig()));
     }
 
     public void setVersion(final int version) {
         this.version = version;
-    }
-
-    public AdvancedMinecraftServer server() {
-        return this.server;
     }
 
     public void setServerAddress(final String serverAddress) {

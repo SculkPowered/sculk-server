@@ -1,14 +1,17 @@
 package de.bauhd.minecraft.server;
 
 import de.bauhd.minecraft.server.command.CommandHandler;
+import de.bauhd.minecraft.server.command.CommandSource;
+import de.bauhd.minecraft.server.damage.DamageType;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.player.Player;
 import de.bauhd.minecraft.server.event.EventHandler;
 import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.plugin.PluginHandler;
+import de.bauhd.minecraft.server.registry.Registry;
 import de.bauhd.minecraft.server.world.World;
-import de.bauhd.minecraft.server.world.biome.BiomeHandler;
-import de.bauhd.minecraft.server.world.dimension.DimensionHandler;
+import de.bauhd.minecraft.server.world.biome.Biome;
+import de.bauhd.minecraft.server.world.dimension.Dimension;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
@@ -25,16 +28,22 @@ public interface MinecraftServer {
             player.disconnect(Component.text("The world was unloaded!", NamedTextColor.RED));
 
     /**
-     * Gets the {@link DimensionHandler} instance
-     * @return the dimension handler instance
+     * Gets the registry of the dimensions
+     * @return the dimension registry instance
      */
-    @NotNull DimensionHandler getDimensionHandler();
+    @NotNull Registry<Dimension> getDimensionRegistry();
 
     /**
-     * Gets the {@link BiomeHandler} instance
-     * @return the biome handler instance
+     * Gets the registry of the biomes
+     * @return the biome registry instance
      */
-    @NotNull BiomeHandler getBiomeHandler();
+    @NotNull Registry<Biome> getBiomeRegistry();
+
+    /**
+     * Gets the registry of the damage types
+     * @return the damage type registry instance
+     */
+    @NotNull Registry<DamageType> getDamageTypeRegistry();
 
     /**
      * Gets the {@link PluginHandler} instance
@@ -131,6 +140,18 @@ public interface MinecraftServer {
      * @return a new instance of the container
      */
     @NotNull Container createContainer(@NotNull Container.Type type, @NotNull Component title);
+
+    /**
+     * Gets the console command source object.
+     * @return the console command source object
+     */
+    @NotNull CommandSource getConsoleCommandSource();
+
+    /**
+     * Gets the configuration.
+     * @return the configuration
+     */
+    @NotNull MinecraftConfig getConfig();
 
     /**
      * Shutdowns the server.

@@ -1,15 +1,12 @@
 package de.bauhd.minecraft.server.world.dimension;
 
+import de.bauhd.minecraft.server.registry.SimpleRegistry;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-public final class MineDimensionHandler implements DimensionHandler {
+public final class DimensionRegistry extends SimpleRegistry<Dimension> {
 
     private static final int[] MAGIC = {
             -1, -1, 0, Integer.MIN_VALUE, 0, 0, 1431655765, 1431655765, 0, Integer.MIN_VALUE,
@@ -45,16 +42,13 @@ public final class MineDimensionHandler implements DimensionHandler {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    private final Map<String, Dimension> dimensions;
-
-    public MineDimensionHandler() {
-        this.dimensions = new HashMap<>();
-        this.register(Dimension.OVERWORLD);
+    public DimensionRegistry() {
+        super("minecraft:dimension_type", Dimension.OVERWORLD);
     }
 
     @Override
     public void register(@NotNull Dimension dimension) {
-        final var dimensionHeight = dimension.nbt().getCompound("element").getInt("height");
+        final var dimensionHeight = dimension.asNBT().getCompound("element").getInt("height");
         final var worldSurface = new int[256];
         Arrays.fill(worldSurface, dimensionHeight - 1);
         final var bitsForHeight = Integer.SIZE - Integer.numberOfLeadingZeros(dimensionHeight);
@@ -62,25 +56,7 @@ public final class MineDimensionHandler implements DimensionHandler {
                 .putLongArray("MOTION_BLOCKING", encodeBlocks(MOTION_BLOCKING, bitsForHeight))
                 .putLongArray("WORLD_SURFACE", encodeBlocks(worldSurface, bitsForHeight))
                 .build());
-        this.dimensions.put(dimension.name(), dimension);
-    }
-
-    @Override
-    public @NotNull Collection<Dimension> getDimensions() {
-        return this.dimensions.values();
-    }
-
-    @Override
-    public @NotNull Dimension getDimension(@NotNull String name) {
-        final var biome = this.dimensions.get(name);
-        return biome != null ? biome : Dimension.OVERWORLD;
-    }
-
-    public CompoundBinaryTag nbt() {
-        return CompoundBinaryTag.builder()
-                .putString("type", "minecraft:dimension_type")
-                .put("value", ListBinaryTag.from(this.dimensions.values().stream().map(Dimension::nbt).toList()))
-                .build();
+        super.register(dimension);
     }
 
     private static long[] encodeBlocks(final int[] blocks, final int bitsPerEntry) {
@@ -91,7 +67,7 @@ public final class MineDimensionHandler implements DimensionHandler {
         final var divideAdd = Integer.toUnsignedLong(MAGIC[magicIndex + 1]);
         final var divideShift = MAGIC[magicIndex + 2];
         final var size = (blocks.length + valuesPerLong - 1) / valuesPerLong;
-        var data = new long[size];
+        final var data = new long[size];
         for (var i = 0; i < blocks.length; i++) {
             final var value = blocks[i];
             final var cellIndex = (int) (i * divideMul + divideAdd >> 32L >> divideShift);

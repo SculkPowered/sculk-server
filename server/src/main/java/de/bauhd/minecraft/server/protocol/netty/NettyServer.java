@@ -57,5 +57,4 @@ public final class NettyServer {
         this.bossLoopGroup.shutdownGracefully();
         this.workerLoopGroup.shutdownGracefully();
     }
-
 }

@@ -106,4 +106,13 @@ public class MineBlockState implements BlockState {
         newProperties.putAll(properties);
         return this.block.state(newProperties);
     }
+
+    @Override
+    public String toString() {
+        return "MineBlockState{" +
+                "block=" + this.block +
+                ", id=" + this.id +
+                ", properties=" + this.properties +
+                '}';
+    }
 }

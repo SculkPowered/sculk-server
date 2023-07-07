@@ -6,13 +6,15 @@ import org.jetbrains.annotations.NotNull;
 
 public final class MineFurnaceContainer extends MineContainer implements FurnaceContainer {
 
+    private final Type type;
     private int fuelLeft;
     private int maxFuelBurnTime;
     private int progressArrow;
     private int maximumProgress;
 
-    public MineFurnaceContainer(final Component title) {
+    public MineFurnaceContainer(final Type type, final Component title) {
         super(title);
+        this.type = type;
     }
 
     @Override
@@ -61,7 +63,7 @@ public final class MineFurnaceContainer extends MineContainer implements Furnace
 
     @Override
     public @NotNull Type getType() {
-        return Type.FURNACE;
+        return this.type;
     }
 
     @Override

@@ -29,5 +29,4 @@ public final class EncryptionUtil {
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -15,7 +15,12 @@ import io.netty5.buffer.DefaultBufferAllocators;
 import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+
+import static de.bauhd.minecraft.server.util.CoordinateUtil.chunkCoordinate;
+import static de.bauhd.minecraft.server.util.CoordinateUtil.relativeCoordinate;
 
 public final class MinecraftChunk implements Chunk {
 
@@ -62,7 +67,7 @@ public final class MinecraftChunk implements Chunk {
     @Override
     public void setBlock(int x, int y, int z, @NotNull BlockState block) {
         final var id = block.getId();
-        this.section(y).blocks().set(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z), id);
+        this.section(y).blocks().set(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z), id);
         this.packet = null;
         if (this.viewers.size() != 0) {
             final var packet = new BlockUpdate(x, y, z, id);
@@ -74,13 +79,12 @@ public final class MinecraftChunk implements Chunk {
 
     @Override
     public @NotNull BlockState getBlock(int x, int y, int z) {
-        return Block.get(this.section(y).blocks()
-                .get(this.relativeCoordinate(x), this.relativeCoordinate(y), this.relativeCoordinate(z)));
+        return Block.get(this.section(y).blocks().get(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z)));
     }
 
     @Override
     public void setBiome(int x, int y, int z, @NotNull Biome biome) {
-        this.section(y).biomes().set(this.relativeCoordinate(x) / 4, this.relativeCoordinate(y) / 4, this.relativeCoordinate(z) / 4,
+        this.section(y).biomes().set(relativeCoordinate(x) / 4, relativeCoordinate(y) / 4, relativeCoordinate(z) / 4,
                 biome.id());
         this.packet = null;
     }
@@ -100,7 +104,7 @@ public final class MinecraftChunk implements Chunk {
     }
 
     public Section section(final int y) {
-        return this.sections[this.world.chunkCoordinate(y) - this.dimension.minimumSections()];
+        return this.sections[chunkCoordinate(y) - this.dimension.minimumSections()];
     }
 
     private Pair<byte[], LightData> sectionsToData() {
@@ -137,14 +141,10 @@ public final class MinecraftChunk implements Chunk {
         return Pair.of(data, new LightData(skyMask, blockMask, emptySkyMask, emptyBlockMask, skyLight, blockLight));
     }
 
-    private int relativeCoordinate(final int coordinate) {
-        return coordinate & 0xF;
-    }
-
     @Override
     public String toString() {
         return "MinecraftChunk{" +
-                "dimension=" + this.dimension.nbt().getString("name") +
+                "dimension=" + this.dimension.name() +
                 ", x=" + this.x +
                 ", z=" + this.z +
                 '}';

@@ -1,11 +1,15 @@
 package de.bauhd.minecraft.server;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import de.bauhd.minecraft.server.command.CommandSource;
 import de.bauhd.minecraft.server.command.MineCommandHandler;
 import de.bauhd.minecraft.server.command.defaults.InfoCommand;
 import de.bauhd.minecraft.server.command.defaults.ShutdownCommand;
 import de.bauhd.minecraft.server.container.*;
+import de.bauhd.minecraft.server.damage.DamageType;
 import de.bauhd.minecraft.server.entity.Entity;
 import de.bauhd.minecraft.server.entity.EntityClassToSupplierMap;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
@@ -21,16 +25,21 @@ import de.bauhd.minecraft.server.protocol.MineConnection;
 import de.bauhd.minecraft.server.protocol.netty.NettyServer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import de.bauhd.minecraft.server.protocol.packet.login.CompressionPacket;
+import de.bauhd.minecraft.server.registry.Registry;
+import de.bauhd.minecraft.server.registry.SimpleRegistry;
 import de.bauhd.minecraft.server.terminal.SimpleTerminal;
 import de.bauhd.minecraft.server.util.BossBarListener;
 import de.bauhd.minecraft.server.world.MinecraftWorld;
 import de.bauhd.minecraft.server.world.World;
-import de.bauhd.minecraft.server.world.biome.MineBiomeHandler;
-import de.bauhd.minecraft.server.world.block.*;
-import de.bauhd.minecraft.server.world.chunk.loader.DefaultChunkLoader;
+import de.bauhd.minecraft.server.world.biome.Biome;
+import de.bauhd.minecraft.server.world.block.BlockParent;
+import de.bauhd.minecraft.server.world.block.BlockState;
+import de.bauhd.minecraft.server.world.block.MineBlockState;
+import de.bauhd.minecraft.server.world.chunk.loader.AnvilLoader;
 import de.bauhd.minecraft.server.world.chunk.loader.ChunkLoader;
-import de.bauhd.minecraft.server.world.chunk.loader.VanillaLoader;
-import de.bauhd.minecraft.server.world.dimension.MineDimensionHandler;
+import de.bauhd.minecraft.server.world.chunk.loader.DefaultChunkLoader;
+import de.bauhd.minecraft.server.world.dimension.Dimension;
+import de.bauhd.minecraft.server.world.dimension.DimensionRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
@@ -60,10 +69,6 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             .setPrettyPrinting()
             .create();
 
-    static {
-        System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
-    }
-
     private boolean running = true;
 
     private MinecraftConfiguration configuration;
@@ -71,8 +76,10 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     private final Map<UUID, MinecraftPlayer> players = new ConcurrentHashMap<>();
     private final Map<String, MinecraftWorld> worlds = new ConcurrentHashMap<>();
-    private final MineDimensionHandler dimensionHandler;
-    private final MineBiomeHandler biomeHandler;
+    private final SimpleTerminal terminal;
+    private final Registry<Dimension> dimensionRegistry;
+    private final Registry<Biome> biomeRegistry;
+    private final Registry<DamageType> damageTypeRegistry;
     private final MinePluginHandler pluginHandler;
     private final MineEventHandler eventHandler;
     private final MineCommandHandler commandHandler;
@@ -82,8 +89,8 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     AdvancedMinecraftServer() {
         final var startTime = System.currentTimeMillis();
-        final var terminal = new SimpleTerminal(this);
-        terminal.setupStreams();
+        this.terminal = new SimpleTerminal(this);
+        this.terminal.setupStreams();
 
         this.loadConfig();
 
@@ -97,11 +104,21 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             }
         }
 
-        this.dimensionHandler = new MineDimensionHandler();
-        this.biomeHandler = new MineBiomeHandler();
+        this.dimensionRegistry = new DimensionRegistry();
+        this.biomeRegistry = new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS);
+        this.damageTypeRegistry = new SimpleRegistry<>("minecraft:damage_type", DamageType.OUT_OF_WORLD);
+        try { // load DamageTypes
+            for (final var field : DamageType.class.getDeclaredFields()) {
+                if (field.getType() == DamageType.class) {
+                    this.damageTypeRegistry.register((DamageType) field.get(null));
+                }
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         this.pluginHandler = new MinePluginHandler(this);
         this.eventHandler = new MineEventHandler();
-        this.commandHandler = (MineCommandHandler) new MineCommandHandler() // register defaults
+        this.commandHandler = (MineCommandHandler) new MineCommandHandler(this) // register defaults
                 .register(new ShutdownCommand(this))
                 .register(new InfoCommand());
         this.bossBarListener = new BossBarListener();
@@ -124,7 +141,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
             MineConnection.COMPRESSION_PACKET = new CompressionPacket(this.configuration.compressionThreshold());
         }
 
-        terminal.start();
+        this.terminal.start();
     }
 
     public void shutdown(final boolean runtime) {
@@ -181,19 +198,18 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     // I don't like this solution so much...
     private void loadBlocks() {
-        try (final var resource = this.getClass().getClassLoader().getResourceAsStream("registries/blocks.json")) {
+        try (final var resource = this.getClass().getClassLoader().getResourceAsStream("registries/blocks.json");
+             final var reader = new InputStreamReader(Objects.requireNonNull(resource))) {
             final var byName = new HashMap<String, BlockState>();
             final var byId = new HashMap<Integer, BlockState>();
-            assert resource != null;
             final var stringJsonMap = TypeToken.getParameterized(Map.class, String.class, JsonObject.class).getType();
             final var stringStringMap = TypeToken.getParameterized(Map.class, String.class, String.class).getType();
             final var jsonArray = TypeToken.getArray(JsonObject.class).getType();
-            final Map<String, JsonObject> map = GSON.fromJson(new InputStreamReader(resource), stringJsonMap);
+            final Map<String, JsonObject> map = GSON.fromJson(reader, stringJsonMap);
             for (final var entry : map.entrySet()) {
                 final var key = entry.getKey();
-                final var value = entry.getValue();
-                final var block = new BlockParent();
-                final JsonObject[] states = GSON.fromJson(value.get("states"), jsonArray);
+                final var block = new BlockParent(key);
+                final JsonObject[] states = GSON.fromJson(entry.getValue().get("states"), jsonArray);
                 final var stateArray = new MineBlockState[states.length];
                 for (var i = 0; i < states.length; i++) {
                     final var state = states[i];
@@ -205,6 +221,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
                         properties = Map.of();
                     }
                     final var blockState = new MineBlockState(block, id, properties);
+                    byId.put(blockState.getId(), blockState);
                     if (state.has("default") && state.get("default").getAsBoolean()) {
                         byName.put(key, blockState);
                     }
@@ -223,13 +240,18 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     @Override
-    public @NotNull MineDimensionHandler getDimensionHandler() {
-        return this.dimensionHandler;
+    public @NotNull Registry<Dimension> getDimensionRegistry() {
+        return this.dimensionRegistry;
     }
 
     @Override
-    public @NotNull MineBiomeHandler getBiomeHandler() {
-        return this.biomeHandler;
+    public @NotNull Registry<Biome> getBiomeRegistry() {
+        return this.biomeRegistry;
+    }
+
+    @Override
+    public @NotNull Registry<DamageType> getDamageTypeRegistry() {
+        return this.damageTypeRegistry;
     }
 
     @Override
@@ -269,17 +291,19 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
 
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
-        return this.createWorld(builder, new VanillaLoader(this, builder.generator(), path));
+        return this.createWorld(builder, new AnvilLoader(this, builder.generator(), path));
     }
 
     @Override
     public void loadWorld(@NotNull World world) {
-        ((MinecraftWorld) world).load();
+        final var mcWorld = (MinecraftWorld) world;
+        mcWorld.load();
+        this.worlds.put(world.getName(), mcWorld);
     }
 
     private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new MinecraftWorld(name, builder.dimension(), chunkLoader,
+        final var world = new MinecraftWorld(this, name, builder.dimension(), chunkLoader,
                 builder.spawnPosition(), builder.defaultGameMode());
         this.worlds.put(name, world);
         return world;
@@ -314,7 +338,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
                     new GenericContainer(type, title);
             case ANVIL -> new MineAnvilContainer(title);
             case BEACON -> new MineBeaconContainer(title);
-            case BLAST_FURNACE, FURNACE, SMOKER -> new MineFurnaceContainer(title);
+            case BLAST_FURNACE, FURNACE, SMOKER -> new MineFurnaceContainer(type, title);
             case BREWING_STAND -> new MineBrewingStandContainer(title);
             case ENCHANTMENT -> new MineEnchantingTableContainer(title);
             case LOOM -> new MineLoomContainer(title);
@@ -324,12 +348,18 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     }
 
     @Override
-    public void shutdown() {
-        this.shutdown(true);
+    public @NotNull CommandSource getConsoleCommandSource() {
+        return this.terminal;
     }
 
-    public MinecraftConfiguration getConfiguration() {
+    @Override
+    public @NotNull MinecraftConfiguration getConfig() {
         return this.configuration;
+    }
+
+    @Override
+    public void shutdown() {
+        this.shutdown(true);
     }
 
     public KeyPair getKeyPair() {

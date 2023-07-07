@@ -12,7 +12,7 @@ public final class ItemList extends AbstractList<ItemStack> {
     public ItemList(int size) {
         this.items = new ItemStack[size];
         for (var i = 0; i < size; i++) {
-            this.items[i] = ItemStack.AIR;
+            this.items[i] = ItemStack.empty();
         }
         this.size = size;
     }

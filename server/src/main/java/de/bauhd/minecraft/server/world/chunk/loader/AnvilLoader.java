@@ -22,9 +22,10 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.bauhd.minecraft.server.util.CoordinateUtil.regionCoordinate;
 import static de.bauhd.minecraft.server.world.chunk.Chunk.*;
 
-public final class VanillaLoader extends DefaultChunkLoader {
+public final class AnvilLoader extends DefaultChunkLoader {
 
     private static final int SECTOR_SIZE = 4096;
 
@@ -32,7 +33,7 @@ public final class VanillaLoader extends DefaultChunkLoader {
     private final Path regionPath;
     private final Map<String, RegionFile> regionCache;
 
-    public VanillaLoader(final AdvancedMinecraftServer server, final ChunkGenerator generator, final Path path) {
+    public AnvilLoader(final AdvancedMinecraftServer server, final ChunkGenerator generator, final Path path) {
         super(generator);
         this.server = server;
         this.regionPath = path.resolve("region");
@@ -41,14 +42,15 @@ public final class VanillaLoader extends DefaultChunkLoader {
 
     @Override
     public @NotNull MinecraftChunk loadChunk(final MinecraftWorld world, final int x, final int z) {
-        final var fileName = "r." + this.toRegionCoordinate(x) +
-                "." + this.toRegionCoordinate(z) + ".mca";
+        final var fileName = "r." + regionCoordinate(x) + "." + regionCoordinate(z) + ".mca";
         try {
             MinecraftChunk chunk;
             if (!this.regionCache.containsKey(fileName)) {
                 final var file = this.regionPath.resolve(fileName);
                 if (Files.exists(file)) {
                     this.regionCache.put(fileName, new RegionFile(file));
+                } else {
+                    return super.loadChunk(world, x, z);
                 }
             }
             chunk = this.regionCache.get(fileName).getChunk(world, x, z);
@@ -61,16 +63,12 @@ public final class VanillaLoader extends DefaultChunkLoader {
         }
     }
 
-    private int toRegionCoordinate(final int coordinate) {
-        return (int) Math.floor((double) coordinate / 32);
-    }
-
     private final class RegionFile {
 
         private final RandomAccessFile accessFile;
         private final int[] locations = new int[1024];
 
-        public RegionFile(final Path path) throws IOException {
+        private RegionFile(final Path path) throws IOException {
             this.accessFile = new RandomAccessFile(path.toFile(), "r");
             this.accessFile.seek(0);
 
@@ -154,7 +152,7 @@ public final class VanillaLoader extends DefaultChunkLoader {
                     final var palette = new int[biomePalette.size()];
                     for (var k = 0; k < palette.length; k++) {
                         final var entry = biomePalette.getCompound(k);
-                        palette[k] = VanillaLoader.this.server.getBiomeHandler().getBiome(entry.getString("value")).id();
+                        palette[k] = AnvilLoader.this.server.getBiomeRegistry().get(entry.getString("value")).id();
                     }
                     if (palette.length == 1) {
                         biomes.fill(palette[0]);
@@ -222,6 +220,5 @@ public final class VanillaLoader extends DefaultChunkLoader {
         private long sectorOffset(final int location) {
             return location >>> 8;
         }
-
     }
 }

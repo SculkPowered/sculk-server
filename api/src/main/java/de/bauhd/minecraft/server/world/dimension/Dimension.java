@@ -1,17 +1,17 @@
 package de.bauhd.minecraft.server.world.dimension;
 
+import de.bauhd.minecraft.server.registry.Registry;
 import de.bauhd.minecraft.server.world.chunk.Chunk;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a dimension.
  */
-public final class Dimension {
+public final class Dimension implements Registry.Entry {
 
-    private static int CURRENT_ID = 0;
-
-    public static final Dimension OVERWORLD = Dimension.builder("minecraft:overworld")
+    public static final Dimension OVERWORLD = builder(Key.key("overworld"))
             .piglinSafe(false)
             .hasRaids(true)
             .monsterSpawnLightLevel(CompoundBinaryTag.builder()
@@ -37,12 +37,16 @@ public final class Dimension {
             .hasCeiling(false)
             .build();
 
+    private static int CURRENT_ID = 0;
+
+    private final Key key;
     private final CompoundBinaryTag nbt;
     private final int minimumSections;
     private final int maximumSections;
     private CompoundBinaryTag heightmaps;
 
-    private Dimension(final CompoundBinaryTag nbt) {
+    private Dimension(final Key key, final CompoundBinaryTag nbt) {
+        this.key = key;
         this.nbt = nbt;
         final var dimensionHeight = this.nbt.getCompound("element").getInt("height");
         final var minY = this.nbt.getCompound("element").getInt("min_y");
@@ -54,24 +58,31 @@ public final class Dimension {
         this.heightmaps = heightmaps;
     }
 
-    public static @NotNull Builder builder(@NotNull String name) {
-        return new Builder(name);
+    public static @NotNull Builder builder(final @NotNull Key key) {
+        return new Builder(key);
     }
 
-    public @NotNull Builder toBuilder(final String newName) {
-        return new Builder(newName, CompoundBinaryTag.builder().put(this.nbt.getCompound("element")));
+    public @NotNull Builder toBuilder(final @NotNull Key newKey) {
+        return new Builder(newKey, CompoundBinaryTag.builder().put(this.nbt.getCompound("element")));
     }
 
-    public @NotNull CompoundBinaryTag nbt() {
-        return this.nbt;
+    @Override
+    public @NotNull Key key() {
+        return this.key;
     }
 
     public @NotNull String name() {
-        return this.nbt.getString("name");
+        return this.key.asString();
     }
 
+    @Override
     public int id() {
         return this.nbt.getInt("id");
+    }
+
+    @Override
+    public @NotNull CompoundBinaryTag asNBT() {
+        return this.nbt;
     }
 
     public @NotNull CompoundBinaryTag heightmaps() {
@@ -86,18 +97,18 @@ public final class Dimension {
         return this.maximumSections;
     }
 
-    public static class Builder {
+    public static final class Builder {
 
-        private final String name;
+        private final Key key;
         private final int id;
         private final CompoundBinaryTag.Builder builder;
 
-        public Builder(String name) {
-            this(name, CompoundBinaryTag.builder());
+        public Builder(final Key key) {
+            this(key, CompoundBinaryTag.builder());
         }
 
-        private Builder(final String name, final CompoundBinaryTag.Builder builder) {
-            this.name = name;
+        private Builder(final Key key, final CompoundBinaryTag.Builder builder) {
+            this.key = key;
             this.id = CURRENT_ID++;
             this.builder = builder;
         }
@@ -198,8 +209,8 @@ public final class Dimension {
         }
 
         public @NotNull Dimension build() {
-            return new Dimension(CompoundBinaryTag.builder()
-                    .putString("name", this.name)
+            return new Dimension(this.key, CompoundBinaryTag.builder()
+                    .putString("name", this.key.asString())
                     .putInt("id", this.id)
                     .put("element", this.builder.build())
                     .build());
@@ -207,7 +218,7 @@ public final class Dimension {
 
     }
 
-    public static class Effects {
+    public static final class Effects {
 
         private final CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder();
 
@@ -238,6 +249,5 @@ public final class Dimension {
         public CompoundBinaryTag build() {
             return this.builder.build();
         }
-
     }
 }

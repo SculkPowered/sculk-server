@@ -1,16 +1,16 @@
 package de.bauhd.minecraft.server.world.biome;
 
+import de.bauhd.minecraft.server.registry.Registry;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a biome.
  */
-public final class Biome {
+public final class Biome implements Registry.Entry {
 
-    private static int CURRENT_ID = 0;
-
-    public static final Biome PLAINS = Biome.builder("minecraft:plains")
+    public static final Biome PLAINS = builder(Key.key(Key.MINECRAFT_NAMESPACE, "plains"))
             .precipitation(true)
             .temperature(0.5F)
             .downfall(0.5F)
@@ -22,44 +22,51 @@ public final class Biome {
             )
             .build();
 
+    private static int CURRENT_ID = 0;
+
+    private final Key key;
     private final CompoundBinaryTag nbt;
 
-    private Biome(final CompoundBinaryTag nbt) {
+    private Biome(final Key key, final CompoundBinaryTag nbt) {
+        this.key = key;
         this.nbt = nbt;
     }
 
-    public static @NotNull Builder builder(@NotNull String name) {
-        return new Builder(name);
+    public static @NotNull Builder builder(@NotNull Key key) {
+        return new Builder(key);
     }
 
-    public @NotNull Builder toBuilder(final String newName) {
-        return new Builder(newName, CompoundBinaryTag.builder().put(this.nbt.getCompound("element")));
+    public @NotNull Builder toBuilder(final Key newKey) {
+        return new Builder(newKey, CompoundBinaryTag.builder().put(this.nbt.getCompound("element")));
     }
 
-    public @NotNull CompoundBinaryTag nbt() {
-        return this.nbt;
+    @Override
+    public @NotNull Key key() {
+        return this.key;
     }
 
-    public @NotNull String name() {
-        return this.nbt.getString("name");
-    }
-
+    @Override
     public int id() {
         return this.nbt.getInt("id");
     }
 
-    public static class Builder {
+    @Override
+    public @NotNull CompoundBinaryTag asNBT() {
+        return this.nbt;
+    }
 
-        private final String name;
+    public static final class Builder {
+
+        private final Key key;
         private final int id;
         private final CompoundBinaryTag.Builder builder;
 
-        private Builder(final String name) {
-            this(name, CompoundBinaryTag.builder());
+        private Builder(final Key key) {
+            this(key, CompoundBinaryTag.builder());
         }
 
-        private Builder(final String name, final CompoundBinaryTag.Builder builder) {
-            this.name = name;
+        private Builder(final Key key, final CompoundBinaryTag.Builder builder) {
+            this.key = key;
             this.id = CURRENT_ID++;
             this.builder = builder;
         }
@@ -105,16 +112,15 @@ public final class Biome {
         }
 
         public @NotNull Biome build() {
-            return new Biome(CompoundBinaryTag.builder()
-                    .putString("name", this.name)
+            return new Biome(this.key, CompoundBinaryTag.builder()
+                    .putString("name", this.key.asString())
                     .putInt("id", this.id)
                     .put("element", this.builder.build())
                     .build());
         }
-
     }
 
-    public static class Effects {
+    public static final class Effects {
 
         private final CompoundBinaryTag.Builder builder = CompoundBinaryTag.builder();
 
@@ -215,5 +221,4 @@ public final class Biome {
             return this.builder.build();
         }
     }
-
 }

@@ -5,7 +5,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import de.bauhd.minecraft.server.command.CommandSender;
+import de.bauhd.minecraft.server.command.CommandSource;
 import de.bauhd.minecraft.server.protocol.Buffer;
 import de.bauhd.minecraft.server.protocol.packet.Packet;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
@@ -15,16 +15,16 @@ import java.util.List;
 
 public final class Commands implements Packet {
 
-    private final RootCommandNode<CommandSender> rootNode;
+    private final RootCommandNode<CommandSource> rootNode;
 
-    public Commands(final RootCommandNode<CommandSender> rootNode) {
+    public Commands(final RootCommandNode<CommandSource> rootNode) {
         this.rootNode = rootNode;
     }
 
     @Override
     public void encode(Buffer buf) {
-        final var nodeQueue = new ArrayDeque<CommandNode<CommandSender>>(List.of(this.rootNode));
-        final var nodes = new Object2IntLinkedOpenHashMap<CommandNode<CommandSender>>();
+        final var nodeQueue = new ArrayDeque<CommandNode<CommandSource>>(List.of(this.rootNode));
+        final var nodes = new Object2IntLinkedOpenHashMap<CommandNode<CommandSource>>();
         while (!nodeQueue.isEmpty()) {
             final var node = nodeQueue.poll();
             if (nodes.containsKey(node)) return;
@@ -43,8 +43,8 @@ public final class Commands implements Packet {
     }
 
     private void writeNode(final Buffer buf,
-                               final CommandNode<CommandSender> node,
-                               final Object2IntLinkedOpenHashMap<CommandNode<CommandSender>> nodes) {
+                               final CommandNode<CommandSource> node,
+                               final Object2IntLinkedOpenHashMap<CommandNode<CommandSource>> nodes) {
         // node flags
         byte flags = 0;
         if (node.getRedirect() != null) {
@@ -75,7 +75,7 @@ public final class Commands implements Packet {
             buf.writeVarInt(nodes.getInt(node.getRedirect()));
         }
 
-        if (node instanceof ArgumentCommandNode<?,?> || node instanceof LiteralCommandNode<CommandSender>) {
+        if (node instanceof ArgumentCommandNode<?,?> || node instanceof LiteralCommandNode<CommandSource>) {
             buf.writeString(node.getName()); // name
 
             if (node instanceof ArgumentCommandNode<?,?> argumentNode) {

@@ -5,7 +5,11 @@ import de.bauhd.minecraft.server.container.AnvilContainer;
 import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.item.ItemStack;
 import de.bauhd.minecraft.server.container.item.Material;
+import de.bauhd.minecraft.server.entity.player.GameMode;
+import de.bauhd.minecraft.server.event.ResultedEvent;
 import de.bauhd.minecraft.server.event.Subscribe;
+import de.bauhd.minecraft.server.event.block.BlockBreakEvent;
+import de.bauhd.minecraft.server.event.block.BlockPlaceEvent;
 import de.bauhd.minecraft.server.event.player.PlayerInitialEvent;
 import de.bauhd.minecraft.server.event.connection.ServerPingEvent;
 import de.bauhd.minecraft.server.event.lifecycle.ServerInitializeEvent;
@@ -17,6 +21,7 @@ import de.bauhd.minecraft.server.plugin.PluginDescription;
 import de.bauhd.minecraft.server.world.Position;
 import de.bauhd.minecraft.server.world.World;
 import de.bauhd.minecraft.server.world.biome.Biome;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -33,7 +38,7 @@ public final class TestPlugin extends Plugin {
     public void handle(final ServerInitializeEvent event) {
         this.getServer().getCommandHandler().register(new GameModeCommand());
 
-        final var testBiome = Biome.PLAINS.toBuilder("test")
+        final var testBiome = Biome.PLAINS.toBuilder(Key.key("test", "plains"))
                 .effects(Biome.Effects.builder()
                         .grassColor(0x962d26)
                         .skyColor(8103167)
@@ -42,7 +47,7 @@ public final class TestPlugin extends Plugin {
                         .waterColor(4159204)
                 )
                 .build();
-        this.getServer().getBiomeHandler().register(testBiome);
+        this.getServer().getBiomeRegistry().register(testBiome);
         this.world = this.getServer().loadWorld(World.builder()
                         .name("test")
                         .spawnPosition(new Position(0.5, 86, 0.5)),
@@ -90,6 +95,20 @@ public final class TestPlugin extends Plugin {
 
     @Subscribe
     public void handle(final PlayerClickContainerEvent event) {
-        event.setCancelled(true);
+        event.setResult(ResultedEvent.GenericResult.denied());
+    }
+
+    @Subscribe
+    public void handle(final BlockBreakEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+            event.setResult(ResultedEvent.GenericResult.denied());
+        }
+    }
+
+    @Subscribe
+    public void handle(final BlockPlaceEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
+            event.setResult(ResultedEvent.GenericResult.denied());
+        }
     }
 }

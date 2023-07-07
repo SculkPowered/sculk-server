@@ -44,7 +44,7 @@ public interface EventHandler {
      * @param eventConsumer the consumer that consumes the event on call
      * @param <E> the event class type
      */
-    <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, @NotNull EventOrder eventOrder, @NotNull Consumer<E> eventConsumer);
+    <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, short eventOrder, @NotNull Consumer<E> eventConsumer);
 
     /**
      * Unregisters all listeners of a specific plugin

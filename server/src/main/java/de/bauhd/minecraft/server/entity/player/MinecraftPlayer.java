@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.entity.player;
 
+import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.container.Container;
 import de.bauhd.minecraft.server.container.MineContainer;
 import de.bauhd.minecraft.server.container.MineInventory;
@@ -39,6 +40,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
             .withDynamic(PermissionChecker.POINTER, () -> this.permissionChecker)
             .build();
 
+    private final AdvancedMinecraftServer server;
     private final MineConnection connection;
     private final GameProfile profile;
     private final ClientInformationWrapper settings = new ClientInformationWrapper();
@@ -56,8 +58,9 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
     private boolean instantBreak;
     private float viewModifier = 0.01F;
 
-    public MinecraftPlayer(final MineConnection connection, final GameProfile profile) {
+    public MinecraftPlayer(final AdvancedMinecraftServer server, final MineConnection connection, final GameProfile profile) {
         super(profile.uniqueId());
+        this.server = server;
         this.connection = connection;
         this.profile = profile;
     }
@@ -206,7 +209,7 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
         this.position = world.getSpawnPosition();
         this.gameMode = world.getDefaultGameMode();
         super.setWorld(world);
-        this.send(new Respawn(world.getDimension().nbt().getString("name"), world.getName(), 0, this.gameMode, (byte) 3));
+        this.send(new Respawn(world.getDimension().name(), world.getName(), 0, this.gameMode, (byte) 3));
     }
 
     @Override
@@ -241,12 +244,12 @@ public final class MinecraftPlayer extends AbstractLivingEntity implements Playe
 
     @Override
     public void showBossBar(@NotNull BossBar bar) {
-        this.connection.server().getBossBarListener().showBossBar(this, bar);
+        this.server.getBossBarListener().showBossBar(this, bar);
     }
 
     @Override
     public void hideBossBar(@NotNull BossBar bar) {
-        this.connection.server().getBossBarListener().hideBossBar(this, bar);
+        this.server.getBossBarListener().hideBossBar(this, bar);
     }
 
     @NotNull

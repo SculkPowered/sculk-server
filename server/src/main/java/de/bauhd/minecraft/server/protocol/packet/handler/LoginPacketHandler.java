@@ -25,17 +25,17 @@ public final class LoginPacketHandler extends PacketHandler {
 
     private byte[] verifyToken;
 
-    public LoginPacketHandler(final MineConnection connection) {
+    public LoginPacketHandler(final MineConnection connection, final AdvancedMinecraftServer server) {
         this.connection = connection;
-        this.server = connection.server();
+        this.server = server;
     }
 
     @Override
     public boolean handle(LoginStart loginStart) {
         this.connection.setUsername(loginStart.username());
 
-        if (this.connection.server().getConfiguration().mode() == MinecraftConfig.Mode.ONLINE) {
-            final var publicKey = this.connection.server().getKeyPair().getPublic().getEncoded();
+        if (this.server.getConfig().mode() == MinecraftConfig.Mode.ONLINE) {
+            final var publicKey = this.server.getKeyPair().getPublic().getEncoded();
             this.verifyToken = new byte[4];
             ThreadLocalRandom.current().nextBytes(this.verifyToken);
             this.connection.send(new EncryptionRequest("", publicKey, this.verifyToken));

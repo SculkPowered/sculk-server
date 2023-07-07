@@ -13,7 +13,7 @@ public final class MinecraftConfiguration implements MinecraftConfig {
     public MinecraftConfiguration() {
         this.host = "0.0.0.0";
         this.port = 25565;
-        this.mode = Mode.OFFLINE;
+        this.mode = Mode.ONLINE;
         this.compressionThreshold = 256;
         this.compressionLevel = -1;
     }
