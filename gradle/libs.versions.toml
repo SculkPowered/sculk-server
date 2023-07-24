@@ -37,7 +37,7 @@ fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
 gson = "com.google.code.gson:gson:2.10.1"
 brigadier = "com.mojang:brigadier:1.0.18"
 
-junit = "org.junit.jupiter:junit-jupiter:5.9.3"
+junit = "org.junit.jupiter:junit-jupiter:5.10.0"
 
 [bundles]
 netty = ["netty-codec", "netty-transport", "netty-transport-epoll"]
