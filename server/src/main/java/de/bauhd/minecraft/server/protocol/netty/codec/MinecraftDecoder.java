@@ -7,8 +7,12 @@ import io.netty5.buffer.Buffer;
 import io.netty5.channel.ChannelHandler;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.handler.codec.DecoderException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class MinecraftDecoder implements ChannelHandler {
+
+    private static final Logger LOGGER = LogManager.getLogger(MinecraftDecoder.class);
 
     private final Protocol.Direction direction;
     private State.PacketRegistry registry;
@@ -31,7 +35,7 @@ public final class MinecraftDecoder implements ChannelHandler {
             if (packet == null) {
                 buf.readerOffset(offset);
                 ctx.fireChannelRead(message);
-                System.out.println("Unknown packet id " + Integer.toHexString(id));
+                LOGGER.warn("Unknown packet id 0x" + Integer.toHexString(id));
             } else {
                 try (buf) {
                     final var minLength = packet.minLength();
@@ -49,7 +53,7 @@ public final class MinecraftDecoder implements ChannelHandler {
                     try {
                         packet.decode(new de.bauhd.minecraft.server.protocol.Buffer(buf));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("Error during decoding of " + packet.getClass(), e);
                     }
                     if (buf.readableBytes() > 0) {
                         throw new DecoderException("Overflow after decode packet " +

@@ -11,15 +11,12 @@ public interface MinecraftConfig {
     @NotNull Mode mode();
 
     enum Mode {
-
         ONLINE,
         OFFLINE,
-        BUNGEECORD,
-
+        BUNGEECORD
     }
 
     int compressionThreshold();
 
     int compressionLevel();
-
 }

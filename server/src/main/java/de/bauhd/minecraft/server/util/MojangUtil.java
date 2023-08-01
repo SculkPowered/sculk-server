@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.bauhd.minecraft.server.AdvancedMinecraftServer;
 import de.bauhd.minecraft.server.entity.player.GameProfile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +13,8 @@ import java.net.URL;
 import java.util.UUID;
 
 public final class MojangUtil {
+
+    private static final Logger LOGGER = LogManager.getLogger(MojangUtil.class);
 
     private static final String SESSION_SERVER_URL = "https://sessionserver.mojang.com";
     private static final String SESSION_SERVER_PROFILE_URL = SESSION_SERVER_URL + "/session/minecraft/profile/%s?unsigned=false";
@@ -54,7 +58,7 @@ public final class MojangUtil {
         try (final var reader = new InputStreamReader(new URL(url).openConnection().getInputStream())) {
             return JsonParser.parseReader(reader).getAsJsonObject();
         } catch (IOException | IllegalStateException e) {
-            e.printStackTrace();
+            LOGGER.error("Exception during api request", e);
             return null;
         }
     }

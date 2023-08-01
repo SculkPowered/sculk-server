@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static de.bauhd.minecraft.server.protocol.packet.play.BossBar.update;
+
 public final class BossBarListener implements BossBar.Listener {
 
     private final Map<BossBar, Holder> bossBars = new HashMap<>();
@@ -16,7 +18,7 @@ public final class BossBarListener implements BossBar.Listener {
     public void bossBarNameChanged(@NotNull BossBar bar, @NotNull Component oldName, @NotNull Component newName) {
         final var holder = this.bossBars.get(bar);
         if (!holder.subscribers.isEmpty()) {
-            holder.sendSubscribers(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(holder.uniqueId, newName));
+            holder.sendSubscribers(update(holder.uniqueId, newName));
         }
     }
 
@@ -24,7 +26,7 @@ public final class BossBarListener implements BossBar.Listener {
     public void bossBarProgressChanged(@NotNull BossBar bar, float oldProgress, float newProgress) {
         final var holder = this.bossBars.get(bar);
         if (!holder.subscribers.isEmpty()) {
-            holder.sendSubscribers(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(holder.uniqueId, newProgress));
+            holder.sendSubscribers(update(holder.uniqueId, newProgress));
         }
     }
 
@@ -32,7 +34,7 @@ public final class BossBarListener implements BossBar.Listener {
     public void bossBarColorChanged(@NotNull BossBar bar, BossBar.@NotNull Color oldColor, BossBar.@NotNull Color newColor) {
         final var holder = this.bossBars.get(bar);
         if (!holder.subscribers.isEmpty()) {
-            holder.sendSubscribers(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(holder.uniqueId, newColor.ordinal(), bar.overlay().ordinal()));
+            holder.sendSubscribers(update(holder.uniqueId, newColor.ordinal(), bar.overlay().ordinal()));
         }
     }
 
@@ -40,7 +42,7 @@ public final class BossBarListener implements BossBar.Listener {
     public void bossBarOverlayChanged(@NotNull BossBar bar, BossBar.@NotNull Overlay oldOverlay, BossBar.@NotNull Overlay newOverlay) {
         final var holder = this.bossBars.get(bar);
         if (!holder.subscribers.isEmpty()) {
-            holder.sendSubscribers(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(holder.uniqueId, bar.color().ordinal(), newOverlay.ordinal()));
+            holder.sendSubscribers(update(holder.uniqueId, bar.color().ordinal(), newOverlay.ordinal()));
         }
     }
 
@@ -48,7 +50,7 @@ public final class BossBarListener implements BossBar.Listener {
     public void bossBarFlagsChanged(@NotNull BossBar bar, @NotNull Set<BossBar.Flag> flagsAdded, @NotNull Set<BossBar.Flag> flagsRemoved) {
         final var holder = this.bossBars.get(bar);
         if (!holder.subscribers.isEmpty()) {
-            holder.sendSubscribers(de.bauhd.minecraft.server.protocol.packet.play.BossBar.update(holder.uniqueId, this.flags(bar)));
+            holder.sendSubscribers(update(holder.uniqueId, this.flags(bar)));
         }
     }
 

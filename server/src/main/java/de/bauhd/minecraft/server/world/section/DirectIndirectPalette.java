@@ -52,7 +52,7 @@ final class DirectIndirectPalette implements Palette {
         final var clear = (1L << this.bitsPerEntry) - 1L;
         this.values[index] = old & ~(clear << bitIndex) | ((long) value << bitIndex);
         final var air = (old >> bitIndex & clear) == 0;
-        if (air != (value == 0)) this.size += air ? 1 : -1;
+        if (air != (value == 0)) this.size += (short) (air ? 1 : -1);
     }
 
     @Override
@@ -76,7 +76,7 @@ final class DirectIndirectPalette implements Palette {
         final var valuesPerLong = 64 / this.bitsPerEntry;
         var block = 0;
         for (var i = 0; i < valuesPerLong; i++)
-            block |= (long) value << i * this.bitsPerEntry;
+            block |= (int) ((long) value << i * this.bitsPerEntry);
         Arrays.fill(this.values, block);
         this.size = this.maxSize();
     }

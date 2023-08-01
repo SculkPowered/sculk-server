@@ -46,23 +46,7 @@ public final class Commands implements Packet {
                                final CommandNode<CommandSource> node,
                                final Object2IntLinkedOpenHashMap<CommandNode<CommandSource>> nodes) {
         // node flags
-        byte flags = 0;
-        if (node.getRedirect() != null) {
-            flags |= 0x08;
-        }
-        if (node.getCommand() != null) {
-            flags |= 0x04;
-        }
-
-        if (node instanceof LiteralCommandNode<?>) {
-            flags |= 0x01;
-        } else if (node instanceof ArgumentCommandNode<?, ?> argumentCommandNode) {
-            flags |= 0x02;
-            if (argumentCommandNode.getCustomSuggestions() != null) {
-                flags |= 0x10;
-            }
-        }
-        buf.writeByte(flags);
+        buf.writeByte(this.flags(node));
 
         // node children
         buf.writeVarInt(node.getChildren().size());
@@ -176,6 +160,26 @@ public final class Commands implements Packet {
                 }
             }
         }
+    }
+
+    private byte flags(final CommandNode<CommandSource> node) {
+        byte flags = 0;
+        if (node.getRedirect() != null) {
+            flags |= 0x08;
+        }
+        if (node.getCommand() != null) {
+            flags |= 0x04;
+        }
+
+        if (node instanceof LiteralCommandNode<?>) {
+            flags |= 0x01;
+        } else if (node instanceof ArgumentCommandNode<?, ?> argumentCommandNode) {
+            flags |= 0x02;
+            if (argumentCommandNode.getCustomSuggestions() != null) {
+                flags |= 0x10;
+            }
+        }
+        return flags;
     }
 
     @Override

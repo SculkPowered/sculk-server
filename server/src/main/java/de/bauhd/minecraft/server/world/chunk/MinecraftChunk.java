@@ -69,7 +69,7 @@ public final class MinecraftChunk implements Chunk {
         final var id = block.getId();
         this.section(y).blocks().set(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z), id);
         this.packet = null;
-        if (this.viewers.size() != 0) {
+        if (!this.viewers.isEmpty()) {
             final var packet = new BlockUpdate(x, y, z, id);
             for (final var viewer : this.viewers) {
                 viewer.send(packet);

@@ -43,7 +43,7 @@ public final class MinePluginHandler implements PluginHandler {
                 path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".jar"))) {
             stream.forEach(this::loadPlugin);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error during loading of plugins", e);
         }
     }
 
@@ -63,13 +63,13 @@ public final class MinePluginHandler implements PluginHandler {
                 this.plugins.put(plugin.getDescription().name(), plugin);
                 this.server.getEventHandler().register(plugin, plugin);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                LOGGER.error("Main class could not be found", e);
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
                      NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
     }
 

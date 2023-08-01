@@ -77,35 +77,33 @@ public final class CodeGenerator {
         }
 
         try (final var stream = Files.walk(data.resolve("damage_type"), 1)) {
-            this.append(apiPackage.resolve("damage").resolve("DamageType.java"), list -> {
-                stream.forEach(path -> {
-                    if (Files.isDirectory(path)) return;
-                    final var name = path.getFileName().toString().split("\\.")[0];
-                    try (final var reader = Files.newBufferedReader(path)) {
-                        final var damageData = GSON.fromJson(reader, JsonObject.class);
-                        final var stringBuilder = new StringBuilder("    public static final DamageType " + name.toUpperCase() + " = builder(Key.key(\"" + name + "\"))");
-                        if (damageData.has("exhaustion")) {
-                            stringBuilder.append(".exhaustion(").append(damageData.get("exhaustion").getAsDouble()).append(")");
-                        }
-                        if (damageData.has("effects")) {
-                            stringBuilder.append(".effects(").append("\"").append(damageData.get("effects").getAsString()).append("\"").append(")");
-                        }
-                        if (damageData.has("message_id")) {
-                            stringBuilder.append(".messageId(").append("\"").append(damageData.get("message_id").getAsString()).append("\"").append(")");
-                        }
-                        if (damageData.has("scaling")) {
-                            stringBuilder.append(".scaling(").append("\"").append(damageData.get("scaling").getAsString()).append("\"").append(")");
-                        }
-                        if (damageData.has("death_message_type")) {
-                            stringBuilder.append(".deathMessageType(").append("\"").append(damageData.get("death_message_type").getAsString()).append("\"").append(")");
-                        }
-                        stringBuilder.append(".build();");
-                        list.add(stringBuilder.toString());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+            this.append(apiPackage.resolve("damage").resolve("DamageType.java"), list -> stream.forEach(path -> {
+                if (Files.isDirectory(path)) return;
+                final var name = path.getFileName().toString().split("\\.")[0];
+                try (final var reader = Files.newBufferedReader(path)) {
+                    final var damageData = GSON.fromJson(reader, JsonObject.class);
+                    final var stringBuilder = new StringBuilder("    public static final DamageType " + name.toUpperCase() + " = builder(Key.key(\"" + name + "\"))");
+                    if (damageData.has("exhaustion")) {
+                        stringBuilder.append(".exhaustion(").append(damageData.get("exhaustion").getAsDouble()).append(")");
                     }
-                });
-            });
+                    if (damageData.has("effects")) {
+                        stringBuilder.append(".effects(").append("\"").append(damageData.get("effects").getAsString()).append("\"").append(")");
+                    }
+                    if (damageData.has("message_id")) {
+                        stringBuilder.append(".messageId(").append("\"").append(damageData.get("message_id").getAsString()).append("\"").append(")");
+                    }
+                    if (damageData.has("scaling")) {
+                        stringBuilder.append(".scaling(").append("\"").append(damageData.get("scaling").getAsString()).append("\"").append(")");
+                    }
+                    if (damageData.has("death_message_type")) {
+                        stringBuilder.append(".deathMessageType(").append("\"").append(damageData.get("death_message_type").getAsString()).append("\"").append(")");
+                    }
+                    stringBuilder.append(".build();");
+                    list.add(stringBuilder.toString());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

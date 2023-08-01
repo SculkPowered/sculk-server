@@ -10,9 +10,12 @@ import de.bauhd.minecraft.server.protocol.netty.codec.VarIntLengthEncoder;
 import io.netty5.channel.Channel;
 import io.netty5.channel.ChannelHandlerContext;
 import io.netty5.channel.ChannelInitializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class NettyServerInitializer extends ChannelInitializer<Channel> {
 
+    private static final Logger LOGGER = LogManager.getLogger(NettyServerInitializer.class);
     private final AdvancedMinecraftServer server;
 
     public NettyServerInitializer(final AdvancedMinecraftServer server) {
@@ -31,6 +34,6 @@ public final class NettyServerInitializer extends ChannelInitializer<Channel> {
 
     @Override
     public void channelExceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        LOGGER.error(cause);
     }
 }

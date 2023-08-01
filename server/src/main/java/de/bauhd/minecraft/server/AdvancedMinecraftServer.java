@@ -85,6 +85,7 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private final MineCommandHandler commandHandler;
     private final BossBarListener bossBarListener;
     private final NettyServer nettyServer;
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final EntityClassToSupplierMap entities = new EntityClassToSupplierMap();
 
     AdvancedMinecraftServer() {
