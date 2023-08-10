@@ -78,14 +78,15 @@ public final class BossBarListener implements BossBar.Listener {
     }
 
     private byte flags(final BossBar bar) {
+        final var flagSet = bar.flags();
         byte flags = 0;
-        if (bar.flags().contains(BossBar.Flag.DARKEN_SCREEN)) {
+        if (flagSet.contains(BossBar.Flag.DARKEN_SCREEN)) {
             flags |= 0x1;
         }
-        if (bar.flags().contains(BossBar.Flag.PLAY_BOSS_MUSIC)) {
+        if (flagSet.contains(BossBar.Flag.PLAY_BOSS_MUSIC)) {
             flags |= 0x2;
         }
-        if (bar.flags().contains(BossBar.Flag.CREATE_WORLD_FOG)) {
+        if (flagSet.contains(BossBar.Flag.CREATE_WORLD_FOG)) {
             flags |= 0x4;
         }
         return flags;

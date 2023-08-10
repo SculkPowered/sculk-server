@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.command.defaults;
 
+import com.mojang.brigadier.Command;
 import de.bauhd.minecraft.server.MinecraftServer;
 import de.bauhd.minecraft.server.command.BrigadierCommand;
 
@@ -10,7 +11,7 @@ public final class ShutdownCommand extends BrigadierCommand {
                 .requires(commandSender -> commandSender.hasPermission("server.command.shutdown"))
                 .executes(context -> {
                     server.shutdown();
-                    return 1;
+                    return Command.SINGLE_SUCCESS;
                 })
                 .build());
     }

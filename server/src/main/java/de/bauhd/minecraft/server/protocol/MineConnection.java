@@ -51,6 +51,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 import static de.bauhd.minecraft.server.entity.player.GameProfile.Property;
+import static de.bauhd.minecraft.server.util.Constant.*;
 import static de.bauhd.minecraft.server.util.CoordinateUtil.chunkCoordinate;
 
 public final class MineConnection extends ChannelHandlerAdapter implements Connection {
@@ -247,15 +248,15 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
         final var secretKey = new SecretKeySpec(secret, "AES");
 
         this.channel.pipeline()
-                .addBefore("frame-decoder", "cipher-decoder", new CipherDecoder(new JavaCipher(secretKey, Cipher.DECRYPT_MODE)))
-                .addBefore("frame-encoder", "cipher-encoder", new CipherEncoder(new JavaCipher(secretKey, Cipher.ENCRYPT_MODE)));
+                .addBefore(FRAME_DECODER, CIPHER_DECODER, new CipherDecoder(new JavaCipher(secretKey, Cipher.DECRYPT_MODE)))
+                .addBefore(FRAME_ENCODER, CIPHER_ENCODER, new CipherEncoder(new JavaCipher(secretKey, Cipher.ENCRYPT_MODE)));
     }
 
     private void addCompressionHandler() {
-        this.channel.pipeline().remove("frame-encoder");
+        this.channel.pipeline().remove(FRAME_ENCODER);
         this.channel.pipeline()
-                .addBefore("minecraft-decoder", "compressor-decoder", new CompressorDecoder())
-                .addBefore("minecraft-encoder", "compressor-encoder", new CompressorEncoder(this.server.getConfig()));
+                .addBefore(MINECRAFT_DECODER, COMPRESSOR_DECODER, new CompressorDecoder())
+                .addBefore(MINECRAFT_ENCODER, COMPRESSOR_ENCODER, new CompressorEncoder(this.server.getConfig()));
     }
 
     public void setVersion(final int version) {

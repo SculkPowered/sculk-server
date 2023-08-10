@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.server.command.defaults;
 
+import com.mojang.brigadier.Command;
 import de.bauhd.minecraft.server.MinecraftServer;
 import de.bauhd.minecraft.server.command.BrigadierCommand;
 import net.kyori.adventure.text.Component;
@@ -25,7 +26,7 @@ public final class InfoCommand extends BrigadierCommand {
                             .append(Component.text("RAM: " +
                                     toMB(memoryMXBean.getUsed()) + "/" + toMB(memoryMXBean.getMax()))).appendNewline()
                             .append(Component.text("Threads: " + Thread.getAllStackTraces().keySet().size())));
-                    return 1;
+                    return Command.SINGLE_SUCCESS;
                 })
                 .build());
     }

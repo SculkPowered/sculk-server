@@ -1,5 +1,6 @@
 package de.bauhd.minecraft.plugin.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import de.bauhd.minecraft.server.command.BrigadierCommand;
 import de.bauhd.minecraft.server.entity.player.GameMode;
@@ -29,7 +30,7 @@ public final class GameModeCommand extends BrigadierCommand {
                 )
                 .executes(context -> {
                     context.getSource().sendMessage(Component.text("/gamemode <0-3>", NamedTextColor.RED));
-                    return 1;
+                    return Command.SINGLE_SUCCESS;
                 })
                 .build());
     }
