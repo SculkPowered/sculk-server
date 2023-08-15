@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     api(libs.bundles.adventure)
-    api(libs.bundles.configurate)
     api(libs.slf4j)
     api(libs.gson)
     api(libs.brigadier)
