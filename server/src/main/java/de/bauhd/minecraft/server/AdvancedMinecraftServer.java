@@ -201,12 +201,12 @@ public final class AdvancedMinecraftServer implements MinecraftServer {
     private void loadBlocks() {
         try (final var resource = this.getClass().getClassLoader().getResourceAsStream("registries/blocks.json");
              final var reader = new InputStreamReader(Objects.requireNonNull(resource))) {
-            final var byName = new HashMap<String, BlockState>();
-            final var byId = new HashMap<Integer, BlockState>();
             final var stringJsonMap = TypeToken.getParameterized(Map.class, String.class, JsonObject.class).getType();
             final var stringStringMap = TypeToken.getParameterized(Map.class, String.class, String.class).getType();
             final var jsonArray = TypeToken.getArray(JsonObject.class).getType();
             final Map<String, JsonObject> map = GSON.fromJson(reader, stringJsonMap);
+            final var byName = new HashMap<String, BlockState>(map.size());
+            final var byId = new HashMap<Integer, BlockState>(map.size());
             for (final var entry : map.entrySet()) {
                 final var key = entry.getKey();
                 final var block = new BlockParent(key);

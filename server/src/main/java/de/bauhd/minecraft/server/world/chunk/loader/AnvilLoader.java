@@ -118,8 +118,9 @@ public final class AnvilLoader extends DefaultChunkLoader {
                         final var block = entry.getString("Name");
                         final var properties = entry.getCompound("Properties");
                         if (!properties.equals(CompoundBinaryTag.empty())) {
-                            final var map = new HashMap<String, String>();
-                            for (final var property : entry.getCompound("Properties")) {
+                            final var propertiesCompound = entry.getCompound("Properties");
+                            final var map = new HashMap<String, String>(propertiesCompound.keySet().size()); // TODO: change if #size is available
+                            for (final var property : propertiesCompound) {
                                 map.put(property.getKey(), ((StringBinaryTag) property.getValue()).value());
                             }
                             palette[k] = Block.get(block).properties(map).getId();

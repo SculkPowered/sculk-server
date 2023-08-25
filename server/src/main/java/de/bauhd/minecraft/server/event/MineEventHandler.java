@@ -59,10 +59,13 @@ public final class MineEventHandler implements EventHandler {
     @SuppressWarnings("unchecked")
     private <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, short order,
                               @NotNull Object instance, @NotNull Consumer<E> eventConsumer) {
-        final var registrations = new ArrayList<Registration>();
         final var array = this.registrations.get(event);
+        final List<Registration> registrations;
         if (array != null) {
+            registrations = new ArrayList<>(array.length + 1);
             Collections.addAll(registrations, array);
+        } else {
+            registrations = new ArrayList<>(1);
         }
         registrations.add(new Registration(plugin, order, instance, (Consumer<Object>) eventConsumer));
         registrations.sort(this.orderComparator);

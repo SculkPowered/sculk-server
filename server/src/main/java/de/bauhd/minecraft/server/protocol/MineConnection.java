@@ -310,7 +310,7 @@ public final class MineConnection extends ChannelHandlerAdapter implements Conne
             this.send(new CenterChunk(chunkX, chunkZ));
         }
         final var world = this.player.getWorld();
-        final var chunks = new ArrayList<MinecraftChunk>();
+        final var chunks = new ArrayList<MinecraftChunk>((range * 2 + 1) * (range * 2 + 1));
         this.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
             final var chunk = world.getChunk(x, z);
             chunks.add(chunk);

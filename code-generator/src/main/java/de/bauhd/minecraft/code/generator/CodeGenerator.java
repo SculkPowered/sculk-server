@@ -130,7 +130,7 @@ public final class CodeGenerator {
 
     private void append(final Path path, final Consumer<List<String>> appender) throws IOException {
         final var oldLines = Files.readAllLines(path);
-        final var newLines = new ArrayList<String>();
+        final var newLines = new ArrayList<String>(oldLines.size());
         var index = 0;
         for (final var line : oldLines) {
             newLines.add(line);
