@@ -89,7 +89,13 @@ tasks {
             "it/unimi/dsi/fastutil/objects/*Big*",
             "it/unimi/dsi/fastutil/objects/*Tree*",
             "it/unimi/dsi/fastutil/objects/*2Object*",
-            "it/unimi/dsi/fastutil/objects/*HashSet*"
+            "it/unimi/dsi/fastutil/objects/*HashSet*",
+            "javax/annotation/**",
+            "org/checkerframework/**",
+            "com/google/common/**",
+            "com/google/j2objc/**",
+            "com/google/thirdparty/**",
+            "javax.annotation/**"
         )
     }
 
