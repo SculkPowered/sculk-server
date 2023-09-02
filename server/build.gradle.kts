@@ -10,7 +10,9 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":server:appender"))
 
-    // netty
+    /*
+        We go back to netty v4, because at this point v5 is stick in the Alpha and is not frequently updated.
+     */
     implementation(libs.bundles.netty)
     implementation(variantOf(libs.netty.transport.epoll) { classifier("linux-x86_64") })
     implementation(variantOf(libs.netty.transport.epoll) { classifier("linux-aarch_64") })
@@ -22,15 +24,21 @@ dependencies {
     implementation(libs.bundles.log4j)
     implementation(libs.fastutil)
 
+    implementation(libs.velocity.native)
+
     testImplementation(libs.junit)
+}
+
+repositories {
+    maven("https://repo.papermc.io/repository/maven-public/") // for velocity-native
 }
 
 tasks {
     jar {
         manifest {
-            attributes["Main-Class"] = "de.bauhd.minecraft.server.Main"
+            attributes["Main-Class"] = "de.bauhd.sculk.Main"
             attributes["Multi-Release"] = true
-            attributes["Implementation-Title"] = "Minecraft-Server"
+            attributes["Implementation-Title"] = "Sculk-Server"
 
             val gitCommit = ByteArrayOutputStream().use {
                 exec {
@@ -45,7 +53,7 @@ tasks {
     }
 
     shadowJar {
-        archiveFileName.set("minecraft-server.jar")
+        archiveFileName.set("sculk-server.jar")
         transform(Log4j2PluginsCacheFileTransformer::class.java)
 
         // exclude some things we don't need to save space

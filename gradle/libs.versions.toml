@@ -1,5 +1,5 @@
 [versions]
-netty = "5.0.0.Alpha5"
+netty = "4.1.97.Final"
 adventure = "4.14.0"
 log4j = "2.20.0"
 
@@ -7,9 +7,9 @@ log4j = "2.20.0"
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 
 [libraries]
-netty-codec = { group = "io.netty", name = "netty5-codec", version.ref = "netty" }
-netty-transport = { group = "io.netty", name = "netty5-transport", version.ref = "netty" }
-netty-transport-epoll = { group = "io.netty", name = "netty5-transport-native-epoll", version.ref = "netty" }
+netty-codec = { group = "io.netty", name = "netty-codec", version.ref = "netty" }
+netty-transport = { group = "io.netty", name = "netty-transport", version.ref = "netty" }
+netty-transport-epoll = { group = "io.netty", name = "netty-transport-native-epoll", version.ref = "netty" }
 
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 adventure-nbt = { group = "net.kyori", name = "adventure-nbt", version.ref = "adventure" }
@@ -31,6 +31,7 @@ jansi = "org.fusesource.jansi:jansi:2.4.0"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
 gson = "com.google.code.gson:gson:2.10.1"
 brigadier = "com.mojang:brigadier:1.0.18"
+velocity-native = "com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"
 
 junit = "org.junit.jupiter:junit-jupiter:5.10.0"
 

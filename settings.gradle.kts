@@ -1,4 +1,4 @@
-rootProject.name = "minecraft-server"
+rootProject.name = "sculk-server"
 include(
     "api",
     "server",
