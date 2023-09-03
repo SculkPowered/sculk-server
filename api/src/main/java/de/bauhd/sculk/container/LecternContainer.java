@@ -5,7 +5,13 @@ package de.bauhd.sculk.container;
  */
 public interface LecternContainer extends Container {
 
+    /**
+     * @since 1.0.0
+     */
     void setPage(int page);
 
+    /**
+     * @since 1.0.0
+     */
     int getPage();
 }

@@ -9,7 +9,9 @@ public interface ChunkGenerator {
 
     /**
      * Generates a chunk.
+     *
      * @param chunk the chunk that should be generated
+     * @since 1.0.0
      */
     void generate(@NotNull Chunk chunk);
 }

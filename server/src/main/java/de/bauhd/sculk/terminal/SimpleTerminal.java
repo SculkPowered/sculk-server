@@ -1,6 +1,6 @@
 package de.bauhd.sculk.terminal;
 
-import de.bauhd.sculk.SculkMinecraftServer;
+import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.command.CommandSource;
 import de.bauhd.terminal.TerminalAppender;
 import net.kyori.adventure.chat.ChatType;
@@ -29,14 +29,14 @@ public final class SimpleTerminal implements CommandSource {
     private static final ComponentLogger COMPONENT_LOGGER = ComponentLogger.logger(SimpleTerminal.class);
     private static final String PROMPT = "> ";
 
-    private final SculkMinecraftServer server;
+    private final SculkServer server;
     private final LineReader lineReader;
     private final Pointers pointers = Pointers.builder()
             .withStatic(Identity.NAME, "CONSOLE")
             .withStatic(PermissionChecker.POINTER, PermissionChecker.always(TriState.TRUE))
             .build();
 
-    public SimpleTerminal(final SculkMinecraftServer server) {
+    public SimpleTerminal(final SculkServer server) {
         this.server = server;
         try {
             this.lineReader = LineReaderBuilder.builder()

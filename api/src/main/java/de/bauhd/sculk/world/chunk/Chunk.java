@@ -15,40 +15,50 @@ public interface Chunk {
 
     /**
      * Gets the x chunk coordinate.
+     *
      * @return the x coordinate of the chunk
+     * @since 1.0.0
      */
     int getX();
 
     /**
      * Gets the z chunk coordinate.
+     *
      * @return the z coordinate of the chunk
+     * @since 1.0.0
      */
     int getZ();
 
     /**
      * Sets the block at the specified coordinates.
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     *
+     * @param x     the x coordinate
+     * @param y     the y coordinate
+     * @param z     the z coordinate
      * @param block the block to set
+     * @since 1.0.0
      */
     void setBlock(int x, int y, int z, @NotNull BlockState block);
 
     /**
      * Gets a block from his coordinates.
+     *
      * @param x the x coordinate
      * @param y the y coordinate
      * @param z the z coordinate
      * @return the block at the specified coordinates.
+     * @since 1.0.0
      */
     @NotNull BlockState getBlock(int x, int y, int z);
 
     /**
      * Sets the biome at the specified coordinates.
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
+     *
+     * @param x     the x coordinate
+     * @param y     the y coordinate
+     * @param z     the z coordinate
      * @param biome the block to set
+     * @since 1.0.0
      */
     void setBiome(int x, int y, int z, @NotNull Biome biome);
 }

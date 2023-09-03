@@ -1,7 +1,7 @@
 package de.bauhd.sculk.container;
 
 import de.bauhd.sculk.container.item.ItemStack;
-import de.bauhd.sculk.entity.player.MinecraftPlayer;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.packet.play.Equipment;
 import de.bauhd.sculk.protocol.packet.play.container.ContainerSlot;
 import de.bauhd.sculk.util.ItemList;
@@ -13,9 +13,9 @@ import java.util.Map;
 public final class MineInventory implements Inventory {
 
     public final ItemList items = new ItemList(this.getType().size());
-    private final MinecraftPlayer player;
+    private final SculkPlayer player;
 
-    public MineInventory(final MinecraftPlayer player) {
+    public MineInventory(final SculkPlayer player) {
         this.player = player;
     }
 

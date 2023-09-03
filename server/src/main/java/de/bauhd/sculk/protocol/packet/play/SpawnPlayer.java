@@ -1,14 +1,14 @@
 package de.bauhd.sculk.protocol.packet.play;
 
-import de.bauhd.sculk.entity.player.MinecraftPlayer;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class SpawnPlayer implements Packet {
 
-    private final MinecraftPlayer player;
+    private final SculkPlayer player;
 
-    public SpawnPlayer(final MinecraftPlayer player) {
+    public SpawnPlayer(final SculkPlayer player) {
         this.player = player;
     }
 

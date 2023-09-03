@@ -5,13 +5,13 @@ import java.util.Map;
 public final class BlockParent {
 
     private final String name;
-    private MineBlockState[] states;
+    private SculkBlockState[] states;
 
     public BlockParent(final String name) {
         this.name = name;
     }
 
-    public void setStates(MineBlockState[] states) {
+    public void setStates(SculkBlockState[] states) {
         this.states = states;
     }
 

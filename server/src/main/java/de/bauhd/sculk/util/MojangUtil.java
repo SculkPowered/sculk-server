@@ -2,7 +2,7 @@ package de.bauhd.sculk.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.bauhd.sculk.SculkMinecraftServer;
+import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.entity.player.GameProfile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +45,7 @@ public final class MojangUtil {
     }
 
     public static GameProfile hasJoined(final String username, final String serverId) {
-        return SculkMinecraftServer.GSON.fromJson(apiRequest(String.format(HAS_JOINED_URL, username, serverId)), GameProfile.class);
+        return SculkServer.GSON.fromJson(apiRequest(String.format(HAS_JOINED_URL, username, serverId)), GameProfile.class);
     }
 
     public static UUID fromMojang(String uniqueId) {

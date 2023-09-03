@@ -1,15 +1,15 @@
 package de.bauhd.sculk.entity;
 
-import de.bauhd.sculk.entity.player.MinecraftPlayer;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.entity.player.Player;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.play.EntityMetadata;
 import de.bauhd.sculk.protocol.packet.play.RemoveEntities;
 import de.bauhd.sculk.protocol.packet.play.SpawnEntity;
-import de.bauhd.sculk.world.MinecraftWorld;
+import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.World;
-import de.bauhd.sculk.world.chunk.MinecraftChunk;
+import de.bauhd.sculk.world.chunk.SculkChunk;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,8 +24,8 @@ public abstract class AbstractEntity implements Entity {
     private final UUID uniqueId;
     private final int id = CURRENT_ID.getAndIncrement();
     public final Metadata metadata = new Metadata();
-    protected final Collection<MinecraftPlayer> viewers = new ArrayList<>();
-    private MinecraftWorld world;
+    protected final Collection<SculkPlayer> viewers = new ArrayList<>();
+    private SculkWorld world;
     protected Position position = Position.ZERO;
 
     public AbstractEntity() {
@@ -47,17 +47,17 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public MinecraftWorld getWorld() {
+    public SculkWorld getWorld() {
         return this.world;
     }
 
     @Override
     public void setWorld(@NotNull World world) {
         if (this.world != null) {
-            ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().remove(this);
+            ((SculkChunk) this.world.getChunkAt(this.position)).entities().remove(this);
         }
-        this.world = (MinecraftWorld) world;
-        ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().add(this);
+        this.world = (SculkWorld) world;
+        ((SculkChunk) this.world.getChunkAt(this.position)).entities().add(this);
     }
 
     @Override
@@ -66,9 +66,9 @@ public abstract class AbstractEntity implements Entity {
     }
 
     public void setPosition(final Position position) {
-        ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().remove(this);
+        ((SculkChunk) this.world.getChunkAt(this.position)).entities().remove(this);
         this.position = position;
-        ((MinecraftChunk) this.world.getChunkAt(this.position)).entities().add(this);
+        ((SculkChunk) this.world.getChunkAt(this.position)).entities().add(this);
     }
 
     @Override
@@ -171,7 +171,7 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void addViewer(@NotNull Player player) {
-        final var mcPlayer = ((MinecraftPlayer) player);
+        final var mcPlayer = ((SculkPlayer) player);
         mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().protocolId(), this.position));
         if (this.metadata.entries().isEmpty()) {
             mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
@@ -181,7 +181,7 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void removeViewer(@NotNull Player player) {
-        final var mcPlayer = (MinecraftPlayer) player;
+        final var mcPlayer = (SculkPlayer) player;
         if (this.viewers.contains(mcPlayer)) {
             mcPlayer.send(new RemoveEntities(this.getId()));
             this.viewers.remove(mcPlayer);
@@ -193,7 +193,7 @@ public abstract class AbstractEntity implements Entity {
             final var entityMetadata = new EntityMetadata(this.id, this.metadata.changes());
             this.metadata.reset();
             this.sendViewers(entityMetadata);
-            if (this instanceof MinecraftPlayer player) {
+            if (this instanceof SculkPlayer player) {
                 player.send(entityMetadata);
             }
         }

@@ -5,7 +5,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import de.bauhd.sculk.SculkMinecraftServer;
+import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.entity.player.GameProfile;
 import de.bauhd.sculk.util.MojangUtil;
 
@@ -22,7 +22,7 @@ public final class GameProfileDeserializer implements JsonDeserializer<GameProfi
         return new GameProfile(
                 MojangUtil.fromMojang(json.get("id").getAsString()),
                 json.get("name").getAsString(),
-                List.of(SculkMinecraftServer.GSON.fromJson(json.get("properties"), PROPERTY_ARRAY))
+                List.of(SculkServer.GSON.fromJson(json.get("properties"), PROPERTY_ARRAY))
         );
     }
 }

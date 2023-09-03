@@ -1,10 +1,10 @@
 package de.bauhd.sculk.world.chunk.loader;
 
-import de.bauhd.sculk.SculkMinecraftServer;
-import de.bauhd.sculk.world.MinecraftWorld;
+import de.bauhd.sculk.SculkServer;
+import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.block.Block;
 import de.bauhd.sculk.world.chunk.ChunkGenerator;
-import de.bauhd.sculk.world.chunk.MinecraftChunk;
+import de.bauhd.sculk.world.chunk.SculkChunk;
 import de.bauhd.sculk.world.section.PaletteHolder;
 import de.bauhd.sculk.world.section.Section;
 import de.bauhd.sculk.util.CoordinateUtil;
@@ -28,11 +28,11 @@ public final class AnvilLoader extends DefaultChunkLoader {
 
     private static final int SECTOR_SIZE = 4096;
 
-    private final SculkMinecraftServer server;
+    private final SculkServer server;
     private final Path regionPath;
     private final Map<String, RegionFile> regionCache;
 
-    public AnvilLoader(final SculkMinecraftServer server, final ChunkGenerator generator, final Path path) {
+    public AnvilLoader(final SculkServer server, final ChunkGenerator generator, final Path path) {
         super(generator);
         this.server = server;
         this.regionPath = path.resolve("region");
@@ -40,10 +40,10 @@ public final class AnvilLoader extends DefaultChunkLoader {
     }
 
     @Override
-    public @NotNull MinecraftChunk loadChunk(final MinecraftWorld world, final int x, final int z) {
+    public @NotNull SculkChunk loadChunk(final SculkWorld world, final int x, final int z) {
         final var fileName = "r." + CoordinateUtil.regionCoordinate(x) + "." + CoordinateUtil.regionCoordinate(z) + ".mca";
         try {
-            MinecraftChunk chunk;
+            SculkChunk chunk;
             if (!this.regionCache.containsKey(fileName)) {
                 final var file = this.regionPath.resolve(fileName);
                 if (Files.exists(file)) {
@@ -77,7 +77,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
             }
         }
 
-        private MinecraftChunk getChunk(final MinecraftWorld world, final int chunkX, final int chunkZ) throws IOException {
+        private SculkChunk getChunk(final SculkWorld world, final int chunkX, final int chunkZ) throws IOException {
             final var offset = this.sectorOffset(this.locations[(chunkX & 31) + (chunkZ & 31) * 32]) * SECTOR_SIZE;
             var buf = ByteBuffer.allocate(5);
             this.accessFile.getChannel().read(buf, offset);
@@ -175,7 +175,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
 
                 sections[i] = section;
             }
-            return new MinecraftChunk(world, chunkX, chunkZ, sections);
+            return new SculkChunk(world, chunkX, chunkZ, sections);
         }
 
         private int[] uncompressedBlockStates(CompoundBinaryTag states) {

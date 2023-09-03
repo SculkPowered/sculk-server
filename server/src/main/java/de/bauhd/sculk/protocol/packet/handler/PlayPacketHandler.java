@@ -1,18 +1,18 @@
 package de.bauhd.sculk.protocol.packet.handler;
 
-import de.bauhd.sculk.SculkMinecraftServer;
-import de.bauhd.sculk.container.MineContainer;
+import de.bauhd.sculk.SculkServer;
+import de.bauhd.sculk.container.SculkContainer;
 import de.bauhd.sculk.container.item.ItemStack;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.player.GameMode;
-import de.bauhd.sculk.entity.player.MinecraftPlayer;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.event.block.BlockBreakEvent;
 import de.bauhd.sculk.event.block.BlockPlaceEvent;
 import de.bauhd.sculk.event.player.PlayerChatEvent;
 import de.bauhd.sculk.event.player.PlayerClickContainerButtonEvent;
 import de.bauhd.sculk.event.player.PlayerClickContainerEvent;
 import de.bauhd.sculk.event.player.PlayerUseItemEvent;
-import de.bauhd.sculk.protocol.MineConnection;
+import de.bauhd.sculk.protocol.SculkConnection;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 import de.bauhd.sculk.protocol.packet.play.*;
 import de.bauhd.sculk.protocol.packet.play.block.BlockUpdate;
@@ -32,11 +32,11 @@ public final class PlayPacketHandler extends PacketHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(PlayPacketHandler.class);
 
-    private final MineConnection connection;
-    private final SculkMinecraftServer server;
-    private final MinecraftPlayer player;
+    private final SculkConnection connection;
+    private final SculkServer server;
+    private final SculkPlayer player;
 
-    public PlayPacketHandler(final MineConnection connection, final SculkMinecraftServer server, final MinecraftPlayer player) {
+    public PlayPacketHandler(final SculkConnection connection, final SculkServer server, final SculkPlayer player) {
         this.connection = connection;
         this.server = server;
         this.player = player;
@@ -119,13 +119,13 @@ public final class PlayPacketHandler extends PacketHandler {
                         if (container == inventory) {
                             this.player.send(new ContainerContent((byte) 0, 1, inventory.items));
                         } else {
-                            final var mineContainer = (MineContainer) container;
+                            final var sculkContainer = (SculkContainer) container;
                             final var items = new ItemList(container.getType().size() + 36);
                             for (var i = 8; i < 44; i++) {
                                 items.set(i - 9 + container.getType().size(), inventory.items.get(i));
                             }
-                            for (var i = 0; i < mineContainer.items.size(); i++) {
-                                items.set(i, mineContainer.items.get(i));
+                            for (var i = 0; i < sculkContainer.items.size(); i++) {
+                                items.set(i, sculkContainer.items.get(i));
                             }
                             this.player.send(new ContainerContent((byte) 1, 1, items));
                         }

@@ -38,7 +38,9 @@ public class ItemStack {
 
     /**
      * Gets the material of an item.
+     *
      * @return the material of item
+     * @since 1.0.0
      */
     public Material material() {
         return this.material;
@@ -46,7 +48,9 @@ public class ItemStack {
 
     /**
      * Gets the amount of items.
+     *
      * @return the amount of items
+     * @since 1.0.0
      */
     public int amount() {
         return this.amount;
@@ -54,7 +58,9 @@ public class ItemStack {
 
     /**
      * Sets the amount of items.
+     *
      * @return the same item
+     * @since 1.0.0
      */
     public @NotNull ItemStack amount(final int amount) {
         this.amount = amount;
@@ -63,7 +69,9 @@ public class ItemStack {
 
     /**
      * Sets the display name of item.
+     *
      * @return the same item
+     * @since 1.0.0
      */
     public @NotNull ItemStack displayName(final Component displayName) {
         this.display("Name", StringBinaryTag.stringBinaryTag(GsonComponentSerializer.gson().serialize(displayName)));
@@ -72,7 +80,9 @@ public class ItemStack {
 
     /**
      * Sets the lore of item.
+     *
      * @return the same item
+     * @since 1.0.0
      */
     public @NotNull ItemStack lore(final Component... lore) {
         final var list = ListBinaryTag.builder();
@@ -85,7 +95,9 @@ public class ItemStack {
 
     /**
      * Sets the item unbreakable or not.
+     *
      * @return the same item
+     * @since 1.0.0
      */
     public @NotNull ItemStack unbreakable(final boolean unbreakable) {
         this.nbt = this.nbt.putBoolean("Unbreakable", unbreakable);
@@ -94,7 +106,9 @@ public class ItemStack {
 
     /**
      * Gets the nbt of item.
+     *
      * @return the nbt of item
+     * @since 1.0.0
      */
     public @NotNull CompoundBinaryTag nbt() {
         return this.nbt;
@@ -102,7 +116,9 @@ public class ItemStack {
 
     /**
      * Returns true if this item is air.
+     *
      * @return true if it is empty.
+     * @since 1.0.0
      */
     public boolean isEmpty() {
         return this.material == Material.AIR;

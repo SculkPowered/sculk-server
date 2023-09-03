@@ -1,6 +1,6 @@
 package de.bauhd.sculk.protocol.netty;
 
-import de.bauhd.sculk.SculkMinecraftServer;
+import de.bauhd.sculk.SculkServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
@@ -18,13 +18,13 @@ public final class NettyServer {
 
     private static final Logger LOGGER = LogManager.getLogger(NettyServer.class);
 
-    private final SculkMinecraftServer server;
+    private final SculkServer server;
 
     private Future<? super Void> channelFuture;
     private EventLoopGroup bossLoopGroup;
     private EventLoopGroup workerLoopGroup;
 
-    public NettyServer(final SculkMinecraftServer server) {
+    public NettyServer(final SculkServer server) {
         this.server = server;
     }
 

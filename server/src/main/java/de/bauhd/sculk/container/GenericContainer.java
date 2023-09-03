@@ -1,10 +1,10 @@
 package de.bauhd.sculk.container;
 
-import de.bauhd.sculk.entity.player.MinecraftPlayer;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
-public final class GenericContainer extends MineContainer {
+public final class GenericContainer extends SculkContainer {
 
     private final Type type;
 
@@ -19,5 +19,5 @@ public final class GenericContainer extends MineContainer {
     }
 
     @Override
-    public void sendProperties(MinecraftPlayer player) {}
+    public void sendProperties(SculkPlayer player) {}
 }

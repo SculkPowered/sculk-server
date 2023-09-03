@@ -11,7 +11,7 @@ public final class EventThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(@NotNull Runnable runnable) {
-        final var thread = new Thread(runnable, "Minecraft Event Executor - " + this.count.getAndIncrement());
+        final var thread = new Thread(runnable, "Sculk Event Executor - " + this.count.getAndIncrement());
         thread.setDaemon(true);
         return thread;
     }

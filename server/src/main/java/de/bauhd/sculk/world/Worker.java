@@ -5,10 +5,10 @@ public final class Worker extends Thread {
     private static final int TPS = 20;
     private static final int MILLIS_BETWEEN_TICK = 1000 / TPS;
 
-    private final MinecraftWorld world;
+    private final SculkWorld world;
 
-    public Worker(final MinecraftWorld world) {
-        super("Minecraft World " + world.getName() + " Worker");
+    public Worker(final SculkWorld world) {
+        super("Sculk World " + world.getName() + " Worker");
         this.world = world;
     }
 

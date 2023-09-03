@@ -1,6 +1,6 @@
 package de.bauhd.sculk.util;
 
-import de.bauhd.sculk.entity.player.MinecraftPlayer;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.packet.Packet;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -54,7 +54,7 @@ public final class BossBarListener implements BossBar.Listener {
         }
     }
 
-    public void showBossBar(final MinecraftPlayer player, final BossBar bar) {
+    public void showBossBar(final SculkPlayer player, final BossBar bar) {
         if (!this.bossBars.containsKey(bar)) {
             this.bossBars.put(bar, new Holder());
             bar.addListener(this);
@@ -65,13 +65,13 @@ public final class BossBarListener implements BossBar.Listener {
                 .add(holder.uniqueId, bar.name(), bar.progress(), bar.color().ordinal(), bar.overlay().ordinal(), this.flags(bar)));
     }
 
-    public void hideBossBar(final MinecraftPlayer player, final BossBar bar) {
+    public void hideBossBar(final SculkPlayer player, final BossBar bar) {
         final var holder = this.bossBars.get(bar);
         holder.subscribers.remove(player);
         player.send(de.bauhd.sculk.protocol.packet.play.BossBar.remove(holder.uniqueId));
     }
 
-    public void onDisconnect(final MinecraftPlayer player) {
+    public void onDisconnect(final SculkPlayer player) {
         for (final var holder : this.bossBars.values()) {
             holder.subscribers.remove(player);
         }
@@ -95,7 +95,7 @@ public final class BossBarListener implements BossBar.Listener {
     private static final class Holder {
 
         private final UUID uniqueId;
-        private final List<MinecraftPlayer> subscribers;
+        private final List<SculkPlayer> subscribers;
 
         private Holder() {
             this.uniqueId = UUID.randomUUID();

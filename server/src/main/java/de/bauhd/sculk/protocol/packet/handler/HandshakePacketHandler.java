@@ -1,6 +1,6 @@
 package de.bauhd.sculk.protocol.packet.handler;
 
-import de.bauhd.sculk.protocol.MineConnection;
+import de.bauhd.sculk.protocol.SculkConnection;
 import de.bauhd.sculk.protocol.Protocol;
 import de.bauhd.sculk.protocol.State;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
@@ -10,9 +10,9 @@ import net.kyori.adventure.text.Component;
 
 public final class HandshakePacketHandler extends PacketHandler {
 
-    private final MineConnection connection;
+    private final SculkConnection connection;
 
-    public HandshakePacketHandler(final MineConnection connection) {
+    public HandshakePacketHandler(final SculkConnection connection) {
         this.connection = connection;
     }
 

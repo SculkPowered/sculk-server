@@ -1,7 +1,7 @@
 package de.bauhd.sculk.test.event;
 
 import de.bauhd.sculk.event.EventOrder;
-import de.bauhd.sculk.event.MineEventHandler;
+import de.bauhd.sculk.event.SculkEventHandler;
 import de.bauhd.sculk.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.sculk.test.plugin.TestPlugin;
 import org.junit.jupiter.api.AfterAll;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class EventTest {
 
-    private static final MineEventHandler EVENT_HANDLER = new MineEventHandler();
+    private static final SculkEventHandler EVENT_HANDLER = new SculkEventHandler();
 
     @Test
     void test() {

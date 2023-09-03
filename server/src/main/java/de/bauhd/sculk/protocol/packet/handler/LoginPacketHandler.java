@@ -1,8 +1,8 @@
 package de.bauhd.sculk.protocol.packet.handler;
 
-import de.bauhd.sculk.SculkMinecraftServer;
+import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.MinecraftConfig;
-import de.bauhd.sculk.protocol.MineConnection;
+import de.bauhd.sculk.protocol.SculkConnection;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 import de.bauhd.sculk.protocol.packet.login.*;
 import de.bauhd.sculk.util.EncryptionUtil;
@@ -20,12 +20,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class LoginPacketHandler extends PacketHandler {
 
-    private final MineConnection connection;
-    private final SculkMinecraftServer server;
+    private final SculkConnection connection;
+    private final SculkServer server;
 
     private byte[] verifyToken;
 
-    public LoginPacketHandler(final MineConnection connection, final SculkMinecraftServer server) {
+    public LoginPacketHandler(final SculkConnection connection, final SculkServer server) {
         this.connection = connection;
         this.server = server;
     }

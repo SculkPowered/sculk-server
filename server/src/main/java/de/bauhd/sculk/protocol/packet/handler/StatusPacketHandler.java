@@ -1,9 +1,9 @@
 package de.bauhd.sculk.protocol.packet.handler;
 
-import de.bauhd.sculk.SculkMinecraftServer;
+import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.event.connection.ServerPingEvent;
 import de.bauhd.sculk.protocol.Buffer;
-import de.bauhd.sculk.protocol.MineConnection;
+import de.bauhd.sculk.protocol.SculkConnection;
 import de.bauhd.sculk.protocol.Protocol;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 import de.bauhd.sculk.protocol.packet.status.StatusPing;
@@ -13,10 +13,10 @@ import net.kyori.adventure.text.Component;
 
 public final class StatusPacketHandler extends PacketHandler {
 
-    private final SculkMinecraftServer server;
-    private final MineConnection connection;
+    private final SculkServer server;
+    private final SculkConnection connection;
 
-    public StatusPacketHandler(final MineConnection connection, final SculkMinecraftServer server) {
+    public StatusPacketHandler(final SculkConnection connection, final SculkServer server) {
         this.connection = connection;
         this.server = server;
     }

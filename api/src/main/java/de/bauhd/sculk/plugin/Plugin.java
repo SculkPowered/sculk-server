@@ -20,7 +20,9 @@ public abstract class Plugin {
 
     /**
      * Gets the server instance.
+     *
      * @return the server
+     * @since 1.0.0
      */
     public final MinecraftServer getServer() {
         return server;
@@ -28,7 +30,9 @@ public abstract class Plugin {
 
     /**
      * Gets the description of the plugin.
+     *
      * @return the plugin's description
+     * @since 1.0.0
      */
     public final PluginDescription getDescription() {
         return this.description;
@@ -36,7 +40,9 @@ public abstract class Plugin {
 
     /**
      * Gets the {@link ComponentLogger} of the plugin.
+     *
      * @return the plugin's logger
+     * @since 1.0.0
      */
     public ComponentLogger getLogger() {
         return this.logger;

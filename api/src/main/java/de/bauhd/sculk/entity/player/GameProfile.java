@@ -17,13 +17,16 @@ public record GameProfile(
 
     /**
      * Represents a property of a profile.
-     * @param key the key of the property
-     * @param value the value of the property
+     *
+     * @param key       the key of the property
+     * @param value     the value of the property
      * @param signature the signature of the property
+     * @since 1.0.0
      */
     public record Property(
             @NotNull String key,
             @NotNull String value,
             @Nullable String signature
-    ) {}
+    ) {
+    }
 }

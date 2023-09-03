@@ -5,7 +5,13 @@ package de.bauhd.sculk.container;
  */
 public interface LoomContainer extends Container {
 
+    /**
+     * @since 1.0.0
+     */
     void setSelectedPattern(int pattern);
 
+    /**
+     * @since 1.0.0
+     */
     int getSelectedPattern();
 }

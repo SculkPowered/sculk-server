@@ -11,27 +11,35 @@ public interface Container {
 
     /**
      * Gets the title of the container.
+     *
      * @return the title of the container
+     * @since 1.0.0
      */
     @NotNull Component getTitle();
 
     /**
      * Gets the type of the container
+     *
      * @return the type of the container
+     * @since 1.0.0
      */
     @NotNull Type getType();
 
     /**
      * Sets the item at the specified index.
+     *
      * @param index the index of the item
-     * @param item the item to set
+     * @param item  the item to set
+     * @since 1.0.0
      */
     void setItem(int index, @NotNull ItemStack item);
 
     /**
      * Gets an item by its index.
+     *
      * @param index the index of the item
      * @return the item at the specified index
+     * @since 1.0.0
      */
     @NotNull ItemStack getItem(int index);
 
@@ -74,6 +82,7 @@ public interface Container {
 
         /**
          * Gets the size of a container of this type.
+         *
          * @return the size of the container type
          */
         public int size() {
