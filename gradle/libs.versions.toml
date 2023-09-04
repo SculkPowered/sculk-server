@@ -25,7 +25,7 @@ log4j-iostreams = { group = "org.apache.logging.log4j", name = "log4j-iostreams"
 log4j-jul = { group = "org.apache.logging.log4j", name = "log4j-jul", version.ref = "log4j" }
 log4j-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j" }
 
-slf4j = "org.slf4j:slf4j-api:2.0.7"
+slf4j = "org.slf4j:slf4j-api:2.0.9"
 jline = "org.jline:jline-reader:3.23.0"
 jansi = "org.fusesource.jansi:jansi:2.4.0"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
