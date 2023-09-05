@@ -2,7 +2,7 @@ package de.bauhd.sculk.entity;
 
 import org.jetbrains.annotations.NotNull;
 
-public final class SculkDrowned extends AbstractMob implements Drowned {
+public final class SculkDrowned extends SculkZombie implements Drowned {
 
     @Override
     public @NotNull EntityType getType() {

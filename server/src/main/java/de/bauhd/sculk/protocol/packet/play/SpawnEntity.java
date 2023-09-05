@@ -37,4 +37,14 @@ public final class SpawnEntity implements Packet {
                 .writeShort((short) 0)
                 .writeShort((short) 0);
     }
+
+    @Override
+    public String toString() {
+        return "SpawnEntity{" +
+                "entityId=" + this.entityId +
+                ", uniqueId=" + this.uniqueId +
+                ", type=" + this.type +
+                ", position=" + this.position +
+                '}';
+    }
 }

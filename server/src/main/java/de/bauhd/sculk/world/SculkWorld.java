@@ -1,17 +1,17 @@
 package de.bauhd.sculk.world;
 
-import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.MinecraftServer;
+import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.entity.AbstractEntity;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.player.GameMode;
 import de.bauhd.sculk.entity.player.Player;
+import de.bauhd.sculk.util.CoordinateUtil;
 import de.bauhd.sculk.world.block.BlockState;
 import de.bauhd.sculk.world.chunk.ChunkGenerator;
 import de.bauhd.sculk.world.chunk.SculkChunk;
 import de.bauhd.sculk.world.chunk.loader.ChunkLoader;
 import de.bauhd.sculk.world.dimension.Dimension;
-import de.bauhd.sculk.util.CoordinateUtil;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -102,8 +102,10 @@ public class SculkWorld implements World {
     @Override
     public void spawnEntity(@NotNull Entity entity, @NotNull Position position) {
         final var abstractEntity = (AbstractEntity) entity;
-        abstractEntity.setWorld(this);
-        abstractEntity.setPosition(position);
+        abstractEntity.spawn(this, position);
+        for (final var viewer : this.getChunkAt(position).viewers()) {
+            abstractEntity.addViewer(viewer);
+        }
     }
 
     @Override

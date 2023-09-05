@@ -330,6 +330,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         this.position = position;
         super.setWorld(world);
         this.permissionChecker = permissionChecker;
+        this.spawned = true;
     }
 
     public void send(final Packet packet) {

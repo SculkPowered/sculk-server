@@ -27,8 +27,8 @@ public final class Metadata {
     private static final int OPT_POSITION_TYPE = 11;
     private static final int DIRECTION_TYPE = 12;
     private static final int OPT_UUID_TYPE = 13;
-    private static final int BLOCK__TYPE = 14;
-    private static final int OPT_BLOCK__TYPE = 15;
+    private static final int BLOCK_TYPE = 14;
+    private static final int OPT_BLOCK_TYPE = 15;
     private static final int NBT_TYPE = 16;
     private static final int PARTICLE_TYPE = 17;
     private static final int VILLAGER_DATA_TYPE = 18;
@@ -54,7 +54,7 @@ public final class Metadata {
     public <T> T get(final int index, final T def) {
         final var entry = this.entries.get(index);
         if (entry != null) {
-            return (T) this.entries.get(index).t;
+            return (T) entry.t;
         }
         return def;
     }
@@ -113,11 +113,11 @@ public final class Metadata {
         }));
     }
 
-    public void setSlot(final int index, final ItemStack value) {
+    public void setItem(final int index, final ItemStack value) {
         this.set(index, new Entry<>(SLOT_TYPE, value, Buffer::writeItem));
     }
 
-    public ItemStack getSlot(final int index, final ItemStack def) {
+    public ItemStack getItem(final int index, final ItemStack def) {
         return this.get(index, def);
     }
 
@@ -153,6 +153,10 @@ public final class Metadata {
         return this.get(index, def);
     }
 
+    public void setBlockId(final int index, final int value) {
+        this.set(index, new Entry<>(BLOCK_TYPE, value, Buffer::writeVarInt));
+    }
+
     public void setNbt(final int index, final CompoundBinaryTag value) {
         this.set(index, new Entry<>(NBT_TYPE, value, Buffer::writeCompoundTag));
     }
@@ -184,6 +188,15 @@ public final class Metadata {
             mask &= ~0x20;
         }
         this.setByte(index, mask);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Enum<T>> T getEnum(final int index, final T def) {
+        final var entry = this.entries.get(index);
+        if (entry != null) {
+            return (T) def.getClass().getEnumConstants()[(int) entry.t];
+        }
+        return def;
     }
 
     public Map<Integer, Entry<?>> entries() {

@@ -26,6 +26,7 @@ public abstract class AbstractEntity implements Entity {
     protected final Collection<SculkPlayer> viewers = new ArrayList<>();
     private SculkWorld world;
     protected Position position = Position.ZERO;
+    protected boolean spawned;
 
     public AbstractEntity() {
         this(UUID.randomUUID());
@@ -171,11 +172,13 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public void addViewer(@NotNull Player player) {
         final var mcPlayer = ((SculkPlayer) player);
-        mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().protocolId(), this.position));
-        if (this.metadata.entries().isEmpty()) {
-            mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
+        if (!this.viewers.contains(mcPlayer)) {
+            mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().protocolId(), this.position));
+            if (this.metadata.entries().isEmpty()) {
+                mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
+            }
+            this.viewers.add(mcPlayer);
         }
-        this.viewers.add(mcPlayer);
     }
 
     @Override
@@ -188,7 +191,7 @@ public abstract class AbstractEntity implements Entity {
     }
 
     public void tick() {
-        if (!this.metadata.changes().isEmpty()) {
+        if (this.spawned && !this.metadata.changes().isEmpty()) {
             final var entityMetadata = new EntityMetadata(this.id, this.metadata.changes());
             this.metadata.reset();
             this.sendViewers(entityMetadata);
@@ -207,5 +210,11 @@ public abstract class AbstractEntity implements Entity {
             player.send(packet1);
             player.send(packet2);
         });
+    }
+
+    public void spawn(@NotNull World world, @NotNull Position position) {
+        this.setWorld(world);
+        this.setPosition(position);
+        this.spawned = true;
     }
 }
