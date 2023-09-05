@@ -126,9 +126,7 @@ public interface World {
      * @return the chunk at the specified position
      * @since 1.0.0
      */
-    default @NotNull Chunk getChunkAt(@NotNull Position position) {
-        return this.getChunkAt((int) position.x(), (int) position.z());
-    }
+    @NotNull Chunk getChunkAt(@NotNull Position position);
 
     /**
      * Spawns the specified entity at the specified position in this world.

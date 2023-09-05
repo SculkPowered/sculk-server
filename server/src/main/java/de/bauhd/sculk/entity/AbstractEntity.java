@@ -9,7 +9,6 @@ import de.bauhd.sculk.protocol.packet.play.SpawnEntity;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.World;
-import de.bauhd.sculk.world.chunk.SculkChunk;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,10 +53,10 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public void setWorld(@NotNull World world) {
         if (this.world != null) {
-            ((SculkChunk) this.world.getChunkAt(this.position)).entities().remove(this);
+            this.world.getChunkAt(this.position).entities().remove(this);
         }
         this.world = (SculkWorld) world;
-        ((SculkChunk) this.world.getChunkAt(this.position)).entities().add(this);
+        this.world.getChunkAt(this.position).entities().add(this);
     }
 
     @Override
@@ -66,9 +65,9 @@ public abstract class AbstractEntity implements Entity {
     }
 
     public void setPosition(final Position position) {
-        ((SculkChunk) this.world.getChunkAt(this.position)).entities().remove(this);
+        this.world.getChunkAt(this.position).entities().remove(this);
         this.position = position;
-        ((SculkChunk) this.world.getChunkAt(this.position)).entities().add(this);
+        this.world.getChunkAt(this.position).entities().add(this);
     }
 
     @Override

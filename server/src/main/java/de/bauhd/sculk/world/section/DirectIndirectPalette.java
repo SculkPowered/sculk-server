@@ -4,16 +4,14 @@ import de.bauhd.sculk.protocol.Buffer;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 final class DirectIndirectPalette implements Palette {
 
     private final byte dimension;
     private final byte maxBitsPerEntry;
     private byte bitsPerEntry;
-    private final List<Integer> paletteToValue;
+    private int[] paletteToValue;
     private final Int2IntMap valueToPalette;
     private long[] values;
     private short size;
@@ -22,8 +20,7 @@ final class DirectIndirectPalette implements Palette {
         this.dimension = dimension;
         this.maxBitsPerEntry = maxBitsPerEntry;
         this.bitsPerEntry = bitsPerEntry;
-        this.paletteToValue = new ArrayList<>(1);
-        this.paletteToValue.add(0);
+        this.paletteToValue = new int[]{0};
         this.valueToPalette = new Int2IntOpenHashMap(1);
         this.valueToPalette.put(0, 0);
         this.valueToPalette.defaultReturnValue(-1);
@@ -62,7 +59,7 @@ final class DirectIndirectPalette implements Palette {
         final var index = sectionIndex / valuesPerLong;
         final var bitIndex = (sectionIndex - index * valuesPerLong) * this.bitsPerEntry;
         final var value = (int) (this.values[index] >> bitIndex) & ((1 << this.bitsPerEntry) - 1);
-        return this.isIndirect() ? this.paletteToValue.get(value) : value;
+        return this.isIndirect() ? this.paletteToValue[value] : value;
     }
 
     @Override
@@ -85,7 +82,7 @@ final class DirectIndirectPalette implements Palette {
     public void write(Buffer buf) {
         buf.writeByte(this.bitsPerEntry);
         if (this.isIndirect()) { // indirect
-            buf.writeVarInt(this.paletteToValue.size());
+            buf.writeVarInt(this.paletteToValue.length);
             for (final var i : this.paletteToValue) {
                 buf.writeVarInt(i);
             }
@@ -97,7 +94,7 @@ final class DirectIndirectPalette implements Palette {
         return this.bitsPerEntry;
     }
 
-    public List<Integer> paletteToValue() {
+    public int[] paletteToValue() {
         return this.paletteToValue;
     }
 
@@ -110,7 +107,7 @@ final class DirectIndirectPalette implements Palette {
         final var valuesPerLong = 64 / bitsPerEntry;
         final var size = maxSize();
         final var dimensionMinus = this.dimension - 1;
-        final var ids = this.isIndirect() ? this.paletteToValue.toArray() : null;
+        final var ids = this.isIndirect() ? this.paletteToValue : null;
         final var dimensionBitCount = this.bitsToRepresent(dimensionMinus);
         final var shiftedDimensionBitCount = dimensionBitCount << 1;
         for (var i = 0; i < values.length; i++) {
@@ -124,7 +121,7 @@ final class DirectIndirectPalette implements Palette {
                 final var z = index >> dimensionBitCount & dimensionMinus;
                 final var x = index & dimensionMinus;
                 final var result = ids != null ? ids[paletteIndex] : paletteIndex;
-                consumer.accept(x, y, z, (Integer) result);
+                consumer.accept(x, y, z, result);
             }
         }
     }
@@ -137,7 +134,7 @@ final class DirectIndirectPalette implements Palette {
         if (!this.isIndirect()) {
             return value;
         }
-        final var lastIndex = this.paletteToValue.size();
+        final var lastIndex = this.paletteToValue.length;
         if (lastIndex >= 1 << this.bitsPerEntry) { // is full
             this.resize((byte) (this.bitsPerEntry + 1));
             return this.index(value); // try again, after resize
@@ -145,7 +142,8 @@ final class DirectIndirectPalette implements Palette {
         final var val = this.valueToPalette.putIfAbsent(value, lastIndex);
         if (val != -1) return val;
         // is new add
-        this.paletteToValue.add(value);
+        this.paletteToValue = Arrays.copyOf(this.paletteToValue, this.paletteToValue.length + 1);
+        this.paletteToValue[this.paletteToValue.length - 1] = value;
         return lastIndex;
     }
 

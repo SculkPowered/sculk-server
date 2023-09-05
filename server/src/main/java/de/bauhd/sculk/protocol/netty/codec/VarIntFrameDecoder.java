@@ -12,7 +12,7 @@ public final class VarIntFrameDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
         if (!ctx.channel().isActive()) {
-            buf.release();
+            buf.clear();
             return;
         }
 
@@ -28,6 +28,7 @@ public final class VarIntFrameDecoder extends ByteToMessageDecoder {
             if (buf.readableBytes() > 0) {
                 buf.skipBytes(buf.readableBytes());
             }
+            buf.clear();
             return;
         }
 

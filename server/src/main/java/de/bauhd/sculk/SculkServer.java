@@ -28,6 +28,7 @@ import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.login.CompressionPacket;
 import de.bauhd.sculk.registry.Registry;
 import de.bauhd.sculk.registry.SimpleRegistry;
+import de.bauhd.sculk.team.SculkTeamHandler;
 import de.bauhd.sculk.terminal.SimpleTerminal;
 import de.bauhd.sculk.util.BossBarListener;
 import de.bauhd.sculk.world.SculkWorld;
@@ -86,6 +87,7 @@ public final class SculkServer implements MinecraftServer {
     private final SculkPluginHandler pluginHandler;
     private final SculkEventHandler eventHandler;
     private final SculkCommandHandler commandHandler;
+    private final SculkTeamHandler teamHandler;
     private final BossBarListener bossBarListener;
     private final NettyServer nettyServer;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -130,6 +132,7 @@ public final class SculkServer implements MinecraftServer {
         this.commandHandler = (SculkCommandHandler) new SculkCommandHandler(this) // register defaults
                 .register(ShutdownCommand.get(this))
                 .register(InfoCommand.get());
+        this.teamHandler = new SculkTeamHandler(this);
         this.bossBarListener = new BossBarListener();
 
         this.loadBlocks();
@@ -223,12 +226,8 @@ public final class SculkServer implements MinecraftServer {
                 for (var i = 0; i < states.length; i++) {
                     final var state = states[i];
                     final var id = state.get("id").getAsInt();
-                    Map<String, String> properties;
-                    if (state.has("properties")) {
-                        properties = Map.copyOf(GSON.fromJson(state.get("properties"), stringStringMap));
-                    } else {
-                        properties = Map.of();
-                    }
+                    Map<String, String> properties = (state.has("properties") ?
+                            Map.copyOf(GSON.fromJson(state.get("properties"), stringStringMap)) : Map.of());
                     final var blockState = new SculkBlockState(block, id, properties);
                     byId.put(blockState.getId(), blockState);
                     if (state.has("default") && state.get("default").getAsBoolean()) {
@@ -276,6 +275,11 @@ public final class SculkServer implements MinecraftServer {
     @Override
     public @NotNull SculkCommandHandler getCommandHandler() {
         return this.commandHandler;
+    }
+
+    @Override
+    public @NotNull SculkTeamHandler getTeamHandler() {
+        return this.teamHandler;
     }
 
     @Override

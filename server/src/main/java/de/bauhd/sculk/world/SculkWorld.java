@@ -95,6 +95,11 @@ public class SculkWorld implements World {
     }
 
     @Override
+    public @NotNull SculkChunk getChunkAt(@NotNull Position position) {
+        return this.getChunkAt((int) position.x(), (int) position.z());
+    }
+
+    @Override
     public void spawnEntity(@NotNull Entity entity, @NotNull Position position) {
         final var abstractEntity = (AbstractEntity) entity;
         abstractEntity.setWorld(this);

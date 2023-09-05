@@ -8,9 +8,9 @@ import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.command.CommandSource;
 import de.bauhd.sculk.connection.Connection;
 import de.bauhd.sculk.entity.player.GameProfile;
-import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.entity.player.Player;
 import de.bauhd.sculk.entity.player.PlayerInfoEntry;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.event.player.PlayerInitialEvent;
 import de.bauhd.sculk.event.player.PlayerJoinEvent;
 import de.bauhd.sculk.protocol.netty.codec.*;
@@ -21,6 +21,7 @@ import de.bauhd.sculk.protocol.packet.handler.LoginPacketHandler;
 import de.bauhd.sculk.protocol.packet.handler.PlayPacketHandler;
 import de.bauhd.sculk.protocol.packet.handler.StatusPacketHandler;
 import de.bauhd.sculk.protocol.packet.login.CompressionPacket;
+import de.bauhd.sculk.protocol.packet.login.Disconnect;
 import de.bauhd.sculk.protocol.packet.login.LoginSuccess;
 import de.bauhd.sculk.protocol.packet.play.*;
 import de.bauhd.sculk.protocol.packet.play.command.Commands;
@@ -81,11 +82,11 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
     @Override
     public void channelRead(@NotNull ChannelHandlerContext ctx, @NotNull Object message) {
-        if (!ctx.channel().isActive()) {
-            return;
-        }
-
         try {
+            if (!ctx.channel().isActive()) {
+                return;
+            }
+
             if (message instanceof Packet packet) {
                 if (!packet.handle(this.packetHandler)) {
                     if (this.state == State.HANDSHAKE) {
@@ -146,8 +147,13 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             if (this.server.getConfig().mode() == MinecraftConfig.Mode.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
                 this.serverAddress = arguments[0];
-                final var properties = (Property[]) SculkServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
-                profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username, List.of(properties));
+                try {
+                    final var properties = (Property[]) SculkServer.GSON.fromJson(arguments[3], TypeToken.getArray(Property.class).getType());
+                    profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username, List.of(properties));
+                } catch (Exception e) {
+                    this.send(new Disconnect(Component.text("Connect through your proxy!", NamedTextColor.RED)));
+                    return;
+                }
             } else {
                 profile = new GameProfile(
                         UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.username).getBytes(StandardCharsets.UTF_8)),
@@ -195,6 +201,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             final var playerInfo = PlayerInfo.add(List.of(this.player));
             for (final var other : this.server.getAllPlayers()) {
                 if (other != this.player) ((SculkPlayer) other).send(playerInfo);
+            }
+
+            for (final var team : this.server.getTeamHandler().teams()) {
+                this.send(new UpdateTeams(team, (byte) 0, team.entries().toArray(new String[]{})));
             }
 
             this.calculateChunks(position, position, false, false);

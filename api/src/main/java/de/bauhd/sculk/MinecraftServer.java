@@ -9,6 +9,7 @@ import de.bauhd.sculk.entity.player.Player;
 import de.bauhd.sculk.event.EventHandler;
 import de.bauhd.sculk.plugin.PluginHandler;
 import de.bauhd.sculk.registry.Registry;
+import de.bauhd.sculk.team.TeamHandler;
 import de.bauhd.sculk.world.World;
 import de.bauhd.sculk.world.biome.Biome;
 import de.bauhd.sculk.world.dimension.Dimension;
@@ -74,6 +75,14 @@ public interface MinecraftServer {
      * @since 1.0.0
      */
     @NotNull CommandHandler getCommandHandler();
+
+    /**
+     * Gets the {@link TeamHandler} instance
+     *
+     * @return the team handler instance
+     * @since 1.0.0
+     */
+    @NotNull TeamHandler getTeamHandler();
 
     /**
      * Gets all players currently connected.

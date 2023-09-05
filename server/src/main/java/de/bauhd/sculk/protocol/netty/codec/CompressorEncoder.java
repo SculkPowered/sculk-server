@@ -48,7 +48,7 @@ public final class CompressorEncoder extends MessageToByteEncoder<ByteBuf> {
         var size = buf.readableBytes();
         if (size < this.threshold) {
             size += 1 + PacketUtils.varIntLength(size + 1);
-            return NettyServerInitializer.IS_JAVA_CIPHER ?  ctx.alloc().heapBuffer(size) : ctx.alloc().directBuffer(size);
+            return NettyServerInitializer.IS_JAVA_CIPHER ? ctx.alloc().heapBuffer(size) : ctx.alloc().directBuffer(size);
         } else {
             size += 2 + PacketUtils.varIntLength(size);
             return MoreByteBufUtils.preferredBuffer(ctx.alloc(), this.compressor, size);

@@ -136,7 +136,8 @@ public final class SculkChunk implements Chunk {
         }
         final var data = buf.readAll();
         buf.close();
-        return Pair.of(data, new LightData(skyMask, blockMask, emptySkyMask, emptyBlockMask, skyLight, blockLight));
+        return Pair.of(data, new LightData(skyMask, blockMask, emptySkyMask, emptyBlockMask,
+                skyLight.toArray(new byte[][]{}), blockLight.toArray(new byte[][]{})));
     }
 
     @Override

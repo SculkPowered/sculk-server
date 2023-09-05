@@ -9,9 +9,10 @@ import de.bauhd.sculk.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.sculk.protocol.netty.codec.MinecraftEncoder;
 import de.bauhd.sculk.protocol.netty.codec.VarIntFrameDecoder;
 import de.bauhd.sculk.protocol.netty.codec.VarIntLengthEncoder;
-import de.bauhd.sculk.util.Constant;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+
+import static de.bauhd.sculk.util.Constant.*;
 
 public final class NettyServerInitializer extends ChannelInitializer<Channel> {
 
@@ -26,10 +27,10 @@ public final class NettyServerInitializer extends ChannelInitializer<Channel> {
     @Override
     protected void initChannel(Channel channel) {
         channel.pipeline()
-                .addLast(Constant.FRAME_DECODER, new VarIntFrameDecoder())
-                .addLast(Constant.FRAME_ENCODER, VarIntLengthEncoder.INSTANCE)
-                .addLast(Constant.MINECRAFT_DECODER, new MinecraftDecoder(Protocol.Direction.SERVERBOUND))
-                .addLast(Constant.MINECRAFT_ENCODER, new MinecraftEncoder(Protocol.Direction.CLIENTBOUND))
-                .addLast(Constant.HANDLER, new SculkConnection(this.server, channel));
+                .addLast(FRAME_DECODER, new VarIntFrameDecoder())
+                .addLast(FRAME_ENCODER, VarIntLengthEncoder.INSTANCE)
+                .addLast(MINECRAFT_DECODER, new MinecraftDecoder(Protocol.Direction.SERVERBOUND))
+                .addLast(MINECRAFT_ENCODER, new MinecraftEncoder(Protocol.Direction.CLIENTBOUND))
+                .addLast(HANDLER, new SculkConnection(this.server, channel));
     }
 }

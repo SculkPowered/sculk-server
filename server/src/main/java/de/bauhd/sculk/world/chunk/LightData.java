@@ -3,7 +3,6 @@ package de.bauhd.sculk.world.chunk;
 import de.bauhd.sculk.protocol.Buffer;
 
 import java.util.BitSet;
-import java.util.List;
 
 public class LightData {
 
@@ -11,11 +10,11 @@ public class LightData {
     private final BitSet blockMask;
     private final BitSet emptySkyMask;
     private final BitSet emptyBlockMask;
-    private final List<byte[]> skyLight;
-    private final List<byte[]> blockLight;
+    private final byte[][] skyLight;
+    private final byte[][] blockLight;
 
     public LightData(final BitSet skyMask, final BitSet blockMask, final BitSet emptySkyMask, final BitSet emptyBlockMask,
-                     final List<byte[]> skyLight, final List<byte[]> blockLight) {
+                     final byte[][] skyLight, final byte[][] blockLight) {
         this.skyMask = skyMask;
         this.blockMask = blockMask;
         this.emptySkyMask = emptySkyMask;
@@ -30,11 +29,11 @@ public class LightData {
                 .writeBitSet(this.blockMask)
                 .writeBitSet(this.emptySkyMask)
                 .writeBitSet(this.emptyBlockMask);
-        buf.writeVarInt(this.skyLight.size());
+        buf.writeVarInt(this.skyLight.length);
         for (final var bytes : this.skyLight) {
             buf.writeByteArray(bytes);
         }
-        buf.writeVarInt(this.blockLight.size());
+        buf.writeVarInt(this.blockLight.length);
         for (final var bytes : this.blockLight) {
             buf.writeByteArray(bytes);
         }

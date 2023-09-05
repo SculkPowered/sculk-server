@@ -16,6 +16,7 @@ import de.bauhd.sculk.event.player.PlayerInitialEvent;
 import de.bauhd.sculk.event.player.PlayerJoinEvent;
 import de.bauhd.sculk.event.player.PlayerUseItemEvent;
 import de.bauhd.sculk.plugin.command.GameModeCommand;
+import de.bauhd.sculk.team.Team;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.World;
 import de.bauhd.sculk.world.biome.Biome;
@@ -26,6 +27,7 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 @PluginDescription(name = "test", version = "1.0")
 public final class TestPlugin extends Plugin {
@@ -35,6 +37,11 @@ public final class TestPlugin extends Plugin {
     @Subscribe
     public void handle(final ServerInitializeEvent event) {
         this.getServer().getCommandHandler().register(GameModeCommand.get());
+
+        this.getServer().getTeamHandler().register(Team.builder()
+                .name("default")
+                .color(NamedTextColor.GRAY)
+        );
 
         final var testBiome = Biome.PLAINS.toBuilder(Key.key("test", "plains"))
                 .effects(Biome.Effects.builder()
@@ -76,6 +83,9 @@ public final class TestPlugin extends Plugin {
         inventory.setItem(4, ItemStack.of(Material.CHEST));
         inventory.setHelmet(ItemStack.of(Material.DIAMOND_HELMET));
         inventory.setItemInOffHand(ItemStack.of(Material.SHIELD));
+
+        Objects.requireNonNull(this.getServer().getTeamHandler().getTeam("default"))
+                .addEntry(event.getPlayer().getUsername());
     }
 
     @Subscribe

@@ -202,7 +202,7 @@ public enum State {
             this.clientBound.register(Health.class);
             this.clientBound.register(UpdateObjectives.class);
             this.clientBound.skip(); // Set Passengers
-            this.clientBound.skip(); // Update Teams
+            this.clientBound.register(UpdateTeams.class);
             this.clientBound.register(UpdateScore.class);
             this.clientBound.register(SimulationDistance.class);
             this.clientBound.register(Subtitle.class);

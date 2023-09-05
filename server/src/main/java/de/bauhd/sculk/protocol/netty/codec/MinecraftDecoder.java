@@ -39,29 +39,33 @@ public final class MinecraftDecoder extends ChannelInboundHandlerAdapter {
                 ctx.fireChannelRead(message);
                 LOGGER.warn("Unknown packet id 0x" + Integer.toHexString(id));
             } else {
-                final var minLength = packet.minLength();
-                final var maxLength = packet.maxLength();
-                final var length = buf.readableBytes();
-                if (maxLength != -1 && length > maxLength) {
-                    throw new DecoderException("Overflow packet " + packet.getClass().getSimpleName() +
-                            " (max length = " + maxLength + ", length = " + length + ")");
-                }
-                if (length < minLength) {
-                    throw new DecoderException("Underflow packet " + packet.getClass().getSimpleName() +
-                            " (min length = " + minLength + ", length = " + length + ")");
-                }
-
                 try {
-                    packet.decode(new Buffer(buf));
-                } catch (Exception e) {
-                    LOGGER.error("Error during decoding of " + packet.getClass(), e);
+                    final var minLength = packet.minLength();
+                    final var maxLength = packet.maxLength();
+                    final var length = buf.readableBytes();
+                    if (maxLength != -1 && length > maxLength) {
+                        throw new DecoderException("Overflow packet " + packet.getClass().getSimpleName() +
+                                " (max length = " + maxLength + ", length = " + length + ")");
+                    }
+                    if (length < minLength) {
+                        throw new DecoderException("Underflow packet " + packet.getClass().getSimpleName() +
+                                " (min length = " + minLength + ", length = " + length + ")");
+                    }
+
+                    try {
+                        packet.decode(new Buffer(buf));
+                    } catch (Exception e) {
+                        LOGGER.error("Error during decoding of " + packet.getClass(), e);
+                    }
+                    if (buf.readableBytes() > 0) {
+                        throw new DecoderException("Overflow after decode packet " +
+                                packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
+                    }
+                    //System.out.println("decoded " + packet + " - " + id);
+                    ctx.fireChannelRead(packet);
+                } finally {
+                    buf.release();
                 }
-                if (buf.readableBytes() > 0) {
-                    throw new DecoderException("Overflow after decode packet " +
-                            packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
-                }
-                //System.out.println("decoded " + packet + " - " + id);
-                ctx.fireChannelRead(packet);
             }
         } else {
             ctx.fireChannelRead(message);

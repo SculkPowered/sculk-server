@@ -63,7 +63,7 @@ public final class PaletteHolder implements Palette {
             if (size == 0) {
                 palette = Section.EMPTY_PALETTE;
             } else {
-                final var entries = new IntOpenHashSet(directIndirectPalette.paletteToValue().size());
+                final var entries = new IntOpenHashSet(directIndirectPalette.paletteToValue().length);
                 directIndirectPalette.getAll((x, y, z, value) -> entries.add(value));
                 final var currentBitsPerEntry = directIndirectPalette.bitsPerEntry();
                 final int bitsPerEntry;
