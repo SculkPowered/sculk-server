@@ -8,6 +8,7 @@ import de.bauhd.sculk.world.Position;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -183,18 +184,18 @@ public final class Buffer {
 
     public @NotNull CompoundBinaryTag readCompoundTag() {
         try {
-            return BinaryTagIO.reader().read((DataInput) new ByteBufInputStream(this.buf));
+            return BinaryTagIO.reader().readNameless((DataInput) new ByteBufInputStream(this.buf));
         } catch (IOException e) {
-            return CompoundBinaryTag.empty();
+            throw new DecoderException("Unable to decode compound tag: " + e.getMessage());
         }
 
     }
 
     public @NotNull Buffer writeCompoundTag(final CompoundBinaryTag binaryTag) {
         try {
-            BinaryTagIO.writer().write(binaryTag, (DataOutput) new ByteBufOutputStream(this.buf));
+            BinaryTagIO.writer().writeNameless(binaryTag, (DataOutput) new ByteBufOutputStream(this.buf));
         } catch (IOException e) {
-            throw new EncoderException("Unable to encode NBT CompoundTag");
+            throw new EncoderException("Unable to encode compound tag: " + e.getMessage());
         }
         return this;
     }

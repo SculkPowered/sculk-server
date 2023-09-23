@@ -330,7 +330,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         this.position = position;
         super.setWorld(world);
         this.permissionChecker = permissionChecker;
-        this.spawned = true;
     }
 
     public void send(final Packet packet) {
@@ -344,6 +343,25 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
     public void setKeepAlivePending(boolean pending) {
         this.keepAlivePending = pending;
+    }
+
+    public void handleClientInformation(ClientInformation clientInformation) {
+        final var settings = this.getSettings();
+        final var old = settings.clientInformation();
+        if (settings.isDefault() || old.skinParts() != clientInformation.skinParts()) {
+            this.metadata.setByte(17, (byte) clientInformation.skinParts());
+        }
+        if (settings.isDefault() || old.mainHand() != clientInformation.mainHand()) {
+            this.metadata.setByte(18, (byte) clientInformation.mainHand().ordinal());
+        }
+        if (old.viewDistance() != clientInformation.viewDistance()) {
+            if (this.world != null) {
+                this.connection
+                        .calculateChunks(this.getPosition(), this.getPosition(), false, true,
+                                clientInformation.viewDistance(), old.viewDistance());
+            }
+        }
+        this.getSettings().setClientInformation(clientInformation);
     }
 
     private void updateAttributes() {

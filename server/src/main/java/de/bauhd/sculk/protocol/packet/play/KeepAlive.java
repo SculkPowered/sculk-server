@@ -4,7 +4,11 @@ import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 
+import java.util.function.Supplier;
+
 public final class KeepAlive implements Packet {
+
+    public static final Supplier<KeepAlive> SUPPLIER = KeepAlive::new;
 
     private long timeMillis;
 
@@ -12,7 +16,7 @@ public final class KeepAlive implements Packet {
         this.timeMillis = timeMillis;
     }
 
-    public KeepAlive() {}
+    private KeepAlive() {}
 
     @Override
     public void decode(Buffer buf) {

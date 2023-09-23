@@ -1,7 +1,9 @@
 package de.bauhd.sculk.protocol.packet;
 
+import de.bauhd.sculk.protocol.packet.config.FinishConfiguration;
 import de.bauhd.sculk.protocol.packet.handshake.Handshake;
 import de.bauhd.sculk.protocol.packet.login.EncryptionResponse;
+import de.bauhd.sculk.protocol.packet.login.LoginAcknowledged;
 import de.bauhd.sculk.protocol.packet.login.LoginPluginResponse;
 import de.bauhd.sculk.protocol.packet.login.LoginStart;
 import de.bauhd.sculk.protocol.packet.play.*;
@@ -42,6 +44,15 @@ public abstract class PacketHandler {
     }
 
     public boolean handle(final LoginPluginResponse pluginResponse) {
+        return false;
+    }
+
+    public boolean handle(final LoginAcknowledged loginAcknowledged) {
+        return false;
+    }
+
+    // Config
+    public boolean handle(final FinishConfiguration finishConfiguration) {
         return false;
     }
 

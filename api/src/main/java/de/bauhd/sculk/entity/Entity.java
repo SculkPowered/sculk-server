@@ -137,6 +137,13 @@ public interface Entity extends Viewable {
     @ApiStatus.Experimental
     void setPose(@NotNull Pose pose);
 
+    /**
+     * Removes the entity.
+     *
+     * @since 1.0.0
+     */
+    void remove();
+
     @ApiStatus.Experimental
     enum Pose {
 

@@ -5,8 +5,11 @@ import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 public final class PluginMessage implements Packet {
+
+    public static final Supplier<PluginMessage> SUPPLIER = PluginMessage::new;
 
     private String identifier;
     private byte[] data;
@@ -16,7 +19,7 @@ public final class PluginMessage implements Packet {
         this.data = data;
     }
 
-    public PluginMessage() {}
+    private PluginMessage() {}
 
     @Override
     public void decode(Buffer buf) {

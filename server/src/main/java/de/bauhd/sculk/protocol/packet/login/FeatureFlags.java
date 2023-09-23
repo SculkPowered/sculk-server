@@ -1,4 +1,4 @@
-package de.bauhd.sculk.protocol.packet.play;
+package de.bauhd.sculk.protocol.packet.login;
 
 import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.Packet;
@@ -7,7 +7,7 @@ public final class FeatureFlags implements Packet {
 
     private final String[] features;
 
-    public FeatureFlags(final String[] features) {
+    public FeatureFlags(final String... features) {
         this.features = features;
     }
 

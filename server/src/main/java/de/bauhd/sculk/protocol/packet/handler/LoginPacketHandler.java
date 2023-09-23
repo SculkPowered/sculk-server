@@ -3,6 +3,7 @@ package de.bauhd.sculk.protocol.packet.handler;
 import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.MinecraftConfig;
 import de.bauhd.sculk.protocol.SculkConnection;
+import de.bauhd.sculk.protocol.State;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 import de.bauhd.sculk.protocol.packet.login.*;
 import de.bauhd.sculk.util.EncryptionUtil;
@@ -40,7 +41,7 @@ public final class LoginPacketHandler extends PacketHandler {
             ThreadLocalRandom.current().nextBytes(this.verifyToken);
             this.connection.send(new EncryptionRequest("", publicKey, this.verifyToken));
         } else {
-            this.connection.play(null);
+            this.connection.initPlayer(null);
         }
         return true;
     }
@@ -61,7 +62,7 @@ public final class LoginPacketHandler extends PacketHandler {
                     EncryptionUtil.generateServerId(this.server.getKeyPair(), decryptedSecret));
 
             this.connection.enableEncryption(decryptedSecret);
-            this.connection.play(gameProfile);
+            this.connection.initPlayer(gameProfile);
         } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException |
                  InvalidKeyException e) {
             throw new RuntimeException(e);
@@ -71,6 +72,13 @@ public final class LoginPacketHandler extends PacketHandler {
 
     @Override
     public boolean handle(LoginPluginResponse pluginResponse) {
+        return true;
+    }
+
+    @Override
+    public boolean handle(LoginAcknowledged loginAcknowledged) {
+        this.connection.setState(State.CONFIG);
+        this.connection.configuration();
         return true;
     }
 }

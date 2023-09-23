@@ -14,8 +14,8 @@ import de.bauhd.sculk.damage.DamageType;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.EntityClassToSupplierMap;
 import de.bauhd.sculk.entity.player.GameProfile;
-import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.entity.player.Player;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.event.SculkEventHandler;
 import de.bauhd.sculk.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.sculk.event.lifecycle.ServerShutdownEvent;
@@ -309,9 +309,9 @@ public final class SculkServer implements MinecraftServer {
 
     @Override
     public void loadWorld(@NotNull World world) {
-        final var mcWorld = (SculkWorld) world;
-        mcWorld.load();
-        this.worlds.put(world.getName(), mcWorld);
+        final var sculkWorld = (SculkWorld) world;
+        sculkWorld.load();
+        this.worlds.put(world.getName(), sculkWorld);
     }
 
     private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
@@ -384,7 +384,9 @@ public final class SculkServer implements MinecraftServer {
     }
 
     public void sendAll(final Packet packet) {
-        this.players.values().forEach(player -> player.send(packet));
+        for (final var player : this.players.values()) {
+            player.send(packet);
+        }
     }
 
     public void addPlayer(final SculkPlayer player) {

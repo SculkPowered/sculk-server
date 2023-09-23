@@ -21,12 +21,12 @@ public final class Equipment implements Packet {
         buf.writeVarInt(this.entityId);
         var index = 0;
         for (final var entry : this.equipment.entrySet()) {
-            var key = entry.getKey();
+            var key = entry.getKey().byteValue();
             if (index == this.equipment.size()) {
-                key |= 0x80; // isn't last so set first bit
+                key |= (byte) 0x80; // isn't last so set first bit
             }
             buf
-                    .writeVarInt(key)
+                    .writeByte(key)
                     .writeItem(entry.getValue());
             index++;
         }

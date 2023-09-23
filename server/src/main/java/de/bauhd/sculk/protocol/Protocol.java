@@ -2,8 +2,8 @@ package de.bauhd.sculk.protocol;
 
 public final class Protocol {
 
-    public static final String VERSION_NAME = "1.20";
-    public static final int VERSION_PROTOCOL = 763;
+    public static final String VERSION_NAME = "1.20.2";
+    public static final int VERSION_PROTOCOL = 764;
 
     public enum Direction {
         SERVERBOUND,

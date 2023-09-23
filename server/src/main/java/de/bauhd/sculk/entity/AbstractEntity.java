@@ -24,9 +24,8 @@ public abstract class AbstractEntity implements Entity {
     private final int id = CURRENT_ID.getAndIncrement();
     public final Metadata metadata = new Metadata();
     protected final Collection<SculkPlayer> viewers = new ArrayList<>();
-    private SculkWorld world;
+    protected SculkWorld world;
     protected Position position = Position.ZERO;
-    protected boolean spawned;
 
     public AbstractEntity() {
         this(UUID.randomUUID());
@@ -171,27 +170,32 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void addViewer(@NotNull Player player) {
-        final var mcPlayer = ((SculkPlayer) player);
-        if (!this.viewers.contains(mcPlayer)) {
-            mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().protocolId(), this.position));
-            if (this.metadata.entries().isEmpty()) {
-                mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
+        final var sculkPlayer = ((SculkPlayer) player);
+        if (!this.viewers.contains(sculkPlayer)) {
+            sculkPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().protocolId(), this.position));
+            if (!this.metadata.entries().isEmpty()) {
+                sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
             }
-            this.viewers.add(mcPlayer);
+            this.viewers.add(sculkPlayer);
         }
     }
 
     @Override
     public void removeViewer(@NotNull Player player) {
-        final var mcPlayer = (SculkPlayer) player;
-        if (this.viewers.contains(mcPlayer)) {
-            mcPlayer.send(new RemoveEntities(this.getId()));
-            this.viewers.remove(mcPlayer);
+        final var sculkPlayer = (SculkPlayer) player;
+        if (this.viewers.contains(sculkPlayer)) {
+            sculkPlayer.send(new RemoveEntities(this.getId()));
+            this.viewers.remove(sculkPlayer);
         }
     }
 
+    @Override
+    public void remove() {
+
+    }
+
     public void tick() {
-        if (this.spawned && !this.metadata.changes().isEmpty()) {
+        if (!this.metadata.changes().isEmpty()) {
             final var entityMetadata = new EntityMetadata(this.id, this.metadata.changes());
             this.metadata.reset();
             this.sendViewers(entityMetadata);
@@ -202,19 +206,15 @@ public abstract class AbstractEntity implements Entity {
     }
 
     public void sendViewers(final Packet packet) {
-        this.viewers.forEach(player -> player.send(packet));
+        for (final var viewer : this.viewers) {
+            viewer.send(packet);
+        }
     }
 
     public void sendViewers(final Packet packet1, final Packet packet2) {
-        this.viewers.forEach(player -> {
-            player.send(packet1);
-            player.send(packet2);
-        });
-    }
-
-    public void spawn(@NotNull World world, @NotNull Position position) {
-        this.setWorld(world);
-        this.setPosition(position);
-        this.spawned = true;
+        for (final var viewer : this.viewers) {
+            viewer.send(packet1);
+            viewer.send(packet2);
+        }
     }
 }

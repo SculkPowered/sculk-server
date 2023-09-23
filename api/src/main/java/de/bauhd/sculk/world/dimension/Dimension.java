@@ -183,6 +183,9 @@ public final class Dimension implements Registry.Entry {
             return this;
         }
 
+        /**
+         * Height must be dividable by 16
+         */
         public @NotNull Builder height(int height) {
             this.builder.putInt("height", height);
             return this;

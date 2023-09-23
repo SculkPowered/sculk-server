@@ -16,12 +16,12 @@ import de.bauhd.sculk.event.player.PlayerJoinEvent;
 import de.bauhd.sculk.protocol.netty.codec.*;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
-import de.bauhd.sculk.protocol.packet.handler.HandshakePacketHandler;
-import de.bauhd.sculk.protocol.packet.handler.LoginPacketHandler;
-import de.bauhd.sculk.protocol.packet.handler.PlayPacketHandler;
-import de.bauhd.sculk.protocol.packet.handler.StatusPacketHandler;
+import de.bauhd.sculk.protocol.packet.config.FinishConfiguration;
+import de.bauhd.sculk.protocol.packet.config.RegistryData;
+import de.bauhd.sculk.protocol.packet.handler.*;
 import de.bauhd.sculk.protocol.packet.login.CompressionPacket;
 import de.bauhd.sculk.protocol.packet.login.Disconnect;
+import de.bauhd.sculk.protocol.packet.login.FeatureFlags;
 import de.bauhd.sculk.protocol.packet.login.LoginSuccess;
 import de.bauhd.sculk.protocol.packet.play.*;
 import de.bauhd.sculk.protocol.packet.play.command.Commands;
@@ -142,7 +142,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
         }
     }
 
-    public void play(GameProfile profile) {
+    public void initPlayer(GameProfile profile) {
         if (profile == null) {
             if (this.server.getConfig().mode() == MinecraftConfig.Mode.BUNGEECORD) {
                 final var arguments = this.serverAddress.split("\00");
@@ -169,6 +169,17 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
         this.send(new LoginSuccess(profile));
         this.player = new SculkPlayer(this.server, this, profile);
+    }
+
+    public void configuration() {
+        this.send(SculkConnection.BRAND_PACKET);
+        this.send(new FeatureFlags("minecraft:vanilla"));
+        this.send(new RegistryData(this.server.getBiomeRegistry(),
+                this.server.getDimensionRegistry(), this.server.getDamageTypeRegistry()));
+        this.send(FinishConfiguration.INSTANCE);
+    }
+
+    public void play() {
         this.server.addPlayer(this.player);
         this.setState(State.PLAY);
         this.server.getEventHandler().call(new PlayerInitialEvent(this.player)).thenAcceptAsync(event -> {
@@ -190,11 +201,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             this.player.init(event.getGameMode(), position, world, event.getPermissionChecker());
 
             this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
-                    this.server.getBiomeRegistry(), this.server.getDimensionRegistry(),
-                    this.server.getDamageTypeRegistry(),
                     world.getDimension().name()));
 
-            this.send(BRAND_PACKET);
             this.sendCommands();
             this.send(new SpawnPosition(position));
             this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
@@ -245,6 +253,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             case HANDSHAKE -> new HandshakePacketHandler(this);
             case STATUS -> new StatusPacketHandler(this, this.server);
             case LOGIN -> new LoginPacketHandler(this, this.server);
+            case CONFIG -> new ConfigPacketHandler(this, this.player);
             case PLAY -> new PlayPacketHandler(this, this.server, this.player);
         };
         this.channel.pipeline().get(MinecraftEncoder.class).setState(state);
