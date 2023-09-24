@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-public final class DataGenerator {
+final class DataGenerator {
 
     private final StringBuffer stringBuffer = new StringBuffer();
     private final byte[] bytes = new byte[2048];

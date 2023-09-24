@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ClassCreator {
+final class ClassCreator {
 
     private final Path path;
     private final String pckage;
