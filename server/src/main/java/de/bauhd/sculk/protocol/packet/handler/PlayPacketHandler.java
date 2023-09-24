@@ -356,11 +356,11 @@ public final class PlayPacketHandler extends PacketHandler {
             var block = Block.get(slot.material().key());
             if (block.hasProperty("facing")) { // let's set the correct facing
                 final var rotation = (int) Math.floor(this.player.getPosition().yaw() / 90.0D + 0.5D) & 3;
-                block = block.facing(switch (rotation % 4) {
-                    case 0 -> Block.Facing.SOUTH;
-                    case 1 -> Block.Facing.WEST;
-                    case 2 -> Block.Facing.NORTH;
-                    case 3 -> Block.Facing.EAST;
+                block = block.property("facing", switch (rotation % 4) {
+                    case 0 -> Block.Facing.SOUTH.name().toLowerCase();
+                    case 1 -> Block.Facing.WEST.name().toLowerCase();
+                    case 2 -> Block.Facing.NORTH.name().toLowerCase();
+                    case 3 -> Block.Facing.EAST.name().toLowerCase();
                     default -> null;
                 });
             }

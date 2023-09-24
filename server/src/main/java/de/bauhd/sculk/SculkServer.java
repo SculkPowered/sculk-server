@@ -2,8 +2,6 @@ package de.bauhd.sculk;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.velocitypowered.natives.util.Natives;
 import de.bauhd.sculk.command.CommandSource;
 import de.bauhd.sculk.command.SculkCommandHandler;
@@ -14,8 +12,8 @@ import de.bauhd.sculk.damage.DamageType;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.EntityClassToSupplierMap;
 import de.bauhd.sculk.entity.player.GameProfile;
-import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.entity.player.Player;
+import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.event.SculkEventHandler;
 import de.bauhd.sculk.event.lifecycle.ServerInitializeEvent;
 import de.bauhd.sculk.event.lifecycle.ServerShutdownEvent;
@@ -35,8 +33,6 @@ import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.World;
 import de.bauhd.sculk.world.biome.Biome;
 import de.bauhd.sculk.world.block.BlockParent;
-import de.bauhd.sculk.world.block.BlockState;
-import de.bauhd.sculk.world.block.SculkBlockState;
 import de.bauhd.sculk.world.chunk.loader.AnvilLoader;
 import de.bauhd.sculk.world.chunk.loader.ChunkLoader;
 import de.bauhd.sculk.world.chunk.loader.DefaultChunkLoader;
@@ -51,7 +47,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyPair;
@@ -135,7 +130,7 @@ public final class SculkServer implements MinecraftServer {
         this.teamHandler = new SculkTeamHandler(this);
         this.bossBarListener = new BossBarListener();
 
-        this.loadBlocks();
+        BlockParent.addBlocks();
 
         this.pluginHandler.loadPlugins();
 
@@ -203,41 +198,6 @@ public final class SculkServer implements MinecraftServer {
                     this.configuration = GSON.fromJson(reader, SculkConfiguration.class);
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // I don't like this solution so much...
-    private void loadBlocks() {
-        try (final var resource = this.getClass().getClassLoader().getResourceAsStream("registries/blocks.json");
-             final var reader = new InputStreamReader(Objects.requireNonNull(resource))) {
-            final var stringJsonMap = TypeToken.getParameterized(Map.class, String.class, JsonObject.class).getType();
-            final var stringStringMap = TypeToken.getParameterized(Map.class, String.class, String.class).getType();
-            final var jsonArray = TypeToken.getArray(JsonObject.class).getType();
-            final Map<String, JsonObject> map = GSON.fromJson(reader, stringJsonMap);
-            final var byName = new HashMap<String, BlockState>(map.size());
-            final var byId = new HashMap<Integer, BlockState>(map.size());
-            for (final var entry : map.entrySet()) {
-                final var key = entry.getKey();
-                final var block = new BlockParent(key);
-                final JsonObject[] states = GSON.fromJson(entry.getValue().get("states"), jsonArray);
-                final var stateArray = new SculkBlockState[states.length];
-                for (var i = 0; i < states.length; i++) {
-                    final var state = states[i];
-                    final var id = state.get("id").getAsInt();
-                    Map<String, String> properties = (state.has("properties") ?
-                            Map.copyOf(GSON.fromJson(state.get("properties"), stringStringMap)) : Map.of());
-                    final var blockState = new SculkBlockState(block, id, properties);
-                    byId.put(blockState.getId(), blockState);
-                    if (state.has("default") && state.get("default").getAsBoolean()) {
-                        byName.put(key, blockState);
-                    }
-                    stateArray[i] = blockState;
-                }
-                block.setStates(stateArray);
-            }
-            BlockParent.set(byName, byId);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

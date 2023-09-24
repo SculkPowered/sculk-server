@@ -4,15 +4,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public class SculkBlockState implements BlockState {
+class SculkBlockState implements BlockState {
 
-    private final BlockParent block;
-    private final int id;
-    private final Map<String, String> properties;
+    protected final BlockParent block;
+    protected final int id;
+    protected final Map<String, String> properties;
 
-    public SculkBlockState(final BlockParent block, final int id, final Map<String, String> properties) {
+    SculkBlockState(final BlockParent block, final int id, final Map<String, String> properties) {
         this.block = block;
         this.id = id;
         this.properties = properties;
@@ -31,61 +30,6 @@ public class SculkBlockState implements BlockState {
     @Override
     public boolean hasProperty(@NotNull String key) {
         return this.properties.containsKey(key);
-    }
-
-    @Override
-    public boolean isPowered() {
-        return Objects.equals(this.properties.get("powered"), "true");
-    }
-
-    @Override
-    public BlockState powered(boolean powered) {
-        return this.property("powered", powered);
-    }
-
-    @Override
-    public boolean isLit() {
-        return Objects.equals(this.properties.get("powered"), "lit");
-    }
-
-    @Override
-    public BlockState lit(boolean lit) {
-        return this.property("lit", lit);
-    }
-
-    @Override
-    public BlockState face(Block.@NotNull Face face) {
-        return this.property("face", face.name().toLowerCase());
-    }
-
-    @Override
-    public BlockState facing(Block.@NotNull Facing facing) {
-        return this.property("facing", facing.name().toLowerCase());
-    }
-
-    @Override
-    public BlockState half(Block.@NotNull Half half) {
-        return this.property("half", half.name().toLowerCase());
-    }
-
-    @Override
-    public boolean isOpen() {
-        return Objects.equals(this.properties.get("open"), "true");
-    }
-
-    @Override
-    public BlockState open(boolean open) {
-        return this.property("open", open);
-    }
-
-    @Override
-    public boolean isWaterlogged() {
-        return Objects.equals(this.properties.get("waterlogged"), "true");
-    }
-
-    @Override
-    public BlockState waterlogged(boolean waterlogged) {
-        return this.property("waterlogged", waterlogged);
     }
 
     @Override
@@ -114,5 +58,19 @@ public class SculkBlockState implements BlockState {
                 ", id=" + this.id +
                 ", properties=" + this.properties +
                 '}';
+    }
+
+    public static class Waterloggable<T extends BlockState> extends SculkBlockState implements BlockState.Waterloggable<T> {
+
+        public Waterloggable(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
+    }
+
+    public static class Powerable<T extends BlockState> extends SculkBlockState implements BlockState.Powerable<T> {
+
+        public Powerable(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
     }
 }
