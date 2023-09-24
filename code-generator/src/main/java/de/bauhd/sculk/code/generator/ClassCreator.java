@@ -52,12 +52,10 @@ public class ClassCreator {
             writer.write("\n");
             writer.write("public " + this.type.name().toLowerCase() + " " + this.name + " " + this.addition + " {");
             if (this.inner != null) {
-                writer.write("\n");
-                writer.write("\n");
+                writer.write("\n\n");
                 for (final var s : this.inner) {
                     writer.write(s + "\n");
                 }
-                writer.write("\n");
             }
             writer.write("}");
         } catch (IOException e) {

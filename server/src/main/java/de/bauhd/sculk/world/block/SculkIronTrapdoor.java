@@ -7,5 +7,4 @@ public class SculkIronTrapdoor extends SculkBlockState implements IronTrapdoor {
     SculkIronTrapdoor(BlockParent block, int id, Map<String, String> properties) {
         super(block, id, properties);
     }
-
 }

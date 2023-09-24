@@ -7,5 +7,4 @@ public class SculkCherryTrapdoor extends SculkBlockState implements CherryTrapdo
     SculkCherryTrapdoor(BlockParent block, int id, Map<String, String> properties) {
         super(block, id, properties);
     }
-
 }

@@ -7,5 +7,4 @@ public class SculkWarpedTrapdoor extends SculkBlockState implements WarpedTrapdo
     SculkWarpedTrapdoor(BlockParent block, int id, Map<String, String> properties) {
         super(block, id, properties);
     }
-
 }

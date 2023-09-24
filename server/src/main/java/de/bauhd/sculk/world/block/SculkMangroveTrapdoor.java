@@ -7,5 +7,4 @@ public class SculkMangroveTrapdoor extends SculkBlockState implements MangroveTr
     SculkMangroveTrapdoor(BlockParent block, int id, Map<String, String> properties) {
         super(block, id, properties);
     }
-
 }

@@ -119,7 +119,12 @@ public final class CodeGenerator {
     private void generateBlocks(final Reader reader, final Path path) throws IOException {
         final Map<String, String> propertyToClass = Map.of(
                 "waterlogged", "Waterloggable",
-                "powered", "Powerable"
+                "powered", "Powerable",
+                "snowy", "Snowy",
+                "face", "Face",
+                "facing", "Facing",
+                "half", "Half",
+                "age", "Ageable"
         );
         final Map<String, JsonObject> objects = GSON.fromJson(reader, STRING_JSON_MAP);
         final var blockAdder = new ArrayList<String>();

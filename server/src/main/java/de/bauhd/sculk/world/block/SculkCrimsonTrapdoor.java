@@ -7,5 +7,4 @@ public class SculkCrimsonTrapdoor extends SculkBlockState implements CrimsonTrap
     SculkCrimsonTrapdoor(BlockParent block, int id, Map<String, String> properties) {
         super(block, id, properties);
     }
-
 }

@@ -21,6 +21,12 @@ public final class DataGenerator {
         while (process.isAlive()) {
             this.readStream(process.getErrorStream(), error);
             this.readStream(process.getInputStream(), input);
+            try {
+                //noinspection BusyWait
+                Thread.sleep(50L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

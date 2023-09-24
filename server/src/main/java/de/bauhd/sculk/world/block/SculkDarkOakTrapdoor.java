@@ -7,5 +7,4 @@ public class SculkDarkOakTrapdoor extends SculkBlockState implements DarkOakTrap
     SculkDarkOakTrapdoor(BlockParent block, int id, Map<String, String> properties) {
         super(block, id, properties);
     }
-
 }

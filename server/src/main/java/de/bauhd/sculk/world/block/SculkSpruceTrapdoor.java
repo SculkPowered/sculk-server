@@ -7,5 +7,4 @@ public class SculkSpruceTrapdoor extends SculkBlockState implements SpruceTrapdo
     SculkSpruceTrapdoor(BlockParent block, int id, Map<String, String> properties) {
         super(block, id, properties);
     }
-
 }

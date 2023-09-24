@@ -45,6 +45,11 @@ class SculkBlockState implements BlockState {
     }
 
     @Override
+    public BlockState property(@NotNull String key, int value) {
+        return this.property(key, String.valueOf(value));
+    }
+
+    @Override
     public BlockState properties(@NotNull Map<String, String> properties) {
         final var newProperties = new HashMap<>(this.properties);
         newProperties.putAll(properties);

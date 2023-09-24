@@ -1,3 +1,3 @@
 package de.bauhd.sculk.world.block;
 
-public interface CherryTrapdoor extends BlockState.Powerable<CherryTrapdoor>, BlockState.Waterloggable<CherryTrapdoor> {}
+public interface CherryTrapdoor extends BlockState.Facing<CherryTrapdoor>, BlockState.Half<CherryTrapdoor>, BlockState.Powerable<CherryTrapdoor>, BlockState.Waterloggable<CherryTrapdoor> {}
