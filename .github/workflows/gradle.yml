@@ -27,7 +27,7 @@ jobs:
       - name: Build with Gradle
         run: |
             chmod +x gradlew;
-            ./gradlew build test shadowJar;
+            ./gradlew test shadowJar;
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
