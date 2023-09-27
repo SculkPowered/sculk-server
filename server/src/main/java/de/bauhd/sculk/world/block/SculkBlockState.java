@@ -45,6 +45,11 @@ class SculkBlockState implements BlockState {
     }
 
     @Override
+    public BlockState property(@NotNull String key, int value) {
+        return this.property(key, String.valueOf(value));
+    }
+
+    @Override
     public BlockState properties(@NotNull Map<String, String> properties) {
         final var newProperties = new HashMap<>(this.properties);
         newProperties.putAll(properties);
@@ -70,6 +75,48 @@ class SculkBlockState implements BlockState {
     public static class Powerable<T extends BlockState> extends SculkBlockState implements BlockState.Powerable<T> {
 
         public Powerable(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
+    }
+
+    public static class Facing<T extends BlockState> extends SculkBlockState implements BlockState.Facing<T> {
+
+        public Facing(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
+    }
+
+    public static class Half<T extends BlockState> extends SculkBlockState implements BlockState.Half<T> {
+
+        public Half(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
+    }
+
+    public static class Ageable<T extends BlockState> extends SculkBlockState implements BlockState.Ageable<T> {
+
+        public Ageable(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
+    }
+
+    public static class Snowy<T extends BlockState> extends SculkBlockState implements BlockState.Snowy<T> {
+
+        public Snowy(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
+    }
+
+    public static class Rotationable<T extends BlockState> extends SculkBlockState implements BlockState.Rotationable<T> {
+
+        public Rotationable(BlockParent block, int id, Map<String, String> properties) {
+            super(block, id, properties);
+        }
+    }
+
+    public static class Axis<T extends BlockState> extends SculkBlockState implements BlockState.Axis<T> {
+
+        public Axis(BlockParent block, int id, Map<String, String> properties) {
             super(block, id, properties);
         }
     }

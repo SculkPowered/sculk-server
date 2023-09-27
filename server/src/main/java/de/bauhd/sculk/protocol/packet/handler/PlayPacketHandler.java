@@ -25,6 +25,7 @@ import de.bauhd.sculk.protocol.packet.play.position.*;
 import de.bauhd.sculk.util.ItemList;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.block.Block;
+import de.bauhd.sculk.world.block.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -336,8 +337,8 @@ public final class PlayPacketHandler extends PacketHandler {
             if (slot.isEmpty()) return;
             var position = useItemOn.position();
             position = switch (useItemOn.face()) {
-                case BOTTOM -> position.subtract(0, 1, 0);
-                case TOP -> position.add(0, 1, 0);
+                case DOWN -> position.subtract(0, 1, 0);
+                case UP -> position.add(0, 1, 0);
                 case NORTH -> position.subtract(0, 0, 1);
                 case SOUTH -> position.add(0, 0, 1);
                 case WEST -> position.subtract(1, 0, 0);
@@ -354,13 +355,13 @@ public final class PlayPacketHandler extends PacketHandler {
             }
 
             var block = Block.get(slot.material().key());
-            if (block.hasProperty("facing")) { // let's set the correct facing
+            if (block instanceof BlockState.Facing<?> facing) { // let's set the correct facing
                 final var rotation = (int) Math.floor(this.player.getPosition().yaw() / 90.0D + 0.5D) & 3;
-                block = block.property("facing", switch (rotation % 4) {
-                    case 0 -> Block.Facing.SOUTH.name().toLowerCase();
-                    case 1 -> Block.Facing.WEST.name().toLowerCase();
-                    case 2 -> Block.Facing.NORTH.name().toLowerCase();
-                    case 3 -> Block.Facing.EAST.name().toLowerCase();
+                block = facing.facing(switch (rotation % 4) {
+                    case 0 -> Block.Facing.SOUTH;
+                    case 1 -> Block.Facing.WEST;
+                    case 2 -> Block.Facing.NORTH;
+                    case 3 -> Block.Facing.EAST;
                     default -> null;
                 });
             }

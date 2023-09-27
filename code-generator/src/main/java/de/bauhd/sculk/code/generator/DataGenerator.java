@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-public final class DataGenerator {
+final class DataGenerator {
 
     private final StringBuffer stringBuffer = new StringBuffer();
     private final byte[] bytes = new byte[2048];
@@ -21,6 +21,12 @@ public final class DataGenerator {
         while (process.isAlive()) {
             this.readStream(process.getErrorStream(), error);
             this.readStream(process.getInputStream(), input);
+            try {
+                //noinspection BusyWait
+                Thread.sleep(50L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

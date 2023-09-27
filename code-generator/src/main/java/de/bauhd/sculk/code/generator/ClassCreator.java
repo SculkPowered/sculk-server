@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ClassCreator {
+final class ClassCreator {
 
     private final Path path;
     private final String pckage;
@@ -12,7 +12,7 @@ public class ClassCreator {
     private String[] imports;
     private String addition;
     private String[] inner;
-    private Type type = Type.CLASS;
+    private Type type;
 
     public ClassCreator(final Path path, final String pckage, final String name) {
         this.path = path;
@@ -50,14 +50,12 @@ public class ClassCreator {
                 }
             }
             writer.write("\n");
-            writer.write("public " + this.type.name().toLowerCase() + " " + this.name + " " + this.addition + " {");
+            writer.write(this.type.type + " " + this.name + " " + this.addition + " {");
             if (this.inner != null) {
-                writer.write("\n");
-                writer.write("\n");
+                writer.write("\n\n");
                 for (final var s : this.inner) {
                     writer.write(s + "\n");
                 }
-                writer.write("\n");
             }
             writer.write("}");
         } catch (IOException e) {
@@ -66,7 +64,13 @@ public class ClassCreator {
     }
 
     public enum Type {
-        CLASS,
-        INTERFACE
+        PROTECTED("final class"),
+        INTERFACE("public interface");
+
+        private final String type;
+
+        Type(final String type) {
+            this.type = type;
+        }
     }
 }
