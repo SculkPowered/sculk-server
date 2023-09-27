@@ -29,7 +29,7 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
 
     @Override
     public void setFirstPotionEffect(@NotNull PotionEffect potionEffect) {
-        this.sendProperty(1, potionEffect.protocolId());
+        this.sendProperty(1, potionEffect.ordinal());
         this.firstPotionEffect = potionEffect;
     }
 
@@ -40,7 +40,7 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
 
     @Override
     public void setSecondPotionEffect(@NotNull PotionEffect potionEffect) {
-        this.sendProperty(2, potionEffect.protocolId());
+        this.sendProperty(2, potionEffect.ordinal());
         this.secondPotionEffect = potionEffect;
     }
 
@@ -57,7 +57,7 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
     @Override
     public void sendProperties(SculkPlayer player) {
         player.send(this.property(0, this.powerLevel));
-        player.send(this.property(1, this.firstPotionEffect.protocolId()));
-        player.send(this.property(2, this.secondPotionEffect.protocolId()));
+        player.send(this.property(1, this.firstPotionEffect.ordinal()));
+        player.send(this.property(2, this.secondPotionEffect.ordinal()));
     }
 }

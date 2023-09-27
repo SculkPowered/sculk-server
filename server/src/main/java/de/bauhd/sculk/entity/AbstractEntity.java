@@ -173,7 +173,7 @@ public abstract class AbstractEntity implements Entity {
     public void addViewer(@NotNull Player player) {
         final var mcPlayer = ((SculkPlayer) player);
         if (!this.viewers.contains(mcPlayer)) {
-            mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().protocolId(), this.position));
+            mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().ordinal(), this.position));
             if (this.metadata.entries().isEmpty()) {
                 mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
             }

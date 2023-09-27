@@ -216,7 +216,7 @@ public final class Buffer {
         if (!slot.isEmpty()) {
             this
                     .writeBoolean(true)
-                    .writeVarInt(slot.material().protocolId())
+                    .writeVarInt(slot.material().ordinal())
                     .writeByte((byte) slot.amount())
                     .writeCompoundTag(slot.nbt());
         } else {

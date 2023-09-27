@@ -68,7 +68,7 @@ public final class SculkEnchantingTableContainer extends SculkContainer implemen
 
     @Override
     public void setTopEnchantment(@NotNull Enchantment enchantment) {
-        this.sendProperty(4, enchantment.protocolId());
+        this.sendProperty(4, enchantment.ordinal());
         this.topEnchantment = enchantment;
     }
 
@@ -79,7 +79,7 @@ public final class SculkEnchantingTableContainer extends SculkContainer implemen
 
     @Override
     public void setMiddleEnchantment(@NotNull Enchantment enchantment) {
-        this.sendProperty(5, enchantment.protocolId());
+        this.sendProperty(5, enchantment.ordinal());
         this.middleEnchantment = enchantment;
     }
 
@@ -90,7 +90,7 @@ public final class SculkEnchantingTableContainer extends SculkContainer implemen
 
     @Override
     public void setBottomEnchantment(@NotNull Enchantment enchantment) {
-        this.sendProperty(6, enchantment.protocolId());
+        this.sendProperty(6, enchantment.ordinal());
         this.bottomEnchantment = enchantment;
     }
 
@@ -143,9 +143,9 @@ public final class SculkEnchantingTableContainer extends SculkContainer implemen
         player.send(this.property(1, this.requirementForMiddleEnchanting));
         player.send(this.property(2, this.requirementForBottomEnchanting));
         player.send(this.property(3, this.enchantmentSeed));
-        player.send(this.property(4, this.topEnchantment.protocolId()));
-        player.send(this.property(5, this.middleEnchantment.protocolId()));
-        player.send(this.property(6, this.bottomEnchantment.protocolId()));
+        player.send(this.property(4, this.topEnchantment.ordinal()));
+        player.send(this.property(5, this.middleEnchantment.ordinal()));
+        player.send(this.property(6, this.bottomEnchantment.ordinal()));
         player.send(this.property(7, this.topEnchantingLevel));
         player.send(this.property(8, this.middleEnchantingLevel));
         player.send(this.property(9, this.bottomEnchantingLevel));
