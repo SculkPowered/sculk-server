@@ -337,8 +337,8 @@ public final class PlayPacketHandler extends PacketHandler {
             if (slot.isEmpty()) return;
             var position = useItemOn.position();
             position = switch (useItemOn.face()) {
-                case BOTTOM -> position.subtract(0, 1, 0);
-                case TOP -> position.add(0, 1, 0);
+                case DOWN -> position.subtract(0, 1, 0);
+                case UP -> position.add(0, 1, 0);
                 case NORTH -> position.subtract(0, 0, 1);
                 case SOUTH -> position.add(0, 0, 1);
                 case WEST -> position.subtract(1, 0, 0);

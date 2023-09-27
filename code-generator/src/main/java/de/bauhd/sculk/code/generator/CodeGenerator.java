@@ -62,6 +62,7 @@ final class CodeGenerator extends Generator {
                 final var entityTypePath = entityPath.resolve(name + ".java");
                 if (Files.notExists(entityTypePath)) {
                     new ClassCreator(entityTypePath, "de.bauhd.sculk.entity", name)
+                            .type(ClassCreator.Type.PROTECTED)
                             .addition("extends Entity")
                             .create();
                 }

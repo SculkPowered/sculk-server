@@ -13,19 +13,19 @@ public final class Block {
     public static final Door ACACIA_DOOR = (Door) get("minecraft:acacia_door");
     public static final BlockState.Waterloggable<BlockState> ACACIA_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:acacia_fence");
     public static final FenceGate ACACIA_FENCE_GATE = (FenceGate) get("minecraft:acacia_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> ACACIA_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:acacia_hanging_sign");
+    public static final HangingSign ACACIA_HANGING_SIGN = (HangingSign) get("minecraft:acacia_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> ACACIA_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:acacia_leaves");
-    public static final BlockState ACACIA_LOG = get("minecraft:acacia_log");
+    public static final BlockState.Axis<BlockState> ACACIA_LOG = (BlockState.Axis<BlockState>) get("minecraft:acacia_log");
     public static final BlockState ACACIA_PLANKS = get("minecraft:acacia_planks");
     public static final BlockState.Powerable<BlockState> ACACIA_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:acacia_pressure_plate");
     public static final BlockState ACACIA_SAPLING = get("minecraft:acacia_sapling");
-    public static final BlockState.Waterloggable<BlockState> ACACIA_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:acacia_sign");
+    public static final Sign ACACIA_SIGN = (Sign) get("minecraft:acacia_sign");
     public static final BlockState.Waterloggable<BlockState> ACACIA_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:acacia_slab");
     public static final Stairs ACACIA_STAIRS = (Stairs) get("minecraft:acacia_stairs");
     public static final Trapdoor ACACIA_TRAPDOOR = (Trapdoor) get("minecraft:acacia_trapdoor");
     public static final WallHangingSign ACACIA_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:acacia_wall_hanging_sign");
     public static final WallSign ACACIA_WALL_SIGN = (WallSign) get("minecraft:acacia_wall_sign");
-    public static final BlockState ACACIA_WOOD = get("minecraft:acacia_wood");
+    public static final BlockState.Axis<BlockState> ACACIA_WOOD = (BlockState.Axis<BlockState>) get("minecraft:acacia_wood");
     public static final ActivatorRail ACTIVATOR_RAIL = (ActivatorRail) get("minecraft:activator_rail");
     public static final BlockState AIR = get("minecraft:air");
     public static final BlockState ALLIUM = get("minecraft:allium");
@@ -43,19 +43,19 @@ public final class Block {
     public static final BlockState.Waterloggable<BlockState> AZALEA_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:azalea_leaves");
     public static final BlockState AZURE_BLUET = get("minecraft:azure_bluet");
     public static final BlockState.Ageable<BlockState> BAMBOO = (BlockState.Ageable<BlockState>) get("minecraft:bamboo");
-    public static final BlockState BAMBOO_BLOCK = get("minecraft:bamboo_block");
+    public static final BlockState.Axis<BlockState> BAMBOO_BLOCK = (BlockState.Axis<BlockState>) get("minecraft:bamboo_block");
     public static final Button BAMBOO_BUTTON = (Button) get("minecraft:bamboo_button");
     public static final Door BAMBOO_DOOR = (Door) get("minecraft:bamboo_door");
     public static final BlockState.Waterloggable<BlockState> BAMBOO_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:bamboo_fence");
     public static final FenceGate BAMBOO_FENCE_GATE = (FenceGate) get("minecraft:bamboo_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> BAMBOO_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:bamboo_hanging_sign");
+    public static final HangingSign BAMBOO_HANGING_SIGN = (HangingSign) get("minecraft:bamboo_hanging_sign");
     public static final BlockState BAMBOO_MOSAIC = get("minecraft:bamboo_mosaic");
     public static final BlockState.Waterloggable<BlockState> BAMBOO_MOSAIC_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:bamboo_mosaic_slab");
     public static final Stairs BAMBOO_MOSAIC_STAIRS = (Stairs) get("minecraft:bamboo_mosaic_stairs");
     public static final BlockState BAMBOO_PLANKS = get("minecraft:bamboo_planks");
     public static final BlockState.Powerable<BlockState> BAMBOO_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:bamboo_pressure_plate");
     public static final BlockState BAMBOO_SAPLING = get("minecraft:bamboo_sapling");
-    public static final BlockState.Waterloggable<BlockState> BAMBOO_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:bamboo_sign");
+    public static final Sign BAMBOO_SIGN = (Sign) get("minecraft:bamboo_sign");
     public static final BlockState.Waterloggable<BlockState> BAMBOO_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:bamboo_slab");
     public static final Stairs BAMBOO_STAIRS = (Stairs) get("minecraft:bamboo_stairs");
     public static final Trapdoor BAMBOO_TRAPDOOR = (Trapdoor) get("minecraft:bamboo_trapdoor");
@@ -63,7 +63,7 @@ public final class Block {
     public static final WallSign BAMBOO_WALL_SIGN = (WallSign) get("minecraft:bamboo_wall_sign");
     public static final BlockState.Facing<BlockState> BARREL = (BlockState.Facing<BlockState>) get("minecraft:barrel");
     public static final BlockState BARRIER = get("minecraft:barrier");
-    public static final BlockState BASALT = get("minecraft:basalt");
+    public static final BlockState.Axis<BlockState> BASALT = (BlockState.Axis<BlockState>) get("minecraft:basalt");
     public static final BlockState BEACON = get("minecraft:beacon");
     public static final BlockState BEDROCK = get("minecraft:bedrock");
     public static final BlockState.Facing<BlockState> BEE_NEST = (BlockState.Facing<BlockState>) get("minecraft:bee_nest");
@@ -76,21 +76,21 @@ public final class Block {
     public static final Door BIRCH_DOOR = (Door) get("minecraft:birch_door");
     public static final BlockState.Waterloggable<BlockState> BIRCH_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:birch_fence");
     public static final FenceGate BIRCH_FENCE_GATE = (FenceGate) get("minecraft:birch_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> BIRCH_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:birch_hanging_sign");
+    public static final HangingSign BIRCH_HANGING_SIGN = (HangingSign) get("minecraft:birch_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> BIRCH_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:birch_leaves");
-    public static final BlockState BIRCH_LOG = get("minecraft:birch_log");
+    public static final BlockState.Axis<BlockState> BIRCH_LOG = (BlockState.Axis<BlockState>) get("minecraft:birch_log");
     public static final BlockState BIRCH_PLANKS = get("minecraft:birch_planks");
     public static final BlockState.Powerable<BlockState> BIRCH_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:birch_pressure_plate");
     public static final BlockState BIRCH_SAPLING = get("minecraft:birch_sapling");
-    public static final BlockState.Waterloggable<BlockState> BIRCH_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:birch_sign");
+    public static final Sign BIRCH_SIGN = (Sign) get("minecraft:birch_sign");
     public static final BlockState.Waterloggable<BlockState> BIRCH_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:birch_slab");
     public static final Stairs BIRCH_STAIRS = (Stairs) get("minecraft:birch_stairs");
     public static final Trapdoor BIRCH_TRAPDOOR = (Trapdoor) get("minecraft:birch_trapdoor");
     public static final WallHangingSign BIRCH_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:birch_wall_hanging_sign");
     public static final WallSign BIRCH_WALL_SIGN = (WallSign) get("minecraft:birch_wall_sign");
-    public static final BlockState BIRCH_WOOD = get("minecraft:birch_wood");
-    public static final BlockState BLACK_BANNER = get("minecraft:black_banner");
-    public static final BlockState.Facing<BlockState> BLACK_BED = (BlockState.Facing<BlockState>) get("minecraft:black_bed");
+    public static final BlockState.Axis<BlockState> BIRCH_WOOD = (BlockState.Axis<BlockState>) get("minecraft:birch_wood");
+    public static final BlockState.Rotationable<BlockState> BLACK_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:black_banner");
+    public static final Bed BLACK_BED = (Bed) get("minecraft:black_bed");
     public static final BlockState.Waterloggable<BlockState> BLACK_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:black_candle");
     public static final BlockState BLACK_CANDLE_CAKE = get("minecraft:black_candle_cake");
     public static final BlockState BLACK_CARPET = get("minecraft:black_carpet");
@@ -108,8 +108,8 @@ public final class Block {
     public static final Stairs BLACKSTONE_STAIRS = (Stairs) get("minecraft:blackstone_stairs");
     public static final BlockState.Waterloggable<BlockState> BLACKSTONE_WALL = (BlockState.Waterloggable<BlockState>) get("minecraft:blackstone_wall");
     public static final BlockState.Facing<BlockState> BLAST_FURNACE = (BlockState.Facing<BlockState>) get("minecraft:blast_furnace");
-    public static final BlockState BLUE_BANNER = get("minecraft:blue_banner");
-    public static final BlockState.Facing<BlockState> BLUE_BED = (BlockState.Facing<BlockState>) get("minecraft:blue_bed");
+    public static final BlockState.Rotationable<BlockState> BLUE_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:blue_banner");
+    public static final Bed BLUE_BED = (Bed) get("minecraft:blue_bed");
     public static final BlockState.Waterloggable<BlockState> BLUE_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:blue_candle");
     public static final BlockState BLUE_CANDLE_CAKE = get("minecraft:blue_candle_cake");
     public static final BlockState BLUE_CARPET = get("minecraft:blue_carpet");
@@ -124,7 +124,7 @@ public final class Block {
     public static final BlockState BLUE_TERRACOTTA = get("minecraft:blue_terracotta");
     public static final BlockState.Facing<BlockState> BLUE_WALL_BANNER = (BlockState.Facing<BlockState>) get("minecraft:blue_wall_banner");
     public static final BlockState BLUE_WOOL = get("minecraft:blue_wool");
-    public static final BlockState BONE_BLOCK = get("minecraft:bone_block");
+    public static final BlockState.Axis<BlockState> BONE_BLOCK = (BlockState.Axis<BlockState>) get("minecraft:bone_block");
     public static final BlockState BOOKSHELF = get("minecraft:bookshelf");
     public static final BlockState.Waterloggable<BlockState> BRAIN_CORAL = (BlockState.Waterloggable<BlockState>) get("minecraft:brain_coral");
     public static final BlockState BRAIN_CORAL_BLOCK = get("minecraft:brain_coral_block");
@@ -135,8 +135,8 @@ public final class Block {
     public static final Stairs BRICK_STAIRS = (Stairs) get("minecraft:brick_stairs");
     public static final BlockState.Waterloggable<BlockState> BRICK_WALL = (BlockState.Waterloggable<BlockState>) get("minecraft:brick_wall");
     public static final BlockState BRICKS = get("minecraft:bricks");
-    public static final BlockState BROWN_BANNER = get("minecraft:brown_banner");
-    public static final BlockState.Facing<BlockState> BROWN_BED = (BlockState.Facing<BlockState>) get("minecraft:brown_bed");
+    public static final BlockState.Rotationable<BlockState> BROWN_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:brown_banner");
+    public static final Bed BROWN_BED = (Bed) get("minecraft:brown_bed");
     public static final BlockState.Waterloggable<BlockState> BROWN_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:brown_candle");
     public static final BlockState BROWN_CANDLE_CAKE = get("minecraft:brown_candle_cake");
     public static final BlockState BROWN_CARPET = get("minecraft:brown_carpet");
@@ -171,25 +171,25 @@ public final class Block {
     public static final BlockState CAVE_AIR = get("minecraft:cave_air");
     public static final BlockState.Ageable<BlockState> CAVE_VINES = (BlockState.Ageable<BlockState>) get("minecraft:cave_vines");
     public static final BlockState CAVE_VINES_PLANT = get("minecraft:cave_vines_plant");
-    public static final BlockState.Waterloggable<BlockState> CHAIN = (BlockState.Waterloggable<BlockState>) get("minecraft:chain");
+    public static final Chain CHAIN = (Chain) get("minecraft:chain");
     public static final BlockState.Facing<BlockState> CHAIN_COMMAND_BLOCK = (BlockState.Facing<BlockState>) get("minecraft:chain_command_block");
     public static final Button CHERRY_BUTTON = (Button) get("minecraft:cherry_button");
     public static final Door CHERRY_DOOR = (Door) get("minecraft:cherry_door");
     public static final BlockState.Waterloggable<BlockState> CHERRY_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:cherry_fence");
     public static final FenceGate CHERRY_FENCE_GATE = (FenceGate) get("minecraft:cherry_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> CHERRY_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:cherry_hanging_sign");
+    public static final HangingSign CHERRY_HANGING_SIGN = (HangingSign) get("minecraft:cherry_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> CHERRY_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:cherry_leaves");
-    public static final BlockState CHERRY_LOG = get("minecraft:cherry_log");
+    public static final BlockState.Axis<BlockState> CHERRY_LOG = (BlockState.Axis<BlockState>) get("minecraft:cherry_log");
     public static final BlockState CHERRY_PLANKS = get("minecraft:cherry_planks");
     public static final BlockState.Powerable<BlockState> CHERRY_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:cherry_pressure_plate");
     public static final BlockState CHERRY_SAPLING = get("minecraft:cherry_sapling");
-    public static final BlockState.Waterloggable<BlockState> CHERRY_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:cherry_sign");
+    public static final Sign CHERRY_SIGN = (Sign) get("minecraft:cherry_sign");
     public static final BlockState.Waterloggable<BlockState> CHERRY_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:cherry_slab");
     public static final Stairs CHERRY_STAIRS = (Stairs) get("minecraft:cherry_stairs");
     public static final Trapdoor CHERRY_TRAPDOOR = (Trapdoor) get("minecraft:cherry_trapdoor");
     public static final WallHangingSign CHERRY_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:cherry_wall_hanging_sign");
     public static final WallSign CHERRY_WALL_SIGN = (WallSign) get("minecraft:cherry_wall_sign");
-    public static final BlockState CHERRY_WOOD = get("minecraft:cherry_wood");
+    public static final BlockState.Axis<BlockState> CHERRY_WOOD = (BlockState.Axis<BlockState>) get("minecraft:cherry_wood");
     public static final Chest CHEST = (Chest) get("minecraft:chest");
     public static final BlockState.Facing<BlockState> CHIPPED_ANVIL = (BlockState.Facing<BlockState>) get("minecraft:chipped_anvil");
     public static final BlockState.Facing<BlockState> CHISELED_BOOKSHELF = (BlockState.Facing<BlockState>) get("minecraft:chiseled_bookshelf");
@@ -229,23 +229,23 @@ public final class Block {
     public static final BlockState CRACKED_POLISHED_BLACKSTONE_BRICKS = get("minecraft:cracked_polished_blackstone_bricks");
     public static final BlockState CRACKED_STONE_BRICKS = get("minecraft:cracked_stone_bricks");
     public static final BlockState CRAFTING_TABLE = get("minecraft:crafting_table");
-    public static final BlockState CREEPER_HEAD = get("minecraft:creeper_head");
+    public static final BlockState.Rotationable<BlockState> CREEPER_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:creeper_head");
     public static final BlockState.Facing<BlockState> CREEPER_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:creeper_wall_head");
     public static final Button CRIMSON_BUTTON = (Button) get("minecraft:crimson_button");
     public static final Door CRIMSON_DOOR = (Door) get("minecraft:crimson_door");
     public static final BlockState.Waterloggable<BlockState> CRIMSON_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:crimson_fence");
     public static final FenceGate CRIMSON_FENCE_GATE = (FenceGate) get("minecraft:crimson_fence_gate");
     public static final BlockState CRIMSON_FUNGUS = get("minecraft:crimson_fungus");
-    public static final BlockState.Waterloggable<BlockState> CRIMSON_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:crimson_hanging_sign");
-    public static final BlockState CRIMSON_HYPHAE = get("minecraft:crimson_hyphae");
+    public static final HangingSign CRIMSON_HANGING_SIGN = (HangingSign) get("minecraft:crimson_hanging_sign");
+    public static final BlockState.Axis<BlockState> CRIMSON_HYPHAE = (BlockState.Axis<BlockState>) get("minecraft:crimson_hyphae");
     public static final BlockState CRIMSON_NYLIUM = get("minecraft:crimson_nylium");
     public static final BlockState CRIMSON_PLANKS = get("minecraft:crimson_planks");
     public static final BlockState.Powerable<BlockState> CRIMSON_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:crimson_pressure_plate");
     public static final BlockState CRIMSON_ROOTS = get("minecraft:crimson_roots");
-    public static final BlockState.Waterloggable<BlockState> CRIMSON_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:crimson_sign");
+    public static final Sign CRIMSON_SIGN = (Sign) get("minecraft:crimson_sign");
     public static final BlockState.Waterloggable<BlockState> CRIMSON_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:crimson_slab");
     public static final Stairs CRIMSON_STAIRS = (Stairs) get("minecraft:crimson_stairs");
-    public static final BlockState CRIMSON_STEM = get("minecraft:crimson_stem");
+    public static final BlockState.Axis<BlockState> CRIMSON_STEM = (BlockState.Axis<BlockState>) get("minecraft:crimson_stem");
     public static final Trapdoor CRIMSON_TRAPDOOR = (Trapdoor) get("minecraft:crimson_trapdoor");
     public static final WallHangingSign CRIMSON_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:crimson_wall_hanging_sign");
     public static final WallSign CRIMSON_WALL_SIGN = (WallSign) get("minecraft:crimson_wall_sign");
@@ -257,8 +257,8 @@ public final class Block {
     public static final BlockState.Waterloggable<BlockState> CUT_RED_SANDSTONE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:cut_red_sandstone_slab");
     public static final BlockState CUT_SANDSTONE = get("minecraft:cut_sandstone");
     public static final BlockState.Waterloggable<BlockState> CUT_SANDSTONE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:cut_sandstone_slab");
-    public static final BlockState CYAN_BANNER = get("minecraft:cyan_banner");
-    public static final BlockState.Facing<BlockState> CYAN_BED = (BlockState.Facing<BlockState>) get("minecraft:cyan_bed");
+    public static final BlockState.Rotationable<BlockState> CYAN_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:cyan_banner");
+    public static final Bed CYAN_BED = (Bed) get("minecraft:cyan_bed");
     public static final BlockState.Waterloggable<BlockState> CYAN_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:cyan_candle");
     public static final BlockState CYAN_CANDLE_CAKE = get("minecraft:cyan_candle_cake");
     public static final BlockState CYAN_CARPET = get("minecraft:cyan_carpet");
@@ -277,19 +277,19 @@ public final class Block {
     public static final Door DARK_OAK_DOOR = (Door) get("minecraft:dark_oak_door");
     public static final BlockState.Waterloggable<BlockState> DARK_OAK_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:dark_oak_fence");
     public static final FenceGate DARK_OAK_FENCE_GATE = (FenceGate) get("minecraft:dark_oak_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> DARK_OAK_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:dark_oak_hanging_sign");
+    public static final HangingSign DARK_OAK_HANGING_SIGN = (HangingSign) get("minecraft:dark_oak_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> DARK_OAK_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:dark_oak_leaves");
-    public static final BlockState DARK_OAK_LOG = get("minecraft:dark_oak_log");
+    public static final BlockState.Axis<BlockState> DARK_OAK_LOG = (BlockState.Axis<BlockState>) get("minecraft:dark_oak_log");
     public static final BlockState DARK_OAK_PLANKS = get("minecraft:dark_oak_planks");
     public static final BlockState.Powerable<BlockState> DARK_OAK_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:dark_oak_pressure_plate");
     public static final BlockState DARK_OAK_SAPLING = get("minecraft:dark_oak_sapling");
-    public static final BlockState.Waterloggable<BlockState> DARK_OAK_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:dark_oak_sign");
+    public static final Sign DARK_OAK_SIGN = (Sign) get("minecraft:dark_oak_sign");
     public static final BlockState.Waterloggable<BlockState> DARK_OAK_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:dark_oak_slab");
     public static final Stairs DARK_OAK_STAIRS = (Stairs) get("minecraft:dark_oak_stairs");
     public static final Trapdoor DARK_OAK_TRAPDOOR = (Trapdoor) get("minecraft:dark_oak_trapdoor");
     public static final WallHangingSign DARK_OAK_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:dark_oak_wall_hanging_sign");
     public static final WallSign DARK_OAK_WALL_SIGN = (WallSign) get("minecraft:dark_oak_wall_sign");
-    public static final BlockState DARK_OAK_WOOD = get("minecraft:dark_oak_wood");
+    public static final BlockState.Axis<BlockState> DARK_OAK_WOOD = (BlockState.Axis<BlockState>) get("minecraft:dark_oak_wood");
     public static final BlockState DARK_PRISMARINE = get("minecraft:dark_prismarine");
     public static final BlockState.Waterloggable<BlockState> DARK_PRISMARINE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:dark_prismarine_slab");
     public static final Stairs DARK_PRISMARINE_STAIRS = (Stairs) get("minecraft:dark_prismarine_stairs");
@@ -316,7 +316,7 @@ public final class Block {
     public static final BlockState.Waterloggable<BlockState> DEAD_TUBE_CORAL_FAN = (BlockState.Waterloggable<BlockState>) get("minecraft:dead_tube_coral_fan");
     public static final WallFan DEAD_TUBE_CORAL_WALL_FAN = (WallFan) get("minecraft:dead_tube_coral_wall_fan");
     public static final DecoratedPot DECORATED_POT = (DecoratedPot) get("minecraft:decorated_pot");
-    public static final BlockState DEEPSLATE = get("minecraft:deepslate");
+    public static final BlockState.Axis<BlockState> DEEPSLATE = (BlockState.Axis<BlockState>) get("minecraft:deepslate");
     public static final BlockState.Waterloggable<BlockState> DEEPSLATE_BRICK_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:deepslate_brick_slab");
     public static final Stairs DEEPSLATE_BRICK_STAIRS = (Stairs) get("minecraft:deepslate_brick_stairs");
     public static final BlockState.Waterloggable<BlockState> DEEPSLATE_BRICK_WALL = (BlockState.Waterloggable<BlockState>) get("minecraft:deepslate_brick_wall");
@@ -344,7 +344,7 @@ public final class Block {
     public static final BlockState DIRT_PATH = get("minecraft:dirt_path");
     public static final BlockState.Facing<BlockState> DISPENSER = (BlockState.Facing<BlockState>) get("minecraft:dispenser");
     public static final BlockState DRAGON_EGG = get("minecraft:dragon_egg");
-    public static final BlockState DRAGON_HEAD = get("minecraft:dragon_head");
+    public static final BlockState.Rotationable<BlockState> DRAGON_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:dragon_head");
     public static final BlockState.Facing<BlockState> DRAGON_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:dragon_wall_head");
     public static final BlockState DRIED_KELP_BLOCK = get("minecraft:dried_kelp_block");
     public static final BlockState DRIPSTONE_BLOCK = get("minecraft:dripstone_block");
@@ -394,8 +394,8 @@ public final class Block {
     public static final BlockState GRASS = get("minecraft:grass");
     public static final BlockState.Snowy<BlockState> GRASS_BLOCK = (BlockState.Snowy<BlockState>) get("minecraft:grass_block");
     public static final BlockState GRAVEL = get("minecraft:gravel");
-    public static final BlockState GRAY_BANNER = get("minecraft:gray_banner");
-    public static final BlockState.Facing<BlockState> GRAY_BED = (BlockState.Facing<BlockState>) get("minecraft:gray_bed");
+    public static final BlockState.Rotationable<BlockState> GRAY_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:gray_banner");
+    public static final Bed GRAY_BED = (Bed) get("minecraft:gray_bed");
     public static final BlockState.Waterloggable<BlockState> GRAY_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:gray_candle");
     public static final BlockState GRAY_CANDLE_CAKE = get("minecraft:gray_candle_cake");
     public static final BlockState GRAY_CARPET = get("minecraft:gray_carpet");
@@ -408,8 +408,8 @@ public final class Block {
     public static final BlockState GRAY_TERRACOTTA = get("minecraft:gray_terracotta");
     public static final BlockState.Facing<BlockState> GRAY_WALL_BANNER = (BlockState.Facing<BlockState>) get("minecraft:gray_wall_banner");
     public static final BlockState GRAY_WOOL = get("minecraft:gray_wool");
-    public static final BlockState GREEN_BANNER = get("minecraft:green_banner");
-    public static final BlockState.Facing<BlockState> GREEN_BED = (BlockState.Facing<BlockState>) get("minecraft:green_bed");
+    public static final BlockState.Rotationable<BlockState> GREEN_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:green_banner");
+    public static final Bed GREEN_BED = (Bed) get("minecraft:green_bed");
     public static final BlockState.Waterloggable<BlockState> GREEN_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:green_candle");
     public static final BlockState GREEN_CANDLE_CAKE = get("minecraft:green_candle_cake");
     public static final BlockState GREEN_CARPET = get("minecraft:green_carpet");
@@ -424,7 +424,7 @@ public final class Block {
     public static final BlockState GREEN_WOOL = get("minecraft:green_wool");
     public static final Grindstone GRINDSTONE = (Grindstone) get("minecraft:grindstone");
     public static final BlockState.Waterloggable<BlockState> HANGING_ROOTS = (BlockState.Waterloggable<BlockState>) get("minecraft:hanging_roots");
-    public static final BlockState HAY_BLOCK = get("minecraft:hay_block");
+    public static final BlockState.Axis<BlockState> HAY_BLOCK = (BlockState.Axis<BlockState>) get("minecraft:hay_block");
     public static final BlockState HEAVY_WEIGHTED_PRESSURE_PLATE = get("minecraft:heavy_weighted_pressure_plate");
     public static final BlockState HONEY_BLOCK = get("minecraft:honey_block");
     public static final BlockState HONEYCOMB_BLOCK = get("minecraft:honeycomb_block");
@@ -437,7 +437,7 @@ public final class Block {
     public static final BlockState INFESTED_CHISELED_STONE_BRICKS = get("minecraft:infested_chiseled_stone_bricks");
     public static final BlockState INFESTED_COBBLESTONE = get("minecraft:infested_cobblestone");
     public static final BlockState INFESTED_CRACKED_STONE_BRICKS = get("minecraft:infested_cracked_stone_bricks");
-    public static final BlockState INFESTED_DEEPSLATE = get("minecraft:infested_deepslate");
+    public static final BlockState.Axis<BlockState> INFESTED_DEEPSLATE = (BlockState.Axis<BlockState>) get("minecraft:infested_deepslate");
     public static final BlockState INFESTED_MOSSY_STONE_BRICKS = get("minecraft:infested_mossy_stone_bricks");
     public static final BlockState INFESTED_STONE = get("minecraft:infested_stone");
     public static final BlockState INFESTED_STONE_BRICKS = get("minecraft:infested_stone_bricks");
@@ -453,19 +453,19 @@ public final class Block {
     public static final Door JUNGLE_DOOR = (Door) get("minecraft:jungle_door");
     public static final BlockState.Waterloggable<BlockState> JUNGLE_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:jungle_fence");
     public static final FenceGate JUNGLE_FENCE_GATE = (FenceGate) get("minecraft:jungle_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> JUNGLE_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:jungle_hanging_sign");
+    public static final HangingSign JUNGLE_HANGING_SIGN = (HangingSign) get("minecraft:jungle_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> JUNGLE_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:jungle_leaves");
-    public static final BlockState JUNGLE_LOG = get("minecraft:jungle_log");
+    public static final BlockState.Axis<BlockState> JUNGLE_LOG = (BlockState.Axis<BlockState>) get("minecraft:jungle_log");
     public static final BlockState JUNGLE_PLANKS = get("minecraft:jungle_planks");
     public static final BlockState.Powerable<BlockState> JUNGLE_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:jungle_pressure_plate");
     public static final BlockState JUNGLE_SAPLING = get("minecraft:jungle_sapling");
-    public static final BlockState.Waterloggable<BlockState> JUNGLE_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:jungle_sign");
+    public static final Sign JUNGLE_SIGN = (Sign) get("minecraft:jungle_sign");
     public static final BlockState.Waterloggable<BlockState> JUNGLE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:jungle_slab");
     public static final Stairs JUNGLE_STAIRS = (Stairs) get("minecraft:jungle_stairs");
     public static final Trapdoor JUNGLE_TRAPDOOR = (Trapdoor) get("minecraft:jungle_trapdoor");
     public static final WallHangingSign JUNGLE_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:jungle_wall_hanging_sign");
     public static final WallSign JUNGLE_WALL_SIGN = (WallSign) get("minecraft:jungle_wall_sign");
-    public static final BlockState JUNGLE_WOOD = get("minecraft:jungle_wood");
+    public static final BlockState.Axis<BlockState> JUNGLE_WOOD = (BlockState.Axis<BlockState>) get("minecraft:jungle_wood");
     public static final BlockState.Ageable<BlockState> KELP = (BlockState.Ageable<BlockState>) get("minecraft:kelp");
     public static final BlockState KELP_PLANT = get("minecraft:kelp_plant");
     public static final Ladder LADDER = (Ladder) get("minecraft:ladder");
@@ -479,8 +479,8 @@ public final class Block {
     public static final Lectern LECTERN = (Lectern) get("minecraft:lectern");
     public static final Lever LEVER = (Lever) get("minecraft:lever");
     public static final BlockState.Waterloggable<BlockState> LIGHT = (BlockState.Waterloggable<BlockState>) get("minecraft:light");
-    public static final BlockState LIGHT_BLUE_BANNER = get("minecraft:light_blue_banner");
-    public static final BlockState.Facing<BlockState> LIGHT_BLUE_BED = (BlockState.Facing<BlockState>) get("minecraft:light_blue_bed");
+    public static final BlockState.Rotationable<BlockState> LIGHT_BLUE_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:light_blue_banner");
+    public static final Bed LIGHT_BLUE_BED = (Bed) get("minecraft:light_blue_bed");
     public static final BlockState.Waterloggable<BlockState> LIGHT_BLUE_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:light_blue_candle");
     public static final BlockState LIGHT_BLUE_CANDLE_CAKE = get("minecraft:light_blue_candle_cake");
     public static final BlockState LIGHT_BLUE_CARPET = get("minecraft:light_blue_carpet");
@@ -493,8 +493,8 @@ public final class Block {
     public static final BlockState LIGHT_BLUE_TERRACOTTA = get("minecraft:light_blue_terracotta");
     public static final BlockState.Facing<BlockState> LIGHT_BLUE_WALL_BANNER = (BlockState.Facing<BlockState>) get("minecraft:light_blue_wall_banner");
     public static final BlockState LIGHT_BLUE_WOOL = get("minecraft:light_blue_wool");
-    public static final BlockState LIGHT_GRAY_BANNER = get("minecraft:light_gray_banner");
-    public static final BlockState.Facing<BlockState> LIGHT_GRAY_BED = (BlockState.Facing<BlockState>) get("minecraft:light_gray_bed");
+    public static final BlockState.Rotationable<BlockState> LIGHT_GRAY_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:light_gray_banner");
+    public static final Bed LIGHT_GRAY_BED = (Bed) get("minecraft:light_gray_bed");
     public static final BlockState.Waterloggable<BlockState> LIGHT_GRAY_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:light_gray_candle");
     public static final BlockState LIGHT_GRAY_CANDLE_CAKE = get("minecraft:light_gray_candle_cake");
     public static final BlockState LIGHT_GRAY_CARPET = get("minecraft:light_gray_carpet");
@@ -512,8 +512,8 @@ public final class Block {
     public static final BlockState.Half<BlockState> LILAC = (BlockState.Half<BlockState>) get("minecraft:lilac");
     public static final BlockState LILY_OF_THE_VALLEY = get("minecraft:lily_of_the_valley");
     public static final BlockState LILY_PAD = get("minecraft:lily_pad");
-    public static final BlockState LIME_BANNER = get("minecraft:lime_banner");
-    public static final BlockState.Facing<BlockState> LIME_BED = (BlockState.Facing<BlockState>) get("minecraft:lime_bed");
+    public static final BlockState.Rotationable<BlockState> LIME_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:lime_banner");
+    public static final Bed LIME_BED = (Bed) get("minecraft:lime_bed");
     public static final BlockState.Waterloggable<BlockState> LIME_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:lime_candle");
     public static final BlockState LIME_CANDLE_CAKE = get("minecraft:lime_candle_cake");
     public static final BlockState LIME_CARPET = get("minecraft:lime_carpet");
@@ -528,8 +528,8 @@ public final class Block {
     public static final BlockState LIME_WOOL = get("minecraft:lime_wool");
     public static final BlockState LODESTONE = get("minecraft:lodestone");
     public static final BlockState.Facing<BlockState> LOOM = (BlockState.Facing<BlockState>) get("minecraft:loom");
-    public static final BlockState MAGENTA_BANNER = get("minecraft:magenta_banner");
-    public static final BlockState.Facing<BlockState> MAGENTA_BED = (BlockState.Facing<BlockState>) get("minecraft:magenta_bed");
+    public static final BlockState.Rotationable<BlockState> MAGENTA_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:magenta_banner");
+    public static final Bed MAGENTA_BED = (Bed) get("minecraft:magenta_bed");
     public static final BlockState.Waterloggable<BlockState> MAGENTA_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:magenta_candle");
     public static final BlockState MAGENTA_CANDLE_CAKE = get("minecraft:magenta_candle_cake");
     public static final BlockState MAGENTA_CARPET = get("minecraft:magenta_carpet");
@@ -547,20 +547,20 @@ public final class Block {
     public static final Door MANGROVE_DOOR = (Door) get("minecraft:mangrove_door");
     public static final BlockState.Waterloggable<BlockState> MANGROVE_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:mangrove_fence");
     public static final FenceGate MANGROVE_FENCE_GATE = (FenceGate) get("minecraft:mangrove_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> MANGROVE_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:mangrove_hanging_sign");
+    public static final HangingSign MANGROVE_HANGING_SIGN = (HangingSign) get("minecraft:mangrove_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> MANGROVE_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:mangrove_leaves");
-    public static final BlockState MANGROVE_LOG = get("minecraft:mangrove_log");
+    public static final BlockState.Axis<BlockState> MANGROVE_LOG = (BlockState.Axis<BlockState>) get("minecraft:mangrove_log");
     public static final BlockState MANGROVE_PLANKS = get("minecraft:mangrove_planks");
     public static final BlockState.Powerable<BlockState> MANGROVE_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:mangrove_pressure_plate");
     public static final MangrovePropagule MANGROVE_PROPAGULE = (MangrovePropagule) get("minecraft:mangrove_propagule");
     public static final BlockState.Waterloggable<BlockState> MANGROVE_ROOTS = (BlockState.Waterloggable<BlockState>) get("minecraft:mangrove_roots");
-    public static final BlockState.Waterloggable<BlockState> MANGROVE_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:mangrove_sign");
+    public static final Sign MANGROVE_SIGN = (Sign) get("minecraft:mangrove_sign");
     public static final BlockState.Waterloggable<BlockState> MANGROVE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:mangrove_slab");
     public static final Stairs MANGROVE_STAIRS = (Stairs) get("minecraft:mangrove_stairs");
     public static final Trapdoor MANGROVE_TRAPDOOR = (Trapdoor) get("minecraft:mangrove_trapdoor");
     public static final WallHangingSign MANGROVE_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:mangrove_wall_hanging_sign");
     public static final WallSign MANGROVE_WALL_SIGN = (WallSign) get("minecraft:mangrove_wall_sign");
-    public static final BlockState MANGROVE_WOOD = get("minecraft:mangrove_wood");
+    public static final BlockState.Axis<BlockState> MANGROVE_WOOD = (BlockState.Axis<BlockState>) get("minecraft:mangrove_wood");
     public static final MediumAmethystBud MEDIUM_AMETHYST_BUD = (MediumAmethystBud) get("minecraft:medium_amethyst_bud");
     public static final BlockState MELON = get("minecraft:melon");
     public static final BlockState.Ageable<BlockState> MELON_STEM = (BlockState.Ageable<BlockState>) get("minecraft:melon_stem");
@@ -580,7 +580,7 @@ public final class Block {
     public static final Stairs MUD_BRICK_STAIRS = (Stairs) get("minecraft:mud_brick_stairs");
     public static final BlockState.Waterloggable<BlockState> MUD_BRICK_WALL = (BlockState.Waterloggable<BlockState>) get("minecraft:mud_brick_wall");
     public static final BlockState MUD_BRICKS = get("minecraft:mud_bricks");
-    public static final BlockState MUDDY_MANGROVE_ROOTS = get("minecraft:muddy_mangrove_roots");
+    public static final BlockState.Axis<BlockState> MUDDY_MANGROVE_ROOTS = (BlockState.Axis<BlockState>) get("minecraft:muddy_mangrove_roots");
     public static final BlockState MUSHROOM_STEM = get("minecraft:mushroom_stem");
     public static final BlockState.Snowy<BlockState> MYCELIUM = (BlockState.Snowy<BlockState>) get("minecraft:mycelium");
     public static final BlockState.Waterloggable<BlockState> NETHER_BRICK_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:nether_brick_fence");
@@ -589,7 +589,7 @@ public final class Block {
     public static final BlockState.Waterloggable<BlockState> NETHER_BRICK_WALL = (BlockState.Waterloggable<BlockState>) get("minecraft:nether_brick_wall");
     public static final BlockState NETHER_BRICKS = get("minecraft:nether_bricks");
     public static final BlockState NETHER_GOLD_ORE = get("minecraft:nether_gold_ore");
-    public static final BlockState NETHER_PORTAL = get("minecraft:nether_portal");
+    public static final BlockState.Axis<BlockState> NETHER_PORTAL = (BlockState.Axis<BlockState>) get("minecraft:nether_portal");
     public static final BlockState NETHER_QUARTZ_ORE = get("minecraft:nether_quartz_ore");
     public static final BlockState NETHER_SPROUTS = get("minecraft:nether_sprouts");
     public static final BlockState.Ageable<BlockState> NETHER_WART = (BlockState.Ageable<BlockState>) get("minecraft:nether_wart");
@@ -601,24 +601,24 @@ public final class Block {
     public static final Door OAK_DOOR = (Door) get("minecraft:oak_door");
     public static final BlockState.Waterloggable<BlockState> OAK_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:oak_fence");
     public static final FenceGate OAK_FENCE_GATE = (FenceGate) get("minecraft:oak_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> OAK_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:oak_hanging_sign");
+    public static final HangingSign OAK_HANGING_SIGN = (HangingSign) get("minecraft:oak_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> OAK_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:oak_leaves");
-    public static final BlockState OAK_LOG = get("minecraft:oak_log");
+    public static final BlockState.Axis<BlockState> OAK_LOG = (BlockState.Axis<BlockState>) get("minecraft:oak_log");
     public static final BlockState OAK_PLANKS = get("minecraft:oak_planks");
     public static final BlockState.Powerable<BlockState> OAK_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:oak_pressure_plate");
     public static final BlockState OAK_SAPLING = get("minecraft:oak_sapling");
-    public static final BlockState.Waterloggable<BlockState> OAK_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:oak_sign");
+    public static final Sign OAK_SIGN = (Sign) get("minecraft:oak_sign");
     public static final BlockState.Waterloggable<BlockState> OAK_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:oak_slab");
     public static final Stairs OAK_STAIRS = (Stairs) get("minecraft:oak_stairs");
     public static final Trapdoor OAK_TRAPDOOR = (Trapdoor) get("minecraft:oak_trapdoor");
     public static final WallHangingSign OAK_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:oak_wall_hanging_sign");
     public static final WallSign OAK_WALL_SIGN = (WallSign) get("minecraft:oak_wall_sign");
-    public static final BlockState OAK_WOOD = get("minecraft:oak_wood");
+    public static final BlockState.Axis<BlockState> OAK_WOOD = (BlockState.Axis<BlockState>) get("minecraft:oak_wood");
     public static final Observer OBSERVER = (Observer) get("minecraft:observer");
     public static final BlockState OBSIDIAN = get("minecraft:obsidian");
-    public static final BlockState OCHRE_FROGLIGHT = get("minecraft:ochre_froglight");
-    public static final BlockState ORANGE_BANNER = get("minecraft:orange_banner");
-    public static final BlockState.Facing<BlockState> ORANGE_BED = (BlockState.Facing<BlockState>) get("minecraft:orange_bed");
+    public static final BlockState.Axis<BlockState> OCHRE_FROGLIGHT = (BlockState.Axis<BlockState>) get("minecraft:ochre_froglight");
+    public static final BlockState.Rotationable<BlockState> ORANGE_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:orange_banner");
+    public static final Bed ORANGE_BED = (Bed) get("minecraft:orange_bed");
     public static final BlockState.Waterloggable<BlockState> ORANGE_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:orange_candle");
     public static final BlockState ORANGE_CANDLE_CAKE = get("minecraft:orange_candle_cake");
     public static final BlockState ORANGE_CARPET = get("minecraft:orange_carpet");
@@ -639,13 +639,13 @@ public final class Block {
     public static final Stairs OXIDIZED_CUT_COPPER_STAIRS = (Stairs) get("minecraft:oxidized_cut_copper_stairs");
     public static final BlockState PACKED_ICE = get("minecraft:packed_ice");
     public static final BlockState PACKED_MUD = get("minecraft:packed_mud");
-    public static final BlockState PEARLESCENT_FROGLIGHT = get("minecraft:pearlescent_froglight");
+    public static final BlockState.Axis<BlockState> PEARLESCENT_FROGLIGHT = (BlockState.Axis<BlockState>) get("minecraft:pearlescent_froglight");
     public static final BlockState.Half<BlockState> PEONY = (BlockState.Half<BlockState>) get("minecraft:peony");
     public static final BlockState.Waterloggable<BlockState> PETRIFIED_OAK_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:petrified_oak_slab");
-    public static final BlockState PIGLIN_HEAD = get("minecraft:piglin_head");
+    public static final BlockState.Rotationable<BlockState> PIGLIN_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:piglin_head");
     public static final BlockState.Facing<BlockState> PIGLIN_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:piglin_wall_head");
-    public static final BlockState PINK_BANNER = get("minecraft:pink_banner");
-    public static final BlockState.Facing<BlockState> PINK_BED = (BlockState.Facing<BlockState>) get("minecraft:pink_bed");
+    public static final BlockState.Rotationable<BlockState> PINK_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:pink_banner");
+    public static final Bed PINK_BED = (Bed) get("minecraft:pink_bed");
     public static final BlockState.Waterloggable<BlockState> PINK_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:pink_candle");
     public static final BlockState PINK_CANDLE_CAKE = get("minecraft:pink_candle_cake");
     public static final BlockState PINK_CARPET = get("minecraft:pink_carpet");
@@ -664,14 +664,14 @@ public final class Block {
     public static final BlockState.Facing<BlockState> PISTON_HEAD = (BlockState.Facing<BlockState>) get("minecraft:piston_head");
     public static final PitcherCrop PITCHER_CROP = (PitcherCrop) get("minecraft:pitcher_crop");
     public static final BlockState.Half<BlockState> PITCHER_PLANT = (BlockState.Half<BlockState>) get("minecraft:pitcher_plant");
-    public static final BlockState PLAYER_HEAD = get("minecraft:player_head");
+    public static final BlockState.Rotationable<BlockState> PLAYER_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:player_head");
     public static final BlockState.Facing<BlockState> PLAYER_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:player_wall_head");
     public static final BlockState.Snowy<BlockState> PODZOL = (BlockState.Snowy<BlockState>) get("minecraft:podzol");
     public static final BlockState.Waterloggable<BlockState> POINTED_DRIPSTONE = (BlockState.Waterloggable<BlockState>) get("minecraft:pointed_dripstone");
     public static final BlockState POLISHED_ANDESITE = get("minecraft:polished_andesite");
     public static final BlockState.Waterloggable<BlockState> POLISHED_ANDESITE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:polished_andesite_slab");
     public static final Stairs POLISHED_ANDESITE_STAIRS = (Stairs) get("minecraft:polished_andesite_stairs");
-    public static final BlockState POLISHED_BASALT = get("minecraft:polished_basalt");
+    public static final BlockState.Axis<BlockState> POLISHED_BASALT = (BlockState.Axis<BlockState>) get("minecraft:polished_basalt");
     public static final BlockState POLISHED_BLACKSTONE = get("minecraft:polished_blackstone");
     public static final BlockState.Waterloggable<BlockState> POLISHED_BLACKSTONE_BRICK_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:polished_blackstone_brick_slab");
     public static final Stairs POLISHED_BLACKSTONE_BRICK_STAIRS = (Stairs) get("minecraft:polished_blackstone_brick_stairs");
@@ -740,8 +740,8 @@ public final class Block {
     public static final BlockState.Waterloggable<BlockState> PRISMARINE_WALL = (BlockState.Waterloggable<BlockState>) get("minecraft:prismarine_wall");
     public static final BlockState PUMPKIN = get("minecraft:pumpkin");
     public static final BlockState.Ageable<BlockState> PUMPKIN_STEM = (BlockState.Ageable<BlockState>) get("minecraft:pumpkin_stem");
-    public static final BlockState PURPLE_BANNER = get("minecraft:purple_banner");
-    public static final BlockState.Facing<BlockState> PURPLE_BED = (BlockState.Facing<BlockState>) get("minecraft:purple_bed");
+    public static final BlockState.Rotationable<BlockState> PURPLE_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:purple_banner");
+    public static final Bed PURPLE_BED = (Bed) get("minecraft:purple_bed");
     public static final BlockState.Waterloggable<BlockState> PURPLE_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:purple_candle");
     public static final BlockState PURPLE_CANDLE_CAKE = get("minecraft:purple_candle_cake");
     public static final BlockState PURPLE_CARPET = get("minecraft:purple_carpet");
@@ -755,20 +755,20 @@ public final class Block {
     public static final BlockState.Facing<BlockState> PURPLE_WALL_BANNER = (BlockState.Facing<BlockState>) get("minecraft:purple_wall_banner");
     public static final BlockState PURPLE_WOOL = get("minecraft:purple_wool");
     public static final BlockState PURPUR_BLOCK = get("minecraft:purpur_block");
-    public static final BlockState PURPUR_PILLAR = get("minecraft:purpur_pillar");
+    public static final BlockState.Axis<BlockState> PURPUR_PILLAR = (BlockState.Axis<BlockState>) get("minecraft:purpur_pillar");
     public static final BlockState.Waterloggable<BlockState> PURPUR_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:purpur_slab");
     public static final Stairs PURPUR_STAIRS = (Stairs) get("minecraft:purpur_stairs");
     public static final BlockState QUARTZ_BLOCK = get("minecraft:quartz_block");
     public static final BlockState QUARTZ_BRICKS = get("minecraft:quartz_bricks");
-    public static final BlockState QUARTZ_PILLAR = get("minecraft:quartz_pillar");
+    public static final BlockState.Axis<BlockState> QUARTZ_PILLAR = (BlockState.Axis<BlockState>) get("minecraft:quartz_pillar");
     public static final BlockState.Waterloggable<BlockState> QUARTZ_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:quartz_slab");
     public static final Stairs QUARTZ_STAIRS = (Stairs) get("minecraft:quartz_stairs");
     public static final BlockState.Waterloggable<BlockState> RAIL = (BlockState.Waterloggable<BlockState>) get("minecraft:rail");
     public static final BlockState RAW_COPPER_BLOCK = get("minecraft:raw_copper_block");
     public static final BlockState RAW_GOLD_BLOCK = get("minecraft:raw_gold_block");
     public static final BlockState RAW_IRON_BLOCK = get("minecraft:raw_iron_block");
-    public static final BlockState RED_BANNER = get("minecraft:red_banner");
-    public static final BlockState.Facing<BlockState> RED_BED = (BlockState.Facing<BlockState>) get("minecraft:red_bed");
+    public static final BlockState.Rotationable<BlockState> RED_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:red_banner");
+    public static final Bed RED_BED = (Bed) get("minecraft:red_bed");
     public static final BlockState.Waterloggable<BlockState> RED_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:red_candle");
     public static final BlockState RED_CANDLE_CAKE = get("minecraft:red_candle_cake");
     public static final BlockState RED_CARPET = get("minecraft:red_carpet");
@@ -821,7 +821,7 @@ public final class Block {
     public static final BlockState SEAGRASS = get("minecraft:seagrass");
     public static final BlockState SHROOMLIGHT = get("minecraft:shroomlight");
     public static final BlockState.Facing<BlockState> SHULKER_BOX = (BlockState.Facing<BlockState>) get("minecraft:shulker_box");
-    public static final BlockState SKELETON_SKULL = get("minecraft:skeleton_skull");
+    public static final BlockState.Rotationable<BlockState> SKELETON_SKULL = (BlockState.Rotationable<BlockState>) get("minecraft:skeleton_skull");
     public static final BlockState.Facing<BlockState> SKELETON_WALL_SKULL = (BlockState.Facing<BlockState>) get("minecraft:skeleton_wall_skull");
     public static final BlockState SLIME_BLOCK = get("minecraft:slime_block");
     public static final SmallAmethystBud SMALL_AMETHYST_BUD = (SmallAmethystBud) get("minecraft:small_amethyst_bud");
@@ -857,19 +857,19 @@ public final class Block {
     public static final Door SPRUCE_DOOR = (Door) get("minecraft:spruce_door");
     public static final BlockState.Waterloggable<BlockState> SPRUCE_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:spruce_fence");
     public static final FenceGate SPRUCE_FENCE_GATE = (FenceGate) get("minecraft:spruce_fence_gate");
-    public static final BlockState.Waterloggable<BlockState> SPRUCE_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:spruce_hanging_sign");
+    public static final HangingSign SPRUCE_HANGING_SIGN = (HangingSign) get("minecraft:spruce_hanging_sign");
     public static final BlockState.Waterloggable<BlockState> SPRUCE_LEAVES = (BlockState.Waterloggable<BlockState>) get("minecraft:spruce_leaves");
-    public static final BlockState SPRUCE_LOG = get("minecraft:spruce_log");
+    public static final BlockState.Axis<BlockState> SPRUCE_LOG = (BlockState.Axis<BlockState>) get("minecraft:spruce_log");
     public static final BlockState SPRUCE_PLANKS = get("minecraft:spruce_planks");
     public static final BlockState.Powerable<BlockState> SPRUCE_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:spruce_pressure_plate");
     public static final BlockState SPRUCE_SAPLING = get("minecraft:spruce_sapling");
-    public static final BlockState.Waterloggable<BlockState> SPRUCE_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:spruce_sign");
+    public static final Sign SPRUCE_SIGN = (Sign) get("minecraft:spruce_sign");
     public static final BlockState.Waterloggable<BlockState> SPRUCE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:spruce_slab");
     public static final Stairs SPRUCE_STAIRS = (Stairs) get("minecraft:spruce_stairs");
     public static final Trapdoor SPRUCE_TRAPDOOR = (Trapdoor) get("minecraft:spruce_trapdoor");
     public static final WallHangingSign SPRUCE_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:spruce_wall_hanging_sign");
     public static final WallSign SPRUCE_WALL_SIGN = (WallSign) get("minecraft:spruce_wall_sign");
-    public static final BlockState SPRUCE_WOOD = get("minecraft:spruce_wood");
+    public static final BlockState.Axis<BlockState> SPRUCE_WOOD = (BlockState.Axis<BlockState>) get("minecraft:spruce_wood");
     public static final BlockState.Facing<BlockState> STICKY_PISTON = (BlockState.Facing<BlockState>) get("minecraft:sticky_piston");
     public static final BlockState STONE = get("minecraft:stone");
     public static final BlockState.Waterloggable<BlockState> STONE_BRICK_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:stone_brick_slab");
@@ -881,27 +881,27 @@ public final class Block {
     public static final BlockState.Waterloggable<BlockState> STONE_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:stone_slab");
     public static final Stairs STONE_STAIRS = (Stairs) get("minecraft:stone_stairs");
     public static final BlockState.Facing<BlockState> STONECUTTER = (BlockState.Facing<BlockState>) get("minecraft:stonecutter");
-    public static final BlockState STRIPPED_ACACIA_LOG = get("minecraft:stripped_acacia_log");
-    public static final BlockState STRIPPED_ACACIA_WOOD = get("minecraft:stripped_acacia_wood");
-    public static final BlockState STRIPPED_BAMBOO_BLOCK = get("minecraft:stripped_bamboo_block");
-    public static final BlockState STRIPPED_BIRCH_LOG = get("minecraft:stripped_birch_log");
-    public static final BlockState STRIPPED_BIRCH_WOOD = get("minecraft:stripped_birch_wood");
-    public static final BlockState STRIPPED_CHERRY_LOG = get("minecraft:stripped_cherry_log");
-    public static final BlockState STRIPPED_CHERRY_WOOD = get("minecraft:stripped_cherry_wood");
-    public static final BlockState STRIPPED_CRIMSON_HYPHAE = get("minecraft:stripped_crimson_hyphae");
-    public static final BlockState STRIPPED_CRIMSON_STEM = get("minecraft:stripped_crimson_stem");
-    public static final BlockState STRIPPED_DARK_OAK_LOG = get("minecraft:stripped_dark_oak_log");
-    public static final BlockState STRIPPED_DARK_OAK_WOOD = get("minecraft:stripped_dark_oak_wood");
-    public static final BlockState STRIPPED_JUNGLE_LOG = get("minecraft:stripped_jungle_log");
-    public static final BlockState STRIPPED_JUNGLE_WOOD = get("minecraft:stripped_jungle_wood");
-    public static final BlockState STRIPPED_MANGROVE_LOG = get("minecraft:stripped_mangrove_log");
-    public static final BlockState STRIPPED_MANGROVE_WOOD = get("minecraft:stripped_mangrove_wood");
-    public static final BlockState STRIPPED_OAK_LOG = get("minecraft:stripped_oak_log");
-    public static final BlockState STRIPPED_OAK_WOOD = get("minecraft:stripped_oak_wood");
-    public static final BlockState STRIPPED_SPRUCE_LOG = get("minecraft:stripped_spruce_log");
-    public static final BlockState STRIPPED_SPRUCE_WOOD = get("minecraft:stripped_spruce_wood");
-    public static final BlockState STRIPPED_WARPED_HYPHAE = get("minecraft:stripped_warped_hyphae");
-    public static final BlockState STRIPPED_WARPED_STEM = get("minecraft:stripped_warped_stem");
+    public static final BlockState.Axis<BlockState> STRIPPED_ACACIA_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_acacia_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_ACACIA_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_acacia_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_BAMBOO_BLOCK = (BlockState.Axis<BlockState>) get("minecraft:stripped_bamboo_block");
+    public static final BlockState.Axis<BlockState> STRIPPED_BIRCH_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_birch_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_BIRCH_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_birch_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_CHERRY_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_cherry_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_CHERRY_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_cherry_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_CRIMSON_HYPHAE = (BlockState.Axis<BlockState>) get("minecraft:stripped_crimson_hyphae");
+    public static final BlockState.Axis<BlockState> STRIPPED_CRIMSON_STEM = (BlockState.Axis<BlockState>) get("minecraft:stripped_crimson_stem");
+    public static final BlockState.Axis<BlockState> STRIPPED_DARK_OAK_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_dark_oak_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_DARK_OAK_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_dark_oak_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_JUNGLE_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_jungle_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_JUNGLE_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_jungle_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_MANGROVE_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_mangrove_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_MANGROVE_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_mangrove_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_OAK_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_oak_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_OAK_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_oak_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_SPRUCE_LOG = (BlockState.Axis<BlockState>) get("minecraft:stripped_spruce_log");
+    public static final BlockState.Axis<BlockState> STRIPPED_SPRUCE_WOOD = (BlockState.Axis<BlockState>) get("minecraft:stripped_spruce_wood");
+    public static final BlockState.Axis<BlockState> STRIPPED_WARPED_HYPHAE = (BlockState.Axis<BlockState>) get("minecraft:stripped_warped_hyphae");
+    public static final BlockState.Axis<BlockState> STRIPPED_WARPED_STEM = (BlockState.Axis<BlockState>) get("minecraft:stripped_warped_stem");
     public static final BlockState STRUCTURE_BLOCK = get("minecraft:structure_block");
     public static final BlockState STRUCTURE_VOID = get("minecraft:structure_void");
     public static final BlockState.Ageable<BlockState> SUGAR_CANE = (BlockState.Ageable<BlockState>) get("minecraft:sugar_cane");
@@ -929,7 +929,7 @@ public final class Block {
     public static final BlockState TURTLE_EGG = get("minecraft:turtle_egg");
     public static final BlockState.Ageable<BlockState> TWISTING_VINES = (BlockState.Ageable<BlockState>) get("minecraft:twisting_vines");
     public static final BlockState TWISTING_VINES_PLANT = get("minecraft:twisting_vines_plant");
-    public static final BlockState VERDANT_FROGLIGHT = get("minecraft:verdant_froglight");
+    public static final BlockState.Axis<BlockState> VERDANT_FROGLIGHT = (BlockState.Axis<BlockState>) get("minecraft:verdant_froglight");
     public static final BlockState VINE = get("minecraft:vine");
     public static final BlockState VOID_AIR = get("minecraft:void_air");
     public static final BlockState.Facing<BlockState> WALL_TORCH = (BlockState.Facing<BlockState>) get("minecraft:wall_torch");
@@ -938,16 +938,16 @@ public final class Block {
     public static final BlockState.Waterloggable<BlockState> WARPED_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:warped_fence");
     public static final FenceGate WARPED_FENCE_GATE = (FenceGate) get("minecraft:warped_fence_gate");
     public static final BlockState WARPED_FUNGUS = get("minecraft:warped_fungus");
-    public static final BlockState.Waterloggable<BlockState> WARPED_HANGING_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:warped_hanging_sign");
-    public static final BlockState WARPED_HYPHAE = get("minecraft:warped_hyphae");
+    public static final HangingSign WARPED_HANGING_SIGN = (HangingSign) get("minecraft:warped_hanging_sign");
+    public static final BlockState.Axis<BlockState> WARPED_HYPHAE = (BlockState.Axis<BlockState>) get("minecraft:warped_hyphae");
     public static final BlockState WARPED_NYLIUM = get("minecraft:warped_nylium");
     public static final BlockState WARPED_PLANKS = get("minecraft:warped_planks");
     public static final BlockState.Powerable<BlockState> WARPED_PRESSURE_PLATE = (BlockState.Powerable<BlockState>) get("minecraft:warped_pressure_plate");
     public static final BlockState WARPED_ROOTS = get("minecraft:warped_roots");
-    public static final BlockState.Waterloggable<BlockState> WARPED_SIGN = (BlockState.Waterloggable<BlockState>) get("minecraft:warped_sign");
+    public static final Sign WARPED_SIGN = (Sign) get("minecraft:warped_sign");
     public static final BlockState.Waterloggable<BlockState> WARPED_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:warped_slab");
     public static final Stairs WARPED_STAIRS = (Stairs) get("minecraft:warped_stairs");
-    public static final BlockState WARPED_STEM = get("minecraft:warped_stem");
+    public static final BlockState.Axis<BlockState> WARPED_STEM = (BlockState.Axis<BlockState>) get("minecraft:warped_stem");
     public static final Trapdoor WARPED_TRAPDOOR = (Trapdoor) get("minecraft:warped_trapdoor");
     public static final WallHangingSign WARPED_WALL_HANGING_SIGN = (WallHangingSign) get("minecraft:warped_wall_hanging_sign");
     public static final WallSign WARPED_WALL_SIGN = (WallSign) get("minecraft:warped_wall_sign");
@@ -978,8 +978,8 @@ public final class Block {
     public static final BlockState WEEPING_VINES_PLANT = get("minecraft:weeping_vines_plant");
     public static final BlockState WET_SPONGE = get("minecraft:wet_sponge");
     public static final BlockState.Ageable<BlockState> WHEAT = (BlockState.Ageable<BlockState>) get("minecraft:wheat");
-    public static final BlockState WHITE_BANNER = get("minecraft:white_banner");
-    public static final BlockState.Facing<BlockState> WHITE_BED = (BlockState.Facing<BlockState>) get("minecraft:white_bed");
+    public static final BlockState.Rotationable<BlockState> WHITE_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:white_banner");
+    public static final Bed WHITE_BED = (Bed) get("minecraft:white_bed");
     public static final BlockState.Waterloggable<BlockState> WHITE_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:white_candle");
     public static final BlockState WHITE_CANDLE_CAKE = get("minecraft:white_candle_cake");
     public static final BlockState WHITE_CARPET = get("minecraft:white_carpet");
@@ -994,10 +994,10 @@ public final class Block {
     public static final BlockState.Facing<BlockState> WHITE_WALL_BANNER = (BlockState.Facing<BlockState>) get("minecraft:white_wall_banner");
     public static final BlockState WHITE_WOOL = get("minecraft:white_wool");
     public static final BlockState WITHER_ROSE = get("minecraft:wither_rose");
-    public static final BlockState WITHER_SKELETON_SKULL = get("minecraft:wither_skeleton_skull");
+    public static final BlockState.Rotationable<BlockState> WITHER_SKELETON_SKULL = (BlockState.Rotationable<BlockState>) get("minecraft:wither_skeleton_skull");
     public static final BlockState.Facing<BlockState> WITHER_SKELETON_WALL_SKULL = (BlockState.Facing<BlockState>) get("minecraft:wither_skeleton_wall_skull");
-    public static final BlockState YELLOW_BANNER = get("minecraft:yellow_banner");
-    public static final BlockState.Facing<BlockState> YELLOW_BED = (BlockState.Facing<BlockState>) get("minecraft:yellow_bed");
+    public static final BlockState.Rotationable<BlockState> YELLOW_BANNER = (BlockState.Rotationable<BlockState>) get("minecraft:yellow_banner");
+    public static final Bed YELLOW_BED = (Bed) get("minecraft:yellow_bed");
     public static final BlockState.Waterloggable<BlockState> YELLOW_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:yellow_candle");
     public static final BlockState YELLOW_CANDLE_CAKE = get("minecraft:yellow_candle_cake");
     public static final BlockState YELLOW_CARPET = get("minecraft:yellow_carpet");
@@ -1010,7 +1010,7 @@ public final class Block {
     public static final BlockState YELLOW_TERRACOTTA = get("minecraft:yellow_terracotta");
     public static final BlockState.Facing<BlockState> YELLOW_WALL_BANNER = (BlockState.Facing<BlockState>) get("minecraft:yellow_wall_banner");
     public static final BlockState YELLOW_WOOL = get("minecraft:yellow_wool");
-    public static final BlockState ZOMBIE_HEAD = get("minecraft:zombie_head");
+    public static final BlockState.Rotationable<BlockState> ZOMBIE_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:zombie_head");
     public static final BlockState.Facing<BlockState> ZOMBIE_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:zombie_wall_head");
     // END
 
@@ -1049,8 +1049,8 @@ public final class Block {
      * The facing a block can have.
      */
     public enum Facing {
-        BOTTOM,
-        TOP,
+        DOWN,
+        UP,
         NORTH,
         SOUTH,
         WEST,
@@ -1063,6 +1063,24 @@ public final class Block {
     public enum Half {
         BOTTOM,
         TOP,
+        LEFT,
+        RIGHT
+    }
+
+    /**
+     * The type of the slab.
+     */
+    public enum SlabType {
+        TOP,
+        BOTTOM,
+        DOUBLE
+    }
+
+    /**
+     * The type of the chest.
+     */
+    public enum ChestType {
+        SINGLE,
         LEFT,
         RIGHT
     }

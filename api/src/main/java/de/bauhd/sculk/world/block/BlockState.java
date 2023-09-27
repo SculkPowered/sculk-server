@@ -1,6 +1,8 @@
 package de.bauhd.sculk.world.block;
 
+import de.bauhd.sculk.world.Direction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.Map;
 
@@ -73,7 +75,7 @@ public interface BlockState {
      */
     BlockState properties(@NotNull Map<String, String> properties);
 
-    interface Waterloggable<T> extends BlockState {
+    interface Waterloggable<B> extends BlockState {
 
         /**
          * Checks if the state is waterlogged.
@@ -93,12 +95,12 @@ public interface BlockState {
          * @since 1.0.0
          */
         @SuppressWarnings("unchecked")
-        default @NotNull T waterlogged(boolean waterlogged) {
-            return (T) this.property("waterlogged", waterlogged);
+        default @NotNull B waterlogged(boolean waterlogged) {
+            return (B) this.property("waterlogged", waterlogged);
         }
     }
 
-    interface Powerable<T extends BlockState> extends BlockState {
+    interface Powerable<B extends BlockState> extends BlockState {
 
         /**
          * Checks if the state is powered.
@@ -118,12 +120,12 @@ public interface BlockState {
          * @since 1.0.0
          */
         @SuppressWarnings("unchecked")
-        default @NotNull T powered(boolean powered) {
-            return (T) this.property("powered", powered);
+        default @NotNull B powered(boolean powered) {
+            return (B) this.property("powered", powered);
         }
     }
 
-    interface Snowy<T extends BlockState> extends BlockState {
+    interface Snowy<B extends BlockState> extends BlockState {
 
         /**
          * Checks if the state is snowy.
@@ -143,12 +145,12 @@ public interface BlockState {
          * @since 1.0.0
          */
         @SuppressWarnings("unchecked")
-        default @NotNull T powered(boolean snowy) {
-            return (T) this.property("snowy", snowy);
+        default @NotNull B powered(boolean snowy) {
+            return (B) this.property("snowy", snowy);
         }
     }
 
-    interface Face<T extends BlockState> extends BlockState {
+    interface Face<B extends BlockState> extends BlockState {
 
         /**
          * Gets the face.
@@ -156,7 +158,7 @@ public interface BlockState {
          * @return the face
          * @since 1.0.0
          */
-        default Block.Face face() {
+        default @NotNull Block.Face face() {
             return Block.Face.valueOf(this.getProperties().get("face"));
         }
 
@@ -168,12 +170,12 @@ public interface BlockState {
          * @since 1.0.0
          */
         @SuppressWarnings("unchecked")
-        default @NotNull T face(@NotNull Block.Face face) {
-            return (T) this.property("face", face.name().toLowerCase());
+        default @NotNull B face(@NotNull Block.Face face) {
+            return (B) this.property("face", face.name().toLowerCase());
         }
     }
 
-    interface Facing<T extends BlockState> extends BlockState {
+    interface Facing<B extends BlockState> extends BlockState {
 
         /**
          * Gets the facing.
@@ -181,7 +183,7 @@ public interface BlockState {
          * @return the facing
          * @since 1.0.0
          */
-        default Block.Facing facing() {
+        default @NotNull Block.Facing facing() {
             return Block.Facing.valueOf(this.getProperties().get("facing"));
         }
 
@@ -193,12 +195,12 @@ public interface BlockState {
          * @since 1.0.0
          */
         @SuppressWarnings("unchecked")
-        default @NotNull T facing(@NotNull Block.Facing facing) {
-            return (T) this.property("facing", facing.name().toLowerCase());
+        default @NotNull B facing(@NotNull Block.Facing facing) {
+            return (B) this.property("facing", facing.name().toLowerCase());
         }
     }
 
-    interface Half<T extends BlockState> extends BlockState {
+    interface Half<B extends BlockState> extends BlockState {
 
         /**
          * Gets the half.
@@ -206,7 +208,7 @@ public interface BlockState {
          * @return the half
          * @since 1.0.0
          */
-        default Block.Half half() {
+        default @NotNull Block.Half half() {
             return Block.Half.valueOf(this.getProperties().get("half"));
         }
 
@@ -218,12 +220,12 @@ public interface BlockState {
          * @since 1.0.0
          */
         @SuppressWarnings("unchecked")
-        default @NotNull T half(@NotNull Block.Half half) {
-            return (T) this.property("half", half.name().toLowerCase());
+        default @NotNull B half(@NotNull Block.Half half) {
+            return (B) this.property("half", half.name().toLowerCase());
         }
     }
 
-    interface Ageable<T extends BlockState> extends BlockState {
+    interface Ageable<B extends BlockState> extends BlockState {
 
         /**
          * Gets the age.
@@ -243,8 +245,58 @@ public interface BlockState {
          * @since 1.0.0
          */
         @SuppressWarnings("unchecked")
-        default @NotNull T age(int age) {
-            return (T) this.property("age", age);
+        default @NotNull B age(int age) {
+            return (B) this.property("age", age);
+        }
+    }
+
+    interface Rotationable<B extends BlockState> extends BlockState {
+
+        /**
+         * Gets the rotation.
+         *
+         * @return the rotation
+         * @since 1.0.0
+         */
+        default int rotation() {
+            return Integer.parseInt(this.getProperties().get("rotation"));
+        }
+
+        /**
+         * Sets the rotation.
+         *
+         * @param rotation the rotation to set
+         * @return the state
+         * @since 1.0.0
+         */
+        @SuppressWarnings("unchecked")
+        default @NotNull B rotation(@Range(from = 0, to = 15) int rotation) {
+            return (B) this.property("rotation", rotation);
+        }
+    }
+
+    interface Axis<B extends BlockState> extends BlockState {
+
+        /**
+         * Gets the axis.
+         *
+         * @return the axis
+         * @since 1.0.0
+         */
+        default @NotNull Direction.Axis axis() {
+            return Direction.Axis.valueOf(this.getProperties().get("axis"));
+        }
+
+        /**
+         * Sets the axis.
+         *
+         * @param axis the axis to set
+         * @return the state
+         * @since 1.0.0
+         */
+        @SuppressWarnings("unchecked")
+        default @NotNull B axis(@NotNull Direction.Axis axis) {
+            return (B) this.property("axis", axis.name().toLowerCase());
         }
     }
 }

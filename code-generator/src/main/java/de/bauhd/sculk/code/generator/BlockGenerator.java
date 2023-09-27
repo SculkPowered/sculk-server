@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 import static de.bauhd.sculk.code.generator.Constants.*;
-import static de.bauhd.sculk.code.generator.Constants.STRING_STRING_MAP;
 
 final class BlockGenerator extends Generator {
 
+    private static final List<String> DO_NOT_CREATE = List.of("Bed");
     private static final Map<String, String> PROPERTY_TO_CLASS = Map.of(
             "waterlogged", "Waterloggable",
             "powered", "Powerable",
@@ -23,19 +23,23 @@ final class BlockGenerator extends Generator {
             "face", "Face",
             "facing", "Facing",
             "half", "Half",
-            "age", "Ageable"
+            "age", "Ageable",
+            "rotation", "Rotationable",
+            "axis", "Axis"
     );
     private static final String[] GROUPS = {
             "Button",
             "WallSign",
             "WallHangingSign",
+            "HangingSign",
+            "Sign",
             "Bed",
             "Stairs",
             "Trapdoor",
             "FenceGate",
             "Door",
-            "Bed",
-            "WallFan"
+            "WallFan",
+            "Slab",
     };
 
     public BlockGenerator(final BufferedReader reader) throws IOException {
@@ -79,20 +83,26 @@ final class BlockGenerator extends Generator {
 
     private String classAndCreate(final Path path, final String key, final JsonElement propertyElement) {
         final var needsClass = propertyElement != null;
-        var clazz = (needsClass ? this.keyToName(key) : "BlockState");
+        var clazz = needsClass ? this.keyToName(key) : "BlockState";
         if (needsClass) {
-            final Map<String, String[]> properties = GSON.fromJson(propertyElement, STRING_STRING_ARRAY_MAP);
-            final var keys = new ArrayList<>(properties.keySet());
-            if (properties.size() == 1) {
-                final var property = PROPERTY_TO_CLASS.get(keys.get(0));
-                clazz = "BlockState" + (property != null ? "." + property + "<BlockState>" : "");
-            } else {
-                for (final var group : GROUPS) {
-                    if (clazz.endsWith(group)) {
-                        clazz = group;
-                        break;
-                    }
+            var grouped = false;
+            for (final var group : GROUPS) {
+                if (clazz.endsWith(group)) {
+                    clazz = group;
+                    grouped = true;
+                    break;
                 }
+            }
+            final Map<String, String[]> properties = GSON.fromJson(propertyElement, STRING_STRING_ARRAY_MAP);
+            if (properties.isEmpty()) {
+                return "BlockState";
+            }
+            final var keys = new ArrayList<>(properties.keySet());
+            if (properties.size() == 1 && !grouped) {
+                final var property = PROPERTY_TO_CLASS.get(keys.get(0));
+                return "BlockState" + (property != null ? "." + property + "<BlockState>" : "");
+            }
+            if (!DO_NOT_CREATE.contains(clazz)) {
                 final var stringBuilder = new StringBuilder();
                 final var iterator = keys.iterator();
                 while (iterator.hasNext()) {
@@ -109,13 +119,13 @@ final class BlockGenerator extends Generator {
                         iterator.remove();
                     }
                 }
-                if (keys.isEmpty()) {
-                    clazz = "BlockState";
-                } else if (keys.size() == 1) {
-                    clazz = "BlockState." + PROPERTY_TO_CLASS.get(keys.get(0)) + "<BlockState>";
-                } else {
-                    this.createClasses(path, clazz, stringBuilder);
+                if (stringBuilder.isEmpty()) {
+                    return "BlockState";
                 }
+                if (keys.size() == 1) {
+                    return "BlockState." + PROPERTY_TO_CLASS.get(keys.get(0)) + "<BlockState>";
+                }
+                this.createClasses(path, clazz, stringBuilder);
             }
         }
         return clazz;
@@ -135,12 +145,13 @@ final class BlockGenerator extends Generator {
 
     private void createClasses(final Path path, final String clazz, final StringBuilder stringBuilder) {
         new ClassCreator(path.resolve(clazz + ".java"), "de.bauhd.sculk.world.block", clazz)
-                .addition("extends " + stringBuilder.substring(0, stringBuilder.length() - 2))
                 .type(ClassCreator.Type.INTERFACE)
+                .addition("extends " + stringBuilder.substring(0, stringBuilder.length() - 2))
                 .create();
         new ClassCreator(SERVER_PACKAGE.resolve("world").resolve("block")
                 .resolve("Sculk" + clazz + ".java"), "de.bauhd.sculk.world.block",
                 "Sculk" + clazz)
+                .type(ClassCreator.Type.PROTECTED)
                 .addition("extends SculkBlockState implements " + clazz)
                 .imports("java.util.Map")
                 .inner(
