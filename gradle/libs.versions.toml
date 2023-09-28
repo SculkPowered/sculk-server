@@ -1,5 +1,5 @@
 [versions]
-netty = "4.1.98.Final"
+netty = "4.1.99.Final"
 adventure = "4.14.0"
 log4j = "2.20.0"
 
