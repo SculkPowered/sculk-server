@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.util.UUID;
 
 public final class MojangUtil {
@@ -55,7 +55,7 @@ public final class MojangUtil {
     }
 
     private static JsonObject apiRequest(final String url) {
-        try (final var reader = new InputStreamReader(new URL(url).openConnection().getInputStream())) {
+        try (final var reader = new InputStreamReader(URI.create(url).toURL().openConnection().getInputStream())) {
             return JsonParser.parseReader(reader).getAsJsonObject();
         } catch (IOException | IllegalStateException e) {
             LOGGER.error("Exception during api request", e);
