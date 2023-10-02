@@ -211,4 +211,9 @@ public interface World {
             return this.defaultGameMode;
         }
     }
+
+    enum Format {
+        ANVIL,
+        SLIME
+    }
 }

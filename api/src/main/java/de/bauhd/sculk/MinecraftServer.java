@@ -119,14 +119,37 @@ public interface MinecraftServer {
     @NotNull World createWorld(@NotNull World.Builder builder);
 
     /**
-     * Loads a vanilla world with the specified builder.
+     * Loads a world with the specified builder.
      *
      * @param builder the builder for the world
-     * @param path    the path of the vanilla world
+     * @param path    the path of the world
      * @return the loaded world
      * @since 1.0.0
      */
-    @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull Path path);
+    default @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull Path path) {
+        return this.loadWorld(builder, World.Format.ANVIL, path);
+    }
+
+    /**
+     * Loads a world with the specified builder.
+     *
+     * @param builder the builder for the world
+     * @param path    the path of the world
+     * @param format  the format of the world
+     * @return the loaded world
+     * @since 1.0.0
+     */
+    @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull World.Format format, @NotNull Path path);
+
+    /**
+     * Loads a slime world with the specified builder.
+     *
+     * @param builder the builder for the world
+     * @param bytes    the data of the world
+     * @return the loaded world
+     * @since 1.0.0
+     */
+    @NotNull World loadWorld(@NotNull World.Builder builder, byte @NotNull [] bytes);
 
     /**
      * Loads the specified world.

@@ -1,6 +1,6 @@
 package de.bauhd.sculk.world;
 
-public final class Worker extends Thread {
+final class Worker extends Thread {
 
     private static final int TPS = 20;
     private static final int MILLIS_BETWEEN_TICK = 1000 / TPS;

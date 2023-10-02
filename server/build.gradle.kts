@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.fastutil)
 
     implementation(libs.velocity.native)
+    implementation(libs.zstd)
 
     testImplementation(libs.junit)
 }
