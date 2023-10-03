@@ -29,6 +29,8 @@ import de.bauhd.sculk.world.block.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static de.bauhd.sculk.world.block.Block.Facing.*;
+
 public final class PlayPacketHandler extends PacketHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(PlayPacketHandler.class);
@@ -337,15 +339,7 @@ public final class PlayPacketHandler extends PacketHandler {
         final var slot = (useItemOn.hand() == 0 ? inventory.getItemInMainHand() : inventory.getItemInOffHand());
         this.server.getEventHandler().call(new PlayerUseItemEvent(this.player, slot)).thenAcceptAsync(event -> {
             if (slot.isEmpty()) return;
-            var position = useItemOn.position();
-            position = switch (useItemOn.face()) {
-                case DOWN -> position.subtract(0, 1, 0);
-                case UP -> position.add(0, 1, 0);
-                case NORTH -> position.subtract(0, 0, 1);
-                case SOUTH -> position.add(0, 0, 1);
-                case WEST -> position.subtract(1, 0, 0);
-                case EAST -> position.add(1, 0, 0);
-            };
+            var position = this.calculatePosition(useItemOn.position(), useItemOn.face());
             if (this.player.getOpenedContainer() != null) {
                 this.player.getWorld().getChunkAt((int) position.x(), (int) position.z()).send(this.player); // TODO: not send the complete chunk
                 if (useItemOn.hand() == 0) {
@@ -362,7 +356,7 @@ public final class PlayPacketHandler extends PacketHandler {
                 block = facing.facing(switch (rotation % 4) {
                     case 0 -> Block.Facing.SOUTH;
                     case 1 -> Block.Facing.WEST;
-                    case 2 -> Block.Facing.NORTH;
+                    case 2 -> NORTH;
                     case 3 -> Block.Facing.EAST;
                     default -> null;
                 });
@@ -387,6 +381,23 @@ public final class PlayPacketHandler extends PacketHandler {
         this.server.getEventHandler().call(new PlayerUseItemEvent(this.player,
                 (useItem.hand() == 0 ? inventory.getItemInMainHand() : inventory.getItemInOffHand())));
         return true;
+    }
+
+    private Position calculatePosition(Position position, Block.Facing facing) {
+        if (facing == DOWN) {
+            position = position.subtract(0, 1, 0);
+        } else if (facing == UP) {
+            position = position.add(0, 1, 0);
+        } else if (facing == NORTH) {
+            position = position.subtract(0, 0, 1);
+        } else if (facing == SOUTH) {
+            position = position.add(0, 0, 1);
+        } else if (facing == WEST) {
+            position = position.subtract(1, 0, 0);
+        } else if (facing == EAST) {
+            position = position.add(1, 0, 0);
+        }
+        return position;
     }
 
     private short delta(final double previous, final double current) {

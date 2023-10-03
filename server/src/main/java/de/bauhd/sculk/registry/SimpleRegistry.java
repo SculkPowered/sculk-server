@@ -40,9 +40,13 @@ public class SimpleRegistry<E extends Registry.Entry> extends HashMap<String, E>
 
     @Override
     public @NotNull CompoundBinaryTag asNBT() {
+        final var list = ListBinaryTag.builder();
+        for (final var value : this.values()) {
+            list.add(value.asNBT());
+        }
         return CompoundBinaryTag.builder()
                 .putString("type", this.type)
-                .put("value", ListBinaryTag.from(this.values().stream().map(Registry.Entry::asNBT).toList()))
+                .put("value", list.build())
                 .build();
     }
 }

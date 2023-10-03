@@ -21,7 +21,7 @@ public final class UseItemOn implements Packet {
     public void decode(Buffer buf) {
         this.hand = buf.readVarInt();
         this.position = buf.readPosition();
-        this.face = buf.readEnum(Block.Facing.class);
+        this.face = Block.Facing.get(buf.readVarInt());
         this.x = buf.readFloat();
         this.y = buf.readFloat();
         this.z = buf.readFloat();

@@ -2,6 +2,9 @@ package de.bauhd.sculk.world.block;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Represent all supported blocks.
  */
@@ -1014,7 +1017,8 @@ public final class Block {
     public static final BlockState.Facing<BlockState> ZOMBIE_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:zombie_wall_head");
     // END
 
-    private Block() {}
+    private Block() {
+    }
 
     /**
      * Gets a block by its name.
@@ -1039,49 +1043,124 @@ public final class Block {
     /**
      * The face a block can have.
      */
-    public enum Face {
-        FLOOR,
-        WALL,
-        CEILING
+    public static final class Face extends PropertyValue<Face> {
+
+        private static final Map<String, Face> INDEX = new HashMap<>(3);
+
+        public static final Face FLOOR = new Face("floor");
+        public static final Face WALL = new Face("wall");
+        public static final Face CEILING = new Face("ceiling");
+
+        private Face(String value) {
+            super(value, INDEX);
+        }
+
+        public static Face get(@NotNull String value) {
+            return INDEX.get(value);
+        }
     }
 
     /**
      * The facing a block can have.
      */
-    public enum Facing {
-        DOWN,
-        UP,
-        NORTH,
-        SOUTH,
-        WEST,
-        EAST
+    public static final class Facing extends PropertyValue<Facing> {
+
+        private static final Map<String, Facing> INDEX = new HashMap<>(6);
+
+        public static final Facing DOWN = new Facing("down");
+        public static final Facing UP = new Facing("up");
+        public static final Facing NORTH = new Facing("north");
+        public static final Facing SOUTH = new Facing("south");
+        public static final Facing WEST = new Facing("west");
+        public static final Facing EAST = new Facing("east");
+
+        private static final Map<Integer, Facing> INDEX_BY_ID = Map.of(0, DOWN, 1, UP, 2, NORTH, 3, SOUTH, 4, WEST, 5, EAST);
+
+        private Facing(String value) {
+            super(value, INDEX);
+        }
+
+        public static Facing get(@NotNull String value) {
+            return INDEX.get(value);
+        }
+
+        public static Facing get(int value) {
+            return INDEX_BY_ID.get(value);
+        }
     }
 
     /**
      * The half a block can be.
      */
-    public enum Half {
-        BOTTOM,
-        TOP,
-        LEFT,
-        RIGHT
+    public static final class Half extends PropertyValue<Half> {
+
+        private static final Map<String, Half> INDEX = new HashMap<>(4);
+
+        public static final Facing BOTTOM = new Facing("bottom");
+        public static final Facing TOP = new Facing("top");
+        public static final Facing LEFT = new Facing("left");
+        public static final Facing RIGHT = new Facing("right");
+
+        private Half(String value) {
+            super(value, INDEX);
+        }
+
+        public static Half get(@NotNull String value) {
+            return INDEX.get(value);
+        }
     }
 
     /**
      * The type of the slab.
      */
-    public enum SlabType {
-        TOP,
-        BOTTOM,
-        DOUBLE
+    public static final class SlabType extends PropertyValue<SlabType> {
+
+        private static final Map<String, SlabType> INDEX = new HashMap<>(3);
+
+        public static final Facing TOP = new Facing("top");
+        public static final Facing BOTTOM = new Facing("bottom");
+        public static final Facing DOUBLE = new Facing("double");
+
+        private SlabType(String value) {
+            super(value, INDEX);
+        }
+
+        public static SlabType get(@NotNull String value) {
+            return INDEX.get(value);
+        }
     }
 
     /**
      * The type of the chest.
      */
-    public enum ChestType {
-        SINGLE,
-        LEFT,
-        RIGHT
+    public static final class ChestType extends PropertyValue<ChestType> {
+
+        private static final Map<String, ChestType> INDEX = new HashMap<>(3);
+
+        public static final Facing SINGLE = new Facing("single");
+        public static final Facing LEFT = new Facing("left");
+        public static final Facing RIGHT = new Facing("right");
+
+        private ChestType(String value) {
+            super(value, INDEX);
+        }
+
+        public static ChestType get(@NotNull String value) {
+            return INDEX.get(value);
+        }
+    }
+
+    public static class PropertyValue<E> {
+
+        private final String value;
+
+        protected PropertyValue(String value, Map<String, E> map) {
+            this.value = value;
+            map.put(value, (E) this);
+        }
+
+        public String getValue() {
+            return this.value;
+        }
     }
 }

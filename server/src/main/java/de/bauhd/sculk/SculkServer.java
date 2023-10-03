@@ -29,7 +29,7 @@ import de.bauhd.sculk.registry.Registry;
 import de.bauhd.sculk.registry.SimpleRegistry;
 import de.bauhd.sculk.team.SculkTeamHandler;
 import de.bauhd.sculk.terminal.SimpleTerminal;
-import de.bauhd.sculk.util.BossBarListener;
+import de.bauhd.sculk.adventure.BossBarListener;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.World;
 import de.bauhd.sculk.world.biome.Biome;
