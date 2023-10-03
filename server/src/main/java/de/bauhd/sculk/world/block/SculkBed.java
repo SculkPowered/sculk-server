@@ -22,11 +22,11 @@ final class SculkBed extends SculkBlockState implements Bed {
 
     @Override
     public @NotNull Part part() {
-        return Part.valueOf(this.properties.get("part"));
+        return Part.get(this.properties.get("part"));
     }
 
     @Override
     public @NotNull Bed part(@NotNull Part part) {
-        return (Bed) this.property("part", part.name().toLowerCase());
+        return (Bed) this.property("part", part.getValue());
     }
 }

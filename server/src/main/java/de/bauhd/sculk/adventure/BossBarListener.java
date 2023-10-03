@@ -1,4 +1,4 @@
-package de.bauhd.sculk.util;
+package de.bauhd.sculk.adventure;
 
 import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.packet.Packet;
@@ -55,14 +55,14 @@ public final class BossBarListener implements BossBar.Listener {
     }
 
     public void showBossBar(final SculkPlayer player, final BossBar bar) {
-        if (!this.bossBars.containsKey(bar)) {
-            this.bossBars.put(bar, new Holder());
+        final var holder = this.bossBars.computeIfAbsent(bar, bossBar -> {
             bar.addListener(this);
+            return new Holder();
+        });
+        if (holder.subscribers.add(player)) {
+            player.send(de.bauhd.sculk.protocol.packet.play.BossBar
+                    .add(holder.uniqueId, bar.name(), bar.progress(), bar.color().ordinal(), bar.overlay().ordinal(), this.flags(bar)));
         }
-        final var holder = this.bossBars.get(bar);
-        holder.subscribers.add(player);
-        player.send(de.bauhd.sculk.protocol.packet.play.BossBar
-                .add(holder.uniqueId, bar.name(), bar.progress(), bar.color().ordinal(), bar.overlay().ordinal(), this.flags(bar)));
     }
 
     public void hideBossBar(final SculkPlayer player, final BossBar bar) {
@@ -95,11 +95,11 @@ public final class BossBarListener implements BossBar.Listener {
     private static final class Holder {
 
         private final UUID uniqueId;
-        private final List<SculkPlayer> subscribers;
+        private final Set<SculkPlayer> subscribers;
 
         private Holder() {
             this.uniqueId = UUID.randomUUID();
-            this.subscribers = new ArrayList<>();
+            this.subscribers = new HashSet<>();
         }
 
         private void sendSubscribers(final Packet packet) {

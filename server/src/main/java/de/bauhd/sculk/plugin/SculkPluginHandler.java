@@ -41,7 +41,9 @@ public final class SculkPluginHandler implements PluginHandler {
     public void loadPlugins() {
         try (final var stream = Files.newDirectoryStream(PLUGINS_DIRECTORY,
                 path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".jar"))) {
-            stream.forEach(this::loadPlugin);
+            for (final var path : stream) {
+                this.loadPlugin(path);
+            }
         } catch (IOException e) {
             LOGGER.error("Error during loading of plugins", e);
         }

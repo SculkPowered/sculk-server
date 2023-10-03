@@ -2,6 +2,9 @@ package de.bauhd.sculk.world.block;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public interface Bed extends BlockState.Facing<Bed> {
 
     /**
@@ -41,8 +44,19 @@ public interface Bed extends BlockState.Facing<Bed> {
     /**
      * @since 1.0.0
      */
-    enum Part {
-        HEAD,
-        FOOT
+    final class Part extends Block.PropertyValue<Part> {
+
+        private static final Map<String, Part> INDEX = new HashMap<>(2);
+
+        public static final Part HEAD = new Part("head");
+        public static final Part FOOT = new Part("foot");
+
+        private Part(String value) {
+            super(value, INDEX);
+        }
+
+        public static Part get(@NotNull String value) {
+            return INDEX.get(value);
+        }
     }
 }

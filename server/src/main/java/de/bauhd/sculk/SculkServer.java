@@ -8,6 +8,7 @@ import de.bauhd.sculk.command.SculkCommandHandler;
 import de.bauhd.sculk.command.defaults.InfoCommand;
 import de.bauhd.sculk.command.defaults.ShutdownCommand;
 import de.bauhd.sculk.container.*;
+import de.bauhd.sculk.container.item.Material;
 import de.bauhd.sculk.damage.DamageType;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.EntityClassToSupplierMap;
@@ -28,7 +29,7 @@ import de.bauhd.sculk.registry.Registry;
 import de.bauhd.sculk.registry.SimpleRegistry;
 import de.bauhd.sculk.team.SculkTeamHandler;
 import de.bauhd.sculk.terminal.SimpleTerminal;
-import de.bauhd.sculk.util.BossBarListener;
+import de.bauhd.sculk.adventure.BossBarListener;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.World;
 import de.bauhd.sculk.world.biome.Biome;
@@ -40,6 +41,7 @@ import de.bauhd.sculk.world.chunk.loader.SlimeLoader;
 import de.bauhd.sculk.world.dimension.Dimension;
 import de.bauhd.sculk.world.dimension.DimensionRegistry;
 import io.netty.channel.epoll.Epoll;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
@@ -132,6 +134,7 @@ public final class SculkServer implements MinecraftServer {
         this.bossBarListener = new BossBarListener();
 
         BlockParent.addBlocks();
+        this.loadMaterials();
 
         this.pluginHandler.loadPlugins();
 
@@ -289,9 +292,9 @@ public final class SculkServer implements MinecraftServer {
 
     @Override
     public void loadWorld(@NotNull World world) {
-        final var mcWorld = (SculkWorld) world;
-        mcWorld.load();
-        this.worlds.put(world.getName(), mcWorld);
+        final var sculkWorld = (SculkWorld) world;
+        sculkWorld.load();
+        this.worlds.put(world.getName(), sculkWorld);
     }
 
     private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
@@ -354,6 +357,15 @@ public final class SculkServer implements MinecraftServer {
         this.shutdown(true);
     }
 
+    private void loadMaterials() {
+        final var materialArray = Material.values();
+        final var materials = new Int2ObjectOpenHashMap<Material>(materialArray.length);
+        for (final var material : materialArray) {
+            materials.put(material.ordinal(), material);
+        }
+        Material.setMaterials(materials);
+    }
+
     public KeyPair getKeyPair() {
         return this.keyPair;
     }
@@ -363,7 +375,9 @@ public final class SculkServer implements MinecraftServer {
     }
 
     public void sendAll(final Packet packet) {
-        this.players.values().forEach(player -> player.send(packet));
+        for (final var player : this.players.values()) {
+            player.send(packet);
+        }
     }
 
     public void addPlayer(final SculkPlayer player) {

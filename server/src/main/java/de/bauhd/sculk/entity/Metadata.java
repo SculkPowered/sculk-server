@@ -3,12 +3,12 @@ package de.bauhd.sculk.entity;
 import de.bauhd.sculk.container.item.ItemStack;
 import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.world.Position;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public final class Metadata {
@@ -42,8 +42,8 @@ public final class Metadata {
     private static final int VECTOR3_TYPE = 26;
     private static final int QUATERNION_TYPE = 27;
 
-    private final Map<Integer, Entry<?>> entries = new HashMap<>();
-    private Map<Integer, Entry<?>> changes = new HashMap<>();
+    private final Int2ObjectMap<Entry<?>> entries = new Int2ObjectOpenHashMap<>();
+    private Int2ObjectMap<Entry<?>> changes = new Int2ObjectOpenHashMap<>();
 
     public void set(final int index, final Entry<?> entry) {
         this.entries.put(index, entry);
@@ -199,16 +199,16 @@ public final class Metadata {
         return def;
     }
 
-    public Map<Integer, Entry<?>> entries() {
+    public Int2ObjectMap<Entry<?>> entries() {
         return this.entries;
     }
 
-    public Map<Integer, Entry<?>> changes() {
+    public Int2ObjectMap<Entry<?>> changes() {
         return this.changes;
     }
 
     public void reset() {
-        this.changes = new HashMap<>();
+        this.changes = new Int2ObjectOpenHashMap<>();
     }
 
     public record Entry<T>(int type, T t, Applier<T> applier) {

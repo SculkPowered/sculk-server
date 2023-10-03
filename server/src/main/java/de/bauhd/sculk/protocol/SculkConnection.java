@@ -339,13 +339,11 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
         if (checkAlreadyLoaded) {
             this.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
                 final var chunk = world.getChunk(x, z);
-                if (!chunks.contains(chunk)) {
+                if (!chunks.remove(chunk)) {
                     chunk.viewers().remove(this.player); // chunk not in range
                     for (final var entity : chunk.entities()) {
                         entity.removeViewer(this.player);
                     }
-                } else {
-                    chunks.remove(chunk); // already loaded
                 }
             });
         }

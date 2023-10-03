@@ -1,5 +1,7 @@
 package de.bauhd.sculk.world.block;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,7 +22,7 @@ public final class BlockParent {
 
     public static void addBlocks() {
         final var byName = new HashMap<String, BlockState>();
-        final var byId = new HashMap<Integer, BlockState>();
+        final var byId = new Int2ObjectOpenHashMap<BlockState>();
         try (final var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(BlockParent.class.getClassLoader()
                 .getResourceAsStream("registries/blocks"))))) {
             String line;

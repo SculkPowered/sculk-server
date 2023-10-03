@@ -159,7 +159,7 @@ public interface BlockState {
          * @since 1.0.0
          */
         default @NotNull Block.Face face() {
-            return Block.Face.valueOf(this.getProperties().get("face"));
+            return Block.Face.get(this.getProperties().get("face"));
         }
 
         /**
@@ -171,7 +171,7 @@ public interface BlockState {
          */
         @SuppressWarnings("unchecked")
         default @NotNull B face(@NotNull Block.Face face) {
-            return (B) this.property("face", face.name().toLowerCase());
+            return (B) this.property("face", face.getValue());
         }
     }
 
@@ -184,7 +184,7 @@ public interface BlockState {
          * @since 1.0.0
          */
         default @NotNull Block.Facing facing() {
-            return Block.Facing.valueOf(this.getProperties().get("facing"));
+            return Block.Facing.get(this.getProperties().get("facing"));
         }
 
         /**
@@ -196,7 +196,7 @@ public interface BlockState {
          */
         @SuppressWarnings("unchecked")
         default @NotNull B facing(@NotNull Block.Facing facing) {
-            return (B) this.property("facing", facing.name().toLowerCase());
+            return (B) this.property("facing", facing.getValue());
         }
     }
 
@@ -209,7 +209,7 @@ public interface BlockState {
          * @since 1.0.0
          */
         default @NotNull Block.Half half() {
-            return Block.Half.valueOf(this.getProperties().get("half"));
+            return Block.Half.get(this.getProperties().get("half"));
         }
 
         /**
@@ -221,7 +221,7 @@ public interface BlockState {
          */
         @SuppressWarnings("unchecked")
         default @NotNull B half(@NotNull Block.Half half) {
-            return (B) this.property("half", half.name().toLowerCase());
+            return (B) this.property("half", half.getValue());
         }
     }
 
