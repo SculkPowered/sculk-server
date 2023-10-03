@@ -23,7 +23,7 @@ public abstract class AbstractEntity implements Entity {
     private final UUID uniqueId;
     private final int id = CURRENT_ID.getAndIncrement();
     public final Metadata metadata = new Metadata();
-    protected final Collection<SculkPlayer> viewers = new ArrayList<>();
+    protected final Set<SculkPlayer> viewers = new HashSet<>();
     private SculkWorld world;
     protected Position position = Position.ZERO;
     protected boolean spawned;
@@ -171,22 +171,20 @@ public abstract class AbstractEntity implements Entity {
 
     @Override
     public void addViewer(@NotNull Player player) {
-        final var mcPlayer = ((SculkPlayer) player);
-        if (!this.viewers.contains(mcPlayer)) {
-            mcPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().ordinal(), this.position));
+        final var sculkPlayer = ((SculkPlayer) player);
+        if (this.viewers.add(sculkPlayer)) {
+            sculkPlayer.send(new SpawnEntity(this.id, this.uniqueId, this.getType().ordinal(), this.position));
             if (this.metadata.entries().isEmpty()) {
-                mcPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
+                sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
             }
-            this.viewers.add(mcPlayer);
         }
     }
 
     @Override
     public void removeViewer(@NotNull Player player) {
-        final var mcPlayer = (SculkPlayer) player;
-        if (this.viewers.contains(mcPlayer)) {
-            mcPlayer.send(new RemoveEntities(this.getId()));
-            this.viewers.remove(mcPlayer);
+        final var sculkPlayer = (SculkPlayer) player;
+        if (this.viewers.remove(sculkPlayer)) {
+            sculkPlayer.send(new RemoveEntities(this.getId()));
         }
     }
 
@@ -202,14 +200,16 @@ public abstract class AbstractEntity implements Entity {
     }
 
     public void sendViewers(final Packet packet) {
-        this.viewers.forEach(player -> player.send(packet));
+        for (final var player : this.viewers) {
+            player.send(packet);
+        }
     }
 
     public void sendViewers(final Packet packet1, final Packet packet2) {
-        this.viewers.forEach(player -> {
+        for (final var player : this.viewers) {
             player.send(packet1);
             player.send(packet2);
-        });
+        }
     }
 
     public void spawn(@NotNull World world, @NotNull Position position) {

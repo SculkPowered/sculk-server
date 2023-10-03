@@ -1,6 +1,7 @@
 package de.bauhd.sculk.container.item;
 
-import java.util.HashMap;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 /**
@@ -1267,14 +1268,10 @@ public enum Material {
     // END
     ;
 
-    private static final Map<Integer, Material> MATERIALS;
+    private static Map<Integer, Material> MATERIALS;
 
-    static {
-        final var values = values();
-        MATERIALS = new HashMap<>(values.length);
-        for (final var material : values) {
-            MATERIALS.put(material.ordinal(), material);
-        }
+    public static void setMaterials(final @NotNull Map<Integer, Material> materials) {
+        MATERIALS = materials;
     }
 
     private final String key;

@@ -131,7 +131,9 @@ public final class PlayPacketHandler extends PacketHandler {
                             this.player.send(new ContainerContent((byte) 1, 1, items));
                         }
                     } else {
-                        clickContainer.slots().forEach(inventory.items::set);
+                        for (final var entry : clickContainer.slots().int2ObjectEntrySet()) {
+                            inventory.items.set(entry.getIntKey(), entry.getValue());
+                        }
                     }
                 }, this.connection.executor())
                 .exceptionally(throwable -> {

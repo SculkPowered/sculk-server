@@ -266,9 +266,9 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     @Override
     public void addViewer(@NotNull Player player) {
         if (player != this) {
-            final var mcPlayer = (SculkPlayer) player;
-            mcPlayer.send(new SpawnPlayer(this));
-            mcPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
+            final var sculkPlayer = (SculkPlayer) player;
+            sculkPlayer.send(new SpawnPlayer(this));
+            sculkPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
             final var inventory = this.getInventory();
             final var equipment = new HashMap<Integer, ItemStack>();
             if (!inventory.getItemInMainHand().isEmpty()) {
@@ -285,9 +285,9 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
                 equipment.put(5, inventory.getHelmet());
             }
             if (!equipment.isEmpty()) {
-                mcPlayer.send(new Equipment(this.getId(), equipment));
+                sculkPlayer.send(new Equipment(this.getId(), equipment));
             }
-            this.viewers.add(mcPlayer);
+            this.viewers.add(sculkPlayer);
         }
     }
 
