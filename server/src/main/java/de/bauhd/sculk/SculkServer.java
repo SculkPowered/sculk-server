@@ -270,11 +270,11 @@ public final class SculkServer implements MinecraftServer {
     public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull World.Format format, @NotNull Path path) {
         World world = null;
         switch (format) {
-            case ANVIL -> world = this.createWorld(builder, new AnvilLoader(builder.generator(), path));
+            case ANVIL -> world = this.createWorld(builder, new AnvilLoader(this, builder.generator(), path));
             case SLIME -> {
                 try {
-                    world = new SculkWorld(this, builder, new DefaultChunkLoader(builder.generator()));
-                    SlimeLoader.load((SculkWorld) world, Files.readAllBytes(path));
+                    world = new SculkWorld(builder, new DefaultChunkLoader(builder.generator()));
+                    SlimeLoader.load(this, (SculkWorld) world, Files.readAllBytes(path));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -285,8 +285,8 @@ public final class SculkServer implements MinecraftServer {
 
     @Override
     public @NotNull World loadWorld(World.@NotNull Builder builder, byte @NotNull [] bytes) {
-        final var world = new SculkWorld(this, builder, new DefaultChunkLoader(builder.generator()));
-        SlimeLoader.load(world, bytes);
+        final var world = new SculkWorld(builder, new DefaultChunkLoader(builder.generator()));
+        SlimeLoader.load(this, world, bytes);
         return world;
     }
 
@@ -299,7 +299,7 @@ public final class SculkServer implements MinecraftServer {
 
     private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new SculkWorld(this, builder, chunkLoader);
+        final var world = new SculkWorld(builder, chunkLoader);
         this.worlds.put(name, world);
         return world;
     }

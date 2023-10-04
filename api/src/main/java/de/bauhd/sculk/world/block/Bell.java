@@ -1,3 +1,3 @@
 package de.bauhd.sculk.world.block;
 
-public interface Bell extends BlockState.Facing<Bell>, BlockState.Powerable<Bell> {}
+public interface Bell extends Block.Entity<Bell>, BlockState.Facing<Bell>, BlockState.Powerable<Bell> {}

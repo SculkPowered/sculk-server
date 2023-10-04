@@ -7,9 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static de.bauhd.sculk.code.generator.Constants.*;
 
@@ -40,6 +38,54 @@ final class BlockGenerator extends Generator {
             "Door",
             "WallFan",
             "Slab",
+            "WallBanner",
+            "Banner"
+    };
+    private static final Map<String, Integer> BLOCK_ENTITIES = new HashMap<>() { // TODO: find a way to not hardcode this
+        {
+            this.put("Furnace", 0);
+            this.put("Chest", 1);
+            this.put("TrappedChest", 2);
+            this.put("EnderChest", 3);
+            this.put("Jukebox", 4);
+            this.put("Dispenser", 5);
+            this.put("Dropper", 6);
+            this.put("Sign", 7);
+            this.put("HangingSign", 8);
+            this.put("MobSpawner", 9);
+            this.put("Piston", 10);
+            this.put("BrewingStand", 11);
+            this.put("EnchantingTable", 12);
+            this.put("EndPortal", 13);
+            this.put("Beacon", 14);
+            this.put("Skull", 15);
+            this.put("DaylightDetector", 16);
+            this.put("Hopper", 17);
+            this.put("Comparator", 18);
+            this.put("WallBanner", 19);
+            this.put("Banner", 19);
+            this.put("StructureBlock", 20);
+            this.put("EndGateway", 21);
+            this.put("CommandBlock", 22);
+            this.put("ShulkerBox", 23);
+            this.put("Bed", 24);
+            this.put("Conduit", 25);
+            this.put("Barrel", 26);
+            this.put("Smoker", 27);
+            this.put("BlastFurnace", 28);
+            this.put("Lectern", 29);
+            this.put("Bell", 30);
+            this.put("Jigsaw", 31);
+            this.put("Campfire", 32);
+            this.put("Beehive", 33);
+            this.put("SculkSensor", 34);
+            this.put("CalibratedSculkSensor", 35);
+            this.put("SculkCatalyst", 36);
+            this.put("SculkShrieker", 37);
+            this.put("ChiseledBookshelf", 38);
+            this.put("BrushableBlock", 39);
+            this.put("DecoratedPot", 40);
+        }
     };
 
     public BlockGenerator(final BufferedReader reader) throws IOException {
@@ -81,26 +127,29 @@ final class BlockGenerator extends Generator {
         this.createBlockRegistry(blockAdder);
     }
 
-    private String classAndCreate(final Path path, final String key, final JsonElement propertyElement) {
+    private String classAndCreate(final Path path, String key, final JsonElement propertyElement) {
         final var needsClass = propertyElement != null;
-        var clazz = needsClass ? this.keyToName(key) : "BlockState";
-        if (needsClass) {
-            var grouped = false;
-            for (final var group : GROUPS) {
-                if (clazz.endsWith(group)) {
-                    clazz = group;
-                    grouped = true;
-                    break;
-                }
+        var clazz = this.keyToName(key);
+        var grouped = false;
+        for (final var group : GROUPS) {
+            if (clazz.endsWith(group)) {
+                clazz = group;
+                grouped = true;
+                break;
             }
+        }
+        final var entity = BLOCK_ENTITIES.containsKey(clazz);
+        if (entity || needsClass) {
             final Map<String, String[]> properties = GSON.fromJson(propertyElement, STRING_STRING_ARRAY_MAP);
-            if (properties.isEmpty()) {
-                return "BlockState";
-            }
-            final var keys = new ArrayList<>(properties.keySet());
-            if (properties.size() == 1 && !grouped) {
-                final var property = PROPERTY_TO_CLASS.get(keys.get(0));
-                return "BlockState" + (property != null ? "." + property + "<BlockState>" : "");
+            final List<String> keys = properties != null ? new ArrayList<>(properties.keySet()) : List.of();
+            if (!entity) {
+                if (keys.isEmpty()) {
+                    return "BlockState";
+                }
+                if (keys.size() == 1 && !grouped) {
+                    final var property = PROPERTY_TO_CLASS.get(keys.get(0));
+                    return "BlockState" + (property != null ? "." + property + "<BlockState>" : "");
+                }
             }
             if (!DO_NOT_CREATE.contains(clazz)) {
                 final var stringBuilder = new StringBuilder();
@@ -119,14 +168,18 @@ final class BlockGenerator extends Generator {
                         iterator.remove();
                     }
                 }
-                if (stringBuilder.isEmpty()) {
-                    return "BlockState";
+                if (!entity) {
+                    if (stringBuilder.isEmpty()) {
+                        return "BlockState";
+                    }
+                    if (keys.size() == 1) {
+                        return "BlockState." + PROPERTY_TO_CLASS.get(keys.get(0)) + "<BlockState>";
+                    }
                 }
-                if (keys.size() == 1) {
-                    return "BlockState." + PROPERTY_TO_CLASS.get(keys.get(0)) + "<BlockState>";
-                }
-                this.createClasses(path, clazz, stringBuilder);
+                this.createClasses(path, clazz, stringBuilder, entity);
             }
+        } else {
+            clazz = "BlockState";
         }
         return clazz;
     }
@@ -143,22 +196,44 @@ final class BlockGenerator extends Generator {
         return clazz;
     }
 
-    private void createClasses(final Path path, final String clazz, final StringBuilder stringBuilder) {
+    private void createClasses(final Path path, final String clazz, final StringBuilder stringBuilder, final boolean entity) {
+        final var empty = stringBuilder.isEmpty();
         new ClassCreator(path.resolve(clazz + ".java"), "de.bauhd.sculk.world.block", clazz)
                 .type(ClassCreator.Type.INTERFACE)
-                .addition("extends " + stringBuilder.substring(0, stringBuilder.length() - 2))
+                .addition("extends " + (entity ? "Block.Entity<" + clazz + ">" + (!empty ? ", " : "") : "") +
+                        (!empty ? stringBuilder.substring(0, stringBuilder.length() - 2) : ""))
                 .create();
+
+        final List<String> implementation = new ArrayList<>(Arrays.asList(
+                "    Sculk" + clazz + "(BlockParent block, int id, Map<String, String> properties) {",
+                "        super(block, id, properties" + (entity ? ", " + BLOCK_ENTITIES.get(clazz) : "") + ");",
+                "    }"
+        ));
+        if (entity) {
+            implementation.addAll(Arrays.asList(
+                    "",
+                    "    public Sculk" + clazz + "(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {",
+                    "        super(block, id, properties, entityId, nbt);",
+                    "    }",
+                    "",
+                    "    @Override",
+                    "    public @NotNull " + clazz + " nbt(@NotNull CompoundBinaryTag nbt) {",
+                    "         return new Sculk" + clazz + "(this.block, this.id, this.properties, this.entityId, nbt);",
+                    "    }"
+            ));
+        }
         new ClassCreator(SERVER_PACKAGE.resolve("world").resolve("block")
                 .resolve("Sculk" + clazz + ".java"), "de.bauhd.sculk.world.block",
                 "Sculk" + clazz)
                 .type(ClassCreator.Type.PROTECTED)
-                .addition("extends SculkBlockState implements " + clazz)
-                .imports("java.util.Map")
-                .inner(
-                        "    Sculk" + clazz + "(BlockParent block, int id, Map<String, String> properties) {",
-                        "        super(block, id, properties);",
-                        "    }"
+                .addition("extends SculkBlockState" + (entity ? ".Entity<" + clazz + ">" : "") + " implements " + clazz)
+                .imports((entity ? new String[]{
+                        "net.kyori.adventure.nbt.CompoundBinaryTag",
+                        "org.jetbrains.annotations.NotNull",
+                        "java.util.Map"} :
+                        new String[]{"java.util.Map"})
                 )
+                .inner(implementation.toArray(new String[0]))
                 .create();
     }
 

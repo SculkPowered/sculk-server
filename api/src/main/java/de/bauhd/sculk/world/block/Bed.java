@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface Bed extends BlockState.Facing<Bed> {
+public interface Bed extends Block.Entity<Bed>, BlockState.Facing<Bed> {
 
     /**
      * Checks if the state is occupied.

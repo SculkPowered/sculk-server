@@ -1,3 +1,3 @@
 package de.bauhd.sculk.world.block;
 
-public interface Comparator extends BlockState.Facing<Comparator>, BlockState.Powerable<Comparator> {}
+public interface Comparator extends Block.Entity<Comparator>, BlockState.Facing<Comparator>, BlockState.Powerable<Comparator> {}

@@ -1,6 +1,5 @@
 package de.bauhd.sculk.world;
 
-import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.entity.AbstractEntity;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.player.GameMode;
@@ -19,7 +18,6 @@ import java.util.function.Consumer;
 
 public final class SculkWorld implements World {
 
-    private final SculkServer server;
     private final String name;
     private final Dimension dimension;
     private final ChunkLoader loader;
@@ -29,8 +27,7 @@ public final class SculkWorld implements World {
     private Worker worker;
     private boolean alive;
 
-    public SculkWorld(final SculkServer server, final World.Builder builder, final ChunkLoader loader) {
-        this.server = server;
+    public SculkWorld(final World.Builder builder, final ChunkLoader loader) {
         this.name = builder.name();
         this.dimension = builder.dimension();
         this.loader = loader;
@@ -150,9 +147,5 @@ public final class SculkWorld implements World {
         }
         this.chunks.clear();
         this.worker = null;
-    }
-
-    public SculkServer server() {
-        return this.server;
     }
 }
