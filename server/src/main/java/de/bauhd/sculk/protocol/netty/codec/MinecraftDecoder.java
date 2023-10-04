@@ -61,7 +61,6 @@ public final class MinecraftDecoder extends ChannelInboundHandlerAdapter {
                         throw new DecoderException("Overflow after decode packet " +
                                 packet.getClass().getSimpleName() + " (length = " + buf.readableBytes() + ")");
                     }
-                    //System.out.println("decoded " + packet + " - " + id);
                     ctx.fireChannelRead(packet);
                 } finally {
                     buf.release();

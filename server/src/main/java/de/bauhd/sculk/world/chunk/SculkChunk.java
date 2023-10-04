@@ -4,8 +4,8 @@ import de.bauhd.sculk.entity.AbstractEntity;
 import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.play.ChunkDataAndUpdateLight;
+import de.bauhd.sculk.protocol.packet.play.block.BlockEntityData;
 import de.bauhd.sculk.protocol.packet.play.block.BlockUpdate;
-import de.bauhd.sculk.util.CoordinateUtil;
 import de.bauhd.sculk.world.Point;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.biome.Biome;
@@ -19,6 +19,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static de.bauhd.sculk.util.CoordinateUtil.chunkCoordinate;
+import static de.bauhd.sculk.util.CoordinateUtil.relativeCoordinate;
 
 public final class SculkChunk implements Chunk {
 
@@ -59,27 +62,38 @@ public final class SculkChunk implements Chunk {
     @Override
     public void setBlock(int x, int y, int z, @NotNull BlockState block) {
         final var id = block.getId();
-        this.section(y).blocks().set(CoordinateUtil.relativeCoordinate(x), CoordinateUtil.relativeCoordinate(y), CoordinateUtil.relativeCoordinate(z), id);
+        this.section(y).blocks().set(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z), id);
         this.packet = null;
-        if (block instanceof Block.Entity<?> entity && !entity.nbt().equals(CompoundBinaryTag.empty())) {
-            this.blockEntities.put(new Point(x, y, z), entity);
+        final var point = new Point(x, y, z);
+        if (block instanceof Block.Entity<?> entity) {
+            this.blockEntities.put(point, entity);
+        } else {
+            this.blockEntities.remove(point);
         }
         if (!this.viewers.isEmpty()) {
             final var packet = new BlockUpdate(x, y, z, id);
-            for (final var viewer : this.viewers) {
-                viewer.send(packet);
+            if (block instanceof Block.Entity<?> entity) {
+                final var entityData = new BlockEntityData(x, y, z, entity.getEntityId(), entity.nbt());
+                for (final var viewer : this.viewers) {
+                    viewer.send(packet);
+                    viewer.send(entityData);
+                }
+            } else {
+                for (final var viewer : this.viewers) {
+                    viewer.send(packet);
+                }
             }
         }
     }
 
     @Override
     public @NotNull BlockState getBlock(int x, int y, int z) {
-        return Block.get(this.section(y).blocks().get(CoordinateUtil.relativeCoordinate(x), CoordinateUtil.relativeCoordinate(y), CoordinateUtil.relativeCoordinate(z)));
+        return Block.get(this.section(y).blocks().get(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z)));
     }
 
     @Override
     public void setBiome(int x, int y, int z, @NotNull Biome biome) {
-        this.section(y).biomes().set(CoordinateUtil.relativeCoordinate(x) / 4, CoordinateUtil.relativeCoordinate(y) / 4, CoordinateUtil.relativeCoordinate(z) / 4,
+        this.section(y).biomes().set(relativeCoordinate(x) / 4, relativeCoordinate(y) / 4, relativeCoordinate(z) / 4,
                 biome.id());
         this.packet = null;
     }
@@ -129,7 +143,7 @@ public final class SculkChunk implements Chunk {
     }
 
     public Section section(final int y) {
-        return this.sections[CoordinateUtil.chunkCoordinate(y) - this.dimension.minimumSections()];
+        return this.sections[chunkCoordinate(y) - this.dimension.minimumSections()];
     }
 
     @Override

@@ -22,6 +22,7 @@ import de.bauhd.sculk.protocol.packet.play.title.TitleAnimationTimes;
 import de.bauhd.sculk.protocol.packet.status.StatusPing;
 import de.bauhd.sculk.protocol.packet.status.StatusRequest;
 import de.bauhd.sculk.protocol.packet.status.StatusResponse;
+import io.netty.handler.codec.EncoderException;
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -268,7 +269,7 @@ public enum State {
         public int getPacketId(final Packet packet) {
             final var id = this.packetClassToId.getInt(packet.getClass());
             if (id == Integer.MIN_VALUE) {
-                System.out.println("err min value dies das");
+                throw new EncoderException("Couldn't find an id for " + packet.getClass());
             }
             return id;
         }

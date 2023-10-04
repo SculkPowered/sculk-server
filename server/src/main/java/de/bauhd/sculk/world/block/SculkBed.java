@@ -32,7 +32,7 @@ final class SculkBed extends SculkBlockState.Entity<Bed> implements Bed {
 
     @Override
     public @NotNull Bed part(@NotNull Part part) {
-        return (Bed) this.property("part", part.getValue());
+        return this.property("part", part.getValue());
     }
 
     @Override

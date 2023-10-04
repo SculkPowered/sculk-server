@@ -350,14 +350,17 @@ public final class PlayPacketHandler extends PacketHandler {
                 return;
             }
 
+            final var currentBlock = this.player.getWorld().getBlock(position);
+            if (currentBlock != Block.AIR) return; // block at position, don't set
             var block = Block.get(slot.material().key());
+            if (block == null) return;
             if (block instanceof BlockState.Facing<?> facing) { // let's set the correct facing
                 final var rotation = (int) Math.floor(this.player.getPosition().yaw() / 90.0D + 0.5D) & 3;
                 block = facing.facing(switch (rotation % 4) {
-                    case 0 -> Block.Facing.SOUTH;
-                    case 1 -> Block.Facing.WEST;
+                    case 0 -> SOUTH;
+                    case 1 -> WEST;
                     case 2 -> NORTH;
-                    case 3 -> Block.Facing.EAST;
+                    case 3 -> EAST;
                     default -> null;
                 });
             }
@@ -365,7 +368,7 @@ public final class PlayPacketHandler extends PacketHandler {
                 if (placeEvent.getResult().isAllowed()) {
                     this.player.getWorld().setBlock(placeEvent.getPosition(), placeEvent.getBlock());
                 } else {
-                    this.player.send(new BlockUpdate(placeEvent.getPosition(), this.player.getWorld().getBlock(placeEvent.getPosition()).getId()));
+                    this.player.send(new BlockUpdate(placeEvent.getPosition(), currentBlock.getId()));
                 }
             }, this.connection.executor()).exceptionally(throwable -> {
                 LOGGER.error("Exception while handling block place for " + this.player.getUsername(), throwable);

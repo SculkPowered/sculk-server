@@ -66,7 +66,7 @@ class SculkBlockState implements BlockState {
                 '}';
     }
 
-    public abstract static class Entity<B extends BlockState> extends SculkBlockState implements Block.Entity<B> {
+    public abstract static class Entity<B extends Block.Entity<B>> extends SculkBlockState implements Block.Entity<B> {
 
         protected final int entityId;
         protected final CompoundBinaryTag nbt;
@@ -75,7 +75,7 @@ class SculkBlockState implements BlockState {
             this(block, id, properties, entityId, CompoundBinaryTag.empty());
         }
 
-        protected Entity(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+        Entity(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
             super(block, id, properties);
             this.entityId = entityId;
             this.nbt = nbt;
@@ -89,6 +89,18 @@ class SculkBlockState implements BlockState {
         @Override
         public @NotNull CompoundBinaryTag nbt() {
             return this.nbt;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public B property(@NotNull String key, @NotNull String value) {
+            return ((B) super.property(key, value)).nbt(this.nbt);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public B properties(@NotNull Map<String, String> properties) {
+            return ((B) super.properties(properties)).nbt(this.nbt);
         }
     }
 

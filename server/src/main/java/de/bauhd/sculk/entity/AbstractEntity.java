@@ -184,12 +184,12 @@ public abstract class AbstractEntity implements Entity {
     public void removeViewer(@NotNull Player player) {
         final var sculkPlayer = (SculkPlayer) player;
         if (this.viewers.remove(sculkPlayer)) {
-            sculkPlayer.send(new RemoveEntities(this.getId()));
+            sculkPlayer.send(new RemoveEntities(this.id));
         }
     }
 
     public void tick() {
-        if (this.spawned && !this.metadata.changes().isEmpty()) {
+        if (!this.metadata.changes().isEmpty()) {
             final var entityMetadata = new EntityMetadata(this.id, this.metadata.changes());
             this.metadata.reset();
             this.sendViewers(entityMetadata);

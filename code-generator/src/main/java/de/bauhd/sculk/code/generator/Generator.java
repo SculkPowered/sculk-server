@@ -42,8 +42,8 @@ class Generator {
 
     protected String keyToName(final String key) {
         final var stringBuilder = new StringBuilder();
-        for (final var s : key.split(":")[1].split("_")) {
-            stringBuilder.append(s.substring(0, 1).toUpperCase()).append(s.substring(1));
+        for (final var s : key.substring(key.indexOf(":") + 1).split("_")) {
+            stringBuilder.append(Character.toUpperCase(s.charAt(0))).append(s.substring(1));
         }
         return stringBuilder.toString();
     }

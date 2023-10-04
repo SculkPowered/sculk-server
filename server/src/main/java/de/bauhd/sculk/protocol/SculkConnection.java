@@ -54,7 +54,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 import static de.bauhd.sculk.entity.player.GameProfile.Property;
-import static de.bauhd.sculk.util.Constant.*;
+import static de.bauhd.sculk.util.Constants.*;
 
 public final class SculkConnection extends ChannelInboundHandlerAdapter implements Connection {
 

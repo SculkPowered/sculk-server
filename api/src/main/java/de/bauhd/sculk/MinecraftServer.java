@@ -152,14 +152,6 @@ public interface MinecraftServer {
     @NotNull World loadWorld(@NotNull World.Builder builder, byte @NotNull [] bytes);
 
     /**
-     * Loads the specified world.
-     *
-     * @param world the world to load
-     * @since 1.0.0
-     */
-    void loadWorld(@NotNull World world);
-
-    /**
      * Gets a world by its name.
      *
      * @param name the name of the world

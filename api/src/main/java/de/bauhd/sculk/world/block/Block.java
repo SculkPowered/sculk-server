@@ -233,8 +233,8 @@ public final class Block {
     public static final BlockState CRACKED_POLISHED_BLACKSTONE_BRICKS = get("minecraft:cracked_polished_blackstone_bricks");
     public static final BlockState CRACKED_STONE_BRICKS = get("minecraft:cracked_stone_bricks");
     public static final BlockState CRAFTING_TABLE = get("minecraft:crafting_table");
-    public static final BlockState.Rotationable<BlockState> CREEPER_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:creeper_head");
-    public static final BlockState.Facing<BlockState> CREEPER_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:creeper_wall_head");
+    public static final Head CREEPER_HEAD = (Head) get("minecraft:creeper_head");
+    public static final WallHead CREEPER_WALL_HEAD = (WallHead) get("minecraft:creeper_wall_head");
     public static final Button CRIMSON_BUTTON = (Button) get("minecraft:crimson_button");
     public static final Door CRIMSON_DOOR = (Door) get("minecraft:crimson_door");
     public static final BlockState.Waterloggable<BlockState> CRIMSON_FENCE = (BlockState.Waterloggable<BlockState>) get("minecraft:crimson_fence");
@@ -348,8 +348,8 @@ public final class Block {
     public static final BlockState DIRT_PATH = get("minecraft:dirt_path");
     public static final Dispenser DISPENSER = (Dispenser) get("minecraft:dispenser");
     public static final BlockState DRAGON_EGG = get("minecraft:dragon_egg");
-    public static final BlockState.Rotationable<BlockState> DRAGON_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:dragon_head");
-    public static final BlockState.Facing<BlockState> DRAGON_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:dragon_wall_head");
+    public static final Head DRAGON_HEAD = (Head) get("minecraft:dragon_head");
+    public static final WallHead DRAGON_WALL_HEAD = (WallHead) get("minecraft:dragon_wall_head");
     public static final BlockState DRIED_KELP_BLOCK = get("minecraft:dried_kelp_block");
     public static final BlockState DRIPSTONE_BLOCK = get("minecraft:dripstone_block");
     public static final Dropper DROPPER = (Dropper) get("minecraft:dropper");
@@ -646,8 +646,8 @@ public final class Block {
     public static final BlockState.Axis<BlockState> PEARLESCENT_FROGLIGHT = (BlockState.Axis<BlockState>) get("minecraft:pearlescent_froglight");
     public static final BlockState.Half<BlockState> PEONY = (BlockState.Half<BlockState>) get("minecraft:peony");
     public static final BlockState.Waterloggable<BlockState> PETRIFIED_OAK_SLAB = (BlockState.Waterloggable<BlockState>) get("minecraft:petrified_oak_slab");
-    public static final BlockState.Rotationable<BlockState> PIGLIN_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:piglin_head");
-    public static final BlockState.Facing<BlockState> PIGLIN_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:piglin_wall_head");
+    public static final Head PIGLIN_HEAD = (Head) get("minecraft:piglin_head");
+    public static final WallHead PIGLIN_WALL_HEAD = (WallHead) get("minecraft:piglin_wall_head");
     public static final Banner PINK_BANNER = (Banner) get("minecraft:pink_banner");
     public static final Bed PINK_BED = (Bed) get("minecraft:pink_bed");
     public static final BlockState.Waterloggable<BlockState> PINK_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:pink_candle");
@@ -665,11 +665,11 @@ public final class Block {
     public static final WallBanner PINK_WALL_BANNER = (WallBanner) get("minecraft:pink_wall_banner");
     public static final BlockState PINK_WOOL = get("minecraft:pink_wool");
     public static final Piston PISTON = (Piston) get("minecraft:piston");
-    public static final BlockState.Facing<BlockState> PISTON_HEAD = (BlockState.Facing<BlockState>) get("minecraft:piston_head");
+    public static final Head PISTON_HEAD = (Head) get("minecraft:piston_head");
     public static final PitcherCrop PITCHER_CROP = (PitcherCrop) get("minecraft:pitcher_crop");
     public static final BlockState.Half<BlockState> PITCHER_PLANT = (BlockState.Half<BlockState>) get("minecraft:pitcher_plant");
-    public static final BlockState.Rotationable<BlockState> PLAYER_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:player_head");
-    public static final BlockState.Facing<BlockState> PLAYER_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:player_wall_head");
+    public static final Head PLAYER_HEAD = (Head) get("minecraft:player_head");
+    public static final WallHead PLAYER_WALL_HEAD = (WallHead) get("minecraft:player_wall_head");
     public static final BlockState.Snowy<BlockState> PODZOL = (BlockState.Snowy<BlockState>) get("minecraft:podzol");
     public static final BlockState.Waterloggable<BlockState> POINTED_DRIPSTONE = (BlockState.Waterloggable<BlockState>) get("minecraft:pointed_dripstone");
     public static final BlockState POLISHED_ANDESITE = get("minecraft:polished_andesite");
@@ -1014,8 +1014,8 @@ public final class Block {
     public static final BlockState YELLOW_TERRACOTTA = get("minecraft:yellow_terracotta");
     public static final WallBanner YELLOW_WALL_BANNER = (WallBanner) get("minecraft:yellow_wall_banner");
     public static final BlockState YELLOW_WOOL = get("minecraft:yellow_wool");
-    public static final BlockState.Rotationable<BlockState> ZOMBIE_HEAD = (BlockState.Rotationable<BlockState>) get("minecraft:zombie_head");
-    public static final BlockState.Facing<BlockState> ZOMBIE_WALL_HEAD = (BlockState.Facing<BlockState>) get("minecraft:zombie_wall_head");
+    public static final Head ZOMBIE_HEAD = (Head) get("minecraft:zombie_head");
+    public static final WallHead ZOMBIE_WALL_HEAD = (WallHead) get("minecraft:zombie_wall_head");
     // END
 
     private Block() {

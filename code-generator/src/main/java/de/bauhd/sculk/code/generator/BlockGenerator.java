@@ -39,7 +39,9 @@ final class BlockGenerator extends Generator {
             "WallFan",
             "Slab",
             "WallBanner",
-            "Banner"
+            "Banner",
+            "WallHead",
+            "Head"
     };
     private static final Map<String, Integer> BLOCK_ENTITIES = new HashMap<>() { // TODO: find a way to not hardcode this
         {
@@ -58,7 +60,8 @@ final class BlockGenerator extends Generator {
             this.put("EnchantingTable", 12);
             this.put("EndPortal", 13);
             this.put("Beacon", 14);
-            this.put("Skull", 15);
+            this.put("WallHead", 15);
+            this.put("Head", 15);
             this.put("DaylightDetector", 16);
             this.put("Hopper", 17);
             this.put("Comparator", 18);

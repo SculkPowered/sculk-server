@@ -2,20 +2,30 @@ package de.bauhd.sculk.world.chunk.loader;
 
 import com.github.luben.zstd.Zstd;
 import de.bauhd.sculk.SculkServer;
+import de.bauhd.sculk.entity.Entity;
+import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.chunk.SculkChunk;
 import de.bauhd.sculk.world.section.Section;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import static de.bauhd.sculk.util.Constants.EMPTY_BYTE_ARRAY;
+
+/*
+ * Slime loader is a world loader and anvil loader a chunk loader
+ */
 public final class SlimeLoader {
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    private static final Logger LOGGER = LogManager.getLogger(SlimeLoader.class);
 
+    @SuppressWarnings("unchecked")
     public static void load(final SculkServer server, final SculkWorld world, final byte[] bytes) {
         try (final var inputStream = new DataInputStream(new ByteArrayInputStream(bytes))) {
             if (inputStream.readShort() != (short) 0xB10B) throw new AssertionError();
@@ -29,10 +39,25 @@ public final class SlimeLoader {
                 final var tilesCompound = (CompoundBinaryTag) tiles;
                 AnvilLoader.loadBlockEntity(world.getChunkAt(tilesCompound.getInt("x"), tilesCompound.getInt("z")), tilesCompound);
             }
-            final var entities = readCompressed(inputStream);
+            final var entities = readCompound(readCompressed(inputStream));
+            for (final var entityTag : entities.getList("entities")) {
+                final var entityCompound = (CompoundBinaryTag) entityTag;
+                final var id = entityCompound.getString("id");
+                try {
+                    final var clazz = (Class<? extends Entity>) Class.forName("de.bauhd.sculk.entity." + keyToName(id));
+                    final var entity = server.createEntity(clazz);
+                    final var pos = entityCompound.getList("Pos");
+                    final var rotation = entityCompound.getList("Rotation");
+
+                    world.spawnEntity(entity, new Position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
+                            rotation.getFloat(0), rotation.getFloat(1)));
+                } catch (ClassNotFoundException e) {
+                    LOGGER.error("Couldn't find entity " + id, e);
+                }
+            }
             final var extra = readCompressed(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOGGER.error("Couldn't load slime world", e);
         }
     }
 
@@ -69,7 +94,7 @@ public final class SlimeLoader {
                 world.putChunk(new SculkChunk(world, x, z, sections, heightmaps));
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOGGER.error("Couldn't read slime chunks", e);
         }
     }
 
@@ -91,5 +116,13 @@ public final class SlimeLoader {
 
     private static CompoundBinaryTag readCompound(final byte[] data) throws IOException {
         return BinaryTagIO.reader().read(new ByteArrayInputStream(data));
+    }
+
+    private static String keyToName(final String key) {
+        final var stringBuilder = new StringBuilder();
+        for (final var s : key.substring(key.indexOf(":") + 1).split("_")) {
+            stringBuilder.append(Character.toUpperCase(s.charAt(0))).append(s.substring(1));
+        }
+        return stringBuilder.toString();
     }
 }

@@ -34,7 +34,9 @@ public final class SculkWorld implements World {
         this.spawnPosition = builder.spawnPosition();
         this.defaultGameMode = builder.defaultGameMode();
         this.chunks = new Long2ObjectOpenHashMap<>();
-        this.load();
+        this.alive = true;
+        this.worker = new Worker(this);
+        this.worker.start();
     }
 
     @Override
@@ -124,16 +126,6 @@ public final class SculkWorld implements World {
 
     public void putChunk(final SculkChunk chunk) {
         this.chunks.put(CoordinateUtil.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
-    }
-
-    public void load() {
-        if (!this.alive) {
-            synchronized (this) {
-                this.alive = true;
-                this.worker = new Worker(this);
-                this.worker.start();
-            }
-        }
     }
 
     public void unload(@NotNull Consumer<Player> consumer) {

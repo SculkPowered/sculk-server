@@ -290,13 +290,6 @@ public final class SculkServer implements MinecraftServer {
         return world;
     }
 
-    @Override
-    public void loadWorld(@NotNull World world) {
-        final var sculkWorld = (SculkWorld) world;
-        sculkWorld.load();
-        this.worlds.put(world.getName(), sculkWorld);
-    }
-
     private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
         final var world = new SculkWorld(builder, chunkLoader);
