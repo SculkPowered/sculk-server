@@ -2,6 +2,7 @@ package de.bauhd.sculk.world.chunk.loader;
 
 import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.world.SculkWorld;
+import de.bauhd.sculk.world.WorldLoader;
 import de.bauhd.sculk.world.block.Block;
 import de.bauhd.sculk.world.chunk.ChunkGenerator;
 import de.bauhd.sculk.world.chunk.SculkChunk;
@@ -27,13 +28,15 @@ public final class AnvilLoader extends DefaultChunkLoader {
     private static final int SECTOR_SIZE = 4096;
 
     private final SculkServer server;
+    private final WorldLoader loader;
     private final Path regionPath;
     private final Map<String, RegionFile> regionCache;
 
-    public AnvilLoader(final SculkServer server, final ChunkGenerator generator, final Path path) {
+    public AnvilLoader(final SculkServer server, final ChunkGenerator generator, final WorldLoader.Anvil loader) {
         super(generator);
         this.server = server;
-        this.regionPath = path.resolve("region");
+        this.loader = loader;
+        this.regionPath = loader.path().resolve("region");
         this.regionCache = new HashMap<>();
     }
 
@@ -60,7 +63,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
         }
     }
 
-    private static final class RegionFile {
+    private final class RegionFile {
 
         private final RandomAccessFile accessFile;
 
@@ -112,8 +115,10 @@ public final class AnvilLoader extends DefaultChunkLoader {
                 sections[i] = section;
             }
             final var chunk = new SculkChunk(world, chunkX, chunkZ, sections, nbt.getCompound("Heightmaps"));
-            for (final var blockEntity : nbt.getList("block_entities")) {
-                loadBlockEntity(chunk, (CompoundBinaryTag) blockEntity);
+            if (AnvilLoader.this.loader.blockEntities()) {
+                for (final var blockEntity : nbt.getList("block_entities")) {
+                    loadBlockEntity(chunk, (CompoundBinaryTag) blockEntity);
+                }
             }
             return chunk;
         }

@@ -18,7 +18,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -117,39 +116,6 @@ public interface MinecraftServer {
      * @since 1.0.0
      */
     @NotNull World createWorld(@NotNull World.Builder builder);
-
-    /**
-     * Loads a world with the specified builder.
-     *
-     * @param builder the builder for the world
-     * @param path    the path of the world
-     * @return the loaded world
-     * @since 1.0.0
-     */
-    default @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull Path path) {
-        return this.loadWorld(builder, World.Format.ANVIL, path);
-    }
-
-    /**
-     * Loads a world with the specified builder.
-     *
-     * @param builder the builder for the world
-     * @param path    the path of the world
-     * @param format  the format of the world
-     * @return the loaded world
-     * @since 1.0.0
-     */
-    @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull World.Format format, @NotNull Path path);
-
-    /**
-     * Loads a slime world with the specified builder.
-     *
-     * @param builder the builder for the world
-     * @param bytes    the data of the world
-     * @return the loaded world
-     * @since 1.0.0
-     */
-    @NotNull World loadWorld(@NotNull World.Builder builder, byte @NotNull [] bytes);
 
     /**
      * Gets a world by its name.

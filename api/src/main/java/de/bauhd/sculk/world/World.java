@@ -162,6 +162,7 @@ public interface World {
 
         private String name;
         private Dimension dimension = Dimension.OVERWORLD;
+        private WorldLoader loader;
         private ChunkGenerator generator = VoidGenerator.INSTANCE;
         private Position spawnPosition = Position.ZERO;
         private GameMode defaultGameMode = GameMode.SURVIVAL;
@@ -189,6 +190,15 @@ public interface World {
             return this;
         }
 
+        public @NotNull Builder loader(@Nullable WorldLoader loader) {
+            this.loader = loader;
+            return this;
+        }
+
+        public @Nullable WorldLoader loader() {
+            return this.loader;
+        }
+
         public @NotNull ChunkGenerator generator() {
             return this.generator;
         }
@@ -207,13 +217,8 @@ public interface World {
             return this;
         }
 
-        public GameMode defaultGameMode() {
+        public @NotNull GameMode defaultGameMode() {
             return this.defaultGameMode;
         }
-    }
-
-    enum Format {
-        ANVIL,
-        SLIME
     }
 }

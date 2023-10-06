@@ -5,6 +5,7 @@ import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.SculkWorld;
+import de.bauhd.sculk.world.WorldLoader;
 import de.bauhd.sculk.world.chunk.SculkChunk;
 import de.bauhd.sculk.world.section.Section;
 import net.kyori.adventure.nbt.BinaryTagIO;
@@ -18,44 +19,33 @@ import java.io.IOException;
 
 import static de.bauhd.sculk.util.Constants.EMPTY_BYTE_ARRAY;
 
-/*
- * Slime loader is a world loader and anvil loader a chunk loader
- */
 public final class SlimeLoader {
 
     private static final Logger LOGGER = LogManager.getLogger(SlimeLoader.class);
 
-    @SuppressWarnings("unchecked")
-    public static void load(final SculkServer server, final SculkWorld world, final byte[] bytes) {
-        try (final var inputStream = new DataInputStream(new ByteArrayInputStream(bytes))) {
+    public static void load(final SculkServer server, final SculkWorld world, final WorldLoader.Slime loader) {
+        try (final var inputStream = new DataInputStream(new ByteArrayInputStream(loader.bytes()))) {
             if (inputStream.readShort() != (short) 0xB10B) throw new AssertionError();
             if (inputStream.readUnsignedByte() != 0x0A)
                 throw new UnsupportedOperationException("Currently only slime version 10 is supported!");
             inputStream.readInt();
             readChunks(server, world, readCompressed(inputStream));
 
-            final var tileEntities = readCompound(readCompressed(inputStream));
-            for (final var tiles : tileEntities.getList("tiles")) {
-                final var tilesCompound = (CompoundBinaryTag) tiles;
-                AnvilLoader.loadBlockEntity(world.getChunkAt(tilesCompound.getInt("x"), tilesCompound.getInt("z")), tilesCompound);
-            }
-            final var entities = readCompound(readCompressed(inputStream));
-            for (final var entityTag : entities.getList("entities")) {
-                final var entityCompound = (CompoundBinaryTag) entityTag;
-                final var id = entityCompound.getString("id");
-                try {
-                    final var clazz = (Class<? extends Entity>) Class.forName("de.bauhd.sculk.entity." + keyToName(id));
-                    final var entity = server.createEntity(clazz);
-                    final var pos = entityCompound.getList("Pos");
-                    final var rotation = entityCompound.getList("Rotation");
-
-                    world.spawnEntity(entity, new Position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
-                            rotation.getFloat(0), rotation.getFloat(1)));
-                } catch (ClassNotFoundException e) {
-                    LOGGER.error("Couldn't find entity " + id, e);
+            final var tileEntityData = readCompressed(inputStream);
+            if (loader.blockEntities()) {
+                final var tileEntities = readCompound(tileEntityData);
+                for (final var tiles : tileEntities.getList("tiles")) {
+                    final var tilesCompound = (CompoundBinaryTag) tiles;
+                    AnvilLoader.loadBlockEntity(world
+                            .getChunkAt(tilesCompound.getInt("x"), tilesCompound.getInt("z")), tilesCompound);
                 }
             }
-            final var extra = readCompressed(inputStream);
+
+            final var entityData = readCompressed(inputStream);
+            if (loader.entities()) {
+                loadEntities(server, world, readCompound(entityData));
+            }
+            readCompressed(inputStream);
         } catch (IOException e) {
             LOGGER.error("Couldn't load slime world", e);
         }
@@ -95,6 +85,25 @@ public final class SlimeLoader {
             }
         } catch (IOException e) {
             LOGGER.error("Couldn't read slime chunks", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void loadEntities(SculkServer server, SculkWorld world, CompoundBinaryTag entities) {
+        for (final var entityTag : entities.getList("entities")) {
+            final var entityCompound = (CompoundBinaryTag) entityTag;
+            final var id = entityCompound.getString("id");
+            try {
+                final var clazz = (Class<? extends Entity>) Class.forName("de.bauhd.sculk.entity." + keyToName(id));
+                final var entity = server.createEntity(clazz);
+                final var pos = entityCompound.getList("Pos");
+                final var rotation = entityCompound.getList("Rotation");
+
+                world.spawnEntity(entity, new Position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
+                        rotation.getFloat(0), rotation.getFloat(1)));
+            } catch (ClassNotFoundException e) {
+                LOGGER.error("Couldn't find entity " + id, e);
+            }
         }
     }
 
