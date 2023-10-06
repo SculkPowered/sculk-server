@@ -1,6 +1,8 @@
 package de.bauhd.sculk.util;
 
-public final class Constant {
+public final class Constants {
+
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     public static final String FRAME_DECODER = "frame-decoder";
     public static final String FRAME_ENCODER = "frame-encoder";

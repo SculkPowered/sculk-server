@@ -18,7 +18,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -117,24 +116,6 @@ public interface MinecraftServer {
      * @since 1.0.0
      */
     @NotNull World createWorld(@NotNull World.Builder builder);
-
-    /**
-     * Loads a vanilla world with the specified builder.
-     *
-     * @param builder the builder for the world
-     * @param path    the path of the vanilla world
-     * @return the loaded world
-     * @since 1.0.0
-     */
-    @NotNull World loadWorld(@NotNull World.Builder builder, @NotNull Path path);
-
-    /**
-     * Loads the specified world.
-     *
-     * @param world the world to load
-     * @since 1.0.0
-     */
-    void loadWorld(@NotNull World world);
 
     /**
      * Gets a world by its name.

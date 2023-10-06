@@ -2,11 +2,12 @@ package de.bauhd.sculk.world.section;
 
 import java.util.Arrays;
 
+import static de.bauhd.sculk.util.Constants.EMPTY_BYTE_ARRAY;
+
 public final class Section {
 
     static final EmptyPalette EMPTY_PALETTE = new EmptyPalette();
     private static final byte[] SKY_LIGHT = new byte[2048];
-    private static final byte[] BLOCK_LIGHT = new byte[0];
 
     static {
         Arrays.fill(SKY_LIGHT, (byte) -1);
@@ -18,7 +19,7 @@ public final class Section {
     private final byte[] blockLight;
 
     public Section() {
-        this(EMPTY_PALETTE, EMPTY_PALETTE, SKY_LIGHT, BLOCK_LIGHT);
+        this(EMPTY_PALETTE, EMPTY_PALETTE, SKY_LIGHT, EMPTY_BYTE_ARRAY);
     }
 
     public Section(final byte[] skyLight, final byte[] blockLight) {

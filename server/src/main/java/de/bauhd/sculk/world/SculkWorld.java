@@ -1,7 +1,5 @@
 package de.bauhd.sculk.world;
 
-import de.bauhd.sculk.MinecraftServer;
-import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.entity.AbstractEntity;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.player.GameMode;
@@ -18,9 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class SculkWorld implements World {
+public final class SculkWorld implements World {
 
-    private final SculkServer server;
     private final String name;
     private final Dimension dimension;
     private final ChunkLoader loader;
@@ -30,16 +27,16 @@ public class SculkWorld implements World {
     private Worker worker;
     private boolean alive;
 
-    public SculkWorld(final SculkServer server, final String name, final Dimension dimension,
-                      final ChunkLoader loader, final Position spawnPosition, final GameMode defaultGameMode) {
-        this.server = server;
-        this.name = name;
-        this.dimension = dimension;
+    public SculkWorld(final World.Builder builder, final ChunkLoader loader) {
+        this.name = builder.name();
+        this.dimension = builder.dimension();
         this.loader = loader;
-        this.spawnPosition = spawnPosition;
-        this.defaultGameMode = defaultGameMode;
+        this.spawnPosition = builder.spawnPosition();
+        this.defaultGameMode = builder.defaultGameMode();
         this.chunks = new Long2ObjectOpenHashMap<>();
-        this.load();
+        this.alive = true;
+        this.worker = new Worker(this);
+        this.worker.start();
     }
 
     @Override
@@ -113,9 +110,9 @@ public class SculkWorld implements World {
         return this.alive;
     }
 
-    protected SculkChunk loadChunk(final int chunkX, final int chunkZ) {
+    private SculkChunk loadChunk(final int chunkX, final int chunkZ) {
         final var chunk = this.loader.loadChunk(this, chunkX, chunkZ);
-        this.chunks.put(CoordinateUtil.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
+        this.putChunk(chunk);
         return chunk;
     }
 
@@ -127,14 +124,8 @@ public class SculkWorld implements World {
         return this.chunks;
     }
 
-    public void load() {
-        if (!this.alive) {
-            synchronized (this) {
-                this.alive = true;
-                this.worker = new Worker(this);
-                this.worker.start();
-            }
-        }
+    public void putChunk(final SculkChunk chunk) {
+        this.chunks.put(CoordinateUtil.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
     }
 
     public void unload(@NotNull Consumer<Player> consumer) {
@@ -148,9 +139,5 @@ public class SculkWorld implements World {
         }
         this.chunks.clear();
         this.worker = null;
-    }
-
-    public MinecraftServer server() {
-        return this.server;
     }
 }

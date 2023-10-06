@@ -1,5 +1,10 @@
 package de.bauhd.sculk.entity;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * All entity types possible.
  */
@@ -133,6 +138,16 @@ public enum EntityType {
     // END
     ;
 
+    private static final Map<String, EntityType> ENTITY_TYPES;
+
+    static {
+        final var entityTypes = values();
+        ENTITY_TYPES = new HashMap<>(entityTypes.length);
+        for (final var entityType : entityTypes) {
+            ENTITY_TYPES.put(entityType.key, entityType);
+        }
+    }
+
     private final String key;
 
     EntityType(final String key) {
@@ -141,5 +156,9 @@ public enum EntityType {
 
     public String key() {
         return this.key;
+    }
+
+    public static EntityType get(@NotNull String key) {
+        return ENTITY_TYPES.get(key);
     }
 }

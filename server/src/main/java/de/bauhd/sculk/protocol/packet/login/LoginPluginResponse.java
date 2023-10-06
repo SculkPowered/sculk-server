@@ -4,9 +4,9 @@ import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 
-public final class LoginPluginResponse implements Packet {
+import static de.bauhd.sculk.util.Constants.EMPTY_BYTE_ARRAY;
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+public final class LoginPluginResponse implements Packet {
 
     private int messageId;
     private byte[] data = EMPTY_BYTE_ARRAY;

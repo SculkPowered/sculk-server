@@ -1,13 +1,18 @@
 package de.bauhd.sculk.world.block;
 
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-final class SculkBed extends SculkBlockState implements Bed {
+final class SculkBed extends SculkBlockState.Entity<Bed> implements Bed {
 
     SculkBed(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties);
+        super(block, id, properties, 24);
+    }
+
+    public SculkBed(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+        super(block, id, properties, entityId, nbt);
     }
 
     @Override
@@ -27,6 +32,11 @@ final class SculkBed extends SculkBlockState implements Bed {
 
     @Override
     public @NotNull Bed part(@NotNull Part part) {
-        return (Bed) this.property("part", part.getValue());
+        return this.property("part", part.getValue());
+    }
+
+    @Override
+    public @NotNull Bed nbt(@NotNull CompoundBinaryTag nbt) {
+        return new SculkBed(this.block, this.id, this.properties, this.entityId, nbt);
     }
 }

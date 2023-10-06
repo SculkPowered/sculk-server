@@ -4,52 +4,49 @@ import de.bauhd.sculk.entity.AbstractEntity;
 import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.play.ChunkDataAndUpdateLight;
+import de.bauhd.sculk.protocol.packet.play.block.BlockEntityData;
 import de.bauhd.sculk.protocol.packet.play.block.BlockUpdate;
+import de.bauhd.sculk.world.Point;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.biome.Biome;
 import de.bauhd.sculk.world.block.Block;
 import de.bauhd.sculk.world.block.BlockState;
 import de.bauhd.sculk.world.dimension.Dimension;
 import de.bauhd.sculk.world.section.Section;
-import de.bauhd.sculk.util.CoordinateUtil;
 import io.netty.buffer.ByteBufAllocator;
-import it.unimi.dsi.fastutil.Pair;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static de.bauhd.sculk.util.CoordinateUtil.chunkCoordinate;
+import static de.bauhd.sculk.util.CoordinateUtil.relativeCoordinate;
 
 public final class SculkChunk implements Chunk {
 
-    private final SculkWorld world;
     private final Dimension dimension;
     private final int x;
     private final int z;
     private final Section[] sections;
-    private final List<SculkPlayer> viewers = new ArrayList<>();
-    private final List<AbstractEntity> entities = new ArrayList<>();
+    private final CompoundBinaryTag heightmaps;
+    private final Set<SculkPlayer> viewers = new HashSet<>();
+    private final Set<AbstractEntity> entities = new HashSet<>();
+    private final Map<Point, Block.Entity<?>> blockEntities = new ConcurrentHashMap<>();
 
     private ChunkDataAndUpdateLight packet;
 
     public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ) {
-        this.world = world;
-        this.dimension = this.world.getDimension();
-        this.x = chunkX;
-        this.z = chunkZ;
-        final var capacity = this.dimension.maximumSections() - this.dimension.minimumSections();
-        this.sections = new Section[capacity];
-        for (var i = 0; i < capacity; i++) {
-            this.sections[i] = new Section();
-        }
+        this(world, chunkX, chunkZ, newSections(world.getDimension()), world.getDimension().heightmaps());
     }
 
-    public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ, final Section[] sections) {
-        this.world = world;
-        this.dimension = this.world.getDimension();
+    public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ, final Section[] sections,
+                      final CompoundBinaryTag heightmaps) {
+        this.dimension = world.getDimension();
         this.x = chunkX;
         this.z = chunkZ;
         this.sections = sections;
+        this.heightmaps = heightmaps;
     }
 
     @Override
@@ -65,79 +62,88 @@ public final class SculkChunk implements Chunk {
     @Override
     public void setBlock(int x, int y, int z, @NotNull BlockState block) {
         final var id = block.getId();
-        this.section(y).blocks().set(CoordinateUtil.relativeCoordinate(x), CoordinateUtil.relativeCoordinate(y), CoordinateUtil.relativeCoordinate(z), id);
+        this.section(y).blocks().set(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z), id);
         this.packet = null;
+        final var point = new Point(x, y, z);
+        if (block instanceof Block.Entity<?> entity) {
+            this.blockEntities.put(point, entity);
+        } else {
+            this.blockEntities.remove(point);
+        }
         if (!this.viewers.isEmpty()) {
             final var packet = new BlockUpdate(x, y, z, id);
-            for (final var viewer : this.viewers) {
-                viewer.send(packet);
+            if (block instanceof Block.Entity<?> entity) {
+                final var entityData = new BlockEntityData(x, y, z, entity.getEntityId(), entity.nbt());
+                for (final var viewer : this.viewers) {
+                    viewer.send(packet);
+                    viewer.send(entityData);
+                }
+            } else {
+                for (final var viewer : this.viewers) {
+                    viewer.send(packet);
+                }
             }
         }
     }
 
     @Override
     public @NotNull BlockState getBlock(int x, int y, int z) {
-        return Block.get(this.section(y).blocks().get(CoordinateUtil.relativeCoordinate(x), CoordinateUtil.relativeCoordinate(y), CoordinateUtil.relativeCoordinate(z)));
+        return Block.get(this.section(y).blocks().get(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z)));
     }
 
     @Override
     public void setBiome(int x, int y, int z, @NotNull Biome biome) {
-        this.section(y).biomes().set(CoordinateUtil.relativeCoordinate(x) / 4, CoordinateUtil.relativeCoordinate(y) / 4, CoordinateUtil.relativeCoordinate(z) / 4,
+        this.section(y).biomes().set(relativeCoordinate(x) / 4, relativeCoordinate(y) / 4, relativeCoordinate(z) / 4,
                 biome.id());
         this.packet = null;
     }
 
     public void send(SculkPlayer player) {
         if (this.packet == null) {
-            final var data = this.sectionsToData();
+            final var buf = new Buffer(ByteBufAllocator.DEFAULT.buffer(this.sections.length * 8)); // minimum amount
+            final var skyMask = new BitSet();
+            final var blockMask = new BitSet();
+            final var emptySkyMask = new BitSet();
+            final var emptyBlockMask = new BitSet();
+            final var skyLight = new ArrayList<byte[]>();
+            final var blockLight = new ArrayList<byte[]>();
+            var index = 0;
+            for (final var section : this.sections) {
+                index++;
+
+                buf.writeShort(section.blocks().size());
+                section.blocks().write(buf);
+                section.biomes().write(buf);
+
+                if (section.skyLight().length != 0) {
+                    skyLight.add(section.skyLight());
+                    skyMask.set(index);
+                } else {
+                    emptySkyMask.set(index);
+                }
+                if (section.blockLight().length != 0) {
+                    blockLight.add(section.blockLight());
+                    blockMask.set(index);
+                } else {
+                    emptyBlockMask.set(index);
+                }
+            }
             this.packet = new ChunkDataAndUpdateLight(
                     this.x,
                     this.z,
-                    this.world.getDimension().heightmaps(),
-                    data.left(),
-                    data.right()
+                    this.heightmaps,
+                    buf.readAll(),
+                    new LightData(skyMask, blockMask, emptySkyMask, emptyBlockMask,
+                            skyLight.toArray(new byte[][]{}), blockLight.toArray(new byte[][]{})),
+                    this.blockEntities
             );
+            buf.close();
         }
         player.send(this.packet);
     }
 
     public Section section(final int y) {
-        return this.sections[CoordinateUtil.chunkCoordinate(y) - this.dimension.minimumSections()];
-    }
-
-    private Pair<byte[], LightData> sectionsToData() {
-        final var buf = new Buffer(ByteBufAllocator.DEFAULT.buffer(this.sections.length * 8)); // minimum amount
-        final var skyMask = new BitSet();
-        final var blockMask = new BitSet();
-        final var emptySkyMask = new BitSet();
-        final var emptyBlockMask = new BitSet();
-        final var skyLight = new ArrayList<byte[]>();
-        final var blockLight = new ArrayList<byte[]>();
-        var index = 0;
-        for (final var section : this.sections) {
-            index++;
-
-            buf.writeShort(section.blocks().size());
-            section.blocks().write(buf);
-            section.biomes().write(buf);
-
-            if (section.skyLight().length != 0) {
-                skyLight.add(section.skyLight());
-                skyMask.set(index);
-            } else {
-                emptySkyMask.set(index);
-            }
-            if (section.blockLight().length != 0) {
-                blockLight.add(section.blockLight());
-                blockMask.set(index);
-            } else {
-                emptyBlockMask.set(index);
-            }
-        }
-        final var data = buf.readAll();
-        buf.close();
-        return Pair.of(data, new LightData(skyMask, blockMask, emptySkyMask, emptyBlockMask,
-                skyLight.toArray(new byte[][]{}), blockLight.toArray(new byte[][]{})));
+        return this.sections[chunkCoordinate(y) - this.dimension.minimumSections()];
     }
 
     @Override
@@ -149,11 +155,11 @@ public final class SculkChunk implements Chunk {
                 '}';
     }
 
-    public List<SculkPlayer> viewers() {
+    public Set<SculkPlayer> viewers() {
         return this.viewers;
     }
 
-    public List<AbstractEntity> entities() {
+    public Set<AbstractEntity> entities() {
         return this.entities;
     }
 
@@ -161,5 +167,14 @@ public final class SculkChunk implements Chunk {
         for (final var entity : this.entities) {
             entity.tick();
         }
+    }
+
+    private static Section[] newSections(Dimension dimension) {
+        final var capacity = dimension.maximumSections() - dimension.minimumSections();
+        final var sections = new Section[capacity];
+        for (var i = 0; i < capacity; i++) {
+            sections[i] = new Section();
+        }
+        return sections;
     }
 }

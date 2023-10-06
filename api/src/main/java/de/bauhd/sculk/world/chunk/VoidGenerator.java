@@ -9,6 +9,8 @@ public final class VoidGenerator implements ChunkGenerator {
 
     public static final VoidGenerator INSTANCE = new VoidGenerator();
 
+    private VoidGenerator() {}
+
     @Override
     public void generate(@NotNull Chunk chunk) {}
 }

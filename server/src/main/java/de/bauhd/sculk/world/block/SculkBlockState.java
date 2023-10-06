@@ -1,5 +1,6 @@
 package de.bauhd.sculk.world.block;
 
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -63,6 +64,44 @@ class SculkBlockState implements BlockState {
                 ", id=" + this.id +
                 ", properties=" + this.properties +
                 '}';
+    }
+
+    public abstract static class Entity<B extends Block.Entity<B>> extends SculkBlockState implements Block.Entity<B> {
+
+        protected final int entityId;
+        protected final CompoundBinaryTag nbt;
+
+        Entity(BlockParent block, int id, Map<String, String> properties, int entityId) {
+            this(block, id, properties, entityId, CompoundBinaryTag.empty());
+        }
+
+        Entity(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+            super(block, id, properties);
+            this.entityId = entityId;
+            this.nbt = nbt;
+        }
+
+        @Override
+        public int getEntityId() {
+            return this.entityId;
+        }
+
+        @Override
+        public @NotNull CompoundBinaryTag nbt() {
+            return this.nbt;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public B property(@NotNull String key, @NotNull String value) {
+            return ((B) super.property(key, value)).nbt(this.nbt);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public B properties(@NotNull Map<String, String> properties) {
+            return ((B) super.properties(properties)).nbt(this.nbt);
+        }
     }
 
     public static class Waterloggable<T extends BlockState> extends SculkBlockState implements BlockState.Waterloggable<T> {

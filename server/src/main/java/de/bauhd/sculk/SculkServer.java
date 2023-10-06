@@ -3,6 +3,7 @@ package de.bauhd.sculk;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.velocitypowered.natives.util.Natives;
+import de.bauhd.sculk.adventure.BossBarListener;
 import de.bauhd.sculk.command.CommandSource;
 import de.bauhd.sculk.command.SculkCommandHandler;
 import de.bauhd.sculk.command.defaults.InfoCommand;
@@ -29,14 +30,15 @@ import de.bauhd.sculk.registry.Registry;
 import de.bauhd.sculk.registry.SimpleRegistry;
 import de.bauhd.sculk.team.SculkTeamHandler;
 import de.bauhd.sculk.terminal.SimpleTerminal;
-import de.bauhd.sculk.adventure.BossBarListener;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.World;
+import de.bauhd.sculk.world.WorldLoader;
 import de.bauhd.sculk.world.biome.Biome;
 import de.bauhd.sculk.world.block.BlockParent;
 import de.bauhd.sculk.world.chunk.loader.AnvilLoader;
 import de.bauhd.sculk.world.chunk.loader.ChunkLoader;
 import de.bauhd.sculk.world.chunk.loader.DefaultChunkLoader;
+import de.bauhd.sculk.world.chunk.loader.SlimeLoader;
 import de.bauhd.sculk.world.dimension.Dimension;
 import de.bauhd.sculk.world.dimension.DimensionRegistry;
 import io.netty.channel.epoll.Epoll;
@@ -262,25 +264,23 @@ public final class SculkServer implements MinecraftServer {
 
     @Override
     public @NotNull World createWorld(World.@NotNull Builder builder) {
-        return this.createWorld(builder, new DefaultChunkLoader(builder.generator()));
-    }
-
-    @Override
-    public @NotNull World loadWorld(World.@NotNull Builder builder, @NotNull Path path) {
-        return this.createWorld(builder, new AnvilLoader(this, builder.generator(), path));
-    }
-
-    @Override
-    public void loadWorld(@NotNull World world) {
-        final var sculkWorld = (SculkWorld) world;
-        sculkWorld.load();
-        this.worlds.put(world.getName(), sculkWorld);
+        final var loader = builder.loader();
+        ChunkLoader chunkLoader;
+        if (loader instanceof WorldLoader.Anvil anvil) {
+            chunkLoader = new AnvilLoader(this, builder.generator(), anvil);
+        } else {
+            chunkLoader = new DefaultChunkLoader(builder.generator());
+        }
+        final var world =  this.createWorld(builder, chunkLoader);
+        if (loader instanceof WorldLoader.Slime slime) {
+            SlimeLoader.load(this, (SculkWorld) world, slime);
+        }
+        return world;
     }
 
     private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new SculkWorld(this, name, builder.dimension(), chunkLoader,
-                builder.spawnPosition(), builder.defaultGameMode());
+        final var world = new SculkWorld(builder, chunkLoader);
         this.worlds.put(name, world);
         return world;
     }

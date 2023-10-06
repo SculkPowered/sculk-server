@@ -2,7 +2,7 @@ package de.bauhd.sculk.world.section;
 
 import de.bauhd.sculk.protocol.Buffer;
 
-public final class EmptyPalette implements Palette {
+final class EmptyPalette implements Palette {
 
     @Override
     public byte dimension() {

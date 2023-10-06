@@ -111,9 +111,13 @@ final class CodeGenerator extends Generator {
     }
 
     private void generateRegistry(final Map<String, JsonObject> map, final Path path) throws IOException {
-        final var list = new ArrayList<String>(map.size());
+        final var list = new ArrayList<Entry>(map.size());
         map.forEach((key, json) ->
-                list.add(key.split(":")[1].toUpperCase() + "(\"" + key + "\", " + json.get("protocol_id").getAsInt() + "),"));
-        this.append(path, list);
+                list.add(new Entry(key.split(":")[1].toUpperCase() + "(\"" + key + "\"),",
+                        json.get("protocol_id").getAsInt())));
+        list.sort(Comparator.comparingInt(entry -> entry.id));
+        this.append(path, list.stream().map(Entry::name).toList());
     }
+
+    private record Entry(String name, int id) {}
 }

@@ -1,10 +1,14 @@
 package de.bauhd.sculk.plugin;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.bauhd.sculk.command.CommandSource;
 import de.bauhd.sculk.container.AnvilContainer;
 import de.bauhd.sculk.container.Container;
 import de.bauhd.sculk.container.item.ItemStack;
 import de.bauhd.sculk.container.item.Material;
 import de.bauhd.sculk.entity.player.GameMode;
+import de.bauhd.sculk.entity.player.Player;
 import de.bauhd.sculk.event.ResultedEvent;
 import de.bauhd.sculk.event.Subscribe;
 import de.bauhd.sculk.event.block.BlockBreakEvent;
@@ -19,13 +23,16 @@ import de.bauhd.sculk.plugin.command.GameModeCommand;
 import de.bauhd.sculk.team.Team;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.World;
+import de.bauhd.sculk.world.WorldLoader;
 import de.bauhd.sculk.world.biome.Biome;
+import de.bauhd.sculk.world.block.Block;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -36,7 +43,17 @@ public final class TestPlugin extends Plugin {
 
     @Subscribe
     public void handle(final ServerInitializeEvent event) {
-        this.getServer().getCommandHandler().register(GameModeCommand.get());
+        this.getServer().getCommandHandler()
+                .register(GameModeCommand.get())
+                .register(LiteralArgumentBuilder.<CommandSource>literal("test")
+                        .executes(context -> {
+                            if (context.getSource() instanceof Player player) {
+                                final var block = Block.COBBLESTONE_STAIRS.waterlogged(true);
+                                player.getWorld().setBlock(player.getPosition(), block);
+                            }
+                            return Command.SINGLE_SUCCESS;
+                        })
+                        .build());
 
         this.getServer().getTeamHandler().register(Team.builder()
                 .name("default")
@@ -53,10 +70,15 @@ public final class TestPlugin extends Plugin {
                 )
                 .build();
         this.getServer().getBiomeRegistry().register(testBiome);
-        this.world = this.getServer().loadWorld(World.builder()
-                        .name("test")
-                        .spawnPosition(new Position(0.5, 86, 0.5)),
-                Path.of("world"));
+        try {
+            this.world = this.getServer().createWorld(World.builder()
+                    .name("test")
+                    .loader(WorldLoader.Slime.slime(Path.of("world.slime")))
+                    .spawnPosition(new Position(0.5, 86, 0.5))
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final Component description = Component.text("Hello world!")

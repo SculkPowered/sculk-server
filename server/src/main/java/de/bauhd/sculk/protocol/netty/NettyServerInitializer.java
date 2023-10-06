@@ -12,7 +12,7 @@ import de.bauhd.sculk.protocol.netty.codec.VarIntLengthEncoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 
-import static de.bauhd.sculk.util.Constant.*;
+import static de.bauhd.sculk.util.Constants.*;
 
 public final class NettyServerInitializer extends ChannelInitializer<Channel> {
 

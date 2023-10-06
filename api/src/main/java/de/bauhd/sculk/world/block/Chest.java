@@ -1,3 +1,3 @@
 package de.bauhd.sculk.world.block;
 
-public interface Chest extends BlockState.Facing<Chest>, BlockState.Waterloggable<Chest> {}
+public interface Chest extends Block.Entity<Chest>, BlockState.Facing<Chest>, BlockState.Waterloggable<Chest> {}

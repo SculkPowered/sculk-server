@@ -51,6 +51,7 @@ public final class BlockParent {
                     });
                     if (capacity == 1) {
                         states[0] = (SculkBlockState) constructor.newInstance(block, id, Map.of());
+                        byId.put(id, states[0]);
                     } else {
                         for (var i = 0; i < capacity; i++) {
                             final var map = new HashMap<String, String>(capacity);

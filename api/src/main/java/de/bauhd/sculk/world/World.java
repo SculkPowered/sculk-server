@@ -162,11 +162,12 @@ public interface World {
 
         private String name;
         private Dimension dimension = Dimension.OVERWORLD;
+        private WorldLoader loader;
         private ChunkGenerator generator = VoidGenerator.INSTANCE;
         private Position spawnPosition = Position.ZERO;
         private GameMode defaultGameMode = GameMode.SURVIVAL;
 
-        public Builder name(@NotNull String name) {
+        public @NotNull Builder name(@NotNull String name) {
             this.name = name;
             return this;
         }
@@ -175,7 +176,7 @@ public interface World {
             return this.name;
         }
 
-        public Builder dimension(@NotNull Dimension dimension) {
+        public @NotNull Builder dimension(@NotNull Dimension dimension) {
             this.dimension = dimension;
             return this;
         }
@@ -184,16 +185,25 @@ public interface World {
             return this.dimension;
         }
 
-        public Builder generator(@NotNull ChunkGenerator generator) {
+        public @NotNull Builder generator(@NotNull ChunkGenerator generator) {
             this.generator = generator;
             return this;
+        }
+
+        public @NotNull Builder loader(@Nullable WorldLoader loader) {
+            this.loader = loader;
+            return this;
+        }
+
+        public @Nullable WorldLoader loader() {
+            return this.loader;
         }
 
         public @NotNull ChunkGenerator generator() {
             return this.generator;
         }
 
-        public Builder spawnPosition(@NotNull Position position) {
+        public @NotNull Builder spawnPosition(@NotNull Position position) {
             this.spawnPosition = position;
             return this;
         }
@@ -202,12 +212,12 @@ public interface World {
             return this.spawnPosition;
         }
 
-        public Builder defaultGameMode(GameMode defaultGameMode) {
+        public @NotNull Builder defaultGameMode(@NotNull GameMode defaultGameMode) {
             this.defaultGameMode = defaultGameMode;
             return this;
         }
 
-        public GameMode defaultGameMode() {
+        public @NotNull GameMode defaultGameMode() {
             return this.defaultGameMode;
         }
     }
