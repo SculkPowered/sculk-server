@@ -52,6 +52,7 @@ final class BlockGenerator extends Generator {
             this.put("Jukebox", 4);
             this.put("Dispenser", 5);
             this.put("Dropper", 6);
+            this.put("WallSign", 7);
             this.put("Sign", 7);
             this.put("HangingSign", 8);
             this.put("MobSpawner", 9);

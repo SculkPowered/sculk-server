@@ -1,3 +1,3 @@
 package de.bauhd.sculk.world.block;
 
-public interface WallSign extends BlockState.Facing<WallSign>, BlockState.Waterloggable<WallSign> {}
+public interface WallSign extends Block.Entity<WallSign>, BlockState.Facing<WallSign>, BlockState.Waterloggable<WallSign> {}
