@@ -146,6 +146,13 @@ public interface World {
     boolean isAlive();
 
     /**
+     * Saves a world.
+     *
+     * @since 1.0.0
+     */
+    void save(@NotNull WorldSaver saver);
+
+    /**
      * Creates a new world builder.
      *
      * @return a new builder instance.

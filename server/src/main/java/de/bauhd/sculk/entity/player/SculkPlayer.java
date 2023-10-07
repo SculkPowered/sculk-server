@@ -30,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
 import java.net.SocketAddress;
 import java.util.HashMap;
 
+import static de.bauhd.sculk.util.CoordinateUtil.chunkCoordinate;
+
 public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
     private final Pointers pointers = Pointers.builder()
@@ -208,8 +210,20 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     public void setWorld(@NotNull World world) {
         this.position = world.getSpawnPosition();
         this.gameMode = world.getDefaultGameMode();
+        if (this.world != null) {
+            this.connection.forChunksInRange(chunkCoordinate(this.position.x()), chunkCoordinate(this.position.z()),
+                    this.settings.getViewDistance(), (x, z) -> this.world.getChunk(x, z).entities().remove(this));
+        }
         super.setWorld(world);
         this.send(new Respawn(world.getDimension().name(), world.getName(), 0, this.gameMode, (byte) 3));
+        this.setPosition(world.getSpawnPosition());
+        this.connection.calculateChunks(position, position, false, false);
+    }
+
+    @Override
+    public void teleport(@NotNull Position position) {
+        this.connection.send(new SynchronizePlayerPosition(position));
+        super.teleport(position);
     }
 
     @Override

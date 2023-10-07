@@ -1,14 +1,19 @@
 package de.bauhd.sculk.registry;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
-public class SimpleRegistry<E extends Registry.Entry> extends HashMap<String, E> implements Registry<E> {
+public class SimpleRegistry<E extends Registry.Entry> implements Registry<E> {
 
+    private final Map<String, E> byKey = new HashMap<>();
+    private final Int2ObjectMap<E> byId = new Int2ObjectOpenHashMap<>();
     private final String type;
     private final E def;
 
@@ -25,23 +30,29 @@ public class SimpleRegistry<E extends Registry.Entry> extends HashMap<String, E>
 
     @Override
     public void register(@NotNull E entry) {
-        this.put(entry.name(), entry);
+        this.byKey.put(entry.name(), entry);
+        this.byId.put(entry.id(), entry);
     }
 
     @Override
     public @NotNull E get(@NotNull String key) {
-        return this.getOrDefault(key, this.def);
+        return this.byKey.getOrDefault(key, this.def);
+    }
+
+    @Override
+    public @NotNull E get(int id) {
+        return this.byId.get(id);
     }
 
     @Override
     public @NotNull Collection<E> entries() {
-        return this.values();
+        return this.byKey.values();
     }
 
     @Override
     public @NotNull CompoundBinaryTag asNBT() {
         final var list = ListBinaryTag.builder();
-        for (final var value : this.values()) {
+        for (final var value : this.entries()) {
             list.add(value.asNBT());
         }
         return CompoundBinaryTag.builder()

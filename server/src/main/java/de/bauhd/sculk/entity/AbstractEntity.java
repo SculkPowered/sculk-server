@@ -24,7 +24,7 @@ public abstract class AbstractEntity implements Entity {
     private final int id = CURRENT_ID.getAndIncrement();
     public final Metadata metadata = new Metadata();
     protected final Set<SculkPlayer> viewers = new HashSet<>();
-    private SculkWorld world;
+    protected SculkWorld world;
     protected Position position = Position.ZERO;
     protected boolean spawned;
 
@@ -152,6 +152,11 @@ public abstract class AbstractEntity implements Entity {
     public void setGravity(boolean gravity) {
         if (this.hasGravity() == gravity) return;
         this.metadata.setBoolean(5, !gravity);
+    }
+
+    @Override
+    public void teleport(@NotNull Position position) {
+        this.setPosition(position);
     }
 
     @Override

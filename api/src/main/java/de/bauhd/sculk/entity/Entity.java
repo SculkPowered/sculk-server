@@ -126,6 +126,14 @@ public interface Entity extends Viewable {
     void setGravity(boolean gravity);
 
     /**
+     * Teleports an entity to the specified position.
+     *
+     * @param position the position to teleport
+     * @since 1.0.0
+     */
+    void teleport(@NotNull Position position);
+
+    /**
      * @since 1.0.0
      */
     @ApiStatus.Experimental

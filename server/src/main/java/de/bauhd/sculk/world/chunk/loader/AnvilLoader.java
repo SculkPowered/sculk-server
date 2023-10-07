@@ -1,15 +1,19 @@
 package de.bauhd.sculk.world.chunk.loader;
 
 import de.bauhd.sculk.SculkServer;
+import de.bauhd.sculk.util.CoordinateUtil;
 import de.bauhd.sculk.world.SculkWorld;
 import de.bauhd.sculk.world.WorldLoader;
 import de.bauhd.sculk.world.block.Block;
 import de.bauhd.sculk.world.chunk.ChunkGenerator;
 import de.bauhd.sculk.world.chunk.SculkChunk;
+import de.bauhd.sculk.world.section.Palette;
 import de.bauhd.sculk.world.section.PaletteHolder;
 import de.bauhd.sculk.world.section.Section;
-import de.bauhd.sculk.util.CoordinateUtil;
-import net.kyori.adventure.nbt.*;
+import net.kyori.adventure.nbt.BinaryTagIO;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.ListBinaryTag;
+import net.kyori.adventure.nbt.StringBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
@@ -68,6 +72,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
         private final RandomAccessFile accessFile;
 
         private final int[] locations = new int[1024];
+
         private RegionFile(final Path path) throws IOException {
             this.accessFile = new RandomAccessFile(path.toFile(), "r");
             this.accessFile.seek(0);
@@ -128,6 +133,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
         }
 
     }
+
     public static void loadBlocks(
             final Section section,
             final ListBinaryTag blockPalette,
@@ -140,9 +146,8 @@ public final class AnvilLoader extends DefaultChunkLoader {
             final var block = entry.getString("Name");
             final var properties = entry.getCompound("Properties");
             if (!properties.equals(CompoundBinaryTag.empty())) {
-                final var propertiesCompound = entry.getCompound("Properties");
-                final var map = new HashMap<String, String>(propertiesCompound.keySet().size()); // TODO: change if #size is available
-                for (final var property : propertiesCompound) {
+                final var map = new HashMap<String, String>(properties.keySet().size()); // TODO: change if #size is available
+                for (final var property : properties) {
                     map.put(property.getKey(), ((StringBinaryTag) property.getValue()).value());
                 }
                 palette[k] = Block.get(block).properties(map).getId();
@@ -154,7 +159,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
             blocks.fill(palette[0]);
             return;
         }
-        blocks.setIndirectPalette();
+        blocks.setIndirectPalette(); // TODO find a way to calculate the size without this calculation
         final var blockStates = uncompressedBlockStates(states);
         for (var y = 0; y < CHUNK_SECTION_SIZE; y++) {
             for (var z = 0; z < CHUNK_SECTION_SIZE; z++) {
@@ -210,6 +215,43 @@ public final class AnvilLoader extends DefaultChunkLoader {
                 .remove("x").remove("y").remove("z").remove("keepPacked")));
     }
 
+    public static CompoundBinaryTag blockStatesToNbt(final Palette palette) {
+        final var paletteToValue = palette.paletteToValue();
+        final var blocks = ListBinaryTag.builder();
+        for (final var value : paletteToValue) {
+            final var block = Block.get(value);
+            final var properties = CompoundBinaryTag.builder();
+            for (final var entry : block.getProperties().entrySet()) {
+                properties.put(entry.getKey(), StringBinaryTag.stringBinaryTag(entry.getValue()));
+            }
+            blocks.add(CompoundBinaryTag.builder()
+                    .putString("Name", block.getKey())
+                    .put("Properties", properties.build())
+                    .build());
+        }
+        final var nbt = CompoundBinaryTag.builder().put("palette", blocks.build());
+        if (paletteToValue.length != 1) {
+            nbt.putLongArray("data", palette.values());
+        }
+        return nbt.build();
+    }
+
+    public static CompoundBinaryTag biomesToNbt(final SculkServer server, final Palette palette) {
+        final var paletteToValue = palette.paletteToValue();
+        final var biomes = ListBinaryTag.builder();
+        for (final var value : paletteToValue) {
+            biomes.add(CompoundBinaryTag.builder()
+                    .putString("value", server.getBiomeRegistry().get(value).name())
+                    .build());
+        }
+
+        final var nbt = CompoundBinaryTag.builder().put("palette", biomes.build());
+        if (paletteToValue.length != 1) {
+            nbt.putLongArray("data", palette.values());
+        }
+        return nbt.build();
+    }
+
     private static int[] uncompressedBlockStates(CompoundBinaryTag states) {
         final var longs = states.getLongArray("data");
         final var sizeInBits = longs.length * 64 / 4096;
@@ -247,5 +289,26 @@ public final class AnvilLoader extends DefaultChunkLoader {
             ints[i] = value;
         }
         return ints;
+    }
+
+    private static long[] compressBlockStates(int[] data, int size) {
+        final var lengthInBits = Math.max((int) Math.ceil(Math.log((float) size)), 4);
+        final var intPerLong = (int) Math.floor(64.0 / lengthInBits);
+        final var longCount = (int) Math.ceil(data.length / (double) intPerLong);
+        final var longs = new long[longCount];
+        final var mask = (1L << lengthInBits) - 1L;
+        for (var i = 0; i < longs.length; i++) {
+            var l = 0L;
+            for (var j = 0; j < intPerLong; j++) {
+                    var bitIndex = j * lengthInBits;
+                    var intActualIndex = j + i * intPerLong;
+                    if (intActualIndex < data.length) {
+                        final var value = ((long) data[intActualIndex] & mask) << bitIndex;
+                        l  = l | (value);
+                    }
+            }
+            longs[i] = l;
+        }
+        return longs;
     }
 }

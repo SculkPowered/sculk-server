@@ -2,6 +2,10 @@ package de.bauhd.sculk.util;
 
 public final class CoordinateUtil {
 
+    public static int chunkCoordinate(final double coordinate) {
+        return chunkCoordinate((int) coordinate);
+    }
+
     public static int chunkCoordinate(final int coordinate) {
         return coordinate >> 4;
     }

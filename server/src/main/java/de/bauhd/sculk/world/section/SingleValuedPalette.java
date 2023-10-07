@@ -50,6 +50,16 @@ final class SingleValuedPalette implements Palette {
     }
 
     @Override
+    public int[] paletteToValue() {
+        return new int[this.value];
+    }
+
+    @Override
+    public long[] values() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String toString() {
         return "SingleValuedPalette{" +
                 "dimension=" + this.dimension +

@@ -79,6 +79,11 @@ final class DirectIndirectPalette implements Palette {
     }
 
     @Override
+    public long[] values() {
+        return this.values;
+    }
+
+    @Override
     public void write(Buffer buf) {
         buf.writeByte(this.bitsPerEntry);
         if (this.isIndirect()) { // indirect
@@ -88,6 +93,19 @@ final class DirectIndirectPalette implements Palette {
             }
         } // direct
         buf.writeLongArray(this.values);
+    }
+
+    @Override
+    public String toString() {
+        return "DirectIndirectPalette{" +
+                "dimension=" + this.dimension +
+                ", maxBitsPerEntry=" + this.maxBitsPerEntry +
+                ", bitsPerEntry=" + this.bitsPerEntry +
+                ", paletteToValue=" + Arrays.toString(this.paletteToValue) +
+                ", valueToPalette=" + this.valueToPalette +
+                ", values=" + Arrays.toString(this.values) +
+                ", size=" + this.size +
+                '}';
     }
 
     public byte bitsPerEntry() {

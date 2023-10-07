@@ -11,6 +11,7 @@ import de.bauhd.sculk.entity.player.GameProfile;
 import de.bauhd.sculk.entity.player.Player;
 import de.bauhd.sculk.entity.player.PlayerInfoEntry;
 import de.bauhd.sculk.entity.player.SculkPlayer;
+import de.bauhd.sculk.event.player.PlayerDisconnectEvent;
 import de.bauhd.sculk.event.player.PlayerInitialEvent;
 import de.bauhd.sculk.event.player.PlayerJoinEvent;
 import de.bauhd.sculk.protocol.netty.codec.*;
@@ -25,7 +26,6 @@ import de.bauhd.sculk.protocol.packet.login.Disconnect;
 import de.bauhd.sculk.protocol.packet.login.LoginSuccess;
 import de.bauhd.sculk.protocol.packet.play.*;
 import de.bauhd.sculk.protocol.packet.play.command.Commands;
-import de.bauhd.sculk.util.CoordinateUtil;
 import de.bauhd.sculk.util.MojangUtil;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.chunk.SculkChunk;
@@ -55,6 +55,7 @@ import java.util.function.BiConsumer;
 
 import static de.bauhd.sculk.entity.player.GameProfile.Property;
 import static de.bauhd.sculk.util.Constants.*;
+import static de.bauhd.sculk.util.CoordinateUtil.chunkCoordinate;
 
 public final class SculkConnection extends ChannelInboundHandlerAdapter implements Connection {
 
@@ -108,7 +109,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             final var world = this.player.getWorld();
             final var position = this.player.getPosition();
             if (world != null) {
-                this.forChunksInRange(CoordinateUtil.chunkCoordinate((int) position.x()), CoordinateUtil.chunkCoordinate((int) position.z()),
+                this.forChunksInRange(chunkCoordinate(position.x()), chunkCoordinate(position.z()),
                         this.player.getSettings().getViewDistance(), (x, z) -> {
                             final var chunk = world.getChunk(x, z);
                             chunk.viewers().remove(this.player);
@@ -125,6 +126,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             }
 
             LOGGER.info(this.username + " has disconnected.");
+            this.server.getEventHandler().call(new PlayerDisconnectEvent(this.player));
         }
         ctx.close();
     }
@@ -312,10 +314,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     public void calculateChunks(final Position from, final Position to,
                                 boolean check, boolean checkAlreadyLoaded,
                                 int range, int oldRange) {
-        final var fromChunkX = (int) from.x() >> 4;
-        final var fromChunkZ = (int) from.z() >> 4;
-        final var chunkX = (int) to.x() >> 4;
-        final var chunkZ = (int) to.z() >> 4;
+        final var fromChunkX = chunkCoordinate(from.x());
+        final var fromChunkZ = chunkCoordinate(from.z());
+        final var chunkX = chunkCoordinate(to.x());
+        final var chunkZ = chunkCoordinate(to.z());
         if (check) {
             if (fromChunkX == chunkX && fromChunkZ == chunkZ) {
                 return;

@@ -12,6 +12,14 @@ import java.util.Map;
 public interface BlockState {
 
     /**
+     * Gets the key of the state.
+     *
+     * @return the state's id
+     * @since 1.0.0
+     */
+    @NotNull String getKey();
+
+    /**
      * Gets the id of the state.
      *
      * @return the state's id

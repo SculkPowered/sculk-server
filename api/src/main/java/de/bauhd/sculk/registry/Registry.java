@@ -46,6 +46,15 @@ public interface Registry<E extends Registry.Entry> {
     }
 
     /**
+     * Gets an entry by its id.
+     *
+     * @param id the id of the entry
+     * @return the entry or a default value
+     * @since 1.0.0
+     */
+    @NotNull E get(int id);
+
+    /**
      * Gets a collection of all entries.
      *
      * @return the collection of all entries

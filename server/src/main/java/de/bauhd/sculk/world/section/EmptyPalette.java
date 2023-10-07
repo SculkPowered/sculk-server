@@ -4,6 +4,8 @@ import de.bauhd.sculk.protocol.Buffer;
 
 final class EmptyPalette implements Palette {
 
+    private static final int[] EMPTY_VALUES = new int[1];
+
     @Override
     public byte dimension() {
         throw new UnsupportedOperationException();
@@ -32,5 +34,15 @@ final class EmptyPalette implements Palette {
     @Override
     public void write(Buffer buf) {
         buf.writeByte((byte) 0).writeByte((byte) 0).writeByte((byte) 0);
+    }
+
+    @Override
+    public int[] paletteToValue() {
+        return EMPTY_VALUES;
+    }
+
+    @Override
+    public long[] values() {
+        throw new UnsupportedOperationException();
     }
 }

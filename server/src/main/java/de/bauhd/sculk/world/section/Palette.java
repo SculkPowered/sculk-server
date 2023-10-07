@@ -20,6 +20,10 @@ public interface Palette {
 
     void write(final Buffer buf);
 
+    int[] paletteToValue();
+
+    long[] values();
+
     default int bitsToRepresent(final int i) {
         return Integer.SIZE - Integer.numberOfLeadingZeros(i);
     }

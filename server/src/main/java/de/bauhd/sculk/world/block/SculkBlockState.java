@@ -19,6 +19,11 @@ class SculkBlockState implements BlockState {
     }
 
     @Override
+    public @NotNull String getKey() {
+        return this.block.name();
+    }
+
+    @Override
     public int getId() {
         return this.id;
     }

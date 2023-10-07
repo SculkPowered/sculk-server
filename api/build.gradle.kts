@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("java-library")
+    id("maven-publish")
 }
 
 dependencies {
@@ -8,6 +9,18 @@ dependencies {
     api(libs.slf4j)
     api(libs.gson)
     api(libs.brigadier)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = groupId
+            artifactId = artifactId
+            version = version
+
+            from(components["java"])
+        }
+    }
 }
 
 tasks {

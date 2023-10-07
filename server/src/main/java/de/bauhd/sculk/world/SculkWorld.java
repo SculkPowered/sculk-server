@@ -1,5 +1,6 @@
 package de.bauhd.sculk.world;
 
+import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.entity.AbstractEntity;
 import de.bauhd.sculk.entity.Entity;
 import de.bauhd.sculk.entity.player.GameMode;
@@ -18,6 +19,7 @@ import java.util.function.Consumer;
 
 public final class SculkWorld implements World {
 
+    private final SculkServer server;
     private final String name;
     private final Dimension dimension;
     private final ChunkLoader loader;
@@ -27,7 +29,8 @@ public final class SculkWorld implements World {
     private Worker worker;
     private boolean alive;
 
-    public SculkWorld(final World.Builder builder, final ChunkLoader loader) {
+    public SculkWorld(final SculkServer server, final World.Builder builder, final ChunkLoader loader) {
+        this.server = server;
         this.name = builder.name();
         this.dimension = builder.dimension();
         this.loader = loader;
@@ -110,6 +113,15 @@ public final class SculkWorld implements World {
         return this.alive;
     }
 
+    @Override
+    public void save(@NotNull WorldSaver saver) {
+        if (saver instanceof WorldSaver.Slime slime) {
+            SlimeFormat.save(this.server, this, slime.outputStream());
+        } else if (saver instanceof WorldSaver.Anvil) {
+            throw new UnsupportedOperationException("Anvil not implemented yet!");
+        }
+    }
+
     private SculkChunk loadChunk(final int chunkX, final int chunkZ) {
         final var chunk = this.loader.loadChunk(this, chunkX, chunkZ);
         this.putChunk(chunk);
@@ -139,5 +151,16 @@ public final class SculkWorld implements World {
         }
         this.chunks.clear();
         this.worker = null;
+    }
+
+    @Override
+    public String toString() {
+        return "SculkWorld{" +
+                "name='" + this.name + '\'' +
+                ", dimension=" + this.dimension +
+                ", spawnPosition=" + this.spawnPosition +
+                ", defaultGameMode=" + this.defaultGameMode +
+                ", alive=" + this.alive +
+                '}';
     }
 }

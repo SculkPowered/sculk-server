@@ -6,6 +6,8 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class SynchronizePlayerPosition implements Packet {
 
+    private static int TELEPORT_ID = 0;
+
     private final Position position;
 
     public SynchronizePlayerPosition(final Position position) {
@@ -21,7 +23,7 @@ public final class SynchronizePlayerPosition implements Packet {
                 .writeFloat(this.position.yaw())
                 .writeFloat(this.position.pitch())
                 .writeByte((byte) 0x00)
-                .writeVarInt(1);
+                .writeVarInt(TELEPORT_ID++);
     }
 
     @Override

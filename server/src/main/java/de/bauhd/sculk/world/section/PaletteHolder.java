@@ -78,6 +78,16 @@ public final class PaletteHolder implements Palette {
         palette.write(buf);
     }
 
+    @Override
+    public int[] paletteToValue() {
+        return this.palette.paletteToValue();
+    }
+
+    @Override
+    public long[] values() {
+        return this.palette.values();
+    }
+
     @FunctionalInterface
     interface Consumer {
         void accept(final int x, final int y, final int z, final int result);
@@ -86,5 +96,12 @@ public final class PaletteHolder implements Palette {
     public void setIndirectPalette() {
         this.palette = new DirectIndirectPalette(this.dimension, this.defaultBitsPerEntry, this.maxBitsPerEntry);
         this.palette.fill(0);
+    }
+
+    @Override
+    public String toString() {
+        return "PaletteHolder{" +
+                "palette=" + this.palette +
+                '}';
     }
 }

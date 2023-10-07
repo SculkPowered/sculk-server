@@ -38,7 +38,7 @@ import de.bauhd.sculk.world.block.BlockParent;
 import de.bauhd.sculk.world.chunk.loader.AnvilLoader;
 import de.bauhd.sculk.world.chunk.loader.ChunkLoader;
 import de.bauhd.sculk.world.chunk.loader.DefaultChunkLoader;
-import de.bauhd.sculk.world.chunk.loader.SlimeLoader;
+import de.bauhd.sculk.world.SlimeFormat;
 import de.bauhd.sculk.world.dimension.Dimension;
 import de.bauhd.sculk.world.dimension.DimensionRegistry;
 import io.netty.channel.epoll.Epoll;
@@ -273,14 +273,14 @@ public final class SculkServer implements MinecraftServer {
         }
         final var world =  this.createWorld(builder, chunkLoader);
         if (loader instanceof WorldLoader.Slime slime) {
-            SlimeLoader.load(this, (SculkWorld) world, slime);
+            SlimeFormat.load(this, (SculkWorld) world, slime);
         }
         return world;
     }
 
     private @NotNull World createWorld(final @NotNull World.Builder builder, @NotNull ChunkLoader chunkLoader) {
         final var name = Objects.requireNonNull(builder.name(), "a world requires a name");
-        final var world = new SculkWorld(builder, chunkLoader);
+        final var world = new SculkWorld(this, builder, chunkLoader);
         this.worlds.put(name, world);
         return world;
     }

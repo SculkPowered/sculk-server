@@ -77,6 +77,10 @@ public final class BlockParent {
         }
     }
 
+    public String name() {
+        return this.name;
+    }
+
     private void setStates(SculkBlockState[] states) {
         this.states = states;
     }

@@ -146,6 +146,18 @@ public final class SculkChunk implements Chunk {
         return this.sections[chunkCoordinate(y) - this.dimension.minimumSections()];
     }
 
+    public Section[] sections() {
+        return this.sections;
+    }
+
+    public CompoundBinaryTag heightmaps() {
+        return this.heightmaps;
+    }
+
+    public Map<Point, Block.Entity<?>> blockEntities() {
+        return this.blockEntities;
+    }
+
     @Override
     public String toString() {
         return "SculkChunk{" +
