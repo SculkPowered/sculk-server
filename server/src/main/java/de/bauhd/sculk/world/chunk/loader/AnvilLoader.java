@@ -290,25 +290,4 @@ public final class AnvilLoader extends DefaultChunkLoader {
         }
         return ints;
     }
-
-    private static long[] compressBlockStates(int[] data, int size) {
-        final var lengthInBits = Math.max((int) Math.ceil(Math.log((float) size)), 4);
-        final var intPerLong = (int) Math.floor(64.0 / lengthInBits);
-        final var longCount = (int) Math.ceil(data.length / (double) intPerLong);
-        final var longs = new long[longCount];
-        final var mask = (1L << lengthInBits) - 1L;
-        for (var i = 0; i < longs.length; i++) {
-            var l = 0L;
-            for (var j = 0; j < intPerLong; j++) {
-                    var bitIndex = j * lengthInBits;
-                    var intActualIndex = j + i * intPerLong;
-                    if (intActualIndex < data.length) {
-                        final var value = ((long) data[intActualIndex] & mask) << bitIndex;
-                        l  = l | (value);
-                    }
-            }
-            longs[i] = l;
-        }
-        return longs;
-    }
 }

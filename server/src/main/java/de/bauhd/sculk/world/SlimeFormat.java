@@ -189,8 +189,7 @@ public final class SlimeFormat {
 
                 final var sections = chunk.sections();
                 outputSteam.writeInt(sections.length);
-                for (int sectionCount = 0; sectionCount < sections.length; sectionCount++) {
-                    final var section = sections[sectionCount];
+                for (final var section : sections) {
                     if (section.skyLight() != EMPTY_BYTE_ARRAY) {
                         outputSteam.writeBoolean(true);
                         outputSteam.write(section.skyLight());
