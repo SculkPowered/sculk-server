@@ -27,7 +27,7 @@ log4j-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", 
 
 slf4j = "org.slf4j:slf4j-api:2.0.9"
 jline = "org.jline:jline-reader:3.23.0"
-jansi = "org.fusesource.jansi:jansi:2.4.0"
+jansi = "org.fusesource.jansi:jansi:2.4.1"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
 gson = "com.google.code.gson:gson:2.10.1"
 brigadier = "com.mojang:brigadier:1.0.18"
