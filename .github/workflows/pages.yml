@@ -27,7 +27,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
-
+          cache: gradle
 
       - name: Build Java Documentation
         run: |
