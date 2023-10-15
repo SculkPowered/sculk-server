@@ -5,14 +5,14 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class RenderDistance implements Packet {
 
-    private final int renderDistance;
+  private final int renderDistance;
 
-    public RenderDistance(final int renderDistance) {
-        this.renderDistance = renderDistance;
-    }
+  public RenderDistance(final int renderDistance) {
+    this.renderDistance = renderDistance;
+  }
 
-    @Override
-    public void encode(Buffer buf) {
-        buf.writeVarInt(this.renderDistance);
-    }
+  @Override
+  public void encode(Buffer buf) {
+    buf.writeVarInt(this.renderDistance);
+  }
 }

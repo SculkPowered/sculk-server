@@ -4,7 +4,7 @@ import java.util.Map;
 
 final class SculkStairs extends SculkBlockState implements Stairs {
 
-    SculkStairs(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties);
-    }
+  SculkStairs(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties);
+  }
 }

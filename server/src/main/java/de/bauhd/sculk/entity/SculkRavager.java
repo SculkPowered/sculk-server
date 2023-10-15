@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkRavager extends AbstractRaider implements Ravager {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.RAVAGER;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.RAVAGER;
+  }
 }

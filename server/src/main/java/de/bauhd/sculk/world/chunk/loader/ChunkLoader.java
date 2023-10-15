@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ChunkLoader {
 
-    @NotNull SculkChunk loadChunk(SculkWorld world, int x, int z);
+  @NotNull SculkChunk loadChunk(SculkWorld world, int x, int z);
 
-    @NotNull ChunkGenerator getGenerator();
+  @NotNull ChunkGenerator getGenerator();
 }

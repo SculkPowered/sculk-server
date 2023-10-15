@@ -5,9 +5,9 @@ package de.bauhd.sculk.entity.player;
  */
 public enum GameMode {
 
-    SURVIVAL,
-    CREATIVE,
-    ADVENTURE,
-    SPECTATOR
+  SURVIVAL,
+  CREATIVE,
+  ADVENTURE,
+  SPECTATOR
 
 }

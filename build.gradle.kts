@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("checkstyle")
 }
 
 defaultTasks("build", "test", "shadowJar")

@@ -5,14 +5,14 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class SimulationDistance implements Packet {
 
-    private final int simulationDistance;
+  private final int simulationDistance;
 
-    public SimulationDistance(final int simulationDistance) {
-        this.simulationDistance = simulationDistance;
-    }
+  public SimulationDistance(final int simulationDistance) {
+    this.simulationDistance = simulationDistance;
+  }
 
-    @Override
-    public void encode(Buffer buf) {
-        buf.writeVarInt(this.simulationDistance);
-    }
+  @Override
+  public void encode(Buffer buf) {
+    buf.writeVarInt(this.simulationDistance);
+  }
 }

@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkLlamaSpit extends AbstractEntity implements LlamaSpit {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.LLAMA_SPIT;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.LLAMA_SPIT;
+  }
 }

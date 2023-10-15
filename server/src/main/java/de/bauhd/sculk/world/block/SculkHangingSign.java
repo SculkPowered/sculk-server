@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkHangingSign extends SculkBlockState.Entity<HangingSign> implements HangingSign {
 
-    SculkHangingSign(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 8);
-    }
+  SculkHangingSign(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 8);
+  }
 
-    public SculkHangingSign(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkHangingSign(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull HangingSign nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkHangingSign(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull HangingSign nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkHangingSign(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

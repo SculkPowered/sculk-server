@@ -2,12 +2,13 @@ name: Deploy static content to Pages
 
 on:
   release:
+  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
-  
+
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -27,16 +28,16 @@ jobs:
         with:
           java-version: '21'
           distribution: 'corretto'
-          cache: gradle
+          cache: 'gradle'
 
       - name: Build Java Documentation
         run: |
-            chmod +x gradlew;
-            ./gradlew api:javadoc;
+          chmod +x gradlew;
+          ./gradlew api:javadoc;
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
-        
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:

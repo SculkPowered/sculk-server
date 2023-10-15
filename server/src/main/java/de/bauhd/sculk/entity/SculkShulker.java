@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkShulker extends AbstractMob implements Shulker {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.SHULKER;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.SHULKER;
+  }
 }

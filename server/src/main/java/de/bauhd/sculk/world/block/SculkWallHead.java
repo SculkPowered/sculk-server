@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkWallHead extends SculkBlockState.Entity<WallHead> implements WallHead {
 
-    SculkWallHead(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 15);
-    }
+  SculkWallHead(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 15);
+  }
 
-    public SculkWallHead(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkWallHead(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull WallHead nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkWallHead(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull WallHead nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkWallHead(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

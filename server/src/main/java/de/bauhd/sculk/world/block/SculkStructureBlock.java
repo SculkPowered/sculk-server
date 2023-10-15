@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkStructureBlock extends SculkBlockState.Entity<StructureBlock> implements StructureBlock {
 
-    SculkStructureBlock(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 20);
-    }
+  SculkStructureBlock(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 20);
+  }
 
-    public SculkStructureBlock(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkStructureBlock(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull StructureBlock nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkStructureBlock(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull StructureBlock nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkStructureBlock(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

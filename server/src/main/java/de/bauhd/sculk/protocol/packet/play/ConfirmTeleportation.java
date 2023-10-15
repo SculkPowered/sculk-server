@@ -5,17 +5,17 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class ConfirmTeleportation implements Packet {
 
-    private int teleportId;
+  private int teleportId;
 
-    @Override
-    public void decode(Buffer buf) {
-        this.teleportId = buf.readVarInt();
-    }
+  @Override
+  public void decode(Buffer buf) {
+    this.teleportId = buf.readVarInt();
+  }
 
-    @Override
-    public String toString() {
-        return "ConfirmTeleportation{" +
-                "teleportId=" + this.teleportId +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "ConfirmTeleportation{" +
+        "teleportId=" + this.teleportId +
+        '}';
+  }
 }

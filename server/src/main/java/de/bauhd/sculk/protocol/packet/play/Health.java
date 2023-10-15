@@ -5,11 +5,11 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class Health implements Packet {
 
-    @Override
-    public void encode(Buffer buf) {
-        buf
-                .writeFloat(20)
-                .writeVarInt(20)
-                .writeFloat(2);
-    }
+  @Override
+  public void encode(Buffer buf) {
+    buf
+        .writeFloat(20)
+        .writeVarInt(20)
+        .writeFloat(2);
+  }
 }

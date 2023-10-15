@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkCalibratedSculkSensor extends SculkBlockState.Entity<CalibratedSculkSensor> implements CalibratedSculkSensor {
 
-    SculkCalibratedSculkSensor(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 35);
-    }
+  SculkCalibratedSculkSensor(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 35);
+  }
 
-    public SculkCalibratedSculkSensor(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkCalibratedSculkSensor(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull CalibratedSculkSensor nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkCalibratedSculkSensor(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull CalibratedSculkSensor nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkCalibratedSculkSensor(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

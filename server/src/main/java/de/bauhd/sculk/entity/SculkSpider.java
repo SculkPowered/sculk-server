@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkSpider extends AbstractMob implements Spider {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.SPIDER;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.SPIDER;
+  }
 }

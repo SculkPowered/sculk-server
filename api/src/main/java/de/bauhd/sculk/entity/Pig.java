@@ -5,13 +5,13 @@ package de.bauhd.sculk.entity;
  */
 public interface Pig extends Animal {
 
-    /**
-     * @since 1.0.0
-     */
-    boolean hasSaddle();
+  /**
+   * @since 1.0.0
+   */
+  boolean hasSaddle();
 
-    /**
-     * @since 1.0.0
-     */
-    void setSaddle(boolean saddle);
+  /**
+   * @since 1.0.0
+   */
+  void setSaddle(boolean saddle);
 }

@@ -5,45 +5,46 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
-public final class SculkBrewingStandContainer extends SculkContainer implements BrewingStandContainer {
+public final class SculkBrewingStandContainer extends SculkContainer implements
+    BrewingStandContainer {
 
-    private int brewTime;
-    private int fuelTime;
+  private int brewTime;
+  private int fuelTime;
 
-    public SculkBrewingStandContainer(final Component title) {
-        super(title);
-    }
+  public SculkBrewingStandContainer(final Component title) {
+    super(title);
+  }
 
-    @Override
-    public void setBrewTime(int brewTime) {
-        this.sendProperty(0, brewTime);
-        this.brewTime = brewTime;
-    }
+  @Override
+  public void setBrewTime(int brewTime) {
+    this.sendProperty(0, brewTime);
+    this.brewTime = brewTime;
+  }
 
-    @Override
-    public int getBrewTime() {
-        return this.brewTime;
-    }
+  @Override
+  public int getBrewTime() {
+    return this.brewTime;
+  }
 
-    @Override
-    public void setFuelTime(@Range(from = 0, to = 20) int fuelTime) {
-        this.sendProperty(1, fuelTime);
-        this.fuelTime = fuelTime;
-    }
+  @Override
+  public void setFuelTime(@Range(from = 0, to = 20) int fuelTime) {
+    this.sendProperty(1, fuelTime);
+    this.fuelTime = fuelTime;
+  }
 
-    @Override
-    public int getFuelTime() {
-        return this.fuelTime;
-    }
+  @Override
+  public int getFuelTime() {
+    return this.fuelTime;
+  }
 
-    @Override
-    public @NotNull Type getType() {
-        return Type.BREWING_STAND;
-    }
+  @Override
+  public @NotNull Type getType() {
+    return Type.BREWING_STAND;
+  }
 
-    @Override
-    public void sendProperties(SculkPlayer player) {
-        player.send(this.property(0, this.brewTime));
-        player.send(this.property(1, this.fuelTime));
-    }
+  @Override
+  public void sendProperties(SculkPlayer player) {
+    player.send(this.property(0, this.brewTime));
+    player.send(this.property(1, this.fuelTime));
+  }
 }

@@ -9,10 +9,10 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PluginDescription {
 
-    String name();
+  String name();
 
-    String version();
+  String version();
 
-    String[] dependencies() default {};
+  String[] dependencies() default {};
 
 }

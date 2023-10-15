@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkMinecart extends AbstractEntity implements Minecart {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.MINECART;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.MINECART;
+  }
 }

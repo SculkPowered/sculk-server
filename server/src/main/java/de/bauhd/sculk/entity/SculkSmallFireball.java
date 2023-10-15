@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkSmallFireball extends AbstractEntity implements SmallFireball {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.SMALL_FIREBALL;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.SMALL_FIREBALL;
+  }
 }

@@ -3,4 +3,6 @@ package de.bauhd.sculk.entity;
 /**
  * Represents an evoker entity.
  */
-public interface Evoker extends Raider {}
+public interface Evoker extends Raider {
+
+}

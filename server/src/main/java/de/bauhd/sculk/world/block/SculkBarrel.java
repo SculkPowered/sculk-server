@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkBarrel extends SculkBlockState.Entity<Barrel> implements Barrel {
 
-    SculkBarrel(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 26);
-    }
+  SculkBarrel(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 26);
+  }
 
-    public SculkBarrel(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkBarrel(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull Barrel nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkBarrel(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull Barrel nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkBarrel(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

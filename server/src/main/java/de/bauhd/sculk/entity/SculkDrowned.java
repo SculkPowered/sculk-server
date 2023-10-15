@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkDrowned extends SculkZombie implements Drowned {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.DROWNED;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.DROWNED;
+  }
 }

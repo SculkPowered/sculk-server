@@ -8,23 +8,23 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ItemFrame extends Entity {
 
-    /**
-     * @since 1.0.0
-     */
-    @NotNull ItemStack getItem();
+  /**
+   * @since 1.0.0
+   */
+  @NotNull ItemStack getItem();
 
-    /**
-     * @since 1.0.0
-     */
-    void setItem(@NotNull ItemStack item);
+  /**
+   * @since 1.0.0
+   */
+  void setItem(@NotNull ItemStack item);
 
-    /**
-     * @since 1.0.0
-     */
-    int getRotation();
+  /**
+   * @since 1.0.0
+   */
+  int getRotation();
 
-    /**
-     * @since 1.0.0
-     */
-    void setRotation(int rotation);
+  /**
+   * @since 1.0.0
+   */
+  void setRotation(int rotation);
 }

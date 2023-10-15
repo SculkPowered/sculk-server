@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkDecoratedPot extends SculkBlockState.Entity<DecoratedPot> implements DecoratedPot {
 
-    SculkDecoratedPot(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 40);
-    }
+  SculkDecoratedPot(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 40);
+  }
 
-    public SculkDecoratedPot(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkDecoratedPot(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull DecoratedPot nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkDecoratedPot(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull DecoratedPot nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkDecoratedPot(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

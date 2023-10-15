@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 public final class BlockTest {
 
-    @Test
-    public void test() {
-        Assertions.assertDoesNotThrow(BlockParent::addBlocks);
-    }
+  @Test
+  public void test() {
+    Assertions.assertDoesNotThrow(BlockParent::addBlocks);
+  }
 }

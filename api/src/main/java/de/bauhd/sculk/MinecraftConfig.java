@@ -4,19 +4,19 @@ import org.jetbrains.annotations.NotNull;
 
 public interface MinecraftConfig {
 
-    @NotNull String host();
+  @NotNull String host();
 
-    int port();
+  int port();
 
-    @NotNull Mode mode();
+  @NotNull Mode mode();
 
-    enum Mode {
-        ONLINE,
-        OFFLINE,
-        BUNGEECORD
-    }
+  enum Mode {
+    ONLINE,
+    OFFLINE,
+    BUNGEECORD
+  }
 
-    int compressionThreshold();
+  int compressionThreshold();
 
-    int compressionLevel();
+  int compressionLevel();
 }

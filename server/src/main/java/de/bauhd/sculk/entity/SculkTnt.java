@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkTnt extends AbstractEntity implements Tnt {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.TNT;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.TNT;
+  }
 }

@@ -5,21 +5,21 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class CompressionPacket implements Packet {
 
-    private final int threshold;
+  private final int threshold;
 
-    public CompressionPacket(final int threshold) {
-        this.threshold = threshold;
-    }
+  public CompressionPacket(final int threshold) {
+    this.threshold = threshold;
+  }
 
-    @Override
-    public void encode(Buffer buf) {
-        buf.writeVarInt(this.threshold);
-    }
+  @Override
+  public void encode(Buffer buf) {
+    buf.writeVarInt(this.threshold);
+  }
 
-    @Override
-    public String toString() {
-        return "CompressionPacket{" +
-                "threshold=" + this.threshold +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "CompressionPacket{" +
+        "threshold=" + this.threshold +
+        '}';
+  }
 }

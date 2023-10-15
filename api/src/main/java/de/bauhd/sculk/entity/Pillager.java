@@ -5,13 +5,13 @@ package de.bauhd.sculk.entity;
  */
 public interface Pillager extends Raider {
 
-    /**
-     * @since 1.0.0
-     */
-    boolean isCharging();
+  /**
+   * @since 1.0.0
+   */
+  boolean isCharging();
 
-    /**
-     * @since 1.0.0
-     */
-    void setCharging(boolean charging);
+  /**
+   * @since 1.0.0
+   */
+  void setCharging(boolean charging);
 }

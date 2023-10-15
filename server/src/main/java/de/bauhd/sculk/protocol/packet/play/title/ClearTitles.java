@@ -5,21 +5,21 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class ClearTitles implements Packet {
 
-    private final boolean reset;
+  private final boolean reset;
 
-    public ClearTitles(final boolean reset) {
-        this.reset = reset;
-    }
+  public ClearTitles(final boolean reset) {
+    this.reset = reset;
+  }
 
-    @Override
-    public void encode(Buffer buf) {
-        buf.writeBoolean(this.reset);
-    }
+  @Override
+  public void encode(Buffer buf) {
+    buf.writeBoolean(this.reset);
+  }
 
-    @Override
-    public String toString() {
-        return "ClearTitles{" +
-                "reset=" + this.reset +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "ClearTitles{" +
+        "reset=" + this.reset +
+        '}';
+  }
 }

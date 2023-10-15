@@ -7,10 +7,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class VoidGenerator implements ChunkGenerator {
 
-    public static final VoidGenerator INSTANCE = new VoidGenerator();
+  public static final VoidGenerator INSTANCE = new VoidGenerator();
 
-    private VoidGenerator() {}
+  private VoidGenerator() {
+  }
 
-    @Override
-    public void generate(@NotNull Chunk chunk) {}
+  @Override
+  public void generate(@NotNull Chunk chunk) {
+  }
 }

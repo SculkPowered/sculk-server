@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkSquid extends AbstractAnimal implements Squid {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.SQUID;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.SQUID;
+  }
 }

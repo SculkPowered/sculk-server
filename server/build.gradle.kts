@@ -93,21 +93,6 @@ tasks {
             "it/unimi/dsi/fastutil/objects/*HashSet*",
             "javax/annotation/**",
             "org/checkerframework/**",
-            "com/google/common/cache/**",
-            "com/google/common/escape/**",
-            "com/google/common/eventbus/**",
-            "com/google/common/graph/**",
-            "com/google/common/hash/**",
-            "com/google/common/html/**",
-            "com/google/common/io/**",
-            "com/google/common/math/**",
-            "com/google/common/net/**",
-            "com/google/common/primitives/**",
-            "com/google/common/reflect/**",
-            "com/google/common/util/**",
-            "com/google/common/xml/**",
-            "com/google/j2objc/**",
-            "com/google/thirdparty/**",
             "javax.annotation/**"
         )
     }

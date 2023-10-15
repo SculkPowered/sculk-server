@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkWallSign extends SculkBlockState.Entity<WallSign> implements WallSign {
 
-    SculkWallSign(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 7);
-    }
+  SculkWallSign(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 7);
+  }
 
-    public SculkWallSign(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkWallSign(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull WallSign nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkWallSign(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull WallSign nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkWallSign(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

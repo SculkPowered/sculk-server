@@ -6,55 +6,55 @@ import de.bauhd.sculk.protocol.packet.PacketHandler;
 
 public final class ChatCommand implements Packet {
 
-    private String command;
-    private long timestamp;
-    private long salt;
-    private boolean signedPreview;
+  private String command;
+  private long timestamp;
+  private long salt;
+  private boolean signedPreview;
 
-    @Override
-    public void decode(Buffer buf) {
-        this.command = buf.readString();
-        this.timestamp = buf.readLong();
-        this.salt = buf.readLong();
-        final var signatures = buf.readVarInt();
-        for (int i = 0; i < signatures; i++) {
-            buf.readString();
-            buf.readByteArray();
-        }
-        this.signedPreview = buf.readBoolean();
-
-        // ignore for now
-        buf.readAll();
+  @Override
+  public void decode(Buffer buf) {
+    this.command = buf.readString();
+    this.timestamp = buf.readLong();
+    this.salt = buf.readLong();
+    final var signatures = buf.readVarInt();
+    for (int i = 0; i < signatures; i++) {
+      buf.readString();
+      buf.readByteArray();
     }
+    this.signedPreview = buf.readBoolean();
 
-    @Override
-    public boolean handle(PacketHandler handler) {
-        return handler.handle(this);
-    }
+    // ignore for now
+    buf.readAll();
+  }
 
-    public String command() {
-        return this.command;
-    }
+  @Override
+  public boolean handle(PacketHandler handler) {
+    return handler.handle(this);
+  }
 
-    public long timestamp() {
-        return this.timestamp;
-    }
+  public String command() {
+    return this.command;
+  }
 
-    public long salt() {
-        return this.salt;
-    }
+  public long timestamp() {
+    return this.timestamp;
+  }
 
-    public boolean signedPreview() {
-        return this.signedPreview;
-    }
+  public long salt() {
+    return this.salt;
+  }
 
-    @Override
-    public String toString() {
-        return "ChatCommand{" +
-                "command='" + this.command + '\'' +
-                ", timestamp=" + this.timestamp +
-                ", salt=" + this.salt +
-                ", signedPreview=" + this.signedPreview +
-                '}';
-    }
+  public boolean signedPreview() {
+    return this.signedPreview;
+  }
+
+  @Override
+  public String toString() {
+    return "ChatCommand{" +
+        "command='" + this.command + '\'' +
+        ", timestamp=" + this.timestamp +
+        ", salt=" + this.salt +
+        ", signedPreview=" + this.signedPreview +
+        '}';
+  }
 }

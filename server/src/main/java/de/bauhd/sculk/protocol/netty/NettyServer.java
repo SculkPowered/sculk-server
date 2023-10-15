@@ -16,44 +16,46 @@ import org.apache.logging.log4j.Logger;
 
 public final class NettyServer {
 
-    private static final Logger LOGGER = LogManager.getLogger(NettyServer.class);
+  private static final Logger LOGGER = LogManager.getLogger(NettyServer.class);
 
-    private final SculkServer server;
+  private final SculkServer server;
 
-    private Future<? super Void> channelFuture;
-    private EventLoopGroup bossLoopGroup;
-    private EventLoopGroup workerLoopGroup;
+  private Future<? super Void> channelFuture;
+  private EventLoopGroup bossLoopGroup;
+  private EventLoopGroup workerLoopGroup;
 
-    public NettyServer(final SculkServer server) {
-        this.server = server;
-    }
+  public NettyServer(final SculkServer server) {
+    this.server = server;
+  }
 
-    public void connect(final String host, final int port) {
-        this.bossLoopGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
-        this.workerLoopGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+  public void connect(final String host, final int port) {
+    this.bossLoopGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+    this.workerLoopGroup =
+        Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
 
-        new ServerBootstrap()
-                .channelFactory(Epoll.isAvailable() ? EpollServerSocketChannel::new : NioServerSocketChannel::new)
-                .group(this.bossLoopGroup, this.workerLoopGroup)
-                .childHandler(new NettyServerInitializer(this.server))
-                .childOption(ChannelOption.TCP_NODELAY, true)
-                .childOption(ChannelOption.IP_TOS, 24)
-                .bind(host, port)
-                .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
-                .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
-                .addListener(future -> {
-                    if (future.isSuccess()) {
-                        LOGGER.info("Listening on " + host + ":" + port);
-                    } else {
-                        throw new RuntimeException(future.cause());
-                    }
-                    this.channelFuture = future;
-                });
-    }
+    new ServerBootstrap()
+        .channelFactory(
+            Epoll.isAvailable() ? EpollServerSocketChannel::new : NioServerSocketChannel::new)
+        .group(this.bossLoopGroup, this.workerLoopGroup)
+        .childHandler(new NettyServerInitializer(this.server))
+        .childOption(ChannelOption.TCP_NODELAY, true)
+        .childOption(ChannelOption.IP_TOS, 24)
+        .bind(host, port)
+        .addListener(ChannelFutureListener.CLOSE_ON_FAILURE)
+        .addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE)
+        .addListener(future -> {
+          if (future.isSuccess()) {
+            LOGGER.info("Listening on " + host + ":" + port);
+          } else {
+            throw new RuntimeException(future.cause());
+          }
+          this.channelFuture = future;
+        });
+  }
 
-    public void close() {
-        this.channelFuture.cancel(true);
-        this.bossLoopGroup.shutdownGracefully();
-        this.workerLoopGroup.shutdownGracefully();
-    }
+  public void close() {
+    this.channelFuture.cancel(true);
+    this.bossLoopGroup.shutdownGracefully();
+    this.workerLoopGroup.shutdownGracefully();
+  }
 }

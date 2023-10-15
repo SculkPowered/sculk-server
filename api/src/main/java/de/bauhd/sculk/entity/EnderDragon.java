@@ -3,4 +3,6 @@ package de.bauhd.sculk.entity;
 /**
  * Represents an ender dragon entity.
  */
-public interface EnderDragon extends Mob {}
+public interface EnderDragon extends Mob {
+
+}

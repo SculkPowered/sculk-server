@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ChunkGenerator {
 
-    /**
-     * Generates a chunk.
-     *
-     * @param chunk the chunk that should be generated
-     * @since 1.0.0
-     */
-    void generate(@NotNull Chunk chunk);
+  /**
+   * Generates a chunk.
+   *
+   * @param chunk the chunk that should be generated
+   * @since 1.0.0
+   */
+  void generate(@NotNull Chunk chunk);
 }

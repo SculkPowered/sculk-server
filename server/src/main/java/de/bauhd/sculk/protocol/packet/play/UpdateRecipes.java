@@ -5,8 +5,8 @@ import de.bauhd.sculk.protocol.packet.Packet;
 
 public final class UpdateRecipes implements Packet {
 
-    @Override
-    public void encode(Buffer buf) {
-        buf.writeVarInt(0);
-    }
+  @Override
+  public void encode(Buffer buf) {
+    buf.writeVarInt(0);
+  }
 }

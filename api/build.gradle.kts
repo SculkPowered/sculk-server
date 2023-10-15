@@ -8,6 +8,7 @@ dependencies {
     api(libs.bundles.adventure)
     api(libs.slf4j)
     api(libs.gson)
+    api(libs.guava)
     api(libs.brigadier)
 }
 
@@ -29,7 +30,8 @@ tasks {
             "https://docs.oracle.com/en/java/javase/17/docs/api/",
             "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/",
             "https://jd.advntr.dev/nbt/${libs.versions.adventure.get()}/",
-            "https://jd.advntr.dev/text-logger-slf4j/${libs.versions.adventure.get()}/"
+            "https://jd.advntr.dev/text-logger-slf4j/${libs.versions.adventure.get()}/",
+            "https://guava.dev/releases/${libs.guava.get().version}/api/docs/"
         )
     }
 }

@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SculkFishingBobber extends AbstractEntity implements FishingBobber {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.FISHING_BOBBER;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.FISHING_BOBBER;
+  }
 }

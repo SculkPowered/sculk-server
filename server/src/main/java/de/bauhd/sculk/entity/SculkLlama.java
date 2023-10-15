@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class SculkLlama extends AbstractAnimal implements Llama {
 
-    @Override
-    public @NotNull EntityType getType() {
-        return EntityType.LLAMA;
-    }
+  @Override
+  public @NotNull EntityType getType() {
+    return EntityType.LLAMA;
+  }
 }

@@ -6,16 +6,16 @@ import java.util.Map;
 
 final class SculkCampfire extends SculkBlockState.Entity<Campfire> implements Campfire {
 
-    SculkCampfire(BlockParent block, int id, Map<String, String> properties) {
-        super(block, id, properties, 32);
-    }
+  SculkCampfire(BlockParent block, int id, Map<String, String> properties) {
+    super(block, id, properties, 32);
+  }
 
-    public SculkCampfire(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
-        super(block, id, properties, entityId, nbt);
-    }
+  public SculkCampfire(BlockParent block, int id, Map<String, String> properties, int entityId, CompoundBinaryTag nbt) {
+    super(block, id, properties, entityId, nbt);
+  }
 
-    @Override
-    public @NotNull Campfire nbt(@NotNull CompoundBinaryTag nbt) {
-         return new SculkCampfire(this.block, this.id, this.properties, this.entityId, nbt);
-    }
+  @Override
+  public @NotNull Campfire nbt(@NotNull CompoundBinaryTag nbt) {
+     return new SculkCampfire(this.block, this.id, this.properties, this.entityId, nbt);
+  }
 }

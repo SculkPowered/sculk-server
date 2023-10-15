@@ -8,13 +8,13 @@ import de.bauhd.sculk.command.CommandSource;
 
 public final class ShutdownCommand {
 
-    public static LiteralCommandNode<CommandSource> get(final SculkServer server) {
-        return LiteralArgumentBuilder.<CommandSource>literal("shutdown")
-                .requires(commandSource -> commandSource.hasPermission("server.command.shutdown"))
-                .executes(context -> {
-                    server.shutdown();
-                    return Command.SINGLE_SUCCESS;
-                })
-                .build();
-    }
+  public static LiteralCommandNode<CommandSource> get(final SculkServer server) {
+    return LiteralArgumentBuilder.<CommandSource>literal("shutdown")
+        .requires(commandSource -> commandSource.hasPermission("server.command.shutdown"))
+        .executes(context -> {
+          server.shutdown();
+          return Command.SINGLE_SUCCESS;
+        })
+        .build();
+  }
 }
