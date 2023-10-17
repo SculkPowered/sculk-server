@@ -59,8 +59,7 @@ public final class SculkCommandHandler implements CommandHandler {
     return this.dispatcher.getRoot();
   }
 
-  public CompletableFuture<Suggestions> suggestions(CommandSource source, String command)
-      throws CommandSyntaxException {
+  public CompletableFuture<Suggestions> suggestions(CommandSource source, String command) {
     var firstSep = command.indexOf(ARGUMENT_SEPARATOR_CHAR);
     if (firstSep != -1) {
       command =
