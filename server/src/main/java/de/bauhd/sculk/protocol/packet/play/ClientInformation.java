@@ -4,8 +4,11 @@ import de.bauhd.sculk.entity.player.PlayerSettings;
 import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
+import java.util.function.Supplier;
 
 public final class ClientInformation implements Packet {
+
+  public static final Supplier<ClientInformation> SUPPLIER = ClientInformation::new;
 
   private String locale;
   private byte viewDistance;
@@ -31,8 +34,7 @@ public final class ClientInformation implements Packet {
     this.allowServerListings = allowServerListings;
   }
 
-  public ClientInformation() {
-  }
+  private ClientInformation() {}
 
   @Override
   public void decode(Buffer buf) {

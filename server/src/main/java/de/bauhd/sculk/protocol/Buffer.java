@@ -10,13 +10,12 @@ import de.bauhd.sculk.world.Position;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.UUID;
-import net.kyori.adventure.nbt.BinaryTagIO;
+import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -155,6 +154,10 @@ public final class Buffer {
   }
 
   public String readString(final int capacity, final int length) {
+    if (capacity < length) {
+      throw new AssertionError(
+          "Length should be lower than capacity. (" + capacity + " <" + length + ")");
+    }
     return this.buf.readCharSequence(length, UTF_8).toString();
   }
 
@@ -181,19 +184,22 @@ public final class Buffer {
   }
 
   public @NotNull CompoundBinaryTag readCompoundTag() {
-    try {
-      return BinaryTagIO.reader().read((DataInput) new ByteBufInputStream(this.buf));
+    try (final var inputStream = new ByteBufInputStream(this.buf)) {
+      if (inputStream.readByte() != BinaryTagTypes.COMPOUND.id()) {
+        throw new AssertionError();
+      }
+      return BinaryTagTypes.COMPOUND.read(inputStream);
     } catch (IOException e) {
-      return CompoundBinaryTag.empty();
+      throw new DecoderException("Unable to decode compound tag: " + e.getMessage());
     }
-
   }
 
   public @NotNull Buffer writeCompoundTag(final CompoundBinaryTag binaryTag) {
-    try {
-      BinaryTagIO.writer().write(binaryTag, (DataOutput) new ByteBufOutputStream(this.buf));
+    try (final var outputStream = new ByteBufOutputStream(this.buf)) {
+      outputStream.write(BinaryTagTypes.COMPOUND.id());
+      BinaryTagTypes.COMPOUND.write(binaryTag, outputStream);
     } catch (IOException e) {
-      throw new EncoderException("Unable to encode NBT CompoundTag");
+      throw new EncoderException("Unable to encode compound tag: " + e.getMessage());
     }
     return this;
   }

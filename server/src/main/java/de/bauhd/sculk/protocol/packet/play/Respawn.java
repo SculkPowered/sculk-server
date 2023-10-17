@@ -31,9 +31,9 @@ public final class Respawn implements Packet {
         .writeByte((byte) -1)
         .writeBoolean(false)
         .writeBoolean(false)
-        .writeByte(this.dataKept)
         .writeBoolean(false)
-        .writeVarInt(0);
+        .writeVarInt(0)
+        .writeByte(this.dataKept);
   }
 
   @Override
