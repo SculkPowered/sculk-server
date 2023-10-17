@@ -1,6 +1,5 @@
 package de.bauhd.sculk.terminal;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.command.CommandSource;
 import de.bauhd.terminal.TerminalAppender;
@@ -56,7 +55,7 @@ public final class SimpleTerminal implements CommandSource {
               for (final var suggestion : suggestions.getList()) {
                 candidates.add(new Candidate(suggestion.getText()));
               }
-            } catch (CommandSyntaxException e) {
+            } catch (Exception e) {
               LOGGER.error("Exception during terminal completion", e);
             }
           })
