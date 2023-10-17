@@ -23,13 +23,12 @@ public abstract class AbstractEntity implements Entity {
 
   private static final AtomicInteger CURRENT_ID = new AtomicInteger(0);
 
-  private final UUID uniqueId;
-  private final int id = CURRENT_ID.getAndIncrement();
-  public final Metadata metadata = new Metadata();
+  protected final UUID uniqueId;
+  protected final int id = CURRENT_ID.getAndIncrement();
+  protected final Metadata metadata = new Metadata();
   protected final Set<SculkPlayer> viewers = new HashSet<>();
   protected SculkWorld world;
   protected Position position = Position.ZERO;
-  protected boolean spawned;
 
   public AbstractEntity() {
     this(UUID.randomUUID());
@@ -225,11 +224,5 @@ public abstract class AbstractEntity implements Entity {
       player.send(packet1);
       player.send(packet2);
     }
-  }
-
-  public void spawn(@NotNull World world, @NotNull Position position) {
-    this.setWorld(world);
-    this.setPosition(position);
-    this.spawned = true;
   }
 }

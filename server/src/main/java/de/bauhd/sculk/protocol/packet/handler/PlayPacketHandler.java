@@ -17,7 +17,6 @@ import de.bauhd.sculk.entity.player.GameMode;
 import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.event.block.BlockBreakEvent;
 import de.bauhd.sculk.event.block.BlockPlaceEvent;
-import de.bauhd.sculk.event.connection.PluginMessageEvent;
 import de.bauhd.sculk.event.player.PlayerChatEvent;
 import de.bauhd.sculk.event.player.PlayerClickContainerButtonEvent;
 import de.bauhd.sculk.event.player.PlayerClickContainerEvent;
@@ -115,20 +114,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(ClientInformation clientInformation) {
-    final var settings = this.player.getSettings();
-    final var old = settings.clientInformation();
-    if (settings.isDefault() || old.skinParts() != clientInformation.skinParts()) {
-      this.player.metadata.setByte(17, (byte) clientInformation.skinParts());
-    }
-    if (settings.isDefault() || old.mainHand() != clientInformation.mainHand()) {
-      this.player.metadata.setByte(18, (byte) clientInformation.mainHand().ordinal());
-    }
-    if (old.viewDistance() != clientInformation.viewDistance()) {
-      this.connection
-          .calculateChunks(this.player.getPosition(), this.player.getPosition(), false, true,
-              clientInformation.viewDistance(), old.viewDistance());
-    }
-    this.player.getSettings().setClientInformation(clientInformation);
+    this.player.handleClientInformation(clientInformation);
     return true;
   }
 
@@ -136,15 +122,15 @@ public final class PlayPacketHandler extends PacketHandler {
   public boolean handle(CommandSuggestionsRequest request) {
     final var command = request.text();
     final var start = command.lastIndexOf(CommandDispatcher.ARGUMENT_SEPARATOR_CHAR) + 1;
-    try {
       this.server.getCommandHandler().suggestions(this.player, command.substring(1))
           .thenAcceptAsync(suggestions -> this.player.send(
                   new CommandSuggestionsResponse(request.transactionId(),
                       start, command.length() - start, suggestions.getList())),
-              this.connection.executor());
-    } catch (CommandSyntaxException e) {
-      LOGGER.error("Exception during suggestion response", e);
-    }
+              this.connection.executor())
+          .exceptionally(throwable -> {
+            LOGGER.error("Exception during suggestion response", throwable);
+            return null;
+          });
     return true;
   }
 
@@ -213,9 +199,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(PluginMessage pluginMessage) {
-    this.server.getEventHandler()
-        .call(
-            new PluginMessageEvent(this.player, pluginMessage.identifier(), pluginMessage.data()));
+    this.player.handlePluginMessage(pluginMessage);
     return true;
   }
 
@@ -241,7 +225,7 @@ public final class PlayPacketHandler extends PacketHandler {
         this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
         playerPosition.onGround()));
     this.player.setPosition(new Position(x, y, z, position.yaw(), position.pitch()));
-    this.connection.calculateChunks(position, this.player.getPosition());
+    this.player.calculateChunks(position, this.player.getPosition());
     return true;
   }
 
@@ -260,7 +244,7 @@ public final class PlayPacketHandler extends PacketHandler {
             yaw, pitch, playerPositionAndRotation.onGround()),
         new HeadRotation(this.player.getId(), yaw));
     this.player.setPosition(new Position(x, y, z, yaw, pitch));
-    this.connection.calculateChunks(position, this.player.getPosition());
+    this.player.calculateChunks(position, this.player.getPosition());
     return true;
   }
 

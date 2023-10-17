@@ -9,10 +9,13 @@ import de.bauhd.sculk.container.SculkContainer;
 import de.bauhd.sculk.container.item.ItemStack;
 import de.bauhd.sculk.entity.AbstractLivingEntity;
 import de.bauhd.sculk.entity.EntityType;
+import de.bauhd.sculk.event.connection.PluginMessageEvent;
 import de.bauhd.sculk.protocol.SculkConnection;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.login.Disconnect;
 import de.bauhd.sculk.protocol.packet.play.ActionBar;
+import de.bauhd.sculk.protocol.packet.play.CenterChunk;
+import de.bauhd.sculk.protocol.packet.play.ClientInformation;
 import de.bauhd.sculk.protocol.packet.play.EntityMetadata;
 import de.bauhd.sculk.protocol.packet.play.Equipment;
 import de.bauhd.sculk.protocol.packet.play.GameEvent;
@@ -31,8 +34,10 @@ import de.bauhd.sculk.protocol.packet.play.title.Subtitle;
 import de.bauhd.sculk.protocol.packet.play.title.TitleAnimationTimes;
 import de.bauhd.sculk.world.Position;
 import de.bauhd.sculk.world.World;
+import de.bauhd.sculk.world.chunk.SculkChunk;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.net.SocketAddress;
-import java.util.HashMap;
+import java.util.ArrayList;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
@@ -237,7 +242,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.send(
         new Respawn(world.getDimension().name(), world.getName(), 0, this.gameMode, (byte) 3));
     this.setPosition(world.getSpawnPosition());
-    this.connection.calculateChunks(position, position, false, false);
+    this.calculateChunks(this.position, this.position, false, false);
   }
 
   @Override
@@ -304,7 +309,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       sculkPlayer.send(new SpawnPlayer(this));
       sculkPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
       final var inventory = this.getInventory();
-      final var equipment = new HashMap<Integer, ItemStack>();
+      final var equipment = new Int2ObjectOpenHashMap<ItemStack>();
       if (!inventory.getItemInMainHand().isEmpty()) {
         equipment.put(0, inventory.getItemInMainHand());
       } else if (!inventory.getItemInOffHand().isEmpty()) {
@@ -319,7 +324,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         equipment.put(5, inventory.getHelmet());
       }
       if (!equipment.isEmpty()) {
-        sculkPlayer.send(new Equipment(this.getId(), equipment));
+        sculkPlayer.send(new Equipment(this.id, equipment));
       }
       this.viewers.add(sculkPlayer);
     }
@@ -365,7 +370,81 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.position = position;
     super.setWorld(world);
     this.permissionChecker = permissionChecker;
-    this.spawned = true;
+  }
+
+  public void calculateChunks(final Position from, final Position to) {
+    this.calculateChunks(from, to, true, true);
+  }
+
+  public void calculateChunks(final Position from, final Position to, boolean check,
+      boolean checkAlreadyLoaded) {
+    final var viewDistance = this.getSettings().getViewDistance();
+    this.calculateChunks(from, to, check, checkAlreadyLoaded, viewDistance, viewDistance);
+  }
+
+  public void calculateChunks(final Position from, final Position to,
+      boolean check, boolean checkAlreadyLoaded,
+      int range, int oldRange) {
+    final var fromChunkX = chunkCoordinate(from.x());
+    final var fromChunkZ = chunkCoordinate(from.z());
+    final var chunkX = chunkCoordinate(to.x());
+    final var chunkZ = chunkCoordinate(to.z());
+    if (check) {
+      if (fromChunkX == chunkX && fromChunkZ == chunkZ) {
+        return;
+      }
+      this.send(new CenterChunk(chunkX, chunkZ));
+    }
+    final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
+    this.connection.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
+      final var chunk = world.getChunk(x, z);
+      chunks.add(chunk);
+      chunk.viewers().add(this); // new in range
+      for (final var entity : chunk.entities()) {
+        if (entity == this) {
+          continue;
+        }
+        if (entity instanceof Player viewer) {
+          this.addViewer(viewer);
+        }
+        entity.addViewer(this);
+      }
+    });
+    if (checkAlreadyLoaded) {
+      this.connection.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
+        final var chunk = world.getChunk(x, z);
+        if (!chunks.remove(chunk)) {
+          chunk.viewers().remove(this); // chunk not in range
+          for (final var entity : chunk.entities()) {
+            entity.removeViewer(this);
+          }
+        }
+      });
+    }
+    for (final var chunk : chunks) { // send all new chunks
+      chunk.send(this);
+    }
+  }
+
+  public void handleClientInformation(final ClientInformation clientInformation) {
+    final var settings = this.settings;
+    final var old = settings.clientInformation();
+    if (settings.isDefault() || old.skinParts() != clientInformation.skinParts()) {
+      this.metadata.setByte(17, (byte) clientInformation.skinParts());
+    }
+    if (settings.isDefault() || old.mainHand() != clientInformation.mainHand()) {
+      this.metadata.setByte(18, (byte) clientInformation.mainHand().ordinal());
+    }
+    if (old.viewDistance() != clientInformation.viewDistance() && this.world != null) {
+      this.calculateChunks(this.position, this.position, false, true,
+              clientInformation.viewDistance(), old.viewDistance());
+    }
+    this.settings.setClientInformation(clientInformation);
+  }
+
+  public void handlePluginMessage(final PluginMessage pluginMessage) {
+    this.server.getEventHandler().call(
+        new PluginMessageEvent(this, pluginMessage.identifier(), pluginMessage.data()));
   }
 
   public void send(final Packet packet) {

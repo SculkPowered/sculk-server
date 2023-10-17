@@ -5,7 +5,7 @@ import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.packet.play.Equipment;
 import de.bauhd.sculk.protocol.packet.play.container.ContainerSlot;
 import de.bauhd.sculk.util.ItemList;
-import java.util.Map;
+import de.bauhd.sculk.util.OneInt2ObjectMap;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,7 +66,7 @@ public final class MineInventory implements Inventory {
   @Override
   public void setHelmet(@NotNull ItemStack helmet) {
     this.items.set(5, helmet);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), Map.of(5, helmet)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(5, helmet)));
   }
 
   @Override
@@ -77,7 +77,7 @@ public final class MineInventory implements Inventory {
   @Override
   public void setChestplate(@NotNull ItemStack chestplate) {
     this.items.set(6, chestplate);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), Map.of(4, chestplate)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(4, chestplate)));
   }
 
   @Override
@@ -88,7 +88,7 @@ public final class MineInventory implements Inventory {
   @Override
   public void setLeggings(@NotNull ItemStack leggings) {
     this.items.set(7, leggings);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), Map.of(3, leggings)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(3, leggings)));
   }
 
   @Override
@@ -99,7 +99,7 @@ public final class MineInventory implements Inventory {
   @Override
   public void setBoots(@NotNull ItemStack boots) {
     this.items.set(8, boots);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), Map.of(2, boots)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(2, boots)));
   }
 
   @Override

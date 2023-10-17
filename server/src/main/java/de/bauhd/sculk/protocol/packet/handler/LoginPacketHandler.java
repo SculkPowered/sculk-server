@@ -3,10 +3,12 @@ package de.bauhd.sculk.protocol.packet.handler;
 import de.bauhd.sculk.MinecraftConfig;
 import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.protocol.SculkConnection;
+import de.bauhd.sculk.protocol.State;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
 import de.bauhd.sculk.protocol.packet.login.Disconnect;
 import de.bauhd.sculk.protocol.packet.login.EncryptionRequest;
 import de.bauhd.sculk.protocol.packet.login.EncryptionResponse;
+import de.bauhd.sculk.protocol.packet.login.LoginAcknowledged;
 import de.bauhd.sculk.protocol.packet.login.LoginPluginResponse;
 import de.bauhd.sculk.protocol.packet.login.LoginStart;
 import de.bauhd.sculk.util.EncryptionUtil;
@@ -38,7 +40,7 @@ public final class LoginPacketHandler extends PacketHandler {
       ThreadLocalRandom.current().nextBytes(this.verifyToken);
       this.connection.send(new EncryptionRequest("", publicKey, this.verifyToken));
     } else {
-      this.connection.play(null);
+      this.connection.initPlayer(null);
     }
     return true;
   }
@@ -47,22 +49,19 @@ public final class LoginPacketHandler extends PacketHandler {
   public boolean handle(EncryptionResponse encryptionResponse) {
     try {
       if (encryptionResponse.verifyToken() != null) {
-        final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.server.getKeyPair(),
-            encryptionResponse.verifyToken());
+        final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.verifyToken());
         if (!MessageDigest.isEqual(decryptedVerifyToken, this.verifyToken)) {
-          this.connection.send(
-              new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
+          this.connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
           return true;
         }
       }
 
-      final var decryptedSecret = EncryptionUtil.decryptRsa(this.server.getKeyPair(),
-          encryptionResponse.sharedSecret());
+      final var decryptedSecret = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.sharedSecret());
       final var gameProfile = MojangUtil.hasJoined(this.connection.username(),
           EncryptionUtil.generateServerId(this.server.getKeyPair(), decryptedSecret));
 
       this.connection.enableEncryption(decryptedSecret);
-      this.connection.play(gameProfile);
+      this.connection.initPlayer(gameProfile);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -71,6 +70,13 @@ public final class LoginPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(LoginPluginResponse pluginResponse) {
+    return true;
+  }
+
+  @Override
+  public boolean handle(LoginAcknowledged loginAcknowledged) {
+    this.connection.setState(State.CONFIG);
+    this.connection.configuration();
     return true;
   }
 }

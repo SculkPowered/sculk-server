@@ -13,9 +13,7 @@ public final class LoginStart implements Packet {
   @Override
   public void decode(Buffer buf) {
     this.username = buf.readString(16);
-    if (buf.readBoolean()) {
-      this.uniqueId = buf.readUniqueId();
-    }
+    this.uniqueId = buf.readUniqueId();
   }
 
   @Override

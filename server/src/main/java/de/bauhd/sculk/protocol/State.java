@@ -1,11 +1,14 @@
 package de.bauhd.sculk.protocol;
 
 import de.bauhd.sculk.protocol.packet.Packet;
+import de.bauhd.sculk.protocol.packet.config.FinishConfiguration;
+import de.bauhd.sculk.protocol.packet.config.RegistryData;
 import de.bauhd.sculk.protocol.packet.handshake.Handshake;
 import de.bauhd.sculk.protocol.packet.login.CompressionPacket;
 import de.bauhd.sculk.protocol.packet.login.Disconnect;
 import de.bauhd.sculk.protocol.packet.login.EncryptionRequest;
 import de.bauhd.sculk.protocol.packet.login.EncryptionResponse;
+import de.bauhd.sculk.protocol.packet.login.LoginAcknowledged;
 import de.bauhd.sculk.protocol.packet.login.LoginPluginRequest;
 import de.bauhd.sculk.protocol.packet.login.LoginPluginResponse;
 import de.bauhd.sculk.protocol.packet.login.LoginStart;
@@ -28,7 +31,7 @@ import de.bauhd.sculk.protocol.packet.play.EntityEvent;
 import de.bauhd.sculk.protocol.packet.play.EntityMetadata;
 import de.bauhd.sculk.protocol.packet.play.Equipment;
 import de.bauhd.sculk.protocol.packet.play.Experience;
-import de.bauhd.sculk.protocol.packet.play.FeatureFlags;
+import de.bauhd.sculk.protocol.packet.config.FeatureFlags;
 import de.bauhd.sculk.protocol.packet.play.GameEvent;
 import de.bauhd.sculk.protocol.packet.play.Health;
 import de.bauhd.sculk.protocol.packet.play.HeldItem;
@@ -50,7 +53,6 @@ import de.bauhd.sculk.protocol.packet.play.Respawn;
 import de.bauhd.sculk.protocol.packet.play.SimulationDistance;
 import de.bauhd.sculk.protocol.packet.play.SpawnEntity;
 import de.bauhd.sculk.protocol.packet.play.SpawnExperienceOrb;
-import de.bauhd.sculk.protocol.packet.play.SpawnPlayer;
 import de.bauhd.sculk.protocol.packet.play.SpawnPosition;
 import de.bauhd.sculk.protocol.packet.play.SwingArm;
 import de.bauhd.sculk.protocol.packet.play.SynchronizePlayerPosition;
@@ -123,12 +125,33 @@ public enum State {
       this.serverBound.register(LoginStart.class, LoginStart::new);
       this.serverBound.register(EncryptionResponse.class, EncryptionResponse::new);
       this.serverBound.register(LoginPluginResponse.class, LoginPluginResponse::new);
+      this.serverBound.register(LoginAcknowledged.class, () -> LoginAcknowledged.INSTANCE);
 
       this.clientBound.register(Disconnect.class);
       this.clientBound.register(EncryptionRequest.class);
       this.clientBound.register(LoginSuccess.class);
       this.clientBound.register(CompressionPacket.class);
       this.clientBound.register(LoginPluginRequest.class);
+    }
+  },
+  CONFIG {
+    {
+      this.serverBound.register(ClientInformation.class, ClientInformation.SUPPLIER);
+      this.serverBound.register(PluginMessage.class, PluginMessage.SUPPLIER);
+      this.serverBound.register(FinishConfiguration.class, () -> FinishConfiguration.INSTANCE);
+      this.serverBound.register(KeepAlive.class, KeepAlive.SUPPLIER);
+      // Pong
+      // Resource Pack
+
+      this.clientBound.register(PluginMessage.class);
+      this.clientBound.register(Disconnect.class);
+      this.clientBound.register(FinishConfiguration.class);
+      this.clientBound.register(KeepAlive.class);
+      this.clientBound.skip(); // Ping
+      this.clientBound.register(RegistryData.class);
+      this.clientBound.skip(); // Resource Pack
+      this.clientBound.register(FeatureFlags.class);
+      // Update Tags
     }
   },
   PLAY {
@@ -140,18 +163,20 @@ public enum State {
       this.serverBound.register(ChatCommand.class, ChatCommand::new);
       this.serverBound.register(ChatMessage.class, ChatMessage::new);
       this.serverBound.register(PlayerSession.class, PlayerSession::new); // Player Session
+      this.serverBound.skip(); // Chunk Batch Received
       this.serverBound.register(ClientCommand.class, ClientCommand::new);
-      this.serverBound.register(ClientInformation.class, ClientInformation::new);
+      this.serverBound.register(ClientInformation.class, ClientInformation.SUPPLIER);
       this.serverBound.register(CommandSuggestionsRequest.class, CommandSuggestionsRequest::new);
+      this.serverBound.skip(); // Configuration Acknowledged
       this.serverBound.register(ClickContainerButton.class, ClickContainerButton::new);
       this.serverBound.register(ClickContainer.class, ClickContainer::new);
       this.serverBound.register(CloseContainer.class, CloseContainer::new);
-      this.serverBound.register(PluginMessage.class, PluginMessage::new);
+      this.serverBound.register(PluginMessage.class, PluginMessage.SUPPLIER);
       this.serverBound.register(EditBook.class, EditBook::new);
       this.serverBound.skip(); // Query Entity Tag
       this.serverBound.register(Interact.class, Interact::new);
       this.serverBound.skip(); // Jigsaw Generate
-      this.serverBound.register(KeepAlive.class, KeepAlive::new);
+      this.serverBound.register(KeepAlive.class, KeepAlive.SUPPLIER);
       this.serverBound.skip(); // Lock Difficult
       this.serverBound.register(PlayerPosition.class, PlayerPosition::new);
       this.serverBound.register(PlayerPositionAndRotation.class, PlayerPositionAndRotation::new);
@@ -160,6 +185,7 @@ public enum State {
       this.serverBound.skip(); // Move Vehicle
       this.serverBound.skip(); // Paddle Boat
       this.serverBound.skip(); // Pick Item
+      this.serverBound.skip(); // Ping Request
       this.serverBound.skip(); // Place Recipe
       this.serverBound.register(PlayerAbilities.class, PlayerAbilities::new);
       this.serverBound.register(PlayerAction.class, PlayerAction::new);
@@ -188,7 +214,6 @@ public enum State {
       this.clientBound.skip(); // Bundle Delimiter
       this.clientBound.register(SpawnEntity.class);
       this.clientBound.register(SpawnExperienceOrb.class);
-      this.clientBound.register(SpawnPlayer.class);
       this.clientBound.register(EntityAnimation.class);
       this.clientBound.register(AwardStatistics.class);
       this.clientBound.skip(); // Acknowledge Block Change
@@ -198,6 +223,8 @@ public enum State {
       this.clientBound.register(BlockUpdate.class);
       this.clientBound.register(BossBar.class);
       this.clientBound.register(ChangeDifficulty.class);
+      this.clientBound.skip(); // Chunk Batch Finished
+      this.clientBound.skip(); // Chunk Batch Start
       this.clientBound.skip(); // Chunk Biomes
       this.clientBound.register(ClearTitles.class);
       this.clientBound.register(CommandSuggestionsResponse.class);
@@ -236,6 +263,7 @@ public enum State {
       this.clientBound.register(OpenScreen.class);
       this.clientBound.skip(); // Open Sign Editor
       this.clientBound.skip(); // Ping
+      this.clientBound.skip(); // Ping Response
       this.clientBound.skip(); // Place Ghost Recipe
       this.clientBound.register(PlayerAbilities.class);
       this.clientBound.skip(); // Player Chat Message
@@ -284,6 +312,7 @@ public enum State {
       this.clientBound.register(TitleAnimationTimes.class);
       this.clientBound.skip(); // Entity Sound Effect
       this.clientBound.skip(); // Sound Effect
+      this.clientBound.skip(); // Start Configuration
       this.clientBound.skip(); // Stop Sound
       this.clientBound.register(SystemChatMessage.class);
       this.clientBound.register(TabListHeaderFooter.class);
@@ -292,7 +321,6 @@ public enum State {
       this.clientBound.skip(); // Teleport Entity
       this.clientBound.skip(); // Update Advancements
       this.clientBound.register(UpdateAttributes.class);
-      this.clientBound.register(FeatureFlags.class);
       this.clientBound.skip(); // Entity Effects
       this.clientBound.register(UpdateRecipes.class);
       this.clientBound.register(UpdateTags.class);

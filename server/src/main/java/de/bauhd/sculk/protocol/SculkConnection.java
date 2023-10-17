@@ -18,7 +18,6 @@ import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.command.CommandSource;
 import de.bauhd.sculk.connection.Connection;
 import de.bauhd.sculk.entity.player.GameProfile;
-import de.bauhd.sculk.entity.player.Player;
 import de.bauhd.sculk.entity.player.PlayerInfoEntry;
 import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.event.player.PlayerDisconnectEvent;
@@ -32,6 +31,9 @@ import de.bauhd.sculk.protocol.netty.codec.MinecraftDecoder;
 import de.bauhd.sculk.protocol.netty.codec.MinecraftEncoder;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.PacketHandler;
+import de.bauhd.sculk.protocol.packet.config.FinishConfiguration;
+import de.bauhd.sculk.protocol.packet.config.RegistryData;
+import de.bauhd.sculk.protocol.packet.handler.ConfigPacketHandler;
 import de.bauhd.sculk.protocol.packet.handler.HandshakePacketHandler;
 import de.bauhd.sculk.protocol.packet.handler.LoginPacketHandler;
 import de.bauhd.sculk.protocol.packet.handler.PlayPacketHandler;
@@ -39,7 +41,6 @@ import de.bauhd.sculk.protocol.packet.handler.StatusPacketHandler;
 import de.bauhd.sculk.protocol.packet.login.CompressionPacket;
 import de.bauhd.sculk.protocol.packet.login.Disconnect;
 import de.bauhd.sculk.protocol.packet.login.LoginSuccess;
-import de.bauhd.sculk.protocol.packet.play.CenterChunk;
 import de.bauhd.sculk.protocol.packet.play.Login;
 import de.bauhd.sculk.protocol.packet.play.PlayerInfo;
 import de.bauhd.sculk.protocol.packet.play.PlayerInfoRemove;
@@ -50,8 +51,6 @@ import de.bauhd.sculk.protocol.packet.play.SynchronizePlayerPosition;
 import de.bauhd.sculk.protocol.packet.play.UpdateTeams;
 import de.bauhd.sculk.protocol.packet.play.command.Commands;
 import de.bauhd.sculk.util.MojangUtil;
-import de.bauhd.sculk.world.Position;
-import de.bauhd.sculk.world.chunk.SculkChunk;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -60,7 +59,6 @@ import io.netty.util.ReferenceCountUtil;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -80,8 +78,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   private static final Logger LOGGER = LogManager.getLogger(SculkConnection.class);
 
   private static final PluginMessage BRAND_PACKET =
-      new PluginMessage("minecraft:brand",
-          new byte[]{11, 110, 111, 116, 32, 118, 97, 110, 105, 108, 108, 97});
+      new PluginMessage("minecraft:brand", new byte[]{5, 115, 99, 117, 108, 107});
 
   public static CompressionPacket COMPRESSION_PACKET;
 
@@ -163,7 +160,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     }
   }
 
-  public void play(GameProfile profile) {
+  public void initPlayer(GameProfile profile) {
     if (profile == null) {
       if (this.server.getConfig().mode() == MinecraftConfig.Mode.BUNGEECORD) {
         final var arguments = this.serverAddress.split("\00");
@@ -193,6 +190,19 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
     this.send(new LoginSuccess(profile));
     this.player = new SculkPlayer(this.server, this, profile);
+  }
+
+  public void configuration() {
+    this.send(SculkConnection.BRAND_PACKET);
+    this.send(new RegistryData(
+        this.server.getBiomeRegistry(),
+        this.server.getDimensionRegistry(),
+        this.server.getDamageTypeRegistry())
+    );
+    this.send(FinishConfiguration.INSTANCE);
+  }
+
+  public void play() {
     this.server.addPlayer(this.player);
     this.setState(State.PLAY);
     this.server.getEventHandler().call(new PlayerInitialEvent(this.player))
@@ -215,11 +225,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           this.player.init(event.getGameMode(), position, world, event.getPermissionChecker());
 
           this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
-              this.server.getBiomeRegistry(), this.server.getDimensionRegistry(),
-              this.server.getDamageTypeRegistry(),
               world.getDimension().name()));
 
-          this.send(BRAND_PACKET);
           this.sendCommands();
           this.send(new SpawnPosition(position));
           this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
@@ -234,7 +241,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             this.send(new UpdateTeams(team, (byte) 0, team.entries().toArray(new String[]{})));
           }
 
-          this.calculateChunks(position, position, false, false);
+          this.player.calculateChunks(position, position, false, false);
           this.send(new SynchronizePlayerPosition(position));
 
           this.server.getEventHandler().justCall(new PlayerJoinEvent(this.player));
@@ -272,6 +279,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       case HANDSHAKE -> new HandshakePacketHandler(this);
       case STATUS -> new StatusPacketHandler(this, this.server);
       case LOGIN -> new LoginPacketHandler(this, this.server);
+      case CONFIG -> new ConfigPacketHandler(this, this.player);
       case PLAY -> new PlayPacketHandler(this, this.server, this.player);
     };
     this.channel.pipeline().get(MinecraftEncoder.class).setState(state);
@@ -329,61 +337,6 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       for (var z = -range; z <= range; z++) {
         chunk.accept(chunkX + x, chunkZ + z);
       }
-    }
-  }
-
-  public void calculateChunks(final Position from, final Position to) {
-    this.calculateChunks(from, to, true, true);
-  }
-
-  public void calculateChunks(final Position from, final Position to, boolean check,
-      boolean checkAlreadyLoaded) {
-    final var viewDistance = this.player.getSettings().getViewDistance();
-    this.calculateChunks(from, to, check, checkAlreadyLoaded, viewDistance, viewDistance);
-  }
-
-  public void calculateChunks(final Position from, final Position to,
-      boolean check, boolean checkAlreadyLoaded,
-      int range, int oldRange) {
-    final var fromChunkX = chunkCoordinate(from.x());
-    final var fromChunkZ = chunkCoordinate(from.z());
-    final var chunkX = chunkCoordinate(to.x());
-    final var chunkZ = chunkCoordinate(to.z());
-    if (check) {
-      if (fromChunkX == chunkX && fromChunkZ == chunkZ) {
-        return;
-      }
-      this.send(new CenterChunk(chunkX, chunkZ));
-    }
-    final var world = this.player.getWorld();
-    final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
-    this.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
-      final var chunk = world.getChunk(x, z);
-      chunks.add(chunk);
-      chunk.viewers().add(this.player); // new in range
-      for (final var entity : chunk.entities()) {
-        if (entity == this.player) {
-          continue;
-        }
-        if (entity instanceof Player viewer) {
-          this.player.addViewer(viewer);
-        }
-        entity.addViewer(this.player);
-      }
-    });
-    if (checkAlreadyLoaded) {
-      this.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
-        final var chunk = world.getChunk(x, z);
-        if (!chunks.remove(chunk)) {
-          chunk.viewers().remove(this.player); // chunk not in range
-          for (final var entity : chunk.entities()) {
-            entity.removeViewer(this.player);
-          }
-        }
-      });
-    }
-    for (final var chunk : chunks) { // send all new chunks
-      chunk.send(this.player);
     }
   }
 
