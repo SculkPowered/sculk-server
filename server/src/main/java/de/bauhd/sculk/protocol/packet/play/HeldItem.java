@@ -7,23 +7,22 @@ import de.bauhd.sculk.protocol.packet.PacketHandler;
 // yes, decode -> short and encode -> byte, is right
 public final class HeldItem implements Packet {
 
-  private short slot;
+  private byte slot;
 
-  public HeldItem(final short slot) {
+  public HeldItem(final byte slot) {
     this.slot = slot;
   }
 
-  public HeldItem() {
-  }
+  public HeldItem() {}
 
   @Override
   public void decode(Buffer buf) {
-    this.slot = buf.readShort();
+    this.slot = (byte) buf.readShort();
   }
 
   @Override
   public void encode(Buffer buf) {
-    buf.writeByte((byte) this.slot);
+    buf.writeByte(this.slot);
   }
 
   @Override
@@ -38,7 +37,7 @@ public final class HeldItem implements Packet {
         '}';
   }
 
-  public short slot() {
+  public byte slot() {
     return this.slot;
   }
 }

@@ -14,7 +14,6 @@ import de.bauhd.sculk.protocol.SculkConnection;
 import de.bauhd.sculk.protocol.packet.Packet;
 import de.bauhd.sculk.protocol.packet.login.Disconnect;
 import de.bauhd.sculk.protocol.packet.play.ActionBar;
-import de.bauhd.sculk.protocol.packet.play.CenterChunk;
 import de.bauhd.sculk.protocol.packet.play.ClientInformation;
 import de.bauhd.sculk.protocol.packet.play.EntityMetadata;
 import de.bauhd.sculk.protocol.packet.play.Equipment;
@@ -24,10 +23,10 @@ import de.bauhd.sculk.protocol.packet.play.KeepAlive;
 import de.bauhd.sculk.protocol.packet.play.PlayerAbilities;
 import de.bauhd.sculk.protocol.packet.play.PluginMessage;
 import de.bauhd.sculk.protocol.packet.play.Respawn;
-import de.bauhd.sculk.protocol.packet.play.SpawnPlayer;
 import de.bauhd.sculk.protocol.packet.play.SynchronizePlayerPosition;
 import de.bauhd.sculk.protocol.packet.play.SystemChatMessage;
 import de.bauhd.sculk.protocol.packet.play.TabListHeaderFooter;
+import de.bauhd.sculk.protocol.packet.play.chunk.CenterChunk;
 import de.bauhd.sculk.protocol.packet.play.container.ContainerContent;
 import de.bauhd.sculk.protocol.packet.play.container.OpenScreen;
 import de.bauhd.sculk.protocol.packet.play.title.Subtitle;
@@ -162,7 +161,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public void setHeldItemSlot(int slot) {
     this.heldItem = slot;
-    this.send(new HeldItem((short) slot));
+    this.send(new HeldItem((byte) slot));
   }
 
   @Override
@@ -303,30 +302,34 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public void addViewer(@NotNull Player player) {
+  public boolean addViewer(@NotNull Player player) {
     if (player != this) {
-      final var sculkPlayer = (SculkPlayer) player;
-      sculkPlayer.send(new SpawnPlayer(this));
-      sculkPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
-      final var inventory = this.getInventory();
-      final var equipment = new Int2ObjectOpenHashMap<ItemStack>();
-      if (!inventory.getItemInMainHand().isEmpty()) {
-        equipment.put(0, inventory.getItemInMainHand());
-      } else if (!inventory.getItemInOffHand().isEmpty()) {
-        equipment.put(1, inventory.getItemInOffHand());
-      } else if (!inventory.getBoots().isEmpty()) {
-        equipment.put(2, inventory.getBoots());
-      } else if (!inventory.getLeggings().isEmpty()) {
-        equipment.put(3, inventory.getLeggings());
-      } else if (!inventory.getChestplate().isEmpty()) {
-        equipment.put(4, inventory.getChestplate());
-      } else if (!inventory.getHelmet().isEmpty()) {
-        equipment.put(5, inventory.getHelmet());
+      final var added = super.addViewer(player);
+      if (added) {
+        final var sculkPlayer = (SculkPlayer) player;
+        sculkPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
+        final var inventory = this.getInventory();
+        final var equipment = new Int2ObjectOpenHashMap<ItemStack>();
+        if (!inventory.getItemInMainHand().isEmpty()) {
+          equipment.put(0, inventory.getItemInMainHand());
+        } else if (!inventory.getItemInOffHand().isEmpty()) {
+          equipment.put(1, inventory.getItemInOffHand());
+        } else if (!inventory.getBoots().isEmpty()) {
+          equipment.put(2, inventory.getBoots());
+        } else if (!inventory.getLeggings().isEmpty()) {
+          equipment.put(3, inventory.getLeggings());
+        } else if (!inventory.getChestplate().isEmpty()) {
+          equipment.put(4, inventory.getChestplate());
+        } else if (!inventory.getHelmet().isEmpty()) {
+          equipment.put(5, inventory.getHelmet());
+        }
+        if (!equipment.isEmpty()) {
+          sculkPlayer.send(new Equipment(this.id, equipment));
+        }
       }
-      if (!equipment.isEmpty()) {
-        sculkPlayer.send(new Equipment(this.id, equipment));
-      }
-      this.viewers.add(sculkPlayer);
+      return added;
+    } else {
+      return false;
     }
   }
 
@@ -437,7 +440,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     }
     if (old.viewDistance() != clientInformation.viewDistance() && this.world != null) {
       this.calculateChunks(this.position, this.position, false, true,
-              clientInformation.viewDistance(), old.viewDistance());
+          clientInformation.viewDistance(), old.viewDistance());
     }
     this.settings.setClientInformation(clientInformation);
   }
