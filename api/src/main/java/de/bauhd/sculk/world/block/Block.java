@@ -824,8 +824,8 @@ public final class Block {
   public static final BlockState SEAGRASS = get("minecraft:seagrass");
   public static final BlockState SHROOMLIGHT = get("minecraft:shroomlight");
   public static final ShulkerBox SHULKER_BOX = (ShulkerBox) get("minecraft:shulker_box");
-  public static final SkeletonSkull SKELETON_SKULL = (SkeletonSkull) get("minecraft:skeleton_skull");
-  public static final SkeletonWallSkull SKELETON_WALL_SKULL = (SkeletonWallSkull) get("minecraft:skeleton_wall_skull");
+  public static final Head SKELETON_SKULL = (Head) get("minecraft:skeleton_skull");
+  public static final WallHead SKELETON_WALL_SKULL = (WallHead) get("minecraft:skeleton_wall_skull");
   public static final BlockState SLIME_BLOCK = get("minecraft:slime_block");
   public static final SmallAmethystBud SMALL_AMETHYST_BUD = (SmallAmethystBud) get("minecraft:small_amethyst_bud");
   public static final SmallDripleaf SMALL_DRIPLEAF = (SmallDripleaf) get("minecraft:small_dripleaf");
@@ -997,8 +997,8 @@ public final class Block {
   public static final WallBanner WHITE_WALL_BANNER = (WallBanner) get("minecraft:white_wall_banner");
   public static final BlockState WHITE_WOOL = get("minecraft:white_wool");
   public static final BlockState WITHER_ROSE = get("minecraft:wither_rose");
-  public static final WitherSkeletonSkull WITHER_SKELETON_SKULL = (WitherSkeletonSkull) get("minecraft:wither_skeleton_skull");
-  public static final WitherSkeletonWallSkull WITHER_SKELETON_WALL_SKULL = (WitherSkeletonWallSkull) get("minecraft:wither_skeleton_wall_skull");
+  public static final Head WITHER_SKELETON_SKULL = (Head) get("minecraft:wither_skeleton_skull");
+  public static final WallHead WITHER_SKELETON_WALL_SKULL = (WallHead) get("minecraft:wither_skeleton_wall_skull");
   public static final Banner YELLOW_BANNER = (Banner) get("minecraft:yellow_banner");
   public static final Bed YELLOW_BED = (Bed) get("minecraft:yellow_bed");
   public static final BlockState.Waterloggable<BlockState> YELLOW_CANDLE = (BlockState.Waterloggable<BlockState>) get("minecraft:yellow_candle");

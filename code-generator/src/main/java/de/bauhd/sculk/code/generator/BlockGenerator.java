@@ -49,7 +49,7 @@ final class BlockGenerator extends Generator {
       "WallBanner",
       "Banner",
       "WallHead",
-      "Head"
+      "Head",
   };
   private static final Map<String, Integer> BLOCK_ENTITIES = new HashMap<>() { // TODO: find a way to not hardcode this
     {
@@ -149,7 +149,7 @@ final class BlockGenerator extends Generator {
 
   private String classAndCreate(final Path path, String key, final JsonElement propertyElement) {
     final var needsClass = propertyElement != null;
-    var clazz = this.keyToName(key);
+    var clazz = this.keyToName(key).replace("Skull", "Head");
     var grouped = false;
     for (final var group : GROUPS) {
       if (clazz.endsWith(group)) {
