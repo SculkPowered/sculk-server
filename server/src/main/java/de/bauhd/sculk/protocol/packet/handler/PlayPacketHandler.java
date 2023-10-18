@@ -8,7 +8,6 @@ import static de.bauhd.sculk.world.block.Block.Facing.UP;
 import static de.bauhd.sculk.world.block.Block.Facing.WEST;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.bauhd.sculk.SculkServer;
 import de.bauhd.sculk.container.SculkContainer;
 import de.bauhd.sculk.container.item.ItemStack;
@@ -41,6 +40,7 @@ import de.bauhd.sculk.protocol.packet.play.SwingArm;
 import de.bauhd.sculk.protocol.packet.play.TeleportToEntity;
 import de.bauhd.sculk.protocol.packet.play.UseItem;
 import de.bauhd.sculk.protocol.packet.play.UseItemOn;
+import de.bauhd.sculk.protocol.packet.play.block.BlockAcknowledge;
 import de.bauhd.sculk.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.sculk.protocol.packet.play.command.ChatCommand;
 import de.bauhd.sculk.protocol.packet.play.command.CommandSuggestionsRequest;
@@ -393,8 +393,7 @@ public final class PlayPacketHandler extends PacketHandler {
           }
           var position = this.calculatePosition(useItemOn.position(), useItemOn.face());
           if (this.player.getOpenedContainer() != null) {
-            this.player.getWorld().getChunkAt((int) position.x(), (int) position.z())
-                .send(this.player); // TODO: not send the complete chunk
+            this.player.send(new BlockAcknowledge(useItemOn.sequence()));
             if (useItemOn.hand() == 0) {
               inventory.setItemInMainHand(slot);
             } else {

@@ -44,13 +44,13 @@ public abstract class SculkContainer implements Container, Viewable {
   }
 
   @Override
-  public void addViewer(@NotNull Player player) {
-    this.viewers.add(player);
+  public boolean addViewer(@NotNull Player player) {
+    return this.viewers.add(player);
   }
 
   @Override
-  public void removeViewer(@NotNull Player player) {
-    this.viewers.remove(player);
+  public boolean removeViewer(@NotNull Player player) {
+    return this.viewers.remove(player);
   }
 
   public Packet property(final int key, final int value) {

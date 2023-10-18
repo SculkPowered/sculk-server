@@ -183,23 +183,27 @@ public abstract class AbstractEntity implements Entity {
   }
 
   @Override
-  public void addViewer(@NotNull Player player) {
+  public boolean addViewer(@NotNull Player player) {
     final var sculkPlayer = ((SculkPlayer) player);
-    if (this.viewers.add(sculkPlayer)) {
+    final var added = this.viewers.add(sculkPlayer);
+    if (added) {
       sculkPlayer.send(
           new SpawnEntity(this.id, this.uniqueId, this.getType().ordinal(), this.position));
       if (this.metadata.entries().isEmpty()) {
         sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
       }
     }
+    return added;
   }
 
   @Override
-  public void removeViewer(@NotNull Player player) {
+  public boolean removeViewer(@NotNull Player player) {
     final var sculkPlayer = (SculkPlayer) player;
-    if (this.viewers.remove(sculkPlayer)) {
+    final var removed = this.viewers.remove(sculkPlayer);
+    if (removed) {
       sculkPlayer.send(new RemoveEntities(this.id));
     }
+    return removed;
   }
 
   public void tick() {

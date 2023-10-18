@@ -21,15 +21,17 @@ public interface Viewable {
    * Adds a viewer.
    *
    * @param player the viewer to add
+   * @return whether the viewer was added
    * @since 1.0.0
    */
-  void addViewer(@NotNull Player player);
+  boolean addViewer(@NotNull Player player);
 
   /**
    * Removes a viewer.
    *
    * @param player the viewer to remove
+   * @return whether the viewer was removed
    * @since 1.0.0
    */
-  void removeViewer(@NotNull Player player);
+  boolean removeViewer(@NotNull Player player);
 }

@@ -6,7 +6,7 @@ import static de.bauhd.sculk.util.CoordinateUtil.relativeCoordinate;
 import de.bauhd.sculk.entity.AbstractEntity;
 import de.bauhd.sculk.entity.player.SculkPlayer;
 import de.bauhd.sculk.protocol.Buffer;
-import de.bauhd.sculk.protocol.packet.play.ChunkDataAndUpdateLight;
+import de.bauhd.sculk.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
 import de.bauhd.sculk.protocol.packet.play.block.BlockEntityData;
 import de.bauhd.sculk.protocol.packet.play.block.BlockUpdate;
 import de.bauhd.sculk.world.Point;

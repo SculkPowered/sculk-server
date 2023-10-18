@@ -1,4 +1,4 @@
-package de.bauhd.sculk.protocol.packet.play;
+package de.bauhd.sculk.protocol.packet.play.chunk;
 
 import de.bauhd.sculk.protocol.Buffer;
 import de.bauhd.sculk.protocol.packet.Packet;

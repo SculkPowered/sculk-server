@@ -16,10 +16,11 @@ import de.bauhd.sculk.protocol.packet.login.LoginSuccess;
 import de.bauhd.sculk.protocol.packet.play.ActionBar;
 import de.bauhd.sculk.protocol.packet.play.AwardStatistics;
 import de.bauhd.sculk.protocol.packet.play.BossBar;
-import de.bauhd.sculk.protocol.packet.play.CenterChunk;
+import de.bauhd.sculk.protocol.packet.play.block.BlockAcknowledge;
+import de.bauhd.sculk.protocol.packet.play.chunk.CenterChunk;
 import de.bauhd.sculk.protocol.packet.play.ChangeDifficulty;
 import de.bauhd.sculk.protocol.packet.play.ChatMessage;
-import de.bauhd.sculk.protocol.packet.play.ChunkDataAndUpdateLight;
+import de.bauhd.sculk.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
 import de.bauhd.sculk.protocol.packet.play.ClientCommand;
 import de.bauhd.sculk.protocol.packet.play.ClientInformation;
 import de.bauhd.sculk.protocol.packet.play.ConfirmTeleportation;
@@ -216,7 +217,7 @@ public enum State {
       this.clientBound.register(SpawnExperienceOrb.class);
       this.clientBound.register(EntityAnimation.class);
       this.clientBound.register(AwardStatistics.class);
-      this.clientBound.skip(); // Acknowledge Block Change
+      this.clientBound.register(BlockAcknowledge.class);
       this.clientBound.skip(); // Block Destroy Stage
       this.clientBound.register(BlockEntityData.class);
       this.clientBound.register(BlockAction.class);
