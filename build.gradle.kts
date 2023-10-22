@@ -6,8 +6,8 @@ plugins {
 defaultTasks("build", "test", "shadowJar")
 
 allprojects {
-    group = "de.bauhd.sculk"
-    version = "1.0-SNAPSHOT"
+    group = "io.github.sculkpowered.server"
+    version = "1.0.0-SNAPSHOT"
 
     repositories {
         mavenCentral()

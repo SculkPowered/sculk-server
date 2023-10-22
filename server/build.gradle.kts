@@ -37,10 +37,10 @@ repositories {
 tasks {
     jar {
         manifest {
-            attributes["Main-Class"] = "de.bauhd.sculk.Main"
+            attributes["Main-Class"] = "io.github.sculkpowered.server.Main"
             attributes["Multi-Release"] = true
             attributes["Implementation-Title"] = "Sculk-Server"
-
+            attributes["Implementation-Vendor"] = "SculkPowered Contributors"
             val gitCommit = ByteArrayOutputStream().use {
                 exec {
                     executable = "git"

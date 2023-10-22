@@ -1,0 +1,8 @@
+package io.github.sculkpowered.server.entity;
+
+/**
+ * Represents a tnt entity.
+ */
+public interface Tnt extends Entity {
+
+}
