@@ -31,7 +31,6 @@ publishing {
             version = version
 
             from(components["java"])
-            artifact("sourcesJar")
         }
     }
 }
