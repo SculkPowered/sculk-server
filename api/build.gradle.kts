@@ -26,9 +26,13 @@ publishing {
 
     publications {
         create<MavenPublication>("maven") {
-            groupId = groupId
-            artifactId = artifactId
-            version = version
+            pom {
+                name = "Sculk-Server"
+                url = "https://github.com/SculkPowered/sculk-server"
+                groupId = groupId
+                artifactId = artifactId
+                version = version
+            }
 
             from(components["java"])
         }
