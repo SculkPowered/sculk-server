@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Build and Publish
 
 on:
   push:
@@ -29,6 +29,12 @@ jobs:
         run: |
           chmod +x gradlew;
           ./gradlew check shadowJar;
+      - name: Publish
+        run: |
+          ./gradlew publish
+        env:
+          SONATYPE_USER: "${{ secrets.SONATYPE_USER }}"
+          SONATYPE_PASSWORD: "${{ secrets.SONATYPE_PASSWORD }}"
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
