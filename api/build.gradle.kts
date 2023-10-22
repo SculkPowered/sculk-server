@@ -32,7 +32,6 @@ publishing {
 
             from(components["java"])
             artifact("sourcesJar")
-            artifact("javadocJar")
         }
     }
 }
