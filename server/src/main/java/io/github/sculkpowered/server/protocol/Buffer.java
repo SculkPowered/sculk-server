@@ -185,10 +185,14 @@ public final class Buffer {
 
   public @NotNull CompoundBinaryTag readCompoundTag() {
     try (final var inputStream = new ByteBufInputStream(this.buf)) {
-      if (inputStream.readByte() != BinaryTagTypes.COMPOUND.id()) {
+      final var type = inputStream.readByte();
+      if (type == BinaryTagTypes.COMPOUND.id()) {
+        return BinaryTagTypes.COMPOUND.read(inputStream);
+      } else if (type == BinaryTagTypes.END.id()) {
+        return CompoundBinaryTag.empty();
+      } else {
         throw new AssertionError();
       }
-      return BinaryTagTypes.COMPOUND.read(inputStream);
     } catch (IOException e) {
       throw new DecoderException("Unable to decode compound tag: " + e.getMessage());
     }
