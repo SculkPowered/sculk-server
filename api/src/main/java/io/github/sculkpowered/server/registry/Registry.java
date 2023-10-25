@@ -28,10 +28,22 @@ public interface Registry<E extends Registry.Entry> {
    * Gets an entry by its key.
    *
    * @param key the key of the entry
+   * @param def the default what will be returned if nothing is found
    * @return the entry or a default value
    * @since 1.0.0
    */
-  @NotNull E get(@NotNull String key);
+  E get(@NotNull String key, E def);
+
+  /**
+   * Gets an entry by its key.
+   *
+   * @param key the key of the entry
+   * @return the entry or a default value
+   * @since 1.0.0
+   */
+  default @NotNull E get(@NotNull String key) {
+    return this.get(key, this.defaultValue());
+  }
 
   /**
    * Gets an entry by its key.
@@ -60,6 +72,12 @@ public interface Registry<E extends Registry.Entry> {
    * @since 1.0.0
    */
   @NotNull Collection<E> entries();
+
+  /**
+   * Returns the default value of the registry.
+   * @return the default value
+   */
+  @NotNull E defaultValue();
 
   /**
    * Gets the registry as a {@link CompoundBinaryTag}.

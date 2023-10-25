@@ -51,7 +51,7 @@ public final class DimensionRegistry extends SimpleRegistry<Dimension> {
 
   private static long[] encodeBlocks(final int[] blocks, final int bitsPerEntry) {
     final var maxEntryValue = (1L << bitsPerEntry) - 1;
-    final var valuesPerLong = (char) (64 / bitsPerEntry);
+    final var valuesPerLong = (byte) (Long.SIZE / bitsPerEntry);
     final var magicIndex = 3 * (valuesPerLong - 1);
     final var divideMul = Integer.toUnsignedLong(MAGIC[magicIndex]);
     final var divideAdd = Integer.toUnsignedLong(MAGIC[magicIndex + 1]);

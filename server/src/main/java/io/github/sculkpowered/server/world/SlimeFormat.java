@@ -97,7 +97,7 @@ public final class SlimeFormat {
 
           final var blockData = readCompound(inputStream);
           AnvilLoader.loadBlocks(section, blockData.getList("palette"), blockData);
-          AnvilLoader.loadBiomes(server, x, z, section, j, readCompound(inputStream));
+          AnvilLoader.loadBiomes(server, section, readCompound(inputStream));
 
           sections[j] = section;
         }

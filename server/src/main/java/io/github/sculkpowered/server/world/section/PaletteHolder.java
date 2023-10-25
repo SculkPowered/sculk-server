@@ -97,10 +97,9 @@ public final class PaletteHolder implements Palette {
     void accept(final int x, final int y, final int z, final int result);
   }
 
-  public void setIndirectPalette() {
-    this.palette = new DirectIndirectPalette(this.dimension, this.defaultBitsPerEntry,
-        this.maxBitsPerEntry);
-    this.palette.fill(0);
+  public void setIndirectPalette(final int[] paletteToValue, final long[] values) {
+    this.palette = new DirectIndirectPalette(this.dimension,
+        this.maxBitsPerEntry, paletteToValue, values);
   }
 
   @Override

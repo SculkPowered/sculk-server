@@ -56,7 +56,6 @@ public final class ChunkDataAndUpdateLight implements Packet {
     return "ChunkDataAndUpdateLight{" +
         "chunkX=" + this.chunkX +
         ", chunkZ=" + this.chunkZ +
-        ", heightmaps=" + this.heightmaps +
         ", data=byte[" + this.data.length + "]" +
         ", lightData=" + this.lightData +
         '}';

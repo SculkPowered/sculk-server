@@ -1,9 +1,5 @@
 package io.github.sculkpowered.server.world.chunk.loader;
 
-import static io.github.sculkpowered.server.world.chunk.Chunk.CHUNK_SECTION_SIZE;
-import static io.github.sculkpowered.server.world.chunk.Chunk.CHUNK_SIZE_X;
-import static io.github.sculkpowered.server.world.chunk.Chunk.CHUNK_SIZE_Z;
-
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.util.CoordinateUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
@@ -114,26 +110,29 @@ public final class AnvilLoader extends DefaultChunkLoader {
                 default -> throw new IllegalStateException(
                     "Unexpected compression scheme: " + compressionScheme);
               });
-
       final var sectionList = nbt.getList("sections");
+      if (sectionList.size() == 0) {
+        return null;
+      }
       final var sections = new Section[sectionList.size()];
       for (var i = 0; i < sectionList.size(); i++) {
         final var compound = (CompoundBinaryTag) sectionList.get(i);
         final var states = compound.getCompound("block_states");
         final var blockPalette = states.getList("palette");
         if (blockPalette.equals(ListBinaryTag.empty())) {
+          sections[i] = new Section();
           continue;
         }
         final var section = new Section(compound.getByteArray("SkyLight"),
             compound.getByteArray("BlockLight"));
 
         loadBlocks(section, blockPalette, states);
-        loadBiomes(server, chunkX, chunkZ, section, i, compound.getCompound("biomes"));
+        loadBiomes(server, section, compound.getCompound("biomes"));
 
         sections[i] = section;
       }
       final var chunk = new SculkChunk(world, chunkX, chunkZ, sections,
-          nbt.getCompound("Heightmaps"));
+          nbt.getCompound("Heightmaps", world.getDimension().heightmaps()));
       if (AnvilLoader.this.loader.blockEntities()) {
         for (final var blockEntity : nbt.getList("block_entities")) {
           loadBlockEntity(chunk, (CompoundBinaryTag) blockEntity);
@@ -174,52 +173,40 @@ public final class AnvilLoader extends DefaultChunkLoader {
       blocks.fill(palette[0]);
       return;
     }
-    blocks.setIndirectPalette(); // TODO find a way to calculate the size without this calculation
-    final var blockStates = uncompressedBlockStates(states);
-    for (var y = 0; y < CHUNK_SECTION_SIZE; y++) {
-      for (var z = 0; z < CHUNK_SECTION_SIZE; z++) {
-        for (var x = 0; x < CHUNK_SECTION_SIZE; x++) {
-          final var blockIndex =
-              y * CHUNK_SECTION_SIZE * CHUNK_SECTION_SIZE + z * CHUNK_SECTION_SIZE + x;
-          final var paletteIndex = blockStates[blockIndex];
-          blocks.set(x, y, z, palette[paletteIndex]);
-        }
-      }
-    }
+    blocks.setIndirectPalette(palette, states.getLongArray("data"));
   }
 
   public static void loadBiomes(
       final SculkServer server,
-      final int chunkX,
-      final int chunkZ,
       final Section section,
-      final int id,
       final CompoundBinaryTag biomeData
   ) {
     final var biomes = (PaletteHolder) section.biomes();
     final var biomePalette = biomeData.getList("palette");
     final var palette = new int[biomePalette.size()];
+    final var registry = server.getBiomeRegistry();
+    var unknownBiome = false;
     for (var k = 0; k < palette.length; k++) {
-      final var entry = biomePalette.getCompound(k);
-      palette[k] = server.getBiomeRegistry().get(entry.getString("value")).id();
-    }
-    if (palette.length == 1) {
-      biomes.fill(palette[0]);
-      return;
-    }
-    biomes.setIndirectPalette();
-    final var biomeIndexes = uncompressedBiomeIndexes(biomeData, biomePalette.size());
-    for (var y = 0; y < CHUNK_SECTION_SIZE; y++) {
-      for (var z = 0; z < CHUNK_SIZE_Z; z++) {
-        for (var x = 0; x < CHUNK_SIZE_X; x++) {
-          final var finalX = (chunkX * CHUNK_SIZE_X + x);
-          final var finalZ = (chunkZ * CHUNK_SIZE_Z + z);
-          final var finalY = (id * CHUNK_SECTION_SIZE + y);
-          final var index = x / 4 + (z / 4) * 4 + (y / 4) * 16;
-          biomes.set(finalX, finalY, finalZ, biomeIndexes[index]);
-        }
+      final var value = biomePalette.getCompound(k).getString("value");
+      final var biome = registry.get(value, null);
+      if (biome != null) {
+        palette[k] = k;
+      } else {
+        unknownBiome = true;
+        palette[k] = -1;
+        break;
       }
     }
+    if (palette.length == 1 || unknownBiome) {
+      var biome = palette[0];
+      if (biome == -1) {
+        biome = registry.defaultValue().id();
+      }
+      biomes.fill(biome);
+      return;
+    }
+
+    biomes.setIndirectPalette(palette, biomeData.getLongArray("data"));
   }
 
   public static void loadBlockEntity(SculkChunk chunk, CompoundBinaryTag compound) {
@@ -266,44 +253,5 @@ public final class AnvilLoader extends DefaultChunkLoader {
       nbt.putLongArray("data", palette.values());
     }
     return nbt.build();
-  }
-
-  private static int[] uncompressedBlockStates(CompoundBinaryTag states) {
-    final var longs = states.getLongArray("data");
-    final var sizeInBits = longs.length * 64 / 4096;
-    var expectedCompressedLength = 0;
-    if (longs.length == 0) {
-      expectedCompressedLength = -1;
-    } else {
-      final var intPerLong = 64 / sizeInBits;
-      expectedCompressedLength = (int) Math.ceil(4096.0 / intPerLong);
-    }
-    if (longs.length != expectedCompressedLength) {
-      if (longs.length == 0) {
-        return new int[4096];
-      }
-    }
-    return uncompress(longs, sizeInBits);
-  }
-
-  private static int[] uncompressedBiomeIndexes(CompoundBinaryTag biomes, final double size) {
-    final var compressedBiomes = biomes.getLongArray("data");
-    final var sizeInBits = (int) Math.ceil(Math.log(size) / Math.log(2));
-    return uncompress(compressedBiomes, sizeInBits);
-  }
-
-  private static int[] uncompress(final long[] longs, final int sizeInBits) {
-    final var intPerLong = Math.floor(64.0 / sizeInBits);
-    final var intCount = (int) Math.ceil(longs.length * intPerLong);
-    final var ints = new int[intCount];
-    final var intPerLongCeil = (int) Math.ceil(intPerLong);
-    final var mask = (1L << sizeInBits) - 1L;
-    for (var i = 0; i < intCount; i++) {
-      final var longIndex = i / intPerLongCeil;
-      final var subIndex = i % intPerLongCeil;
-      final var value = (int) ((longs[longIndex] >> (subIndex * sizeInBits)) & mask);
-      ints[i] = value;
-    }
-    return ints;
   }
 }

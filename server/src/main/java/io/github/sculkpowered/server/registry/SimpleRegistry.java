@@ -34,8 +34,8 @@ public class SimpleRegistry<E extends Registry.Entry> implements Registry<E> {
   }
 
   @Override
-  public @NotNull E get(@NotNull String key) {
-    return this.byKey.getOrDefault(key, this.def);
+  public E get(@NotNull String key, E def) {
+    return this.byKey.getOrDefault(key, def);
   }
 
   @Override
@@ -46,6 +46,11 @@ public class SimpleRegistry<E extends Registry.Entry> implements Registry<E> {
   @Override
   public @NotNull Collection<E> entries() {
     return this.byKey.values();
+  }
+
+  @Override
+  public @NotNull E defaultValue() {
+    return this.def;
   }
 
   @Override
