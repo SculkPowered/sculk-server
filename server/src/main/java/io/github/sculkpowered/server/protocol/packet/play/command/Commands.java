@@ -1,11 +1,5 @@
 package io.github.sculkpowered.server.protocol.packet.play.command;
 
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -13,6 +7,7 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
+import io.github.sculkpowered.server.protocol.packet.play.command.argument.SerializerRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import java.util.ArrayDeque;
 import java.util.List;
@@ -65,106 +60,16 @@ public final class Commands implements Packet {
       buf.writeVarInt(nodes.getInt(node.getRedirect()));
     }
 
-    if (node instanceof ArgumentCommandNode<?, ?>
-        || node instanceof LiteralCommandNode<CommandSource>) {
+    if (node instanceof LiteralCommandNode<CommandSource>) {
+      buf.writeString(node.getName()); // name
+    } else if (node instanceof ArgumentCommandNode<CommandSource, ?> argumentNode) {
       buf.writeString(node.getName()); // name
 
-      if (node instanceof ArgumentCommandNode<?, ?> argumentNode) {
-        final var type = argumentNode.getType();
-        if (type instanceof BoolArgumentType) {
-          buf.writeVarInt(0);
-        } else if (type instanceof FloatArgumentType argument) {
-          final var hasMinimum = argument.getMinimum() != -Float.MAX_VALUE;
-          final var hasMaximum = argument.getMaximum() != Float.MAX_VALUE;
+      SerializerRegistry.serialize(argumentNode.getType(), buf);
 
-          buf.writeVarInt(1);
-
-          byte argumentFlags = 0;
-          if (hasMinimum) {
-            argumentFlags |= 0x01;
-          }
-          if (hasMaximum) {
-            argumentFlags |= 0x02;
-          }
-
-          buf.writeByte(argumentFlags);
-          if (hasMinimum) {
-            buf.writeFloat(argument.getMinimum());
-          }
-          if (hasMaximum) {
-            buf.writeFloat(argument.getMaximum());
-          }
-        } else if (type instanceof DoubleArgumentType argument) {
-          final var hasMinimum = argument.getMinimum() != -Double.MAX_VALUE;
-          final var hasMaximum = argument.getMaximum() != Double.MAX_VALUE;
-
-          buf.writeVarInt(2);
-
-          byte argumentFlags = 0;
-          if (hasMinimum) {
-            argumentFlags |= 0x01;
-          }
-          if (hasMaximum) {
-            argumentFlags |= 0x02;
-          }
-
-          buf.writeByte(argumentFlags);
-          if (hasMinimum) {
-            buf.writeDouble(argument.getMinimum());
-          }
-          if (hasMaximum) {
-            buf.writeDouble(argument.getMaximum());
-          }
-        } else if (type instanceof IntegerArgumentType argument) {
-          final var hasMinimum = argument.getMinimum() != Integer.MIN_VALUE;
-          final var hasMaximum = argument.getMaximum() != Integer.MAX_VALUE;
-
-          buf.writeVarInt(3);
-
-          byte argumentFlags = 0;
-          if (hasMinimum) {
-            argumentFlags |= 0x01;
-          }
-          if (hasMaximum) {
-            argumentFlags |= 0x02;
-          }
-
-          buf.writeByte(argumentFlags);
-          if (hasMinimum) {
-            buf.writeInt(argument.getMinimum());
-          }
-          if (hasMaximum) {
-            buf.writeInt(argument.getMaximum());
-          }
-        } else if (type instanceof LongArgumentType argument) {
-          final var hasMinimum = argument.getMinimum() != Long.MIN_VALUE;
-          final var hasMaximum = argument.getMaximum() != Long.MAX_VALUE;
-
-          buf.writeVarInt(4);
-
-          byte argumentFlags = 0;
-          if (hasMinimum) {
-            argumentFlags |= 0x01;
-          }
-          if (hasMaximum) {
-            argumentFlags |= 0x02;
-          }
-
-          buf.writeByte(argumentFlags);
-          if (hasMinimum) {
-            buf.writeLong(argument.getMinimum());
-          }
-          if (hasMaximum) {
-            buf.writeLong(argument.getMaximum());
-          }
-        } else if (type instanceof StringArgumentType argument) {
-          buf.writeVarInt(5).writeVarInt(argument.getType().ordinal());
-        }
-
-        // suggestion type
-        if (argumentNode.getCustomSuggestions() != null) {
-          buf.writeString("minecraft:ask_server");
-        }
+      // suggestion type
+      if (argumentNode.getCustomSuggestions() != null) {
+        buf.writeString("minecraft:ask_server");
       }
     }
   }
