@@ -46,45 +46,45 @@ public final class SculkWorld implements World {
   }
 
   @Override
-  public @NotNull String getName() {
+  public @NotNull String name() {
     return this.name;
   }
 
   @Override
-  public @NotNull Dimension getDimension() {
+  public @NotNull Dimension dimension() {
     return this.dimension;
   }
 
   @Override
-  public @NotNull ChunkGenerator getGenerator() {
+  public @NotNull ChunkGenerator generator() {
     return this.loader.getGenerator();
   }
 
   @Override
-  public @NotNull Position getSpawnPosition() {
+  public @NotNull Position spawnPosition() {
     return this.spawnPosition;
   }
 
   @Override
-  public @NotNull GameMode getDefaultGameMode() {
+  public @NotNull GameMode defaultGameMode() {
     return this.defaultGameMode;
   }
 
   @Override
-  public void setBlock(int x, int y, int z, @NotNull BlockState block) {
-    final var chunk = this.getChunkAt(x, z);
+  public void block(int x, int y, int z, @NotNull BlockState block) {
+    final var chunk = this.chunkAt(x, z);
     synchronized (chunk) {
-      chunk.setBlock(x, y, z, block);
+      chunk.block(x, y, z, block);
     }
   }
 
   @Override
-  public @NotNull BlockState getBlock(int x, int y, int z) {
-    return this.getChunkAt(x, z).getBlock(x, y, z);
+  public @NotNull BlockState block(int x, int y, int z) {
+    return this.chunkAt(x, z).block(x, y, z);
   }
 
   @Override
-  public @NotNull SculkChunk getChunk(int chunkX, int chunkZ) {
+  public @NotNull SculkChunk chunk(int chunkX, int chunkZ) {
     var chunk = this.chunks.get(CoordinateUtil.chunkIndex(chunkX, chunkZ));
     if (chunk == null) {
       chunk = this.loadChunk(chunkX, chunkZ);
@@ -93,21 +93,21 @@ public final class SculkWorld implements World {
   }
 
   @Override
-  public @NotNull SculkChunk getChunkAt(int x, int z) {
-    return this.getChunk(CoordinateUtil.chunkCoordinate(x), CoordinateUtil.chunkCoordinate(z));
+  public @NotNull SculkChunk chunkAt(int x, int z) {
+    return this.chunk(CoordinateUtil.chunkCoordinate(x), CoordinateUtil.chunkCoordinate(z));
   }
 
   @Override
-  public @NotNull SculkChunk getChunkAt(@NotNull Position position) {
-    return this.getChunkAt((int) position.x(), (int) position.z());
+  public @NotNull SculkChunk chunkAt(@NotNull Position position) {
+    return this.chunkAt((int) position.x(), (int) position.z());
   }
 
   @Override
   public void spawnEntity(@NotNull Entity entity, @NotNull Position position) {
     final var abstractEntity = (AbstractEntity) entity;
-    abstractEntity.setWorld(this);
+    abstractEntity.world(this);
     abstractEntity.setPosition(position);
-    for (final var viewer : this.getChunkAt(position).viewers()) {
+    for (final var viewer : this.chunkAt(position).viewers()) {
       abstractEntity.addViewer(viewer);
     }
   }
@@ -141,7 +141,7 @@ public final class SculkWorld implements World {
   }
 
   public void putChunk(final SculkChunk chunk) {
-    this.chunks.put(CoordinateUtil.chunkIndex(chunk.getX(), chunk.getZ()), chunk);
+    this.chunks.put(CoordinateUtil.chunkIndex(chunk.x(), chunk.z()), chunk);
   }
 
   public void unload(@NotNull Consumer<Player> consumer) {

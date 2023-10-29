@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkStray extends SculkSkeleton implements Stray {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.STRAY;
   }
 }

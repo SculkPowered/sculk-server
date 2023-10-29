@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkItem extends AbstractEntity implements Item {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.ITEM;
   }
 }

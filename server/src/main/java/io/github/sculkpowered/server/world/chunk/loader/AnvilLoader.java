@@ -132,7 +132,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
         sections[i] = section;
       }
       final var chunk = new SculkChunk(world, chunkX, chunkZ, sections,
-          nbt.getCompound("Heightmaps", world.getDimension().heightmaps()));
+          nbt.getCompound("Heightmaps", world.dimension().heightmaps()));
       if (AnvilLoader.this.loader.blockEntities()) {
         for (final var blockEntity : nbt.getList("block_entities")) {
           loadBlockEntity(chunk, (CompoundBinaryTag) blockEntity);
@@ -164,9 +164,9 @@ public final class AnvilLoader extends DefaultChunkLoader {
         for (final var property : properties) {
           map.put(property.getKey(), ((StringBinaryTag) property.getValue()).value());
         }
-        palette[k] = Block.get(block).properties(map).getId();
+        palette[k] = Block.get(block).properties(map).id();
       } else {
-        palette[k] = Block.get(block).getId();
+        palette[k] = Block.get(block).id();
       }
     }
     if (palette.length == 1) {
@@ -184,7 +184,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
     final var biomes = (PaletteHolder) section.biomes();
     final var biomePalette = biomeData.getList("palette");
     final var palette = new int[biomePalette.size()];
-    final var registry = server.getBiomeRegistry();
+    final var registry = server.biomeRegistry();
     var unknownBiome = false;
     for (var k = 0; k < palette.length; k++) {
       final var value = biomePalette.getCompound(k).getString("value");
@@ -213,8 +213,8 @@ public final class AnvilLoader extends DefaultChunkLoader {
     final var x = compound.getInt("x");
     final var y = compound.getInt("y");
     final var z = compound.getInt("z");
-    final var entity = (Block.Entity<?>) chunk.getBlock(x, y, z);
-    chunk.setBlock(x, y, z, entity.nbt(compound.remove("id")
+    final var entity = (Block.Entity<?>) chunk.block(x, y, z);
+    chunk.block(x, y, z, entity.nbt(compound.remove("id")
         .remove("x").remove("y").remove("z").remove("keepPacked")));
   }
 
@@ -224,11 +224,11 @@ public final class AnvilLoader extends DefaultChunkLoader {
     for (final var value : paletteToValue) {
       final var block = Block.get(value);
       final var properties = CompoundBinaryTag.builder();
-      for (final var entry : block.getProperties().entrySet()) {
+      for (final var entry : block.properties().entrySet()) {
         properties.put(entry.getKey(), StringBinaryTag.stringBinaryTag(entry.getValue()));
       }
       blocks.add(CompoundBinaryTag.builder()
-          .putString("Name", block.getKey())
+          .putString("Name", block.key())
           .put("Properties", properties.build())
           .build());
     }
@@ -244,7 +244,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
     final var biomes = ListBinaryTag.builder();
     for (final var value : paletteToValue) {
       biomes.add(CompoundBinaryTag.builder()
-          .putString("value", server.getBiomeRegistry().get(value).name())
+          .putString("value", server.biomeRegistry().get(value).name())
           .build());
     }
 

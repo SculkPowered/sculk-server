@@ -13,18 +13,18 @@ public final class SculkLecternContainer extends SculkContainer implements Lecte
   }
 
   @Override
-  public void setPage(int page) {
+  public void page(int page) {
     this.sendProperty(0, page);
     this.page = page;
   }
 
   @Override
-  public int getPage() {
+  public int page() {
     return this.page;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.LECTERN;
   }
 

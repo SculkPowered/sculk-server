@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkIllusioner extends AbstractMob implements Illusioner {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.ILLUSIONER;
   }
 }

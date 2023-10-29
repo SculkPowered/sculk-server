@@ -5,17 +5,17 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkSlime extends AbstractMob implements Slime {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.SLIME;
   }
 
   @Override
-  public int getSize() {
+  public int size() {
     return this.metadata.getVarInt(16, 1);
   }
 
   @Override
-  public void setSize(int size) {
+  public void size(int size) {
     this.metadata.setVarInt(16, size);
   }
 }

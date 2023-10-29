@@ -30,7 +30,7 @@ public final class PlayerInfo implements Packet {
 
     buf.writeVarInt(this.entries.size());
     for (final var entry : entries) {
-      buf.writeUniqueId(entry.getProfile().uniqueId());
+      buf.writeUniqueId(entry.profile().uniqueId());
       for (final var action : this.actions) {
         action.writer.accept(buf, entry);
       }
@@ -49,7 +49,7 @@ public final class PlayerInfo implements Packet {
 
   public enum Action {
     ADD_PLAYER((buf, entry) -> {
-      final var profile = entry.getProfile();
+      final var profile = entry.profile();
       buf
           .writeString(profile.name())
           .writeVarInt(profile.properties().size());
@@ -64,12 +64,12 @@ public final class PlayerInfo implements Packet {
       }
     }),
     INITIALIZE_CHAT((buf, entry) -> buf.writeBoolean(false)),
-    UPDATE_GAME_MODE((buf, entry) -> buf.writeVarInt(entry.getGameMode().ordinal())),
+    UPDATE_GAME_MODE((buf, entry) -> buf.writeVarInt(entry.gameMode().ordinal())),
     UPDATE_LISTED((buf, entry) -> buf.writeBoolean(true)),
-    UPDATE_LATENCY((buf, entry) -> buf.writeVarInt(entry.getPing())),
+    UPDATE_LATENCY((buf, entry) -> buf.writeVarInt(entry.ping())),
     UPDATE_DISPLAY_NAME((buf, entry) -> {
-      if (buf.writeOptional(entry.getDisplayName())) {
-        buf.writeComponent(entry.getDisplayName());
+      if (buf.writeOptional(entry.displayName())) {
+        buf.writeComponent(entry.displayName());
       }
     });
 

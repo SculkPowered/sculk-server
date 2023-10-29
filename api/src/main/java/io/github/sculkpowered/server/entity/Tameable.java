@@ -14,7 +14,7 @@ public interface Tameable {
    * @return {@code true} if its sits
    * @since 1.0.0
    */
-  boolean isSitting();
+  boolean sitting();
 
   /**
    * Sets the entity into the sit mode or not.
@@ -22,7 +22,7 @@ public interface Tameable {
    * @param sitting whether it should sit or not
    * @since 1.0.0
    */
-  void setSitting(boolean sitting);
+  void sitting(boolean sitting);
 
   /**
    * Gets whether the entity is tamed or not.
@@ -30,7 +30,7 @@ public interface Tameable {
    * @return {@code true} if its tamed
    * @since 1.0.0
    */
-  boolean isTamed();
+  boolean tamed();
 
   /**
    * Gets the unique id of the owner of the entity.
@@ -38,6 +38,6 @@ public interface Tameable {
    * @return the unique id of the owner of this entity
    * @since 1.0.0
    */
-  @Nullable UUID getOwner();
+  @Nullable UUID owner();
 
 }

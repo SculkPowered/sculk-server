@@ -13,5 +13,5 @@ public interface Pig extends Animal {
   /**
    * @since 1.0.0
    */
-  void setSaddle(boolean saddle);
+  void saddle(boolean saddle);
 }

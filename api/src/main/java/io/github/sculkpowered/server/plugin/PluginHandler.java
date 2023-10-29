@@ -17,7 +17,7 @@ public interface PluginHandler {
    * @return {@code true} if its loaded
    * @since 1.0.0
    */
-  boolean isLoaded(@NotNull String name);
+  boolean loaded(@NotNull String name);
 
   /**
    * Gets a plugin by its name.
@@ -26,7 +26,7 @@ public interface PluginHandler {
    * @return the plugin or null
    * @since 1.0.0
    */
-  @Nullable Plugin getPlugin(@NotNull String name);
+  @Nullable Plugin plugin(@NotNull String name);
 
   /**
    * Gets a collection of all loaded plugins.
@@ -34,7 +34,7 @@ public interface PluginHandler {
    * @return all loaded plugins
    * @since 1.0.0
    */
-  @NotNull Collection<Plugin> getPlugins();
+  @NotNull Collection<Plugin> plugins();
 
   /**
    * Adds the specified {@link Path} to the plugins classpath.

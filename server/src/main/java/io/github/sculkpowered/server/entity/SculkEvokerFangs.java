@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkEvokerFangs extends AbstractEntity implements EvokerFangs {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.EVOKER_FANGS;
   }
 }

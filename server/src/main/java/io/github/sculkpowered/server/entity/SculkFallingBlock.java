@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkFallingBlock extends AbstractEntity implements FallingBlock {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.FALLING_BLOCK;
   }
 }

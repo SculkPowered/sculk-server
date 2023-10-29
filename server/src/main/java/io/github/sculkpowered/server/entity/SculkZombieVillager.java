@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkZombieVillager extends SculkZombie implements ZombieVillager {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.ZOMBIE_VILLAGER;
   }
 }

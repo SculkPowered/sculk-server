@@ -21,7 +21,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's name
    * @since 1.0.0
    */
-  @NotNull String getUsername();
+  @NotNull String name();
 
   /**
    * Gets the profile of the player.
@@ -29,7 +29,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's profile
    * @since 1.0.0
    */
-  @NotNull GameProfile getProfile();
+  @NotNull GameProfile profile();
 
   /**
    * Gets the settings of the player.
@@ -37,7 +37,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's settings
    * @since 1.0.0
    */
-  @NotNull PlayerSettings getSettings();
+  @NotNull PlayerSettings settings();
 
   /**
    * Gets the game mode of the player.
@@ -45,7 +45,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's game mode
    * @since 1.0.0
    */
-  @NotNull GameMode getGameMode();
+  @NotNull GameMode gameMode();
 
   /**
    * Sets the game mode of a player.
@@ -53,7 +53,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param gameMode the game mode to set
    * @since 1.0.0
    */
-  void setGameMode(@NotNull GameMode gameMode);
+  void gameMode(@NotNull GameMode gameMode);
 
   /**
    * Gets the game mode of the player.
@@ -61,7 +61,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's game mode
    * @since 1.0.0
    */
-  @Nullable Component getDisplayName();
+  @Nullable Component displayName();
 
   /**
    * Sets the display name of a player.
@@ -69,7 +69,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param displayName the display name to set
    * @since 1.0.0
    */
-  void setDisplayName(@Nullable Component displayName);
+  void displayName(@Nullable Component displayName);
 
   /**
    * Disconnects the player with the specified reason.
@@ -85,7 +85,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's inventory
    * @since 1.0.0
    */
-  @NotNull Inventory getInventory();
+  @NotNull Inventory inventory();
 
   /**
    * Gets the opened container.
@@ -93,7 +93,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the opened container or {@code null} if nothing is opened
    * @since 1.0.0
    */
-  @Nullable Container getOpenedContainer();
+  @Nullable Container openedContainer();
 
   /**
    * Opens the specified container.
@@ -109,7 +109,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the held item slot index
    * @since 1.0.0
    */
-  int getHeldItemSlot();
+  int heldItemSlot();
 
   /**
    * Sets the current held item by its index.
@@ -117,7 +117,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param slot the slot
    * @since 1.0.0
    */
-  void setHeldItemSlot(int slot);
+  void heldItemSlot(int slot);
 
   /**
    * Gets whether the player flies or not.
@@ -125,7 +125,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return whether the player flies or not
    * @since 1.0.0
    */
-  boolean isFlying();
+  boolean flying();
 
   /**
    * Sets whether the player flies or not.
@@ -133,7 +133,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param flying whether the player flies or not
    * @since 1.0.0
    */
-  void setFlying(boolean flying);
+  void flying(boolean flying);
 
   /**
    * Gets whether the player is allowed to fly.
@@ -141,7 +141,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return whether the player is allowed to fly
    * @since 1.0.0
    */
-  boolean isAllowFlight();
+  boolean allowFlight();
 
   /**
    * Sets whether the player is allowed to fly
@@ -149,7 +149,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param allowFight whether the player is allowed to fly
    * @since 1.0.0
    */
-  void setAllowFight(boolean allowFight);
+  void allowFlight(boolean allowFight);
 
   /**
    * Gets the flying speed of the player.
@@ -157,7 +157,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's flying speed
    * @since 1.0.0
    */
-  float getFlyingSpeed();
+  float flyingSpeed();
 
   /**
    * Sets the flying speed of the player
@@ -165,7 +165,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param flyingSpeed the flying speed to set
    * @since 1.0.0
    */
-  void setFlyingSpeed(float flyingSpeed);
+  void flyingSpeed(float flyingSpeed);
 
   /**
    * Gets whether the player can instantly break.
@@ -174,7 +174,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @since 1.0.0
    */
   @ApiStatus.Experimental
-  boolean canInstantBreak();
+  boolean instantBreak();
 
   /**
    * Sets whether the player can instantly break.
@@ -183,7 +183,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @since 1.0.0
    */
   @ApiStatus.Experimental
-  void setInstantBreak(boolean instantBreak);
+  void instantBreak(boolean instantBreak);
 
   /**
    * Gets the view modifier of the player.
@@ -191,7 +191,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's view modifier
    * @since 1.0.0
    */
-  float getViewModifier();
+  float viewModifier();
 
   /**
    * Sets the view modifier of the player.
@@ -199,7 +199,7 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param viewModifier the view modifier to set
    * @since 1.0.0
    */
-  void setViewModifier(float viewModifier);
+  void viewModifier(float viewModifier);
 
   /**
    * Sends a plugin message.

@@ -8,10 +8,10 @@ public interface Ghast extends Mob {
   /**
    * @since 1.0.0
    */
-  boolean isAttacking();
+  boolean attacking();
 
   /**
    * @since 1.0.0
    */
-  void setAttacking(boolean attacking);
+  void attacking(boolean attacking);
 }

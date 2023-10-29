@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkPolarBear extends AbstractAnimal implements PolarBear {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.POLAR_BEAR;
   }
 }

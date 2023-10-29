@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkSnowball extends AbstractEntity implements Snowball {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.SNOWBALL;
   }
 }

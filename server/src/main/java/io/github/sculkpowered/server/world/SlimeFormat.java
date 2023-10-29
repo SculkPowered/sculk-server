@@ -52,7 +52,7 @@ public final class SlimeFormat {
         for (final var tiles : tileEntities.getList("tiles")) {
           final var tilesCompound = (CompoundBinaryTag) tiles;
           AnvilLoader.loadBlockEntity(world
-              .getChunkAt(tilesCompound.getInt("x"), tilesCompound.getInt("z")), tilesCompound);
+              .chunkAt(tilesCompound.getInt("x"), tilesCompound.getInt("z")), tilesCompound);
         }
       }
 
@@ -181,9 +181,9 @@ public final class SlimeFormat {
               .build());
         }
         for (final var entity : chunk.entities()) {
-          final var position = entity.getPosition();
+          final var position = entity.position();
           entities.add(CompoundBinaryTag.builder()
-              .putString("id", entity.getType().key())
+              .putString("id", entity.type().key())
               .put("Pos", ListBinaryTag.builder()
                   .add(DoubleBinaryTag.doubleBinaryTag(position.x()))
                   .add(DoubleBinaryTag.doubleBinaryTag(position.y()))
@@ -213,8 +213,8 @@ public final class SlimeFormat {
         final var outputSteam = new DataOutputStream(byteStream)) {
       outputSteam.writeInt(chunks.size());
       for (final var chunk : chunks) {
-        outputSteam.writeInt(chunk.getX());
-        outputSteam.writeInt(chunk.getZ());
+        outputSteam.writeInt(chunk.x());
+        outputSteam.writeInt(chunk.z());
 
         writeCompound(outputSteam, chunk.heightmaps());
 

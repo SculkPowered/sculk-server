@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkPig extends AbstractAnimal implements Pig {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.PIG;
   }
 
@@ -15,7 +15,7 @@ public final class SculkPig extends AbstractAnimal implements Pig {
   }
 
   @Override
-  public void setSaddle(boolean saddle) {
+  public void saddle(boolean saddle) {
     this.metadata.setBoolean(17, saddle);
   }
 }

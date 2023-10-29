@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkBlaze extends AbstractMob implements Blaze {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.BLAZE;
   }
 }

@@ -15,7 +15,7 @@ public interface Viewable {
    * @return the viewers
    * @since 1.0.0
    */
-  @NotNull Collection<Player> getViewers();
+  @NotNull Collection<Player> viewers();
 
   /**
    * Adds a viewer.

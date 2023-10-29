@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkStrider extends AbstractAnimal implements Strider {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.STRIDER;
   }
 }

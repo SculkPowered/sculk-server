@@ -38,50 +38,50 @@ public final class SculkTeam implements Team {
   }
 
   @Override
-  public @NotNull String getName() {
+  public @NotNull String name() {
     return this.name;
   }
 
   @Override
-  public @NotNull Component getDisplayName() {
+  public @NotNull Component displayName() {
     return this.displayName;
   }
 
   @Override
-  public void setDisplayName(@NotNull Component displayName) {
+  public void displayName(@NotNull Component displayName) {
     this.displayName = displayName;
     this.updateTeam();
   }
 
   @Override
-  public @NotNull NamedTextColor getColor() {
+  public @NotNull NamedTextColor color() {
     return this.color;
   }
 
   @Override
-  public void setColor(@Nullable NamedTextColor color) {
+  public void color(@Nullable NamedTextColor color) {
     this.color = color;
     this.updateTeam();
   }
 
   @Override
-  public @NotNull Component getPrefix() {
+  public @NotNull Component prefix() {
     return this.prefix;
   }
 
   @Override
-  public void setPrefix(@NotNull Component prefix) {
+  public void prefix(@NotNull Component prefix) {
     this.prefix = prefix;
     this.updateTeam();
   }
 
   @Override
-  public @NotNull Component getSuffix() {
+  public @NotNull Component suffix() {
     return this.suffix;
   }
 
   @Override
-  public void setSuffix(@NotNull Component suffix) {
+  public void suffix(@NotNull Component suffix) {
     this.suffix = suffix;
     this.updateTeam();
   }

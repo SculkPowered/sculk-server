@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkWarden extends AbstractMob implements Warden {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.WARDEN;
   }
 }

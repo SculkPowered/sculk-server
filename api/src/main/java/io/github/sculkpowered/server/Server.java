@@ -22,7 +22,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface MinecraftServer {
+public interface Server {
 
   Consumer<Player> DEFAULT_WORLD_UNLOAD = player ->
       player.disconnect(Component.text("The world was unloaded!", NamedTextColor.RED));
@@ -33,7 +33,7 @@ public interface MinecraftServer {
    * @return the dimension registry instance
    * @since 1.0.0
    */
-  @NotNull Registry<Dimension> getDimensionRegistry();
+  @NotNull Registry<Dimension> dimensionRegistry();
 
   /**
    * Gets the registry of the biomes
@@ -41,7 +41,7 @@ public interface MinecraftServer {
    * @return the biome registry instance
    * @since 1.0.0
    */
-  @NotNull Registry<Biome> getBiomeRegistry();
+  @NotNull Registry<Biome> biomeRegistry();
 
   /**
    * Gets the registry of the damage types
@@ -49,7 +49,7 @@ public interface MinecraftServer {
    * @return the damage type registry instance
    * @since 1.0.0
    */
-  @NotNull Registry<DamageType> getDamageTypeRegistry();
+  @NotNull Registry<DamageType> damageTypeRegistry();
 
   /**
    * Gets the {@link PluginHandler} instance
@@ -57,7 +57,7 @@ public interface MinecraftServer {
    * @return the plugin handler instance
    * @since 1.0.0
    */
-  @NotNull PluginHandler getPluginHandler();
+  @NotNull PluginHandler pluginHandler();
 
   /**
    * Gets the {@link EventHandler} instance
@@ -65,7 +65,7 @@ public interface MinecraftServer {
    * @return the event handler instance
    * @since 1.0.0
    */
-  @NotNull EventHandler getEventHandler();
+  @NotNull EventHandler eventHandler();
 
   /**
    * Gets the {@link CommandHandler} instance
@@ -73,7 +73,7 @@ public interface MinecraftServer {
    * @return the command handler instance
    * @since 1.0.0
    */
-  @NotNull CommandHandler getCommandHandler();
+  @NotNull CommandHandler commandHandler();
 
   /**
    * Gets the {@link TeamHandler} instance
@@ -81,7 +81,7 @@ public interface MinecraftServer {
    * @return the team handler instance
    * @since 1.0.0
    */
-  @NotNull TeamHandler getTeamHandler();
+  @NotNull TeamHandler teamHandler();
 
   /**
    * Gets the {@link Scheduler} instance
@@ -89,7 +89,7 @@ public interface MinecraftServer {
    * @return the scheduler instance
    * @since 1.0.0
    */
-  @NotNull Scheduler getScheduler();
+  @NotNull Scheduler scheduler();
 
   /**
    * Gets all players currently connected.
@@ -97,7 +97,7 @@ public interface MinecraftServer {
    * @return the players online
    * @since 1.0.0
    */
-  @NotNull Collection<? extends Player> getAllPlayers();
+  @NotNull Collection<? extends Player> onlinePlayers();
 
   /**
    * Gets the number of players currently connected.
@@ -105,7 +105,7 @@ public interface MinecraftServer {
    * @return the number of players
    * @since 1.0.0
    */
-  int getPlayerCount();
+  int playerCount();
 
   /**
    * Gets a player by its unique id
@@ -114,7 +114,7 @@ public interface MinecraftServer {
    * @return the player or null
    * @since 1.0.0
    */
-  @Nullable Player getPlayer(@NotNull UUID uniqueId);
+  @Nullable Player player(@NotNull UUID uniqueId);
 
   /**
    * Creates a world with the specified builder.
@@ -132,7 +132,7 @@ public interface MinecraftServer {
    * @return the world or null
    * @since 1.0.0
    */
-  @Nullable World getWorld(@NotNull String name);
+  @Nullable World world(@NotNull String name);
 
   /**
    * Unloads the specified world.
@@ -179,7 +179,7 @@ public interface MinecraftServer {
    * @return the console command source object
    * @since 1.0.0
    */
-  @NotNull CommandSource getConsoleCommandSource();
+  @NotNull CommandSource consoleCommandSource();
 
   /**
    * Gets the configuration.
@@ -187,7 +187,7 @@ public interface MinecraftServer {
    * @return the configuration
    * @since 1.0.0
    */
-  @NotNull MinecraftConfig getConfig();
+  @NotNull MinecraftConfig config();
 
   /**
    * Shutdowns the server.

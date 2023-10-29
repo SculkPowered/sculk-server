@@ -34,7 +34,7 @@ public final class LoginPacketHandler extends PacketHandler {
   public boolean handle(LoginStart loginStart) {
     this.connection.setUsername(loginStart.username());
 
-    if (this.server.getConfig().mode() == MinecraftConfig.Mode.ONLINE) {
+    if (this.server.config().mode() == MinecraftConfig.Mode.ONLINE) {
       final var publicKey = this.server.getKeyPair().getPublic().getEncoded();
       this.verifyToken = new byte[4];
       ThreadLocalRandom.current().nextBytes(this.verifyToken);

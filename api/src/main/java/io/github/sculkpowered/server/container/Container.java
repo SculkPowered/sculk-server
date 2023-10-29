@@ -15,7 +15,7 @@ public interface Container {
    * @return the title of the container
    * @since 1.0.0
    */
-  @NotNull Component getTitle();
+  @NotNull Component title();
 
   /**
    * Gets the type of the container
@@ -23,7 +23,7 @@ public interface Container {
    * @return the type of the container
    * @since 1.0.0
    */
-  @NotNull Type getType();
+  @NotNull Type type();
 
   /**
    * Sets the item at the specified index.
@@ -32,7 +32,7 @@ public interface Container {
    * @param item  the item to set
    * @since 1.0.0
    */
-  void setItem(int index, @NotNull ItemStack item);
+  void item(int index, @NotNull ItemStack item);
 
   /**
    * Gets an item by its index.
@@ -41,7 +41,7 @@ public interface Container {
    * @return the item at the specified index
    * @since 1.0.0
    */
-  @NotNull ItemStack getItem(int index);
+  @NotNull ItemStack item(int index);
 
   /**
    * All possible types a container can have.

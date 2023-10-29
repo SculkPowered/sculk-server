@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkFox extends AbstractAnimal implements Fox {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.FOX;
   }
 }

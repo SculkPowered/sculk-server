@@ -30,19 +30,19 @@ public final class SculkTeamHandler implements TeamHandler {
     final var team = new SculkTeam(this.server, builder.name(), entries, builder.displayName(),
         builder.color(), builder.prefix(), builder.suffix());
     this.server.sendAll(new UpdateTeams(team, (byte) 0, builder.entries()));
-    this.teams.put(team.getName(), team);
+    this.teams.put(team.name(), team);
     return team;
   }
 
   @Override
-  public @Nullable Team getTeam(@NotNull String name) {
+  public @Nullable Team team(@NotNull String name) {
     return this.teams.get(name);
   }
 
   @Override
   public void unregister(@NotNull Team team) {
     this.server.sendAll(new UpdateTeams(team, (byte) 1, null));
-    this.teams.remove(team.getName());
+    this.teams.remove(team.name());
   }
 
   public Collection<SculkTeam> teams() {

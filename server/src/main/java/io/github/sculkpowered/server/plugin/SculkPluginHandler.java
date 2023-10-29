@@ -65,8 +65,8 @@ public final class SculkPluginHandler implements PluginHandler {
             new URL[]{path.toUri().toURL()}, Main.class.getClassLoader());
         final var plugin = (Plugin) classLoader.loadClass(main).getConstructor().newInstance();
         plugin.init(this.server);
-        this.plugins.put(plugin.getDescription().name(), plugin);
-        this.server.getEventHandler().register(plugin, plugin);
+        this.plugins.put(plugin.description().name(), plugin);
+        this.server.eventHandler().register(plugin, plugin);
       } catch (ClassNotFoundException e) {
         LOGGER.error("Main class could not be found", e);
       } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
@@ -79,17 +79,17 @@ public final class SculkPluginHandler implements PluginHandler {
   }
 
   @Override
-  public @Nullable Plugin getPlugin(@NotNull String name) {
+  public @Nullable Plugin plugin(@NotNull String name) {
     return this.plugins.get(name);
   }
 
   @Override
-  public boolean isLoaded(@NotNull String name) {
+  public boolean loaded(@NotNull String name) {
     return this.plugins.containsKey(name);
   }
 
   @Override
-  public @NotNull Collection<Plugin> getPlugins() {
+  public @NotNull Collection<Plugin> plugins() {
     return this.plugins.values();
   }
 

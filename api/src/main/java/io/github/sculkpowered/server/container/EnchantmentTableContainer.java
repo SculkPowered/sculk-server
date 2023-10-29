@@ -14,7 +14,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param requirement the requirement for the top enchantment
    * @since 1.0.0
    */
-  void setRequirementForTopEnchantment(int requirement);
+  void requirementForTopEnchantment(int requirement);
 
   /**
    * Gets the requirement for the top enchantment.
@@ -22,7 +22,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the requirement for the top enchantment
    * @since 1.0.0
    */
-  int getRequirementForTopEnchantment();
+  int requirementForTopEnchantment();
 
   /**
    * Sets the requirement for the middle enchantment.
@@ -30,7 +30,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param requirement the requirement for the middle enchantment
    * @since 1.0.0
    */
-  void setRequirementForMiddleEnchantment(int requirement);
+  void requirementForMiddleEnchantment(int requirement);
 
   /**
    * Gets the requirement for the middle enchantment.
@@ -38,7 +38,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the requirement for the middle enchantment
    * @since 1.0.0
    */
-  int getRequirementForMiddleEnchantment();
+  int requirementForMiddleEnchantment();
 
   /**
    * Sets the requirement for the bottom enchantment.
@@ -46,7 +46,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param requirement the requirement for the bottom enchantment
    * @since 1.0.0
    */
-  void setRequirementForBottomEnchantment(int requirement);
+  void requirementForBottomEnchantment(int requirement);
 
   /**
    * Gets the requirement for the bottom enchantment.
@@ -54,7 +54,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the requirement for the bottom enchantment
    * @since 1.0.0
    */
-  int getRequirementForBottomEnchantment();
+  int requirementForBottomEnchantment();
 
   /**
    * Sets the enchantment seed that is used to draw the enchantment names.
@@ -62,7 +62,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param seed the seed to draw
    * @since 1.0.0
    */
-  void setEnchantmentSeed(int seed);
+  void enchantmentSeed(int seed);
 
   /**
    * Gets the enchantment seed.
@@ -70,7 +70,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the enchantment seed
    * @since 1.0.0
    */
-  int getEnchantmentSeed();
+  int enchantmentSeed();
 
   /**
    * Sets the top enchantment.
@@ -78,7 +78,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param enchantment the enchantment at the top
    * @since 1.0.0
    */
-  void setTopEnchantment(@NotNull Enchantment enchantment);
+  void topEnchantment(@NotNull Enchantment enchantment);
 
   /**
    * Gets the top enchantment.
@@ -86,7 +86,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the top enchantment
    * @since 1.0.0
    */
-  @NotNull Enchantment getTopEnchantment();
+  @NotNull Enchantment topEnchantment();
 
   /**
    * Sets the middle enchantment.
@@ -94,7 +94,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param enchantment the enchantment at the middle
    * @since 1.0.0
    */
-  void setMiddleEnchantment(@NotNull Enchantment enchantment);
+  void middleEnchantment(@NotNull Enchantment enchantment);
 
   /**
    * Gets the middle enchantment.
@@ -102,7 +102,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the middle enchantment
    * @since 1.0.0
    */
-  @NotNull Enchantment getMiddleEnchantment();
+  @NotNull Enchantment middleEnchantment();
 
   /**
    * Sets the bottom enchantment.
@@ -110,7 +110,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param enchantment the enchantment at the bottom
    * @since 1.0.0
    */
-  void setBottomEnchantment(@NotNull Enchantment enchantment);
+  void bottomEnchantment(@NotNull Enchantment enchantment);
 
   /**
    * Gets the bottom enchantment.
@@ -118,7 +118,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the bottom enchantment
    * @since 1.0.0
    */
-  @NotNull Enchantment getBottomEnchantment();
+  @NotNull Enchantment bottomEnchantment();
 
   /**
    * Sets the level requirement for the top enchantment.
@@ -126,7 +126,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param level the level requirement for the top enchantment
    * @since 1.0.0
    */
-  void setTopEnchantingLevel(int level);
+  void topEnchantingLevel(int level);
 
   /**
    * Gets the level requirement for the top enchantment
@@ -134,7 +134,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the level requirement for the top enchantment
    * @since 1.0.0
    */
-  int getTopEnchantingLevel();
+  int topEnchantingLevel();
 
   /**
    * Sets the level requirement for the middle enchantment.
@@ -142,7 +142,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param level the level requirement for the middle enchantment
    * @since 1.0.0
    */
-  void setMiddleEnchantingLevel(int level);
+  void middleEnchantingLevel(int level);
 
   /**
    * Gets the level requirement for the middle enchantment
@@ -150,7 +150,7 @@ public interface EnchantmentTableContainer extends Container {
    * @return the level requirement for the middle enchantment
    * @since 1.0.0
    */
-  int getMiddleEnchantingLevel();
+  int middleEnchantingLevel();
 
   /**
    * Sets the level requirement for the bottom enchantment.
@@ -158,7 +158,7 @@ public interface EnchantmentTableContainer extends Container {
    * @param level the level requirement for the bottom enchantment
    * @since 1.0.0
    */
-  void setBottomEnchantingLevel(int level);
+  void bottomEnchantingLevel(int level);
 
   /**
    * Gets the level requirement for the bottom enchantment
@@ -166,5 +166,5 @@ public interface EnchantmentTableContainer extends Container {
    * @return the level requirement for the bottom enchantment
    * @since 1.0.0
    */
-  int getBottomEnchantingLevel();
+  int bottomEnchantingLevel();
 }

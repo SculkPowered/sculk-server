@@ -16,7 +16,7 @@ public interface BlockState {
    * @return the state's id
    * @since 1.0.0
    */
-  @NotNull String getKey();
+  @NotNull String key();
 
   /**
    * Gets the id of the state.
@@ -24,7 +24,7 @@ public interface BlockState {
    * @return the state's id
    * @since 1.0.0
    */
-  int getId();
+  int id();
 
   /**
    * Gets the properties of the state.
@@ -32,7 +32,7 @@ public interface BlockState {
    * @return the state's properties
    * @since 1.0.0
    */
-  @NotNull Map<String, String> getProperties();
+  @NotNull Map<String, String> properties();
 
   /**
    * Checks if the state has the property with the specified key.
@@ -91,7 +91,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default boolean isWaterlogged() {
-      return this.getProperties().get("waterlogged").equals("true");
+      return this.properties().get("waterlogged").equals("true");
     }
 
     /**
@@ -116,7 +116,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default boolean isPowered() {
-      return this.getProperties().get("powered").equals("true");
+      return this.properties().get("powered").equals("true");
     }
 
     /**
@@ -141,7 +141,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default boolean isSnowy() {
-      return this.getProperties().get("snowy").equals("true");
+      return this.properties().get("snowy").equals("true");
     }
 
     /**
@@ -166,7 +166,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default @NotNull Block.Face face() {
-      return Block.Face.get(this.getProperties().get("face"));
+      return Block.Face.get(this.properties().get("face"));
     }
 
     /**
@@ -178,7 +178,7 @@ public interface BlockState {
      */
     @SuppressWarnings("unchecked")
     default @NotNull B face(@NotNull Block.Face face) {
-      return (B) this.property("face", face.getValue());
+      return (B) this.property("face", face.value());
     }
   }
 
@@ -191,7 +191,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default @NotNull Block.Facing facing() {
-      return Block.Facing.get(this.getProperties().get("facing"));
+      return Block.Facing.get(this.properties().get("facing"));
     }
 
     /**
@@ -203,7 +203,7 @@ public interface BlockState {
      */
     @SuppressWarnings("unchecked")
     default @NotNull B facing(@NotNull Block.Facing facing) {
-      return (B) this.property("facing", facing.getValue());
+      return (B) this.property("facing", facing.value());
     }
   }
 
@@ -216,7 +216,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default @NotNull Block.Half half() {
-      return Block.Half.get(this.getProperties().get("half"));
+      return Block.Half.get(this.properties().get("half"));
     }
 
     /**
@@ -228,7 +228,7 @@ public interface BlockState {
      */
     @SuppressWarnings("unchecked")
     default @NotNull B half(@NotNull Block.Half half) {
-      return (B) this.property("half", half.getValue());
+      return (B) this.property("half", half.value());
     }
   }
 
@@ -241,7 +241,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default int age() {
-      return Integer.parseInt(this.getProperties().get("age"));
+      return Integer.parseInt(this.properties().get("age"));
     }
 
     /**
@@ -266,7 +266,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default int rotation() {
-      return Integer.parseInt(this.getProperties().get("rotation"));
+      return Integer.parseInt(this.properties().get("rotation"));
     }
 
     /**
@@ -291,7 +291,7 @@ public interface BlockState {
      * @since 1.0.0
      */
     default @NotNull Direction.Axis axis() {
-      return Direction.Axis.valueOf(this.getProperties().get("axis"));
+      return Direction.Axis.valueOf(this.properties().get("axis"));
     }
 
     /**

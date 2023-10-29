@@ -7,17 +7,17 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkBlockDisplay extends AbstractDisplay implements BlockDisplay {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.BLOCK_DISPLAY;
   }
 
   @Override
-  public @NotNull BlockState getBlock() {
+  public @NotNull BlockState block() {
     return Block.get(this.metadata.getVarInt(22, 0));
   }
 
   @Override
-  public void setBlock(@NotNull BlockState block) {
-    this.metadata.setBlockId(22, block.getId());
+  public void block(@NotNull BlockState block) {
+    this.metadata.setBlockId(22, block.id());
   }
 }

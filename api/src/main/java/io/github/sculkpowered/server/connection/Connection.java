@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.connection;
 
 import java.net.SocketAddress;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a connection to the server.
@@ -13,7 +14,7 @@ public interface Connection {
    * @return the protocol version
    * @since 1.0.0
    */
-  int getProtocolVersion();
+  int protocolVersion();
 
   /**
    * Gets the address of the connection.
@@ -21,5 +22,5 @@ public interface Connection {
    * @return the address
    * @since 1.0.0
    */
-  SocketAddress getAddress();
+  @NotNull SocketAddress address();
 }

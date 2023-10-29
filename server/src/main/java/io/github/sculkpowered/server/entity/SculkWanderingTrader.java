@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkWanderingTrader extends AbstractMob implements WanderingTrader {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.WANDERING_TRADER;
   }
 }

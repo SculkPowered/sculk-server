@@ -6,11 +6,11 @@ public abstract class ResultedEvent<T extends ResultedEvent.Result> {
 
   protected T result;
 
-  public void setResult(@NotNull T result) {
+  public void result(@NotNull T result) {
     this.result = result;
   }
 
-  public T getResult() {
+  public T result() {
     return this.result;
   }
 
@@ -22,11 +22,11 @@ public abstract class ResultedEvent<T extends ResultedEvent.Result> {
       this.allowed = allowed;
     }
 
-    public boolean isAllowed() {
+    public boolean allowed() {
       return this.allowed;
     }
 
-    public boolean isDenied() {
+    public boolean denied() {
       return !this.allowed;
     }
   }
@@ -36,11 +36,11 @@ public abstract class ResultedEvent<T extends ResultedEvent.Result> {
     private static final GenericResult ALLOWED = new GenericResult(true);
     private static final GenericResult DENIED = new GenericResult(false);
 
-    public static GenericResult allowed() {
+    public static GenericResult allow() {
       return ALLOWED;
     }
 
-    public static GenericResult denied() {
+    public static GenericResult deny() {
       return DENIED;
     }
 

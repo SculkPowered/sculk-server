@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkTextDisplay extends AbstractDisplay implements TextDisplay {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.TEXT_DISPLAY;
   }
 

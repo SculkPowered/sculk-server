@@ -15,7 +15,7 @@ public interface PlayerInfoEntry {
    * @return the {@link GameProfile} of the entry
    * @since 1.0.0
    */
-  @NotNull GameProfile getProfile();
+  @NotNull GameProfile profile();
 
   /**
    * Gets the game mode of the entry.
@@ -23,7 +23,7 @@ public interface PlayerInfoEntry {
    * @return the game mode of the entry
    * @since 1.0.0
    */
-  @NotNull GameMode getGameMode();
+  @NotNull GameMode gameMode();
 
   /**
    * Gets the display name of the entry.
@@ -31,7 +31,7 @@ public interface PlayerInfoEntry {
    * @return the display name of the entry
    * @since 1.0.0
    */
-  @Nullable Component getDisplayName();
+  @Nullable Component displayName();
 
   /**
    * Gets the ping/latency of the entry.
@@ -39,6 +39,5 @@ public interface PlayerInfoEntry {
    * @return the ping/latency of the entry
    * @since 1.0.0
    */
-  int getPing();
-
+  int ping();
 }

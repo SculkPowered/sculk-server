@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkAreaEffectCloud extends AbstractEntity implements AreaEffectCloud {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.AREA_EFFECT_CLOUD;
   }
 }

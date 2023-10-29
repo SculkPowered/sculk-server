@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class SculkSpectralArrow extends SculkArrow implements SpectralArrow {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.SPECTRAL_ARROW;
   }
 }

@@ -119,15 +119,15 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   @Override
   public void channelInactive(@NotNull ChannelHandlerContext ctx) {
     if (this.player != null) {
-      this.server.removePlayer(this.player.getUniqueId());
+      this.server.removePlayer(this.player.uniqueId());
       this.server.getBossBarListener().onDisconnect(this.player);
 
-      final var world = this.player.getWorld();
-      final var position = this.player.getPosition();
+      final var world = this.player.world();
+      final var position = this.player.position();
       if (world != null) {
         this.forChunksInRange(chunkCoordinate(position.x()), chunkCoordinate(position.z()),
-            this.player.getSettings().getViewDistance(), (x, z) -> {
-              final var chunk = world.getChunk(x, z);
+            this.player.settings().viewDistance(), (x, z) -> {
+              final var chunk = world.chunk(x, z);
               chunk.viewers().remove(this.player);
               for (final var entity : chunk.entities()) {
                 entity.removeViewer(this.player);
@@ -135,14 +135,14 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
               chunk.entities().remove(this.player);
             });
       }
-      this.player.sendViewers(new RemoveEntities(this.player.getId()));
+      this.player.sendViewers(new RemoveEntities(this.player.id()));
       this.server.sendAll(new PlayerInfoRemove(List.of(this.player)));
-      if (this.player.getOpenedContainer() != null) {
-        this.player.getOpenedContainer().removeViewer(this.player);
+      if (this.player.openedContainer() != null) {
+        this.player.openedContainer().removeViewer(this.player);
       }
 
       LOGGER.info(this.username + " has disconnected.");
-      this.server.getEventHandler().call(new PlayerDisconnectEvent(this.player));
+      this.server.eventHandler().call(new PlayerDisconnectEvent(this.player));
     }
     ctx.close();
   }
@@ -162,7 +162,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   public void initPlayer(GameProfile profile) {
     if (profile == null) {
-      if (this.server.getConfig().mode() == MinecraftConfig.Mode.BUNGEECORD) {
+      if (this.server.config().mode() == MinecraftConfig.Mode.BUNGEECORD) {
         final var arguments = this.serverAddress.split("\00");
         this.serverAddress = arguments[0];
         try {
@@ -195,9 +195,9 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   public void configuration() {
     this.send(SculkConnection.BRAND_PACKET);
     this.send(new RegistryData(
-        this.server.getBiomeRegistry(),
-        this.server.getDimensionRegistry(),
-        this.server.getDamageTypeRegistry())
+        this.server.biomeRegistry(),
+        this.server.dimensionRegistry(),
+        this.server.damageTypeRegistry())
     );
     this.send(FinishConfiguration.INSTANCE);
   }
@@ -205,55 +205,55 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   public void play() {
     this.server.addPlayer(this.player);
     this.setState(State.PLAY);
-    this.server.getEventHandler().call(new PlayerInitialEvent(this.player))
+    this.server.eventHandler().call(new PlayerInitialEvent(this.player))
         .thenAcceptAsync(event -> {
-          final var world = event.getWorld();
-          var position = event.getPosition();
+          final var world = event.world();
+          var position = event.position();
           if (world == null || !world.isAlive()) {
             this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));
             return;
           }
-          if (event.getGameMode() == null) {
-            event.setGameMode(world.getDefaultGameMode());
+          if (event.gameMode() == null) {
+            event.gameMode(world.defaultGameMode());
           }
           if (position == null) {
-            position = world.getSpawnPosition();
+            position = world.spawnPosition();
           }
-          if (event.getPermissionChecker() == null) {
-            event.setPermissionChecker(PermissionChecker.always(TriState.NOT_SET));
+          if (event.permissionChecker() == null) {
+            event.permissionChecker(PermissionChecker.always(TriState.NOT_SET));
           }
-          this.player.init(event.getGameMode(), position, world, event.getPermissionChecker());
+          this.player.init(event.gameMode(), position, world, event.permissionChecker());
 
-          this.send(new Login(this.player.getId(), (byte) this.player.getGameMode().ordinal(),
-              world.getDimension().name()));
+          this.send(new Login(this.player.id(), (byte) this.player.gameMode().ordinal(),
+              world.dimension().name()));
 
           this.sendCommands();
           this.send(new SpawnPosition(position));
-          this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.getAllPlayers()));
+          this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.onlinePlayers()));
           final var playerInfo = PlayerInfo.add(List.of(this.player));
-          for (final var other : this.server.getAllPlayers()) {
+          for (final var other : this.server.onlinePlayers()) {
             if (other != this.player) {
               ((SculkPlayer) other).send(playerInfo);
             }
           }
 
-          for (final var team : this.server.getTeamHandler().teams()) {
+          for (final var team : this.server.teamHandler().teams()) {
             this.send(new UpdateTeams(team, (byte) 0, team.entries().toArray(new String[]{})));
           }
 
           this.player.calculateChunks(position, position, false, false);
           this.send(new SynchronizePlayerPosition(position));
 
-          this.server.getEventHandler().justCall(new PlayerJoinEvent(this.player));
+          this.server.eventHandler().justCall(new PlayerJoinEvent(this.player));
         }, this.executor()).exceptionally(throwable -> {
-          LOGGER.error("Exception during login of player {}", this.player.getUsername(), throwable);
+          LOGGER.error("Exception during login of player {}", this.player.name(), throwable);
           return null;
         });
   }
 
   private void sendCommands() {
     final var rootNode = new RootCommandNode<CommandSource>();
-    for (final var child : this.server.getCommandHandler().root().getChildren()) {
+    for (final var child : this.server.commandHandler().root().getChildren()) {
       if (child.canUse(this.player)) {
         rootNode.addChild(child);
       }
@@ -302,13 +302,13 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   private void addCompressionHandler() {
     final var compressor = Natives.compress.get()
-        .create(this.server.getConfig().compressionLevel());
+        .create(this.server.config().compressionLevel());
 
     this.channel.pipeline().remove(FRAME_ENCODER);
     this.channel.pipeline()
         .addBefore(MINECRAFT_DECODER, COMPRESSOR_DECODER, new CompressorDecoder(compressor))
         .addBefore(MINECRAFT_ENCODER, COMPRESSOR_ENCODER,
-            new CompressorEncoder(compressor, this.server.getConfig()));
+            new CompressorEncoder(compressor, this.server.config()));
   }
 
   public void setVersion(final int version) {
@@ -341,12 +341,12 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   }
 
   @Override
-  public int getProtocolVersion() {
+  public int protocolVersion() {
     return this.version;
   }
 
   @Override
-  public SocketAddress getAddress() {
+  public @NotNull SocketAddress address() {
     return this.channel.remoteAddress();
   }
 }

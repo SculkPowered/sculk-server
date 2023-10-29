@@ -21,7 +21,7 @@ public interface World {
    * @return the world's name
    * @since 1.0.0
    */
-  @NotNull String getName();
+  @NotNull String name();
 
   /**
    * Gets the dimension of the world.
@@ -29,7 +29,7 @@ public interface World {
    * @return the world's dimension
    * @since 1.0.0
    */
-  @NotNull Dimension getDimension();
+  @NotNull Dimension dimension();
 
   /**
    * Gets the chunk generator of the world.
@@ -37,7 +37,7 @@ public interface World {
    * @return the world's chunk generator
    * @since 1.0.0
    */
-  @NotNull ChunkGenerator getGenerator();
+  @NotNull ChunkGenerator generator();
 
   /**
    * Gets the spawn position of the world.
@@ -45,7 +45,7 @@ public interface World {
    * @return the world's spawn position
    * @since 1.0.0
    */
-  @NotNull Position getSpawnPosition();
+  @NotNull Position spawnPosition();
 
   /**
    * Gets the default game mode of the world.
@@ -53,7 +53,7 @@ public interface World {
    * @return the world's default game mode
    * @since 1.0.0
    */
-  @NotNull GameMode getDefaultGameMode();
+  @NotNull GameMode defaultGameMode();
 
   /**
    * Sets the specified block at the specified coordinates.
@@ -64,7 +64,7 @@ public interface World {
    * @param block the block to set
    * @since 1.0.0
    */
-  void setBlock(int x, int y, int z, @NotNull BlockState block);
+  void block(int x, int y, int z, @NotNull BlockState block);
 
   /**
    * Sets the specified block at the specified coordinates.
@@ -73,8 +73,8 @@ public interface World {
    * @param block    the block to set
    * @since 1.0.0
    */
-  default void setBlock(@NotNull Position position, @NotNull BlockState block) {
-    this.setBlock((int) position.x(), (int) position.y(), (int) position.z(), block);
+  default void block(@NotNull Position position, @NotNull BlockState block) {
+    this.block((int) position.x(), (int) position.y(), (int) position.z(), block);
   }
 
   /**
@@ -86,7 +86,7 @@ public interface World {
    * @return the block at the specified coordinates
    * @since 1.0.0
    */
-  @NotNull BlockState getBlock(int x, int y, int z);
+  @NotNull BlockState block(int x, int y, int z);
 
   /**
    * Gets the block at the specified position.
@@ -95,8 +95,8 @@ public interface World {
    * @return the block at the specified position
    * @since 1.0.0
    */
-  default @NotNull BlockState getBlock(@NotNull Position position) {
-    return this.getBlock((int) position.x(), (int) position.y(), (int) position.z());
+  default @NotNull BlockState block(@NotNull Position position) {
+    return this.block((int) position.x(), (int) position.y(), (int) position.z());
   }
 
   /**
@@ -107,7 +107,7 @@ public interface World {
    * @return the chunk at the specified chunk coordinates
    * @since 1.0.0
    */
-  @NotNull Chunk getChunk(int chunkX, int chunkZ);
+  @NotNull Chunk chunk(int chunkX, int chunkZ);
 
   /**
    * Gets the chunk at the specified coordinates.
@@ -117,7 +117,7 @@ public interface World {
    * @return the chunk at the specified coordinates
    * @since 1.0.0
    */
-  @NotNull Chunk getChunkAt(int x, int z);
+  @NotNull Chunk chunkAt(int x, int z);
 
   /**
    * Gets the chunk at the specified position.
@@ -126,7 +126,7 @@ public interface World {
    * @return the chunk at the specified position
    * @since 1.0.0
    */
-  @NotNull Chunk getChunkAt(@NotNull Position position);
+  @NotNull Chunk chunkAt(@NotNull Position position);
 
   /**
    * Spawns the specified entity at the specified position in this world.

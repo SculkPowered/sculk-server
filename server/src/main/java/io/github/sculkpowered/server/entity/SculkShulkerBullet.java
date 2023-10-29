@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkShulkerBullet extends AbstractEntity implements ShulkerBullet {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.SHULKER_BULLET;
   }
 }

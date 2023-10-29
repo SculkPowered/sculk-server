@@ -37,7 +37,7 @@ public final class SculkEventHandler implements EventHandler {
               });
         } else {
           LOGGER.error("Plugin {} tried to register a listener method with multiple parameters. {}",
-              plugin.getDescription().name(), method);
+              plugin.description().name(), method);
         }
       }
     }
@@ -103,7 +103,7 @@ public final class SculkEventHandler implements EventHandler {
   private <E> void call(E event, CompletableFuture<E> future) {
     for (final var registration : this.registrations.get(event.getClass())) {
       if (registration.async) {
-        registration.plugin.getExecutorService().execute(() -> registration.consumer.accept(event));
+        registration.plugin.executorService().execute(() -> registration.consumer.accept(event));
       } else {
         registration.consumer.accept(event);
       }

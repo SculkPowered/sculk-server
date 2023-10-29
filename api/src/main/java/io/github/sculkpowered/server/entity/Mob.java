@@ -11,5 +11,4 @@ public interface Mob extends LivingEntity {
    * @return whether the mob is aggressive
    */
   boolean isAggressive();
-
 }

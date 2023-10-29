@@ -6,7 +6,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.sun.management.OperatingSystemMXBean;
-import io.github.sculkpowered.server.MinecraftServer;
+import io.github.sculkpowered.server.Server;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.command.CommandSource;
 import java.lang.management.ManagementFactory;
@@ -25,7 +25,7 @@ public final class InfoCommand {
           final var heapMemoryUsage = MEMORY_MX_BEAN.getHeapMemoryUsage();
           context.getSource().sendMessage(text()
               .append(
-                  text("Version: " + MinecraftServer.class.getPackage().getImplementationVersion()))
+                  text("Version: " + Server.class.getPackage().getImplementationVersion()))
               .appendNewline()
               .append(Component.text("CPU: " + SculkServer.DECIMAL_FORMAT.format(
                   OPERATING_SYSTEM_MX_BEAN.getCpuLoad() * 100) + "%")).appendNewline()

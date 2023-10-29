@@ -11,7 +11,7 @@ public interface LivingEntity extends Entity {
    * @return the health of this entity
    * @since 1.0.0
    */
-  float getHealth();
+  float health();
 
   /**
    * Sets the health of the entity.
@@ -19,7 +19,7 @@ public interface LivingEntity extends Entity {
    * @param health the health to set
    * @since 1.0.0
    */
-  void setHealth(float health);
+  void health(float health);
 
   /**
    * Gets the potion effect color of the entity.
@@ -27,7 +27,7 @@ public interface LivingEntity extends Entity {
    * @return the potion effect color of the entity
    * @since 1.0.0
    */
-  int getPotionEffectColor();
+  int potionEffectColor();
 
   /**
    * Sets the potion effect color of the entity.
@@ -35,7 +35,7 @@ public interface LivingEntity extends Entity {
    * @param effectColor the effect color to set
    * @since 1.0.0
    */
-  void setPotionEffectColor(int effectColor);
+  void potionEffectColor(int effectColor);
 
   /**
    * Gets whether the player has a potion effect ambient.
@@ -51,7 +51,7 @@ public interface LivingEntity extends Entity {
    * @param ambient whether the player has a potion effect ambient
    * @since 1.0.0
    */
-  void setPotionEffectAmbient(boolean ambient);
+  void potionEffectAmbient(boolean ambient);
 
   /**
    * Gets the number of arrows in the entity.
@@ -59,7 +59,7 @@ public interface LivingEntity extends Entity {
    * @return the number of arrows in the entity
    * @since 1.0.0
    */
-  int getNumberOfArrows();
+  int numberOfArrows();
 
   /**
    * Sets the number of arrows in the entity.
@@ -67,7 +67,7 @@ public interface LivingEntity extends Entity {
    * @param arrows the number of arrows
    * @since 1.0.0
    */
-  void setNumberOfArrows(int arrows);
+  void numberOfArrows(int arrows);
 
   /**
    * Gets the number of bee stingers in the entity.
@@ -75,7 +75,7 @@ public interface LivingEntity extends Entity {
    * @return the number of bee stingers in the entity
    * @since 1.0.0
    */
-  int getNumberOfBeeStingers();
+  int numberOfBeeStingers();
 
   /**
    * Sets the number of bee stingers in the entity.
@@ -83,5 +83,5 @@ public interface LivingEntity extends Entity {
    * @param beeStingers the number of bee stingers
    * @since 1.0.0
    */
-  void setNumberOfBeeStingers(int beeStingers);
+  void numberOfBeeStingers(int beeStingers);
 }

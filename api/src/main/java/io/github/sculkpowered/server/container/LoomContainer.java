@@ -8,10 +8,10 @@ public interface LoomContainer extends Container {
   /**
    * @since 1.0.0
    */
-  void setSelectedPattern(int pattern);
+  void selectedPattern(int pattern);
 
   /**
    * @since 1.0.0
    */
-  int getSelectedPattern();
+  int selectedPattern();
 }

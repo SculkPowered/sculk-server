@@ -17,102 +17,102 @@ public interface Entity extends Viewable {
   /**
    * @since 1.0.0
    */
-  @NotNull UUID getUniqueId();
+  @NotNull UUID uniqueId();
 
   /**
    * @since 1.0.0
    */
-  int getId();
+  int id();
 
   /**
    * @since 1.0.0
    */
-  @NotNull EntityType getType();
+  @NotNull EntityType type();
 
   /**
    * @since 1.0.0
    */
-  World getWorld();
+  World world();
 
   /**
    * @since 1.0.0
    */
-  void setWorld(@NotNull World world);
+  void world(@NotNull World world);
 
   /**
    * @since 1.0.0
    */
-  @NotNull Position getPosition();
+  @NotNull Position position();
 
   /**
    * @since 1.0.0
    */
-  boolean isOnFire();
+  boolean onFire();
 
   /**
    * @since 1.0.0
    */
-  boolean isCrouching();
+  boolean crouching();
 
   /**
    * @since 1.0.0
    */
-  boolean isSprinting();
+  boolean sprinting();
 
   /**
    * @since 1.0.0
    */
-  boolean isSwimming();
+  boolean swimming();
 
   /**
    * @since 1.0.0
    */
-  boolean isInvisible();
+  boolean invisible();
 
   /**
    * @since 1.0.0
    */
-  void setInvisible(boolean invisible);
+  void invisible(boolean invisible);
 
   /**
    * @since 1.0.0
    */
-  boolean isGlowing();
+  boolean glowing();
 
   /**
    * @since 1.0.0
    */
-  void setGlowing(boolean glowing);
+  void glowing(boolean glowing);
 
   /**
    * @since 1.0.0
    */
-  @Nullable Component getCustomName();
+  @Nullable Component customName();
 
   /**
    * @since 1.0.0
    */
-  void setCustomName(@Nullable Component customName);
+  void customName(@Nullable Component customName);
 
   /**
    * @since 1.0.0
    */
-  boolean isCustomNameVisible();
+  boolean customNameVisible();
 
   /**
    * @since 1.0.0
    */
-  void setCustomNameVisible(boolean visible);
+  void customNameVisible(boolean visible);
 
   /**
    * @since 1.0.0
    */
-  boolean isSilent();
+  boolean silent();
 
   /**
    * @since 1.0.0
    */
-  void setSilent(boolean silent);
+  void silent(boolean silent);
 
   /**
    * @since 1.0.0
@@ -122,7 +122,7 @@ public interface Entity extends Viewable {
   /**
    * @since 1.0.0
    */
-  void setGravity(boolean gravity);
+  void gravity(boolean gravity);
 
   /**
    * Teleports an entity to the specified position.
@@ -136,13 +136,13 @@ public interface Entity extends Viewable {
    * @since 1.0.0
    */
   @ApiStatus.Experimental
-  @NotNull Pose getPose();
+  @NotNull Pose pose();
 
   /**
    * @since 1.0.0
    */
   @ApiStatus.Experimental
-  void setPose(@NotNull Pose pose);
+  void pose(@NotNull Pose pose);
 
   @ApiStatus.Experimental
   enum Pose {
@@ -161,6 +161,5 @@ public interface Entity extends Viewable {
     SNIFFING,
     EMERGIND,
     DIGGING
-
   }
 }

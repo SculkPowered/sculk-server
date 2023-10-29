@@ -5,27 +5,27 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkAxolotl extends AbstractAnimal implements Axolotl {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.AXOLOTL;
   }
 
   @Override
-  public @NotNull Axolotl.Variant getVariant() {
+  public @NotNull Axolotl.Variant variant() {
     return this.metadata.getEnum(17, Variant.LUCY);
   }
 
   @Override
-  public void setVariant(@NotNull Variant variant) {
+  public void variant(@NotNull Variant variant) {
     this.metadata.setVarInt(17, variant.ordinal());
   }
 
   @Override
-  public boolean isPlayingDead() {
+  public boolean playingDead() {
     return this.metadata.getBoolean(18, false);
   }
 
   @Override
-  public void setPlayingDead(boolean playingDead) {
+  public void playingDead(boolean playingDead) {
     this.metadata.setBoolean(18, playingDead);
   }
 }

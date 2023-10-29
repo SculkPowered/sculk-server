@@ -76,7 +76,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class SculkServer implements MinecraftServer {
+public final class SculkServer implements Server {
 
   private static final Logger LOGGER = LogManager.getLogger(SculkServer.class);
 
@@ -184,19 +184,20 @@ public final class SculkServer implements MinecraftServer {
 
     this.eventHandler.call(new ServerShutdownEvent()).join();
 
-    final var plugins = this.pluginHandler.getPlugins();
+    final var plugins = this.pluginHandler.plugins();
     final var iterator = plugins.iterator();
     while (iterator.hasNext()) {
       final var plugin = iterator.next();
       if (plugin.hasExecutorService()) {
-        plugin.getExecutorService().shutdown();
+        plugin.executorService().shutdown();
       } else {
         iterator.remove();
       }
     }
     for (final var plugin : plugins) {
       try {
-        plugin.getExecutorService().awaitTermination(10, TimeUnit.SECONDS);
+        //noinspection ResultOfMethodCallIgnored
+        plugin.executorService().awaitTermination(10, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
         LOGGER.info("Something took over 10 seconds to shutdown!");
         Thread.currentThread().interrupt();
@@ -235,57 +236,57 @@ public final class SculkServer implements MinecraftServer {
   }
 
   @Override
-  public @NotNull Registry<Dimension> getDimensionRegistry() {
+  public @NotNull Registry<Dimension> dimensionRegistry() {
     return this.dimensionRegistry;
   }
 
   @Override
-  public @NotNull Registry<Biome> getBiomeRegistry() {
+  public @NotNull Registry<Biome> biomeRegistry() {
     return this.biomeRegistry;
   }
 
   @Override
-  public @NotNull Registry<DamageType> getDamageTypeRegistry() {
+  public @NotNull Registry<DamageType> damageTypeRegistry() {
     return this.damageTypeRegistry;
   }
 
   @Override
-  public @NotNull SculkPluginHandler getPluginHandler() {
+  public @NotNull SculkPluginHandler pluginHandler() {
     return this.pluginHandler;
   }
 
   @Override
-  public @NotNull SculkEventHandler getEventHandler() {
+  public @NotNull SculkEventHandler eventHandler() {
     return this.eventHandler;
   }
 
   @Override
-  public @NotNull SculkCommandHandler getCommandHandler() {
+  public @NotNull SculkCommandHandler commandHandler() {
     return this.commandHandler;
   }
 
   @Override
-  public @NotNull SculkTeamHandler getTeamHandler() {
+  public @NotNull SculkTeamHandler teamHandler() {
     return this.teamHandler;
   }
 
   @Override
-  public @NotNull SculkScheduler getScheduler() {
+  public @NotNull SculkScheduler scheduler() {
     return this.scheduler;
   }
 
   @Override
-  public @NotNull Collection<Player> getAllPlayers() {
+  public @NotNull Collection<Player> onlinePlayers() {
     return List.copyOf(this.players.values());
   }
 
   @Override
-  public int getPlayerCount() {
+  public int playerCount() {
     return this.players.size();
   }
 
   @Override
-  public @Nullable Player getPlayer(@NotNull UUID uniqueId) {
+  public @Nullable Player player(@NotNull UUID uniqueId) {
     return this.players.get(uniqueId);
   }
 
@@ -314,14 +315,14 @@ public final class SculkServer implements MinecraftServer {
   }
 
   @Override
-  public @Nullable World getWorld(@NotNull String name) {
+  public @Nullable World world(@NotNull String name) {
     return this.worlds.get(name);
   }
 
   @Override
   public void unloadWorld(@NotNull World world, @NotNull Consumer<Player> consumer) {
     ((SculkWorld) world).unload(consumer);
-    this.worlds.remove(world.getName());
+    this.worlds.remove(world.name());
   }
 
   @SuppressWarnings("unchecked")
@@ -353,12 +354,12 @@ public final class SculkServer implements MinecraftServer {
   }
 
   @Override
-  public @NotNull CommandSource getConsoleCommandSource() {
+  public @NotNull CommandSource consoleCommandSource() {
     return this.terminal;
   }
 
   @Override
-  public @NotNull SculkConfiguration getConfig() {
+  public @NotNull SculkConfiguration config() {
     return this.configuration;
   }
 

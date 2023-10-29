@@ -39,111 +39,111 @@ public abstract class AbstractEntity implements Entity {
   }
 
   @Override
-  public @NotNull UUID getUniqueId() {
+  public @NotNull UUID uniqueId() {
     return this.uniqueId;
   }
 
   @Override
-  public int getId() {
+  public int id() {
     return this.id;
   }
 
   @Override
-  public SculkWorld getWorld() {
+  public SculkWorld world() {
     return this.world;
   }
 
   @Override
-  public void setWorld(@NotNull World world) {
+  public void world(@NotNull World world) {
     if (this.world != null) {
-      this.world.getChunkAt(this.position).entities().remove(this);
+      this.world.chunkAt(this.position).entities().remove(this);
     }
     this.world = (SculkWorld) world;
-    this.world.getChunkAt(this.position).entities().add(this);
+    this.world.chunkAt(this.position).entities().add(this);
   }
 
   @Override
-  public @NotNull Position getPosition() {
+  public @NotNull Position position() {
     return this.position;
   }
 
   public void setPosition(final Position position) {
-    this.world.getChunkAt(this.position).entities().remove(this);
+    this.world.chunkAt(this.position).entities().remove(this);
     this.position = position;
-    this.world.getChunkAt(this.position).entities().add(this);
+    this.world.chunkAt(this.position).entities().add(this);
   }
 
   @Override
-  public boolean isOnFire() {
+  public boolean onFire() {
     return this.metadata.inMask(0, 0x01);
   }
 
   @Override
-  public boolean isCrouching() {
+  public boolean crouching() {
     return this.metadata.inMask(0, 0x02);
   }
 
   @Override
-  public boolean isSprinting() {
+  public boolean sprinting() {
     return this.metadata.inMask(0, 0x08);
   }
 
   @Override
-  public boolean isSwimming() {
+  public boolean swimming() {
     return this.metadata.inMask(0, 0x10);
   }
 
   @Override
-  public boolean isInvisible() {
+  public boolean invisible() {
     return this.metadata.inMask(0, 0x20);
   }
 
   @Override
-  public void setInvisible(boolean invisible) {
+  public void invisible(boolean invisible) {
     this.metadata.setMask(0, 0x20, invisible);
   }
 
   @Override
-  public boolean isGlowing() {
+  public boolean glowing() {
     return this.metadata.inMask(0, 0x40);
   }
 
   @Override
-  public void setGlowing(boolean glowing) {
+  public void glowing(boolean glowing) {
     this.metadata.setMask(0, 0x40, glowing);
   }
 
   @Override
-  public @Nullable Component getCustomName() {
+  public @Nullable Component customName() {
     return this.metadata.getComponent(2, Component.empty());
   }
 
   @Override
-  public void setCustomName(@Nullable Component customName) {
+  public void customName(@Nullable Component customName) {
     this.metadata.setComponent(2, customName);
   }
 
   @Override
-  public boolean isCustomNameVisible() {
+  public boolean customNameVisible() {
     return this.metadata.getBoolean(3, false);
   }
 
   @Override
-  public void setCustomNameVisible(boolean visible) {
-    if (this.isCustomNameVisible() == visible) {
+  public void customNameVisible(boolean visible) {
+    if (this.customNameVisible() == visible) {
       return;
     }
     this.metadata.setBoolean(3, visible);
   }
 
   @Override
-  public boolean isSilent() {
+  public boolean silent() {
     return this.metadata.getBoolean(4, false);
   }
 
   @Override
-  public void setSilent(boolean silent) {
-    if (this.isSilent() == silent) {
+  public void silent(boolean silent) {
+    if (this.silent() == silent) {
       return;
     }
     this.metadata.setBoolean(4, silent);
@@ -155,7 +155,7 @@ public abstract class AbstractEntity implements Entity {
   }
 
   @Override
-  public void setGravity(boolean gravity) {
+  public void gravity(boolean gravity) {
     if (this.hasGravity() == gravity) {
       return;
     }
@@ -168,17 +168,17 @@ public abstract class AbstractEntity implements Entity {
   }
 
   @Override
-  public @NotNull Pose getPose() {
+  public @NotNull Pose pose() {
     return this.metadata.get(6, Pose.STANDING);
   }
 
   @Override
-  public void setPose(@NotNull Pose pose) {
+  public void pose(@NotNull Pose pose) {
     this.metadata.setPose(6, pose);
   }
 
   @Override
-  public @NotNull Collection<Player> getViewers() {
+  public @NotNull Collection<Player> viewers() {
     return List.copyOf(this.viewers);
   }
 
@@ -188,7 +188,7 @@ public abstract class AbstractEntity implements Entity {
     final var added = this.viewers.add(sculkPlayer);
     if (added) {
       sculkPlayer.send(
-          new SpawnEntity(this.id, this.uniqueId, this.getType().ordinal(), this.position));
+          new SpawnEntity(this.id, this.uniqueId, this.type().ordinal(), this.position));
       if (this.metadata.entries().isEmpty()) {
         sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
       }

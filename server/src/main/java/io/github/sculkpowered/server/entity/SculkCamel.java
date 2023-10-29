@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkCamel extends AbstractAnimal implements Camel {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.CAMEL;
   }
 }

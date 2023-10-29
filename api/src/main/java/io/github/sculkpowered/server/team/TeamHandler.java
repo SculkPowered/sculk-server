@@ -21,7 +21,7 @@ public interface TeamHandler {
    * @return the team or null
    * @since 1.0.0
    */
-  @Nullable Team getTeam(@NotNull String name);
+  @Nullable Team team(@NotNull String name);
 
   /**
    * Unregisters a team.

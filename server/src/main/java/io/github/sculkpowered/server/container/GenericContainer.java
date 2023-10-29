@@ -14,7 +14,7 @@ public final class GenericContainer extends SculkContainer {
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return this.type;
   }
 

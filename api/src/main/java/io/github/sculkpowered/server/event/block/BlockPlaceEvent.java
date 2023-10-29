@@ -8,27 +8,27 @@ import org.jetbrains.annotations.NotNull;
 
 public final class BlockPlaceEvent extends ResultedEvent<ResultedEvent.GenericResult> {
 
-  private final @NotNull Player player;
-  private final @NotNull Position position;
-  private final @NotNull BlockState block;
+  private final Player player;
+  private final Position position;
+  private final BlockState block;
 
   public BlockPlaceEvent(@NotNull Player player, @NotNull Position position,
       @NotNull BlockState block) {
     this.player = player;
     this.position = position;
     this.block = block;
-    this.result = GenericResult.allowed();
+    this.result = GenericResult.allow();
   }
 
-  public @NotNull Player getPlayer() {
+  public @NotNull Player player() {
     return this.player;
   }
 
-  public @NotNull Position getPosition() {
+  public @NotNull Position position() {
     return this.position;
   }
 
-  public @NotNull BlockState getBlock() {
+  public @NotNull BlockState block() {
     return this.block;
   }
 }

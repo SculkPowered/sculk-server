@@ -18,51 +18,51 @@ public final class SculkFurnaceContainer extends SculkContainer implements Furna
   }
 
   @Override
-  public void setFuelLeft(int fuelLeft) {
+  public void fuelLeft(int fuelLeft) {
     this.sendProperty(0, fuelLeft);
     this.fuelLeft = fuelLeft;
   }
 
   @Override
-  public int getFuelLeft() {
+  public int fuelLeft() {
     return this.fuelLeft;
   }
 
   @Override
-  public void setMaxFuelBurnTime(int maxFuelBurnTime) {
+  public void maxFuelBurnTime(int maxFuelBurnTime) {
     this.sendProperty(1, maxFuelBurnTime);
     this.maxFuelBurnTime = maxFuelBurnTime;
   }
 
   @Override
-  public int getMaxFuelBurnTime() {
+  public int maxFuelBurnTime() {
     return this.maxFuelBurnTime;
   }
 
   @Override
-  public void setProgressArrow(int progressArrow) {
+  public void progressArrow(int progressArrow) {
     this.sendProperty(2, progressArrow);
     this.progressArrow = progressArrow;
   }
 
   @Override
-  public int getProgressArrow() {
+  public int progressArrow() {
     return this.progressArrow;
   }
 
   @Override
-  public void setMaximumProgress(int maximumProgress) {
+  public void maximumProgress(int maximumProgress) {
     this.sendProperty(3, maximumProgress);
     this.maximumProgress = maximumProgress;
   }
 
   @Override
-  public int getMaximumProgress() {
+  public int maximumProgress() {
     return this.maximumProgress;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return this.type;
   }
 

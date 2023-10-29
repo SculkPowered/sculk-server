@@ -8,7 +8,7 @@ final class Worker extends Thread {
   private final SculkWorld world;
 
   public Worker(final SculkWorld world) {
-    super("Sculk World " + world.getName() + " Worker");
+    super("Sculk World " + world.name() + " Worker");
     this.world = world;
   }
 

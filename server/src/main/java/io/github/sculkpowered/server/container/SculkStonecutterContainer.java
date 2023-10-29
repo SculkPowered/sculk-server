@@ -14,18 +14,18 @@ public final class SculkStonecutterContainer extends SculkContainer implements
   }
 
   @Override
-  public void setSelectedRecipe(int recipe) {
+  public void selectedRecipe(int recipe) {
     this.sendProperty(0, this.selectedRecipe);
     this.selectedRecipe = recipe;
   }
 
   @Override
-  public int getSelectedRecipe() {
+  public int selectedRecipe() {
     return this.selectedRecipe;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.STONECUTTER;
   }
 

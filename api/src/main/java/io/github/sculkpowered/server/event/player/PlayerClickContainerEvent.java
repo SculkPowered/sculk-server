@@ -11,33 +11,37 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class PlayerClickContainerEvent extends ResultedEvent<ResultedEvent.GenericResult> {
 
-  private final @NotNull Player player;
-  private final @NotNull Container container;
-  private final @NotNull ItemStack carriedItem;
+  private final Player player;
+  private final Container container;
+  private final ItemStack carriedItem;
   private final short slot;
 
-  public PlayerClickContainerEvent(@NotNull Player player, @NotNull Container container,
-      @NotNull ItemStack carriedItem, short slot) {
+  public PlayerClickContainerEvent(
+      @NotNull Player player,
+      @NotNull Container container,
+      @NotNull ItemStack carriedItem,
+      short slot
+  ) {
     this.player = player;
     this.container = container;
     this.carriedItem = carriedItem;
     this.slot = slot;
-    this.result = GenericResult.allowed();
+    this.result = GenericResult.allow();
   }
 
-  public @NotNull Player getPlayer() {
+  public @NotNull Player player() {
     return this.player;
   }
 
-  public @NotNull Container getContainer() {
+  public @NotNull Container container() {
     return this.container;
   }
 
-  public @NotNull ItemStack getCarriedItem() {
+  public @NotNull ItemStack carriedItem() {
     return this.carriedItem;
   }
 
-  public short getSlot() {
+  public short slot() {
     return this.slot;
   }
 }

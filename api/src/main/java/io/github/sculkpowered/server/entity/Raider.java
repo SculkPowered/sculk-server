@@ -5,10 +5,10 @@ public interface Raider extends Monster {
   /**
    * @since 1.0.0
    */
-  boolean isCelebrating();
+  boolean celebrating();
 
   /**
    * @since 1.0.0
    */
-  void setCelebrating(boolean celebrating);
+  void celebrating(boolean celebrating);
 }

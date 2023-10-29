@@ -1,6 +1,6 @@
 package io.github.sculkpowered.server.plugin;
 
-import io.github.sculkpowered.server.MinecraftServer;
+import io.github.sculkpowered.server.Server;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,12 +11,12 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
  */
 public abstract class Plugin {
 
-  private MinecraftServer server;
+  private Server server;
   private PluginDescription description;
   private ComponentLogger logger;
   private volatile ExecutorService executorService;
 
-  final void init(final MinecraftServer server) {
+  final void init(final Server server) {
     this.server = server;
     this.description = this.getClass().getAnnotation(PluginDescription.class);
     this.logger = ComponentLogger.logger(this.description.name());
@@ -28,7 +28,7 @@ public abstract class Plugin {
    * @return the server
    * @since 1.0.0
    */
-  public final MinecraftServer getServer() {
+  public final Server server() {
     return server;
   }
 
@@ -38,7 +38,7 @@ public abstract class Plugin {
    * @return the plugin's description
    * @since 1.0.0
    */
-  public final PluginDescription getDescription() {
+  public final PluginDescription description() {
     return this.description;
   }
 
@@ -48,7 +48,7 @@ public abstract class Plugin {
    * @return the plugin's logger
    * @since 1.0.0
    */
-  public ComponentLogger getLogger() {
+  public ComponentLogger logger() {
     return this.logger;
   }
 
@@ -58,7 +58,7 @@ public abstract class Plugin {
    * @return the plugin's executor service
    * @since 1.0.0
    */
-  public ExecutorService getExecutorService() {
+  public ExecutorService executorService() {
     if (this.executorService == null) {
       synchronized (this) {
         if (this.executorService == null) {
@@ -73,5 +73,9 @@ public abstract class Plugin {
       }
     }
     return this.executorService;
+  }
+
+  public boolean hasExecutorService() {
+    return this.executorService != null;
   }
 }

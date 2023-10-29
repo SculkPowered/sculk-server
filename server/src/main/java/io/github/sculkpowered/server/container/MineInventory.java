@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class MineInventory implements Inventory {
 
-  public final ItemList items = new ItemList(this.getType().size());
+  public final ItemList items = new ItemList(this.type().size());
   private final SculkPlayer player;
 
   public MineInventory(final SculkPlayer player) {
@@ -19,7 +19,7 @@ public final class MineInventory implements Inventory {
   }
 
   @Override
-  public void setItem(int index, @NotNull ItemStack itemStack) {
+  public void item(int index, @NotNull ItemStack itemStack) {
     if (index < 9) {
       index += 36;
     } else if (index > 39) {
@@ -32,7 +32,7 @@ public final class MineInventory implements Inventory {
   }
 
   @Override
-  public @NotNull ItemStack getItem(int index) {
+  public @NotNull ItemStack item(int index) {
     if (index < 9) {
       index += 36;
     } else if (index > 39) {
@@ -44,76 +44,76 @@ public final class MineInventory implements Inventory {
   }
 
   @Override
-  public @NotNull ItemStack getItemInMainHand() {
-    return this.getItem(this.player.getHeldItemSlot());
+  public @NotNull ItemStack itemInHand() {
+    return this.item(this.player.heldItemSlot());
   }
 
   @Override
-  public void setItemInMainHand(@NotNull ItemStack item) {
-    this.setItem(this.player.getHeldItemSlot(), item);
+  public void itemInHand(@NotNull ItemStack item) {
+    this.item(this.player.heldItemSlot(), item);
   }
 
   @Override
-  public @NotNull ItemStack getItemInOffHand() {
+  public @NotNull ItemStack itemInOffHand() {
     return this.items.get(45);
   }
 
   @Override
-  public void setItemInOffHand(@NotNull ItemStack item) {
-    this.setItem(40, item);
+  public void itemInOffHand(@NotNull ItemStack item) {
+    this.item(40, item);
   }
 
   @Override
-  public void setHelmet(@NotNull ItemStack helmet) {
+  public void helmet(@NotNull ItemStack helmet) {
     this.items.set(5, helmet);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(5, helmet)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.id(), OneInt2ObjectMap.of(5, helmet)));
   }
 
   @Override
-  public @NotNull ItemStack getHelmet() {
+  public @NotNull ItemStack helmet() {
     return this.items.get(5);
   }
 
   @Override
-  public void setChestplate(@NotNull ItemStack chestplate) {
+  public void chestplate(@NotNull ItemStack chestplate) {
     this.items.set(6, chestplate);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(4, chestplate)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.id(), OneInt2ObjectMap.of(4, chestplate)));
   }
 
   @Override
-  public @NotNull ItemStack getChestplate() {
+  public @NotNull ItemStack chestplate() {
     return this.items.get(6);
   }
 
   @Override
-  public void setLeggings(@NotNull ItemStack leggings) {
+  public void leggings(@NotNull ItemStack leggings) {
     this.items.set(7, leggings);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(3, leggings)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.id(), OneInt2ObjectMap.of(3, leggings)));
   }
 
   @Override
-  public @NotNull ItemStack getLeggings() {
+  public @NotNull ItemStack leggings() {
     return this.items.get(7);
   }
 
   @Override
-  public void setBoots(@NotNull ItemStack boots) {
+  public void boots(@NotNull ItemStack boots) {
     this.items.set(8, boots);
-    this.player.sendViewersAndSelf(new Equipment(this.player.getId(), OneInt2ObjectMap.of(2, boots)));
+    this.player.sendViewersAndSelf(new Equipment(this.player.id(), OneInt2ObjectMap.of(2, boots)));
   }
 
   @Override
-  public @NotNull ItemStack getBoots() {
+  public @NotNull ItemStack boots() {
     return this.items.get(8);
   }
 
   @Override
-  public @NotNull Component getTitle() {
+  public @NotNull Component title() {
     return Component.empty();
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.PLAYER;
   }
 }

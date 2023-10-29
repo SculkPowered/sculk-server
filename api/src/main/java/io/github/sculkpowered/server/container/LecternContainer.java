@@ -8,10 +8,10 @@ public interface LecternContainer extends Container {
   /**
    * @since 1.0.0
    */
-  void setPage(int page);
+  void page(int page);
 
   /**
    * @since 1.0.0
    */
-  int getPage();
+  int page();
 }

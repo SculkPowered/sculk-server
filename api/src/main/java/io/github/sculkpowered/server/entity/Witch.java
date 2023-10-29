@@ -8,10 +8,10 @@ public interface Witch extends Raider {
   /**
    * @since 1.0.0
    */
-  boolean isDrinkingPotion();
+  boolean drinkingPotion();
 
   /**
    * @since 1.0.0
    */
-  void setDrinkingPotion(boolean drinkingPotion);
+  void drinkingPotion(boolean drinkingPotion);
 }

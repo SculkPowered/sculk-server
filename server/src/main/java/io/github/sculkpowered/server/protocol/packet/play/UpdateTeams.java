@@ -45,7 +45,7 @@ public final class UpdateTeams implements Packet {
   @Override
   public void encode(Buffer buf) {
     buf
-        .writeString(this.team.getName())
+        .writeString(this.team.name())
         .writeByte(this.mode);
     if (this.mode == 0) {
       this.writeData(buf);
@@ -59,13 +59,13 @@ public final class UpdateTeams implements Packet {
 
   private void writeData(final Buffer buf) {
     buf
-        .writeComponent(this.team.getDisplayName())
+        .writeComponent(this.team.displayName())
         .writeByte((byte) 0)
         .writeString("always")
         .writeString("always")
-        .writeVarInt(COLOR_TO_ID.getInt(this.team.getColor()))
-        .writeComponent(this.team.getPrefix())
-        .writeComponent(this.team.getSuffix());
+        .writeVarInt(COLOR_TO_ID.getInt(this.team.color()))
+        .writeComponent(this.team.prefix())
+        .writeComponent(this.team.suffix());
   }
 
   private void writeEntries(final Buffer buf) {

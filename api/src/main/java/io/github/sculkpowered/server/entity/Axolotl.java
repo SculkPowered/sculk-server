@@ -10,22 +10,22 @@ public interface Axolotl extends Animal {
   /**
    * @since 1.0.0
    */
-  @NotNull Axolotl.Variant getVariant();
+  @NotNull Axolotl.Variant variant();
 
   /**
    * @since 1.0.0
    */
-  void setVariant(@NotNull Variant variant);
+  void variant(@NotNull Variant variant);
 
   /**
    * @since 1.0.0
    */
-  boolean isPlayingDead();
+  boolean playingDead();
 
   /**
    * @since 1.0.0
    */
-  void setPlayingDead(boolean playingDead);
+  void playingDead(boolean playingDead);
 
   enum Variant {
     LUCY,

@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.entity.player;
 
 import java.util.Locale;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the settings of the player.
@@ -13,7 +14,7 @@ public interface PlayerSettings {
    * @return the client's locale
    * @since 1.0.0
    */
-  Locale getLocale();
+  @NotNull Locale locale();
 
   /**
    * Gets the view distance of the client.
@@ -21,7 +22,7 @@ public interface PlayerSettings {
    * @return the client's view distance
    * @since 1.0.0
    */
-  byte getViewDistance();
+  byte viewDistance();
 
   /**
    * Gets the chat mode setting of the client.
@@ -29,7 +30,7 @@ public interface PlayerSettings {
    * @return the client's chat mode setting
    * @since 1.0.0
    */
-  ChatMode getChatMode();
+  @NotNull ChatMode chatMode();
 
   /**
    * Gets the chat color setting of the client.
@@ -37,7 +38,7 @@ public interface PlayerSettings {
    * @return whether the client has chat colors enabled.
    * @since 1.0.0
    */
-  boolean enabledChatColors();
+  boolean chatColorsEnabled();
 
   /**
    * Gets the skin parts of the client.
@@ -45,7 +46,7 @@ public interface PlayerSettings {
    * @return the client's skin parts.
    * @since 1.0.0
    */
-  int getSkinParts();
+  int skinParts();
 
   /**
    * Gets the primary hand of the client.
@@ -53,7 +54,7 @@ public interface PlayerSettings {
    * @return the client's primary hand
    * @since 1.0.0
    */
-  Hand getMainHand();
+  @NotNull Hand mainHand();
 
   /**
    * Gets the text filtering setting of the client.
@@ -61,7 +62,7 @@ public interface PlayerSettings {
    * @return whether the client has text filtering enabled.
    * @since 1.0.0
    */
-  boolean enableTextFiltering();
+  boolean textFilteringEnabled();
 
   /**
    * Gets the server listings setting of the client.
@@ -69,7 +70,7 @@ public interface PlayerSettings {
    * @return whether the client allow server listings.
    * @since 1.0.0
    */
-  boolean allowServerListings();
+  boolean serverListingsAllowed();
 
   /**
    * The possible chat modes.

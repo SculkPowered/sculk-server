@@ -13,7 +13,7 @@ public interface Creeper extends Mob {
   /**
    * @since 1.0.0
    */
-  void setIdling();
+  void idling();
 
   /**
    * @since 1.0.0
@@ -23,7 +23,7 @@ public interface Creeper extends Mob {
   /**
    * @since 1.0.0
    */
-  void setFusing();
+  void fusing();
 
   /**
    * @since 1.0.0
@@ -33,7 +33,7 @@ public interface Creeper extends Mob {
   /**
    * @since 1.0.0
    */
-  void setCharged(boolean charged);
+  void charged(boolean charged);
 
   /**
    * @since 1.0.0
@@ -43,5 +43,5 @@ public interface Creeper extends Mob {
   /**
    * @since 1.0.0
    */
-  void setIgnited(boolean ignited);
+  void ignited(boolean ignited);
 }

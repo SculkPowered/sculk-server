@@ -50,10 +50,10 @@ import org.jetbrains.annotations.Nullable;
 public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   private final Pointers pointers = Pointers.builder()
-      .withDynamic(Identity.NAME, this::getUsername)
-      .withDynamic(Identity.UUID, this::getUniqueId)
-      .withDynamic(Identity.DISPLAY_NAME, this::getDisplayName)
-      .withDynamic(Identity.LOCALE, () -> this.getSettings().getLocale())
+      .withDynamic(Identity.NAME, this::name)
+      .withDynamic(Identity.UUID, this::uniqueId)
+      .withDynamic(Identity.DISPLAY_NAME, this::displayName)
+      .withDynamic(Identity.LOCALE, () -> this.settings().locale())
       .withDynamic(PermissionChecker.POINTER, () -> this.permissionChecker)
       .build();
 
@@ -83,42 +83,42 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.profile = profile;
   }
 
-  public @NotNull String getUsername() {
+  public @NotNull String name() {
     return this.profile.name();
   }
 
   @Override
-  public @NotNull GameProfile getProfile() {
+  public @NotNull GameProfile profile() {
     return this.profile;
   }
 
   @Override
-  public @NotNull ClientInformationWrapper getSettings() {
+  public @NotNull ClientInformationWrapper settings() {
     return this.settings;
   }
 
   @Override
-  public @Nullable Component getDisplayName() {
+  public @Nullable Component displayName() {
     return this.displayName;
   }
 
   @Override
-  public int getPing() {
+  public int ping() {
     return 1;
   }
 
   @Override
-  public void setDisplayName(@Nullable Component displayName) {
+  public void displayName(@Nullable Component displayName) {
     this.displayName = displayName;
   }
 
   @Override
-  public @NotNull GameMode getGameMode() {
+  public @NotNull GameMode gameMode() {
     return this.gameMode;
   }
 
   @Override
-  public void setGameMode(@NotNull GameMode gameMode) {
+  public void gameMode(@NotNull GameMode gameMode) {
     if (gameMode != this.gameMode) {
       this.gameMode = gameMode;
       this.send(new GameEvent(3, gameMode.ordinal()));
@@ -131,12 +131,12 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public @NotNull MineInventory getInventory() {
+  public @NotNull MineInventory inventory() {
     return this.inventory;
   }
 
   @Override
-  public @Nullable SculkContainer getOpenedContainer() {
+  public @Nullable SculkContainer openedContainer() {
     return this.container;
   }
 
@@ -148,40 +148,40 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   public void openContainer(@NotNull Container container) {
     this.container = (SculkContainer) container;
     this.container.addViewer(this);
-    this.send(new OpenScreen(1, container.getType().ordinal(), container.getTitle()));
+    this.send(new OpenScreen(1, container.type().ordinal(), container.title()));
     this.send(new ContainerContent((byte) 1, 1, ((SculkContainer) container).items));
     this.container.sendProperties(this);
   }
 
   @Override
-  public int getHeldItemSlot() {
+  public int heldItemSlot() {
     return this.heldItem;
   }
 
   @Override
-  public void setHeldItemSlot(int slot) {
+  public void heldItemSlot(int slot) {
     this.heldItem = slot;
     this.send(new HeldItem((byte) slot));
   }
 
   @Override
-  public boolean isFlying() {
+  public boolean flying() {
     return this.flying;
   }
 
   @Override
-  public void setFlying(boolean flying) {
+  public void flying(boolean flying) {
     this.flying = flying;
     this.updateAttributes();
   }
 
   @Override
-  public boolean isAllowFlight() {
+  public boolean allowFlight() {
     return this.allowedFlight;
   }
 
   @Override
-  public void setAllowFight(boolean allowFight) {
+  public void allowFlight(boolean allowFight) {
     this.allowedFlight = allowFight;
     if (!this.allowedFlight) {
       this.flying = false;
@@ -190,34 +190,34 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public float getFlyingSpeed() {
+  public float flyingSpeed() {
     return this.flyingSpeed;
   }
 
   @Override
-  public void setFlyingSpeed(float flyingSpeed) {
+  public void flyingSpeed(float flyingSpeed) {
     this.flyingSpeed = flyingSpeed;
     this.updateAttributes();
   }
 
   @Override
-  public boolean canInstantBreak() {
+  public boolean instantBreak() {
     return this.instantBreak || this.gameMode == GameMode.CREATIVE;
   }
 
   @Override
-  public void setInstantBreak(boolean instantBreak) {
+  public void instantBreak(boolean instantBreak) {
     this.instantBreak = instantBreak;
     this.updateAttributes();
   }
 
   @Override
-  public float getViewModifier() {
+  public float viewModifier() {
     return this.viewModifier;
   }
 
   @Override
-  public void setViewModifier(float viewModifier) {
+  public void viewModifier(float viewModifier) {
     this.viewModifier = viewModifier;
     this.updateAttributes();
   }
@@ -228,19 +228,19 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public void setWorld(@NotNull World world) {
-    this.position = world.getSpawnPosition();
-    this.gameMode = world.getDefaultGameMode();
+  public void world(@NotNull World world) {
+    this.position = world.spawnPosition();
+    this.gameMode = world.defaultGameMode();
     if (this.world != null) {
       this.connection.forChunksInRange(chunkCoordinate(this.position.x()),
           chunkCoordinate(this.position.z()),
-          this.settings.getViewDistance(),
-          (x, z) -> this.world.getChunk(x, z).entities().remove(this));
+          this.settings.viewDistance(),
+          (x, z) -> this.world.chunk(x, z).entities().remove(this));
     }
-    super.setWorld(world);
+    super.world(world);
     this.send(
-        new Respawn(world.getDimension().name(), world.getName(), 0, this.gameMode, (byte) 3));
-    this.setPosition(world.getSpawnPosition());
+        new Respawn(world.dimension().name(), world.name(), 0, this.gameMode, (byte) 3));
+    this.setPosition(world.spawnPosition());
     this.calculateChunks(this.position, this.position, false, false);
   }
 
@@ -297,7 +297,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.PLAYER;
   }
 
@@ -307,21 +307,21 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       final var added = super.addViewer(player);
       if (added) {
         final var sculkPlayer = (SculkPlayer) player;
-        sculkPlayer.send(new EntityMetadata(this.getId(), this.metadata.entries()));
-        final var inventory = this.getInventory();
+        sculkPlayer.send(new EntityMetadata(this.id(), this.metadata.entries()));
+        final var inventory = this.inventory();
         final var equipment = new Int2ObjectOpenHashMap<ItemStack>();
-        if (!inventory.getItemInMainHand().isEmpty()) {
-          equipment.put(0, inventory.getItemInMainHand());
-        } else if (!inventory.getItemInOffHand().isEmpty()) {
-          equipment.put(1, inventory.getItemInOffHand());
-        } else if (!inventory.getBoots().isEmpty()) {
-          equipment.put(2, inventory.getBoots());
-        } else if (!inventory.getLeggings().isEmpty()) {
-          equipment.put(3, inventory.getLeggings());
-        } else if (!inventory.getChestplate().isEmpty()) {
-          equipment.put(4, inventory.getChestplate());
-        } else if (!inventory.getHelmet().isEmpty()) {
-          equipment.put(5, inventory.getHelmet());
+        if (!inventory.itemInHand().isEmpty()) {
+          equipment.put(0, inventory.itemInHand());
+        } else if (!inventory.itemInOffHand().isEmpty()) {
+          equipment.put(1, inventory.itemInOffHand());
+        } else if (!inventory.boots().isEmpty()) {
+          equipment.put(2, inventory.boots());
+        } else if (!inventory.leggings().isEmpty()) {
+          equipment.put(3, inventory.leggings());
+        } else if (!inventory.chestplate().isEmpty()) {
+          equipment.put(4, inventory.chestplate());
+        } else if (!inventory.helmet().isEmpty()) {
+          equipment.put(5, inventory.helmet());
         }
         if (!equipment.isEmpty()) {
           sculkPlayer.send(new Equipment(this.id, equipment));
@@ -353,13 +353,13 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public int getProtocolVersion() {
-    return this.connection.getProtocolVersion();
+  public int protocolVersion() {
+    return this.connection.protocolVersion();
   }
 
   @Override
-  public SocketAddress getAddress() {
-    return this.connection.getAddress();
+  public @NotNull SocketAddress address() {
+    return this.connection.address();
   }
 
   @Override
@@ -371,7 +371,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       final PermissionChecker permissionChecker) {
     this.gameMode = gameMode;
     this.position = position;
-    super.setWorld(world);
+    super.world(world);
     this.permissionChecker = permissionChecker;
   }
 
@@ -381,7 +381,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void calculateChunks(final Position from, final Position to, boolean check,
       boolean checkAlreadyLoaded) {
-    final var viewDistance = this.getSettings().getViewDistance();
+    final var viewDistance = this.settings().viewDistance();
     this.calculateChunks(from, to, check, checkAlreadyLoaded, viewDistance, viewDistance);
   }
 
@@ -400,7 +400,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     }
     final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
     this.connection.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
-      final var chunk = world.getChunk(x, z);
+      final var chunk = world.chunk(x, z);
       chunks.add(chunk);
       chunk.viewers().add(this); // new in range
       for (final var entity : chunk.entities()) {
@@ -415,7 +415,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     });
     if (checkAlreadyLoaded) {
       this.connection.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
-        final var chunk = world.getChunk(x, z);
+        final var chunk = world.chunk(x, z);
         if (!chunks.remove(chunk)) {
           chunk.viewers().remove(this); // chunk not in range
           for (final var entity : chunk.entities()) {
@@ -446,7 +446,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   public void handlePluginMessage(final PluginMessage pluginMessage) {
-    this.server.getEventHandler().call(
+    this.server.eventHandler().call(
         new PluginMessageEvent(this, pluginMessage.identifier(), pluginMessage.data()));
   }
 

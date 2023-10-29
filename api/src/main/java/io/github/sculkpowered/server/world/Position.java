@@ -19,8 +19,13 @@ public class Position {
     this(x, y, z, 0F, 0F);
   }
 
-  public Position(final double x, final double y, final double z, final float yaw,
-      final float pitch) {
+  public Position(
+      final double x,
+      final double y,
+      final double z,
+      final float yaw,
+      final float pitch
+  ) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -56,23 +61,23 @@ public class Position {
     return new Position(this.x - x, this.y - y, this.z - z, this.yaw, this.pitch);
   }
 
-  public Position setX(final double x) {
+  public Position x(final double x) {
     return new Position(x, this.y, this.z, this.yaw, this.pitch);
   }
 
-  public Position setY(final double y) {
+  public Position y(final double y) {
     return new Position(this.x, y, this.z, this.yaw, this.pitch);
   }
 
-  public Position setZ(final double z) {
+  public Position z(final double z) {
     return new Position(this.x, this.y, z, this.yaw, this.pitch);
   }
 
-  public Position setYaw(final float yaw) {
+  public Position yaw(final float yaw) {
     return new Position(this.x, this.y, this.z, yaw, this.pitch);
   }
 
-  public Position setPitch(final float pitch) {
+  public Position pitch(final float pitch) {
     return new Position(this.x, this.y, this.z, this.yaw, pitch);
   }
 

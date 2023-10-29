@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkExperienceBottle extends AbstractEntity implements ExperienceBottle {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.EXPERIENCE_BOTTLE;
   }
 }

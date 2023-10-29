@@ -15,7 +15,7 @@ public interface BeaconContainer extends Container {
    * @param powerLevel the power level to set
    * @since 1.0.0
    */
-  void setPowerLevel(@Range(from = 0, to = 4) int powerLevel);
+  void powerLevel(@Range(from = 0, to = 4) int powerLevel);
 
   /**
    * Gets the power level of the beacon.
@@ -23,7 +23,7 @@ public interface BeaconContainer extends Container {
    * @return the power level of this beacon
    * @since 1.0.0
    */
-  int getPowerLevel();
+  int powerLevel();
 
   /**
    * Sets the first potion effect of the beacon.
@@ -31,7 +31,7 @@ public interface BeaconContainer extends Container {
    * @param potionEffect the first potion effect
    * @since 1.0.0
    */
-  void setFirstPotionEffect(@NotNull PotionEffect potionEffect);
+  void firstPotionEffect(@NotNull PotionEffect potionEffect);
 
   /**
    * Gets the first potion effect of the beacon.
@@ -39,7 +39,7 @@ public interface BeaconContainer extends Container {
    * @return the first potion effect
    * @since 1.0.0
    */
-  @NotNull PotionEffect getFirstPotionEffect();
+  @NotNull PotionEffect firstPotionEffect();
 
   /**
    * Sets the second potion effect of the beacon.
@@ -47,7 +47,7 @@ public interface BeaconContainer extends Container {
    * @param potionEffect the second potion effect
    * @since 1.0.0
    */
-  void setSecondPotionEffect(@NotNull PotionEffect potionEffect);
+  void secondPotionEffect(@NotNull PotionEffect potionEffect);
 
   /**
    * Gets the second potion effect of the beacon.
@@ -55,5 +55,5 @@ public interface BeaconContainer extends Container {
    * @return the second potion effect
    * @since 1.0.0
    */
-  @NotNull PotionEffect getSecondPotionEffect();
+  @NotNull PotionEffect secondPotionEffect();
 }

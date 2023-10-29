@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkCreeper extends AbstractMob implements Creeper {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.CREEPER;
   }
 
@@ -15,7 +15,7 @@ public final class SculkCreeper extends AbstractMob implements Creeper {
   }
 
   @Override
-  public void setIdling() {
+  public void idling() {
     this.metadata.setVarInt(16, -1);
   }
 
@@ -25,7 +25,7 @@ public final class SculkCreeper extends AbstractMob implements Creeper {
   }
 
   @Override
-  public void setFusing() {
+  public void fusing() {
     this.metadata.setVarInt(16, 1);
   }
 
@@ -35,7 +35,7 @@ public final class SculkCreeper extends AbstractMob implements Creeper {
   }
 
   @Override
-  public void setCharged(boolean charged) {
+  public void charged(boolean charged) {
     this.metadata.setBoolean(17, charged);
   }
 
@@ -45,7 +45,7 @@ public final class SculkCreeper extends AbstractMob implements Creeper {
   }
 
   @Override
-  public void setIgnited(boolean ignited) {
+  public void ignited(boolean ignited) {
     this.metadata.setBoolean(18, ignited);
   }
 }

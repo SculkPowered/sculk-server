@@ -13,18 +13,18 @@ public final class SculkLoomContainer extends SculkContainer implements LoomCont
   }
 
   @Override
-  public void setSelectedPattern(int pattern) {
+  public void selectedPattern(int pattern) {
     this.sendProperty(0, pattern);
     this.selectedPattern = pattern;
   }
 
   @Override
-  public int getSelectedPattern() {
+  public int selectedPattern() {
     return this.selectedPattern;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.LOOM;
   }
 

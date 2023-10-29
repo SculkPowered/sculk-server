@@ -17,40 +17,40 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
   }
 
   @Override
-  public void setPowerLevel(@Range(from = 0, to = 4) int powerLevel) {
+  public void powerLevel(@Range(from = 0, to = 4) int powerLevel) {
     this.sendProperty(0, powerLevel);
     this.powerLevel = powerLevel;
   }
 
   @Override
-  public int getPowerLevel() {
+  public int powerLevel() {
     return this.powerLevel;
   }
 
   @Override
-  public void setFirstPotionEffect(@NotNull PotionEffect potionEffect) {
+  public void firstPotionEffect(@NotNull PotionEffect potionEffect) {
     this.sendProperty(1, potionEffect.ordinal());
     this.firstPotionEffect = potionEffect;
   }
 
   @Override
-  public @NotNull PotionEffect getFirstPotionEffect() {
+  public @NotNull PotionEffect firstPotionEffect() {
     return this.firstPotionEffect;
   }
 
   @Override
-  public void setSecondPotionEffect(@NotNull PotionEffect potionEffect) {
+  public void secondPotionEffect(@NotNull PotionEffect potionEffect) {
     this.sendProperty(2, potionEffect.ordinal());
     this.secondPotionEffect = potionEffect;
   }
 
   @Override
-  public @NotNull PotionEffect getSecondPotionEffect() {
+  public @NotNull PotionEffect secondPotionEffect() {
     return this.secondPotionEffect;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.BEACON;
   }
 

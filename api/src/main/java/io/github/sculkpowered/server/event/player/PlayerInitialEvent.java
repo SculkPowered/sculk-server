@@ -13,49 +13,49 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class PlayerInitialEvent {
 
-  private final @NotNull Player player;
-  private @Nullable World world;
-  private @Nullable GameMode gameMode;
-  private @Nullable Position position;
-  private @Nullable PermissionChecker permissionChecker;
+  private final Player player;
+  private World world;
+  private GameMode gameMode;
+  private Position position;
+  private PermissionChecker permissionChecker;
 
   public PlayerInitialEvent(@NotNull Player player) {
     this.player = player;
   }
 
-  public @NotNull Player getPlayer() {
+  public @NotNull Player player() {
     return this.player;
   }
 
-  public void setWorld(@Nullable World world) {
+  public void world(@Nullable World world) {
     this.world = world;
   }
 
-  public @Nullable World getWorld() {
+  public @Nullable World world() {
     return this.world;
   }
 
-  public @Nullable GameMode getGameMode() {
+  public @Nullable GameMode gameMode() {
     return gameMode;
   }
 
-  public void setGameMode(@Nullable GameMode gameMode) {
+  public void gameMode(@Nullable GameMode gameMode) {
     this.gameMode = gameMode;
   }
 
-  public @Nullable Position getPosition() {
+  public @Nullable Position position() {
     return position;
   }
 
-  public void setPosition(@Nullable Position position) {
+  public void position(@Nullable Position position) {
     this.position = position;
   }
 
-  public @Nullable PermissionChecker getPermissionChecker() {
+  public @Nullable PermissionChecker permissionChecker() {
     return permissionChecker;
   }
 
-  public void setPermissionChecker(@Nullable PermissionChecker permissionChecker) {
+  public void permissionChecker(@Nullable PermissionChecker permissionChecker) {
     this.permissionChecker = permissionChecker;
   }
 }

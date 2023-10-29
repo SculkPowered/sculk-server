@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class SculkVillager extends AbstractAnimal implements Villager {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.VILLAGER;
   }
 }

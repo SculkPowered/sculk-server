@@ -5,17 +5,17 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkPillager extends AbstractRaider implements Pillager {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.PILLAGER;
   }
 
   @Override
-  public boolean isCharging() {
+  public boolean charging() {
     return this.metadata.getBoolean(17, false);
   }
 
   @Override
-  public void setCharging(boolean charging) {
+  public void charging(boolean charging) {
     this.metadata.setBoolean(17, charging);
   }
 }

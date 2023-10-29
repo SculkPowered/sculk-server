@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkTntMinecart extends AbstractEntity implements TntMinecart {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.TNT_MINECART;
   }
 }

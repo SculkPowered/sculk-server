@@ -11,7 +11,7 @@ public interface FurnaceContainer extends Container {
    * @param fuelLeft the fuel left in ticks
    * @since 1.0.0
    */
-  void setFuelLeft(int fuelLeft);
+  void fuelLeft(int fuelLeft);
 
   /**
    * Gets that is left in the container.
@@ -19,7 +19,7 @@ public interface FurnaceContainer extends Container {
    * @return the fuel left
    * @since 1.0.0
    */
-  int getFuelLeft();
+  int fuelLeft();
 
   /**
    * Sets the max fuel burn time of the container.
@@ -27,7 +27,7 @@ public interface FurnaceContainer extends Container {
    * @param maxFuelBurnTime the max fuel burn time in ticks
    * @since 1.0.0
    */
-  void setMaxFuelBurnTime(int maxFuelBurnTime);
+  void maxFuelBurnTime(int maxFuelBurnTime);
 
   /**
    * Gets the max fuel burn time.
@@ -35,25 +35,25 @@ public interface FurnaceContainer extends Container {
    * @return the max fuel burn time in ticks
    * @since 1.0.0
    */
-  int getMaxFuelBurnTime();
+  int maxFuelBurnTime();
 
   /**
    * @since 1.0.0
    */
-  void setProgressArrow(int progressArrow);
+  void progressArrow(int progressArrow);
 
   /**
    * @since 1.0.0
    */
-  int getProgressArrow();
+  int progressArrow();
 
   /**
    * @since 1.0.0
    */
-  void setMaximumProgress(int maximumProgress);
+  void maximumProgress(int maximumProgress);
 
   /**
    * @since 1.0.0
    */
-  int getMaximumProgress();
+  int maximumProgress();
 }

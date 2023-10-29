@@ -11,12 +11,7 @@ public interface Ageable {
    * @return true if it is a baby
    * @since 1.0.0
    */
-  boolean isBaby();
-
-  /**
-   * Sets the entity to a baby.
-   */
-  void setBaby();
+  boolean baby();
 
   /**
    * Gets if the entity is an adult or not.
@@ -24,12 +19,12 @@ public interface Ageable {
    * @return true if it is an adult
    * @since 1.0.0
    */
-  boolean isAdult();
+  boolean adult();
 
   /**
-   * Sets the entity to an adult.
+   * Sets the entity to a baby or not.
    *
-   * @since 1.0.0
+   * @param baby whether the entity should be a baby
    */
-  void setAdult();
+  void setBaby(boolean baby);
 }

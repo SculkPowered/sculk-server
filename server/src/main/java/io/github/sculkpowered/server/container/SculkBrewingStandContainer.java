@@ -16,29 +16,29 @@ public final class SculkBrewingStandContainer extends SculkContainer implements
   }
 
   @Override
-  public void setBrewTime(int brewTime) {
+  public void brewTime(int brewTime) {
     this.sendProperty(0, brewTime);
     this.brewTime = brewTime;
   }
 
   @Override
-  public int getBrewTime() {
+  public int brewTime() {
     return this.brewTime;
   }
 
   @Override
-  public void setFuelTime(@Range(from = 0, to = 20) int fuelTime) {
+  public void fuelTime(@Range(from = 0, to = 20) int fuelTime) {
     this.sendProperty(1, fuelTime);
     this.fuelTime = fuelTime;
   }
 
   @Override
-  public int getFuelTime() {
+  public int fuelTime() {
     return this.fuelTime;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.BREWING_STAND;
   }
 

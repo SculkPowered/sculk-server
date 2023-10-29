@@ -88,7 +88,7 @@ public final class BlockParent {
 
   public BlockState state(Map<String, String> properties) {
     for (final var state : this.states) {
-      if (state.getProperties().equals(properties)) {
+      if (state.properties().equals(properties)) {
         return state;
       }
     }

@@ -5,17 +5,17 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkGhast extends AbstractMob implements Ghast {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.GHAST;
   }
 
   @Override
-  public boolean isAttacking() {
+  public boolean attacking() {
     return this.metadata.getBoolean(16, false);
   }
 
   @Override
-  public void setAttacking(boolean attacking) {
+  public void attacking(boolean attacking) {
     this.metadata.setBoolean(16, attacking);
   }
 }

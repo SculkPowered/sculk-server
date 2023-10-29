@@ -8,10 +8,10 @@ public interface Bat extends Mob {
   /**
    * @since 1.0.0
    */
-  boolean isHanging();
+  boolean hanging();
 
   /**
    * @since 1.0.0
    */
-  void setHanging(boolean hanging);
+  void hanging(boolean hanging);
 }

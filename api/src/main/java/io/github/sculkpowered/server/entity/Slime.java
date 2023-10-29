@@ -8,10 +8,10 @@ public interface Slime extends Mob {
   /**
    * @since 1.0.0
    */
-  int getSize();
+  int size();
 
   /**
    * @since 1.0.0
    */
-  void setSize(int size);
+  void size(int size);
 }

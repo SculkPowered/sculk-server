@@ -11,7 +11,7 @@ public interface ArmorStand extends LivingEntity {
    * @return whether it's small or not
    * @since 1.0.0
    */
-  boolean isSmall();
+  boolean small();
 
   /**
    * Sets the armor stand small.
@@ -26,7 +26,7 @@ public interface ArmorStand extends LivingEntity {
    * @return whether it's big or not
    * @since 1.0.0
    */
-  boolean isBig();
+  boolean big();
 
   /**
    * Sets the armor stand big.
@@ -49,7 +49,7 @@ public interface ArmorStand extends LivingEntity {
    * @param arms whether this armor stand has arms
    * @since 1.0.0
    */
-  void setArms(boolean arms);
+  void arms(boolean arms);
 
   /**
    * Gets whether the armor stand has a baseplate or not.
@@ -65,7 +65,7 @@ public interface ArmorStand extends LivingEntity {
    * @param basePlate whether this armor stand has a baseplate
    * @since 1.0.0
    */
-  void setBasePlate(boolean basePlate);
+  void basePlate(boolean basePlate);
 
   /**
    * Gets whether the armor stand is a marker or not.
@@ -73,7 +73,7 @@ public interface ArmorStand extends LivingEntity {
    * @return whether this armor stand is a marker
    * @since 1.0.0
    */
-  boolean isMarker();
+  boolean marker();
 
   /**
    * Sets whether the armor stand is a marker.
@@ -81,5 +81,5 @@ public interface ArmorStand extends LivingEntity {
    * @param marker whether this armor stand is a marker
    * @since 1.0.0
    */
-  void setMarker(boolean marker);
+  void marker(boolean marker);
 }

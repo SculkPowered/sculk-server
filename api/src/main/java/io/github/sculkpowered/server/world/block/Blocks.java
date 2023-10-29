@@ -13,6 +13,7 @@ final class Blocks {
   private static Map<Integer, BlockState> BLOCKS_BY_ID;
 
   private Blocks() {
+    throw new AssertionError();
   }
 
   static BlockState get(final String name) {

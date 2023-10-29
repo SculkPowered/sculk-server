@@ -23,7 +23,7 @@ public final class ClientInformationWrapper implements PlayerSettings {
   }
 
   @Override
-  public Locale getLocale() {
+  public @NotNull Locale locale() {
     if (this.locale == null) {
       this.locale = Locale.forLanguageTag(this.clientInformation.locale().replaceAll("_", "-"));
     }
@@ -31,37 +31,37 @@ public final class ClientInformationWrapper implements PlayerSettings {
   }
 
   @Override
-  public byte getViewDistance() {
+  public byte viewDistance() {
     return this.clientInformation.viewDistance();
   }
 
   @Override
-  public ChatMode getChatMode() {
+  public @NotNull ChatMode chatMode() {
     return this.clientInformation.chatMode();
   }
 
   @Override
-  public boolean enabledChatColors() {
+  public boolean chatColorsEnabled() {
     return this.clientInformation.chatColors();
   }
 
   @Override
-  public int getSkinParts() {
+  public int skinParts() {
     return this.clientInformation.skinParts();
   }
 
   @Override
-  public Hand getMainHand() {
+  public @NotNull Hand mainHand() {
     return this.clientInformation.mainHand();
   }
 
   @Override
-  public boolean enableTextFiltering() {
+  public boolean textFilteringEnabled() {
     return this.clientInformation.enableTextFiltering();
   }
 
   @Override
-  public boolean allowServerListings() {
+  public boolean serverListingsAllowed() {
     return this.clientInformation.allowServerListings();
   }
 

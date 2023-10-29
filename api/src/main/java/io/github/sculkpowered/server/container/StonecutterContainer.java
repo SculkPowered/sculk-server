@@ -8,10 +8,10 @@ public interface StonecutterContainer extends Container {
   /**
    * @since 1.0.0
    */
-  void setSelectedRecipe(int recipe);
+  void selectedRecipe(int recipe);
 
   /**
    * @since 1.0.0
    */
-  int getSelectedRecipe();
+  int selectedRecipe();
 }

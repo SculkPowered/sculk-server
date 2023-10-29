@@ -18,17 +18,17 @@ class SculkBlockState implements BlockState {
   }
 
   @Override
-  public @NotNull String getKey() {
+  public @NotNull String key() {
     return this.block.name();
   }
 
   @Override
-  public int getId() {
+  public int id() {
     return this.id;
   }
 
   @Override
-  public @NotNull Map<String, String> getProperties() {
+  public @NotNull Map<String, String> properties() {
     return this.properties;
   }
 

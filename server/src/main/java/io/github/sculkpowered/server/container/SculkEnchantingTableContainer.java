@@ -24,117 +24,117 @@ public final class SculkEnchantingTableContainer extends SculkContainer implemen
   }
 
   @Override
-  public void setRequirementForTopEnchantment(int requirement) {
+  public void requirementForTopEnchantment(int requirement) {
     this.sendProperty(0, requirement);
     this.requirementForTopEnchanting = requirement;
   }
 
   @Override
-  public int getRequirementForTopEnchantment() {
+  public int requirementForTopEnchantment() {
     return this.requirementForTopEnchanting;
   }
 
   @Override
-  public void setRequirementForMiddleEnchantment(int requirement) {
+  public void requirementForMiddleEnchantment(int requirement) {
     this.sendProperty(1, requirement);
     this.requirementForMiddleEnchanting = requirement;
   }
 
   @Override
-  public int getRequirementForMiddleEnchantment() {
+  public int requirementForMiddleEnchantment() {
     return this.requirementForMiddleEnchanting;
   }
 
   @Override
-  public void setRequirementForBottomEnchantment(int requirement) {
+  public void requirementForBottomEnchantment(int requirement) {
     this.sendProperty(2, requirement);
     this.requirementForBottomEnchanting = requirement;
   }
 
   @Override
-  public int getRequirementForBottomEnchantment() {
+  public int requirementForBottomEnchantment() {
     return this.requirementForBottomEnchanting;
   }
 
   @Override
-  public void setEnchantmentSeed(int seed) {
+  public void enchantmentSeed(int seed) {
     this.sendProperty(3, seed);
     this.enchantmentSeed = seed;
   }
 
   @Override
-  public int getEnchantmentSeed() {
+  public int enchantmentSeed() {
     return this.enchantmentSeed;
   }
 
   @Override
-  public void setTopEnchantment(@NotNull Enchantment enchantment) {
+  public void topEnchantment(@NotNull Enchantment enchantment) {
     this.sendProperty(4, enchantment.ordinal());
     this.topEnchantment = enchantment;
   }
 
   @Override
-  public @NotNull Enchantment getTopEnchantment() {
+  public @NotNull Enchantment topEnchantment() {
     return this.topEnchantment;
   }
 
   @Override
-  public void setMiddleEnchantment(@NotNull Enchantment enchantment) {
+  public void middleEnchantment(@NotNull Enchantment enchantment) {
     this.sendProperty(5, enchantment.ordinal());
     this.middleEnchantment = enchantment;
   }
 
   @Override
-  public @NotNull Enchantment getMiddleEnchantment() {
+  public @NotNull Enchantment middleEnchantment() {
     return this.middleEnchantment;
   }
 
   @Override
-  public void setBottomEnchantment(@NotNull Enchantment enchantment) {
+  public void bottomEnchantment(@NotNull Enchantment enchantment) {
     this.sendProperty(6, enchantment.ordinal());
     this.bottomEnchantment = enchantment;
   }
 
   @Override
-  public @NotNull Enchantment getBottomEnchantment() {
+  public @NotNull Enchantment bottomEnchantment() {
     return this.bottomEnchantment;
   }
 
   @Override
-  public void setTopEnchantingLevel(int level) {
+  public void topEnchantingLevel(int level) {
     this.sendProperty(7, level);
     this.topEnchantingLevel = level;
   }
 
   @Override
-  public int getTopEnchantingLevel() {
+  public int topEnchantingLevel() {
     return this.topEnchantingLevel;
   }
 
   @Override
-  public void setMiddleEnchantingLevel(int level) {
+  public void middleEnchantingLevel(int level) {
     this.sendProperty(8, level);
     this.middleEnchantingLevel = level;
   }
 
   @Override
-  public int getMiddleEnchantingLevel() {
+  public int middleEnchantingLevel() {
     return this.middleEnchantingLevel;
   }
 
   @Override
-  public void setBottomEnchantingLevel(int level) {
+  public void bottomEnchantingLevel(int level) {
     this.sendProperty(9, level);
     this.bottomEnchantingLevel = level;
   }
 
   @Override
-  public int getBottomEnchantingLevel() {
+  public int bottomEnchantingLevel() {
     return this.bottomEnchantingLevel;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.ENCHANTMENT;
   }
 

@@ -5,17 +5,17 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkWitch extends AbstractRaider implements Witch {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.WITCH;
   }
 
   @Override
-  public boolean isDrinkingPotion() {
+  public boolean drinkingPotion() {
     return this.metadata.getBoolean(17, false);
   }
 
   @Override
-  public void setDrinkingPotion(boolean drinkingPotion) {
+  public void drinkingPotion(boolean drinkingPotion) {
     this.metadata.setBoolean(17, drinkingPotion);
   }
 }

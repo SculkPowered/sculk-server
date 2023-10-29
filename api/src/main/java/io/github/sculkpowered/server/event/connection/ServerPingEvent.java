@@ -16,19 +16,19 @@ public final class ServerPingEvent {
     this.connection = connection;
   }
 
-  public @NotNull Connection getConnection() {
+  public @NotNull Connection connection() {
     return this.connection;
   }
 
-  public void setResponse(Response response) {
+  public void response(Response response) {
     this.response = response;
   }
 
-  public Response getResponse() {
+  public Response response() {
     return this.response;
   }
 
-  public static Response response() {
+  public static Response newResponse() {
     return new Response();
   }
 

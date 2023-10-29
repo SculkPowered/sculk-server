@@ -23,15 +23,15 @@ public final class StatusPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(StatusRequest statusRequest) {
-    this.server.getEventHandler().call(new ServerPingEvent(this.connection))
+    this.server.eventHandler().call(new ServerPingEvent(this.connection))
         .thenAcceptAsync(event -> {
-          final var response = event.getResponse();
+          final var response = event.response();
           if (response != null) {
             if (response.protocol() == Integer.MIN_VALUE) {
               response.protocol(Protocol.VERSION_PROTOCOL);
             }
             if (response.online() == Integer.MIN_VALUE) {
-              response.online(this.server.getPlayerCount());
+              response.online(this.server.playerCount());
             }
             if (response.description() == null) {
               response.description(Component.empty());

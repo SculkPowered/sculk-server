@@ -9,20 +9,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class PlayerChatEvent extends ResultedEvent<ResultedEvent.GenericResult> {
 
-  private final @NotNull Player player;
-  private final @NotNull String message;
+  private final Player player;
+  private final String message;
 
   public PlayerChatEvent(@NotNull Player player, @NotNull String message) {
     this.player = player;
     this.message = message;
-    this.result = GenericResult.allowed();
+    this.result = GenericResult.allow();
   }
 
-  public @NotNull Player getPlayer() {
+  public @NotNull Player player() {
     return this.player;
   }
 
-  public @NotNull String getMessage() {
+  public @NotNull String message() {
     return this.message;
   }
 }

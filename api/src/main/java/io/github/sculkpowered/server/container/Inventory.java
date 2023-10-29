@@ -11,60 +11,60 @@ public interface Inventory extends Container {
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getItemInMainHand();
+  @NotNull ItemStack itemInHand();
 
   /**
    * @since 1.0.0
    */
-  void setItemInMainHand(@NotNull ItemStack item);
+  void itemInHand(@NotNull ItemStack item);
 
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getItemInOffHand();
+  @NotNull ItemStack itemInOffHand();
 
   /**
    * @since 1.0.0
    */
-  void setItemInOffHand(@NotNull ItemStack item);
+  void itemInOffHand(@NotNull ItemStack item);
 
   /**
    * @since 1.0.0
    */
-  void setHelmet(@NotNull ItemStack helmet);
+  void helmet(@NotNull ItemStack helmet);
 
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getHelmet();
+  @NotNull ItemStack helmet();
 
   /**
    * @since 1.0.0
    */
-  void setChestplate(@NotNull ItemStack chestplate);
+  void chestplate(@NotNull ItemStack chestplate);
 
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getChestplate();
+  @NotNull ItemStack chestplate();
 
   /**
    * @since 1.0.0
    */
-  void setLeggings(@NotNull ItemStack leggings);
+  void leggings(@NotNull ItemStack leggings);
 
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getLeggings();
+  @NotNull ItemStack leggings();
 
   /**
    * @since 1.0.0
    */
-  void setBoots(@NotNull ItemStack boots);
+  void boots(@NotNull ItemStack boots);
 
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getBoots();
+  @NotNull ItemStack boots();
 }

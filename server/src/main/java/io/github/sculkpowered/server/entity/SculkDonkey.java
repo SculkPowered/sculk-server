@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkDonkey extends AbstractAnimal implements Donkey {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.DONKEY;
   }
 }

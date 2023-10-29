@@ -9,20 +9,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class CommandExecuteEvent extends ResultedEvent<ResultedEvent.GenericResult> {
 
-  private final @NotNull CommandSource source;
-  private final @NotNull String command;
+  private final CommandSource source;
+  private final String command;
 
   public CommandExecuteEvent(@NotNull CommandSource source, @NotNull String command) {
     this.source = source;
     this.command = command;
-    this.result = GenericResult.allowed();
+    this.result = GenericResult.allow();
   }
 
-  public @NotNull CommandSource getSource() {
+  public @NotNull CommandSource source() {
     return this.source;
   }
 
-  public @NotNull String getCommand() {
+  public @NotNull String command() {
     return this.command;
   }
 }

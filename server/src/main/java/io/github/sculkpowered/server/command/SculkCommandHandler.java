@@ -42,7 +42,7 @@ public final class SculkCommandHandler implements CommandHandler {
 
   @Override
   public void execute(@NotNull CommandSource source, @NotNull String command) {
-    this.server.getEventHandler().call(new CommandExecuteEvent(source, command))
+    this.server.eventHandler().call(new CommandExecuteEvent(source, command))
         .thenAccept(event -> {
           try {
             this.dispatcher.execute(command, source);

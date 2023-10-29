@@ -66,7 +66,7 @@ public final class SculkScheduler implements Scheduler {
     }
 
     @Override
-    public @Nullable ScheduledFuture<?> getFuture() {
+    public @Nullable ScheduledFuture<?> future() {
       return this.future;
     }
 
@@ -77,7 +77,7 @@ public final class SculkScheduler implements Scheduler {
 
     @Override
     public void run() {
-      this.plugin.getExecutorService().execute(this.runnable);
+      this.plugin.executorService().execute(this.runnable);
     }
   }
 }

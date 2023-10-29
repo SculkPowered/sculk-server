@@ -1170,7 +1170,7 @@ public final class Block {
       map.put(value, (E) this);
     }
 
-    public String getValue() {
+    public String value() {
       return this.value;
     }
   }

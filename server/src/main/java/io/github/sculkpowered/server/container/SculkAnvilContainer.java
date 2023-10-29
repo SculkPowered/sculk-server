@@ -13,18 +13,18 @@ public final class SculkAnvilContainer extends SculkContainer implements AnvilCo
   }
 
   @Override
-  public void setRepairCost(int repairCost) {
+  public void repairCost(int repairCost) {
     this.sendProperty(0, repairCost);
     this.repairCost = repairCost;
   }
 
   @Override
-  public int getRepairCost() {
+  public int repairCost() {
     return this.repairCost;
   }
 
   @Override
-  public @NotNull Type getType() {
+  public @NotNull Type type() {
     return Type.ANVIL;
   }
 

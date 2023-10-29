@@ -11,20 +11,20 @@ public interface ItemFrame extends Entity {
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getItem();
+  @NotNull ItemStack item();
 
   /**
    * @since 1.0.0
    */
-  void setItem(@NotNull ItemStack item);
+  void item(@NotNull ItemStack item);
 
   /**
    * @since 1.0.0
    */
-  int getRotation();
+  int rotation();
 
   /**
    * @since 1.0.0
    */
-  void setRotation(int rotation);
+  void rotation(int rotation);
 }

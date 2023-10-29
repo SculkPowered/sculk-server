@@ -49,7 +49,7 @@ public final class SimpleTerminal implements CommandSource {
           .option(Option.DISABLE_EVENT_EXPANSION, true)
           .completer((reader, line, candidates) -> {
             try {
-              final var suggestions = this.server.getCommandHandler()
+              final var suggestions = this.server.commandHandler()
                   .suggestions(this, line.line()).join();
               for (final var suggestion : suggestions.getList()) {
                 candidates.add(new Candidate(suggestion.getText()));
@@ -75,7 +75,7 @@ public final class SimpleTerminal implements CommandSource {
       try {
         final var line = this.lineReader.readLine(PROMPT).trim();
         if (!line.isEmpty()) {
-          this.server.getCommandHandler().execute(this.server.getConsoleCommandSource(), line);
+          this.server.commandHandler().execute(this.server.consoleCommandSource(), line);
         }
       } catch (EndOfFileException ignored) {
       } catch (UserInterruptException e) {

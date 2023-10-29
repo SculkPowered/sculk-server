@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkArmorStand extends AbstractLivingEntity implements ArmorStand {
 
   @Override
-  public boolean isSmall() {
+  public boolean small() {
     return this.inMask(0x01);
   }
 
@@ -15,8 +15,8 @@ public final class SculkArmorStand extends AbstractLivingEntity implements Armor
   }
 
   @Override
-  public boolean isBig() {
-    return !this.isSmall();
+  public boolean big() {
+    return !this.small();
   }
 
   @Override
@@ -34,7 +34,7 @@ public final class SculkArmorStand extends AbstractLivingEntity implements Armor
   }
 
   @Override
-  public void setArms(boolean arms) {
+  public void arms(boolean arms) {
     this.setMask(0x04, arms);
   }
 
@@ -44,22 +44,22 @@ public final class SculkArmorStand extends AbstractLivingEntity implements Armor
   }
 
   @Override
-  public void setBasePlate(boolean basePlate) {
+  public void basePlate(boolean basePlate) {
     this.setMask(0x08, !basePlate);
   }
 
   @Override
-  public boolean isMarker() {
+  public boolean marker() {
     return this.inMask(0x10);
   }
 
   @Override
-  public void setMarker(boolean marker) {
+  public void marker(boolean marker) {
     this.setMask(0x10, marker);
   }
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.ARMOR_STAND;
   }
 

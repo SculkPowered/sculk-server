@@ -6,7 +6,7 @@ public final class SculkCommandBlockMinecart extends AbstractEntity implements
     CommandBlockMinecart {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.COMMAND_BLOCK_MINECART;
   }
 }

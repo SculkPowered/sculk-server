@@ -40,14 +40,14 @@ public final class SculkChunk implements Chunk {
   private ChunkDataAndUpdateLight packet;
 
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ) {
-    this(world, chunkX, chunkZ, newSections(world.getDimension()),
-        world.getDimension().heightmaps());
+    this(world, chunkX, chunkZ, newSections(world.dimension()),
+        world.dimension().heightmaps());
   }
 
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ,
       final Section[] sections,
       final CompoundBinaryTag heightmaps) {
-    this.dimension = world.getDimension();
+    this.dimension = world.dimension();
     this.x = chunkX;
     this.z = chunkZ;
     this.sections = sections;
@@ -55,18 +55,18 @@ public final class SculkChunk implements Chunk {
   }
 
   @Override
-  public int getX() {
+  public int x() {
     return this.x;
   }
 
   @Override
-  public int getZ() {
+  public int z() {
     return this.z;
   }
 
   @Override
-  public void setBlock(int x, int y, int z, @NotNull BlockState block) {
-    final var id = block.getId();
+  public void block(int x, int y, int z, @NotNull BlockState block) {
+    final var id = block.id();
     this.section(y).blocks()
         .set(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z), id);
     this.packet = null;
@@ -93,13 +93,13 @@ public final class SculkChunk implements Chunk {
   }
 
   @Override
-  public @NotNull BlockState getBlock(int x, int y, int z) {
+  public @NotNull BlockState block(int x, int y, int z) {
     return Block.get(this.section(y).blocks()
         .get(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z)));
   }
 
   @Override
-  public void setBiome(int x, int y, int z, @NotNull Biome biome) {
+  public void biome(int x, int y, int z, @NotNull Biome biome) {
     this.section(y).biomes()
         .set(relativeCoordinate(x) / 4, relativeCoordinate(y) / 4, relativeCoordinate(z) / 4,
             biome.id());

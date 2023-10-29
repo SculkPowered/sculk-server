@@ -11,7 +11,7 @@ public interface AnvilContainer extends Container {
    * @param repairCost the repair cost
    * @since 1.0.0
    */
-  void setRepairCost(int repairCost);
+  void repairCost(int repairCost);
 
   /**
    * Gets the current repair cost of the container.
@@ -19,5 +19,5 @@ public interface AnvilContainer extends Container {
    * @return the container's repair cost
    * @since 1.0.0
    */
-  int getRepairCost();
+  int repairCost();
 }

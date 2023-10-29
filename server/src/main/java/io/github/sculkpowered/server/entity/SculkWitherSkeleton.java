@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkWitherSkeleton extends AbstractMob implements WitherSkeleton {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.WITHER_SKELETON;
   }
 }

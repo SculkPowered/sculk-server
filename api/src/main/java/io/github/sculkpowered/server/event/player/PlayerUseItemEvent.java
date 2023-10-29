@@ -10,20 +10,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class PlayerUseItemEvent extends ResultedEvent<ResultedEvent.GenericResult> {
 
-  private final @NotNull Player player;
-  private final @NotNull ItemStack item;
+  private final Player player;
+  private final ItemStack item;
 
   public PlayerUseItemEvent(@NotNull Player player, @NotNull ItemStack item) {
     this.player = player;
     this.item = item;
-    this.result = GenericResult.allowed();
+    this.result = GenericResult.allow();
   }
 
-  public @NotNull Player getPlayer() {
+  public @NotNull Player player() {
     return this.player;
   }
 
-  public @NotNull ItemStack getItem() {
+  public @NotNull ItemStack item() {
     return this.item;
   }
 }

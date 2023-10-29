@@ -5,37 +5,37 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkBee extends AbstractAnimal implements Bee {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.BEE;
   }
 
   @Override
-  public boolean isAngry() {
+  public boolean angry() {
     return this.metadata.inMask(17, 0x02);
   }
 
   @Override
-  public void setAngry(boolean angry) {
+  public void angry(boolean angry) {
     this.metadata.setMask(17, 0x02, angry);
   }
 
   @Override
-  public boolean hasStung() {
+  public boolean stung() {
     return this.metadata.inMask(17, 0x04);
   }
 
   @Override
-  public void setStung(boolean stung) {
+  public void stung(boolean stung) {
     this.metadata.setMask(17, 0x04, stung);
   }
 
   @Override
-  public boolean hasNectar() {
+  public boolean nectar() {
     return this.metadata.inMask(17, 0x08);
   }
 
   @Override
-  public void setNectar(boolean nectar) {
+  public void nectar(boolean nectar) {
     this.metadata.setMask(17, 0x08, nectar);
   }
 }

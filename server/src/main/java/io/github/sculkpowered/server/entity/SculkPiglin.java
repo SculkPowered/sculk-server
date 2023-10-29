@@ -5,30 +5,21 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkPiglin extends AbstractMob implements Piglin {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.PIGLIN;
   }
 
   @Override
-  public boolean isBaby() {
+  public boolean baby() {
     return this.metadata.getBoolean(17, false);
   }
 
   @Override
-  public void setBaby() {
-    this.setBaby(true);
+  public boolean adult() {
+    return !this.baby();
   }
 
   @Override
-  public boolean isAdult() {
-    return !this.isBaby();
-  }
-
-  @Override
-  public void setAdult() {
-    this.setBaby(false);
-  }
-
   public void setBaby(boolean baby) {
     this.metadata.setBoolean(17, baby);
   }

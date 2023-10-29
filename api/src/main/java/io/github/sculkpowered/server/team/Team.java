@@ -13,7 +13,7 @@ public interface Team {
    * @return the name of the team
    * @since 1.0.0
    */
-  @NotNull String getName();
+  @NotNull String name();
 
   /**
    * Gets the display name of the team
@@ -21,7 +21,7 @@ public interface Team {
    * @return the display name of the team
    * @since 1.0.0
    */
-  @NotNull Component getDisplayName();
+  @NotNull Component displayName();
 
   /**
    * Sets the specified component as the display name of the team.
@@ -29,7 +29,7 @@ public interface Team {
    * @param displayName the component to set
    * @since 1.0.0
    */
-  void setDisplayName(@NotNull Component displayName);
+  void displayName(@NotNull Component displayName);
 
   /**
    * Gets the color of the team
@@ -37,7 +37,7 @@ public interface Team {
    * @return the color of the team
    * @since 1.0.0
    */
-  @Nullable NamedTextColor getColor();
+  @Nullable NamedTextColor color();
 
   /**
    * Sets the specified color as the color of the team.
@@ -45,7 +45,7 @@ public interface Team {
    * @param color the color to set
    * @since 1.0.0
    */
-  void setColor(@Nullable NamedTextColor color);
+  void color(@Nullable NamedTextColor color);
 
   /**
    * Gets the prefix of the team.
@@ -53,7 +53,7 @@ public interface Team {
    * @return the prefix of the team
    * @since 1.0.0
    */
-  @NotNull Component getPrefix();
+  @NotNull Component prefix();
 
   /**
    * Sets the specified component as the prefix of the team.
@@ -61,7 +61,7 @@ public interface Team {
    * @param prefix the component to set
    * @since 1.0.0
    */
-  void setPrefix(@NotNull Component prefix);
+  void prefix(@NotNull Component prefix);
 
   /**
    * Gets the suffix of the team.
@@ -69,7 +69,7 @@ public interface Team {
    * @return the suffix of the team
    * @since 1.0.0
    */
-  @NotNull Component getSuffix();
+  @NotNull Component suffix();
 
   /**
    * Sets the specified component as the suffix of the team.
@@ -77,7 +77,7 @@ public interface Team {
    * @param suffix the component to set
    * @since 1.0.0
    */
-  void setSuffix(@NotNull Component suffix);
+  void suffix(@NotNull Component suffix);
 
   /**
    * Adds a new entry to the team.
@@ -119,12 +119,12 @@ public interface Team {
 
   final class Builder {
 
-    private @NotNull String name = "";
-    private @NotNull Component displayName = Component.empty();
-    private @Nullable NamedTextColor color;
-    private @NotNull Component prefix = Component.empty();
-    private @NotNull Component suffix = Component.empty();
-    private @Nullable String[] entries;
+    private String name = "";
+    private Component displayName = Component.empty();
+    private NamedTextColor color;
+    private Component prefix = Component.empty();
+    private Component suffix = Component.empty();
+    private String[] entries;
 
     public @NotNull Builder name(@NotNull String name) {
       this.name = name;

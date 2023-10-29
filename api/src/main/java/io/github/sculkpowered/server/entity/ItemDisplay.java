@@ -11,22 +11,22 @@ public interface ItemDisplay extends Display {
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack getItem();
+  @NotNull ItemStack item();
 
   /**
    * @since 1.0.0
    */
-  void setItem(@NotNull ItemStack item);
+  void item(@NotNull ItemStack item);
 
   /**
    * @since 1.0.0
    */
-  @NotNull DisplayType getDisplayType();
+  @NotNull DisplayType displayType();
 
   /**
    * @since 1.0.0
    */
-  void setDisplayType(@NotNull DisplayType displayType);
+  void displayType(@NotNull DisplayType displayType);
 
   enum DisplayType {
     NONE,

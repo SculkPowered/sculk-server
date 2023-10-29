@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class SculkContainer implements Container, Viewable {
 
-  public final ItemList items = new ItemList(this.getType().size());
+  public final ItemList items = new ItemList(this.type().size());
   private final Component title;
   private final List<Player> viewers = new ArrayList<>();
 
@@ -24,22 +24,22 @@ public abstract class SculkContainer implements Container, Viewable {
   }
 
   @Override
-  public @NotNull Component getTitle() {
+  public @NotNull Component title() {
     return this.title;
   }
 
   @Override
-  public void setItem(int index, @NotNull ItemStack itemStack) {
+  public void item(int index, @NotNull ItemStack itemStack) {
     this.items.set(index, itemStack);
   }
 
   @Override
-  public @NotNull ItemStack getItem(int index) {
+  public @NotNull ItemStack item(int index) {
     return this.items.get(index);
   }
 
   @Override
-  public @NotNull Collection<Player> getViewers() {
+  public @NotNull Collection<Player> viewers() {
     return this.viewers;
   }
 

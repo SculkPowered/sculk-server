@@ -89,13 +89,13 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(ChatCommand chatCommand) {
-    this.server.getCommandHandler().execute(this.player, chatCommand.command());
+    this.server.commandHandler().execute(this.player, chatCommand.command());
     return true;
   }
 
   @Override
   public boolean handle(ChatMessage chatMessage) {
-    this.server.getEventHandler().call(new PlayerChatEvent(this.player, chatMessage.message()))
+    this.server.eventHandler().call(new PlayerChatEvent(this.player, chatMessage.message()))
         .exceptionally(throwable -> {
           LOGGER.error("Exception while handling PlayerChatEvent for " + this.player.name(),
               throwable);
@@ -122,26 +122,28 @@ public final class PlayPacketHandler extends PacketHandler {
   public boolean handle(CommandSuggestionsRequest request) {
     final var command = request.text();
     final var start = command.lastIndexOf(CommandDispatcher.ARGUMENT_SEPARATOR_CHAR) + 1;
-      this.server.getCommandHandler().suggestions(this.player, command.substring(1))
-          .thenAcceptAsync(suggestions -> this.player.send(
-                  new CommandSuggestionsResponse(request.transactionId(),
-                      start, command.length() - start, suggestions.getList())),
-              this.connection.executor())
-          .exceptionally(throwable -> {
-            LOGGER.error("Exception during suggestion response", throwable);
-            return null;
-          });
+    this.server.commandHandler().suggestions(this.player, command.substring(1))
+        .thenAcceptAsync(suggestions -> this.player.send(
+                new CommandSuggestionsResponse(request.transactionId(),
+                    start, command.length() - start, suggestions.getList())),
+            this.connection.executor())
+        .exceptionally(throwable -> {
+          LOGGER.error("Exception during suggestion response", throwable);
+          return null;
+        });
     return true;
   }
 
   @Override
   public boolean handle(ClickContainerButton clickContainerButton) {
-    if (this.player.openedContainer() == null) { // there should be a container
+    final var container = this.player.openedContainer();
+    if (container == null) { // there should be a container
       this.player.send(new CloseContainer(1));
       return true;
     }
-    this.server.getEventHandler()
-        .call(new PlayerClickContainerButtonEvent(this.player, clickContainerButton.buttonId()))
+    this.server.eventHandler()
+        .call(new PlayerClickContainerButtonEvent(this.player, container,
+            clickContainerButton.buttonId()))
         .exceptionally(throwable -> {
           LOGGER.error(
               "Exception while handling container click button for " + this.player.name(),
@@ -156,11 +158,11 @@ public final class PlayPacketHandler extends PacketHandler {
     final var inventory = this.player.inventory();
     final var container = (this.player.openedContainer() != null
         ? this.player.openedContainer() : inventory);
-    this.server.getEventHandler().call(
+    this.server.eventHandler().call(
             new PlayerClickContainerEvent(this.player, container, clickContainer.carriedItem(),
                 clickContainer.slot()))
         .thenAcceptAsync(event -> {
-          if (event.getResult().isDenied()) { // let's resend to override client prediction
+          if (event.result().denied()) { // let's resend to override client prediction
             if (container == inventory) {
               this.player.send(new ContainerContent((byte) 0, 1, inventory.items));
             } else {
@@ -311,13 +313,13 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   private void callBlockBreak(Position position) {
-    this.server.getEventHandler()
-        .call(new BlockBreakEvent(this.player, position, this.player.world().getBlock(position)))
+    this.server.eventHandler()
+        .call(new BlockBreakEvent(this.player, position, this.player.world().block(position)))
         .thenAcceptAsync(event -> {
-          if (event.getResult().isAllowed()) {
-            this.player.world().setBlock(position, Block.AIR);
+          if (event.result().allowed()) {
+            this.player.world().block(position, Block.AIR);
           } else {
-            this.player.world().getChunkAt((int) position.x(), (int) position.y())
+            this.player.world().chunkAt((int) position.x(), (int) position.y())
                 .send(this.player);
           }
         }, this.connection.executor())
@@ -362,7 +364,7 @@ public final class PlayPacketHandler extends PacketHandler {
   @Override
   public boolean handle(TeleportToEntity teleportToEntity) {
     if (this.player.gameMode() == GameMode.SPECTATOR) {
-      final var target = this.server.getPlayer(teleportToEntity.target());
+      final var target = this.server.player(teleportToEntity.target());
       if (target != null) {
         if (target.world() != this.player.world()) {
           this.player.world(target.world());
@@ -389,7 +391,7 @@ public final class PlayPacketHandler extends PacketHandler {
     final var inventory = this.player.inventory();
     final var slot = (useItemOn.hand() == 0 ? inventory.itemInHand()
         : inventory.itemInOffHand());
-    this.server.getEventHandler().call(new PlayerUseItemEvent(this.player, slot))
+    this.server.eventHandler().call(new PlayerUseItemEvent(this.player, slot))
         .thenAcceptAsync(event -> {
           if (slot.isEmpty()) {
             return;
@@ -405,7 +407,7 @@ public final class PlayPacketHandler extends PacketHandler {
             return;
           }
 
-          final var currentBlock = this.player.world().getBlock(position);
+          final var currentBlock = this.player.world().block(position);
           if (currentBlock != Block.AIR) {
             return; // block at position, don't set
           }
@@ -424,12 +426,12 @@ public final class PlayPacketHandler extends PacketHandler {
               default -> null;
             });
           }
-          this.server.getEventHandler().call(new BlockPlaceEvent(this.player, position, block))
+          this.server.eventHandler().call(new BlockPlaceEvent(this.player, position, block))
               .thenAcceptAsync(placeEvent -> {
-                if (placeEvent.getResult().isAllowed()) {
-                  this.player.world().setBlock(placeEvent.getPosition(), placeEvent.getBlock());
+                if (placeEvent.result().allowed()) {
+                  this.player.world().block(placeEvent.position(), placeEvent.block());
                 } else {
-                  this.player.send(new BlockUpdate(placeEvent.getPosition(), currentBlock.getId()));
+                  this.player.send(new BlockUpdate(placeEvent.position(), currentBlock.id()));
                 }
               }, this.connection.executor()).exceptionally(throwable -> {
                 LOGGER.error("Exception while handling block place for " + this.player.name(),
@@ -443,7 +445,7 @@ public final class PlayPacketHandler extends PacketHandler {
   @Override
   public boolean handle(UseItem useItem) {
     final var inventory = this.player.inventory();
-    this.server.getEventHandler().call(new PlayerUseItemEvent(this.player,
+    this.server.eventHandler().call(new PlayerUseItemEvent(this.player,
         (useItem.hand() == 0 ? inventory.itemInHand() : inventory.itemInOffHand())));
     return true;
   }

@@ -8,10 +8,10 @@ public interface Pillager extends Raider {
   /**
    * @since 1.0.0
    */
-  boolean isCharging();
+  boolean charging();
 
   /**
    * @since 1.0.0
    */
-  void setCharging(boolean charging);
+  void charging(boolean charging);
 }

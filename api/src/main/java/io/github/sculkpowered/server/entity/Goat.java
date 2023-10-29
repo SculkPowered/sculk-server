@@ -8,12 +8,12 @@ public interface Goat extends Animal {
   /**
    * @since 1.0.0
    */
-  boolean isScreamingGoat();
+  boolean isScreaming();
 
   /**
    * @since 1.0.0
    */
-  void setScreamingGoat(boolean screamingGoat);
+  void isScreaming(boolean screaming);
 
   /**
    * @since 1.0.0
@@ -23,7 +23,7 @@ public interface Goat extends Animal {
   /**
    * @since 1.0.0
    */
-  void setLeftHorn(boolean leftHorn);
+  void hasLeftHorn(boolean leftHorn);
 
   /**
    * @since 1.0.0
@@ -33,5 +33,5 @@ public interface Goat extends Animal {
   /**
    * @since 1.0.0
    */
-  void setRightHorn(boolean rightHorn);
+  void rightHorn(boolean rightHorn);
 }

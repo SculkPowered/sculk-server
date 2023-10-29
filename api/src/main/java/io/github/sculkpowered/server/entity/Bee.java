@@ -8,30 +8,30 @@ public interface Bee extends Animal {
   /**
    * @since 1.0.0
    */
-  boolean isAngry();
+  boolean angry();
 
   /**
    * @since 1.0.0
    */
-  void setAngry(boolean angry);
+  void angry(boolean angry);
 
   /**
    * @since 1.0.0
    */
-  boolean hasStung();
+  boolean stung();
 
   /**
    * @since 1.0.0
    */
-  void setStung(boolean stung);
+  void stung(boolean stung);
 
   /**
    * @since 1.0.0
    */
-  boolean hasNectar();
+  boolean nectar();
 
   /**
    * @since 1.0.0
    */
-  void setNectar(boolean nectar);
+  void nectar(boolean nectar);
 }

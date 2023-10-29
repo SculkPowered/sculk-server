@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public class SculkSkeleton extends AbstractMob implements Skeleton {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.SKELETON;
   }
 }

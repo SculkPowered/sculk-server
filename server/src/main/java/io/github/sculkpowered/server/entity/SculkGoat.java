@@ -5,17 +5,17 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkGoat extends AbstractAnimal implements Goat {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.GOAT;
   }
 
   @Override
-  public boolean isScreamingGoat() {
+  public boolean isScreaming() {
     return this.metadata.getBoolean(17, false);
   }
 
   @Override
-  public void setScreamingGoat(boolean screamingGoat) {
+  public void isScreaming(boolean screamingGoat) {
     this.metadata.setBoolean(17, screamingGoat);
   }
 
@@ -25,7 +25,7 @@ public final class SculkGoat extends AbstractAnimal implements Goat {
   }
 
   @Override
-  public void setLeftHorn(boolean leftHorn) {
+  public void hasLeftHorn(boolean leftHorn) {
     this.metadata.setBoolean(18, leftHorn);
   }
 
@@ -35,7 +35,7 @@ public final class SculkGoat extends AbstractAnimal implements Goat {
   }
 
   @Override
-  public void setRightHorn(boolean rightHorn) {
+  public void rightHorn(boolean rightHorn) {
     this.metadata.setBoolean(19, rightHorn);
   }
 }

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkWither extends AbstractMob implements Wither {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.WITHER;
   }
 }

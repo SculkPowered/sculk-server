@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SculkTraderLlama extends SculkLlama implements TraderLlama {
 
   @Override
-  public @NotNull EntityType getType() {
+  public @NotNull EntityType type() {
     return EntityType.TRADER_LLAMA;
   }
 }

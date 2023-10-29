@@ -17,7 +17,7 @@ public final class PlayerInfoRemove implements Packet {
   public void encode(Buffer buf) {
     buf.writeVarInt(this.entries.size());
     for (final var entry : this.entries) {
-      buf.writeUniqueId(entry.getProfile().uniqueId());
+      buf.writeUniqueId(entry.profile().uniqueId());
     }
   }
 
