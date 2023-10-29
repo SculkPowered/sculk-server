@@ -28,7 +28,7 @@ public abstract class AbstractEntity implements Entity {
   protected final Metadata metadata = new Metadata();
   protected final Set<SculkPlayer> viewers = new HashSet<>();
   protected SculkWorld world;
-  protected Position position = Position.ZERO;
+  protected Position position = Position.zero();
 
   public AbstractEntity() {
     this(UUID.randomUUID());

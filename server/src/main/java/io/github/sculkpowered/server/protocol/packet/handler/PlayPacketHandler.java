@@ -226,7 +226,7 @@ public final class PlayPacketHandler extends PacketHandler {
     this.player.sendViewers(new EntityPosition(this.player.id(),
         this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
         playerPosition.onGround()));
-    this.player.setPosition(new Position(x, y, z, position.yaw(), position.pitch()));
+    this.player.setPosition(Position.position(x, y, z, position.yaw(), position.pitch()));
     this.player.calculateChunks(position, this.player.position());
     return true;
   }
@@ -245,7 +245,7 @@ public final class PlayPacketHandler extends PacketHandler {
             this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
             yaw, pitch, playerPositionAndRotation.onGround()),
         new HeadRotation(this.player.id(), yaw));
-    this.player.setPosition(new Position(x, y, z, yaw, pitch));
+    this.player.setPosition(Position.position(x, y, z, yaw, pitch));
     this.player.calculateChunks(position, this.player.position());
     return true;
   }
@@ -260,7 +260,7 @@ public final class PlayPacketHandler extends PacketHandler {
         new EntityRotation(this.player.id(), yaw, pitch, playerRotation.onGround()),
         new HeadRotation(this.player.id(), yaw)
     );
-    this.player.setPosition(new Position(position.x(), position.y(), position.z(), yaw, pitch));
+    this.player.setPosition(Position.position(position.x(), position.y(), position.z(), yaw, pitch));
     return true;
   }
 

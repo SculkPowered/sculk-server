@@ -221,7 +221,7 @@ public final class Buffer {
     if (!this.readBoolean()) {
       return ItemStack.empty();
     }
-    return ItemStack.of(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
+    return ItemStack.itemStack(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
   }
 
   public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
@@ -239,7 +239,7 @@ public final class Buffer {
 
   public Position readPosition() {
     final var value = this.readLong();
-    return new Position(value >> 38, value << 52 >> 52, value << 26 >> 38);
+    return Position.position(value >> 38, value << 52 >> 52, value << 26 >> 38);
   }
 
   public @NotNull Buffer writePosition(final @NotNull Position position) {

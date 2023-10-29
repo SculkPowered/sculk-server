@@ -3,10 +3,10 @@ package io.github.sculkpowered.server.world;
 import com.github.luben.zstd.Zstd;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.entity.Entity;
+import io.github.sculkpowered.server.util.Constants;
 import io.github.sculkpowered.server.world.chunk.SculkChunk;
 import io.github.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import io.github.sculkpowered.server.world.section.Section;
-import io.github.sculkpowered.server.util.Constants;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -121,8 +121,9 @@ public final class SlimeFormat {
         final var pos = entityCompound.getList("Pos");
         final var rotation = entityCompound.getList("Rotation");
 
-        world.spawnEntity(entity, new Position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
-            rotation.getFloat(0), rotation.getFloat(1)));
+        world.spawnEntity(entity,
+            Position.position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
+                rotation.getFloat(0), rotation.getFloat(1)));
       } catch (ClassNotFoundException e) {
         LOGGER.error("Couldn't find entity " + id, e);
       }

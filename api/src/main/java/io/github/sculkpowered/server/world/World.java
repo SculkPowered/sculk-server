@@ -171,7 +171,7 @@ public interface World {
     private Dimension dimension = Dimension.OVERWORLD;
     private WorldLoader loader;
     private ChunkGenerator generator = VoidGenerator.INSTANCE;
-    private Position spawnPosition = Position.ZERO;
+    private Position spawnPosition = Position.zero();
     private GameMode defaultGameMode = GameMode.SURVIVAL;
 
     public @NotNull Builder name(@NotNull String name) {

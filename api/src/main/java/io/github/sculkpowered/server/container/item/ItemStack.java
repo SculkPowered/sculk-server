@@ -16,7 +16,7 @@ public class ItemStack {
   /**
    * The default item.
    */
-  private static final ItemStack EMPTY = ItemStack.of(Material.AIR, 0);
+  private static final ItemStack EMPTY = ItemStack.itemStack(Material.AIR, 0);
 
   private final Material material;
   private int amount;
@@ -140,15 +140,15 @@ public class ItemStack {
     this.nbt = this.nbt.put("display", tag.put(key, value));
   }
 
-  public static @NotNull ItemStack of(final @NotNull Material material) {
+  public static @NotNull ItemStack itemStack(final @NotNull Material material) {
     return new ItemStack(material);
   }
 
-  public static @NotNull ItemStack of(final @NotNull Material material, final int amount) {
+  public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount) {
     return new ItemStack(material, amount);
   }
 
-  public static @NotNull ItemStack of(final @NotNull Material material, final int amount,
+  public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount,
       final CompoundBinaryTag nbt) {
     return new ItemStack(material, amount, nbt);
   }

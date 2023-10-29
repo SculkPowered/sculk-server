@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Position {
 
-  public static final Position ZERO = new Position(0, 0, 0);
+  private static final Position ZERO = Position.position(0, 0, 0);
 
   private final double x;
   private final double y;
@@ -15,11 +15,7 @@ public class Position {
   private final float yaw;
   private final float pitch;
 
-  public Position(final double x, final double y, final double z) {
-    this(x, y, z, 0F, 0F);
-  }
-
-  public Position(
+  private Position(
       final double x,
       final double y,
       final double z,
@@ -108,5 +104,23 @@ public class Position {
         ", yaw=" + this.yaw +
         ", pitch=" + this.pitch +
         '}';
+  }
+
+  public static @NotNull Position position(final double x, final double y, final double z) {
+    return Position.position(x, y, z, 0F, 0F);
+  }
+
+  public static @NotNull Position position(
+      final double x,
+      final double y,
+      final double z,
+      final float yaw,
+      final float pitch
+  ) {
+    return new Position(x, y, z, yaw, pitch);
+  }
+
+  public static @NotNull Position zero() {
+    return ZERO;
   }
 }
