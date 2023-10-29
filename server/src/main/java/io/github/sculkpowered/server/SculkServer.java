@@ -23,6 +23,7 @@ import io.github.sculkpowered.server.damage.DamageTypeRegistry;
 import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.EntityClassToSupplierMap;
 import io.github.sculkpowered.server.entity.player.GameProfile;
+import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.event.SculkEventHandler;
@@ -51,7 +52,6 @@ import io.github.sculkpowered.server.world.chunk.loader.ChunkLoader;
 import io.github.sculkpowered.server.world.chunk.loader.DefaultChunkLoader;
 import io.github.sculkpowered.server.world.dimension.Dimension;
 import io.github.sculkpowered.server.world.dimension.DimensionRegistry;
-import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.netty.channel.epoll.Epoll;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
@@ -67,6 +67,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -170,25 +171,36 @@ public final class SculkServer implements MinecraftServer {
     LOGGER.info("Shutting down...");
     this.running = false;
 
-    try {
-      this.nettyServer.close();
+    this.nettyServer.close();
 
-      final var component = Component.text("Shutting down...", NamedTextColor.RED);
-      for (final var player : this.players.values()) {
-        player.disconnect(component);
+    final var component = Component.text("Shutting down...", NamedTextColor.RED);
+    for (final var player : this.players.values()) {
+      player.disconnect(component);
+    }
+
+    for (final var world : this.worlds.values()) {
+      world.setAlive(false);
+    }
+
+    this.eventHandler.call(new ServerShutdownEvent()).join();
+
+    final var plugins = this.pluginHandler.getPlugins();
+    final var iterator = plugins.iterator();
+    while (iterator.hasNext()) {
+      final var plugin = iterator.next();
+      if (plugin.hasExecutorService()) {
+        plugin.getExecutorService().shutdown();
+      } else {
+        iterator.remove();
       }
-
-      for (final var world : this.worlds.values()) {
-        world.setAlive(false);
-      }
-
-      this.eventHandler.call(new ServerShutdownEvent()).join();
-
-      if (!this.eventHandler.shutdown()) {
+    }
+    for (final var plugin : plugins) {
+      try {
+        plugin.getExecutorService().awaitTermination(10, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
         LOGGER.info("Something took over 10 seconds to shutdown!");
+        Thread.currentThread().interrupt();
       }
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
     }
 
     LogManager.shutdown(false);
@@ -379,7 +391,7 @@ public final class SculkServer implements MinecraftServer {
   }
 
   public void addPlayer(final SculkPlayer player) {
-    this.players.put(player.getUniqueId(), player);
+    this.players.put(player.uniqueId(), player);
   }
 
   public void removePlayer(final UUID uniqueId) {

@@ -3,15 +3,11 @@ package io.github.sculkpowered.server.event;
 import io.github.sculkpowered.server.plugin.Plugin;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
@@ -23,10 +19,6 @@ public final class SculkEventHandler implements EventHandler {
   private static final Logger LOGGER = LogManager.getLogger(SculkEventHandler.class);
 
   private final Map<Class<?>, Registration[]> registrations = new HashMap<>();
-  private final ExecutorService executor = Executors.newFixedThreadPool(
-      Runtime.getRuntime().availableProcessors(), new EventThreadFactory());
-  private final Comparator<Registration> orderComparator = Comparator.comparingInt(
-      Registration::order);
 
   @Override
   public void register(@NotNull Plugin plugin, @NotNull Object listener) {
@@ -34,7 +26,8 @@ public final class SculkEventHandler implements EventHandler {
       final var annotation = method.getAnnotation(Subscribe.class);
       if (annotation != null) {
         if (method.getParameterCount() == 1) {
-          this.register(plugin, method.getParameters()[0].getType(), annotation.order(), listener,
+          this.register(plugin, method.getParameters()[0].getType(),
+              annotation.order(), annotation.async(), listener,
               object -> {
                 try {
                   method.invoke(listener, object);
@@ -51,32 +44,24 @@ public final class SculkEventHandler implements EventHandler {
   }
 
   @Override
-  public void register(@NotNull Plugin plugin, @NotNull Object... listeners) {
-    for (final var listener : listeners) {
-      this.register(plugin, listener);
-    }
-  }
-
-  @Override
   public <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, short eventOrder,
       @NotNull Consumer<E> eventConsumer) {
-    this.register(plugin, event, eventOrder, eventConsumer, eventConsumer);
+    this.register(plugin, event, eventOrder, false, eventConsumer, eventConsumer);
   }
 
   @SuppressWarnings("unchecked")
   private <E> void register(@NotNull Plugin plugin, @NotNull Class<E> event, short order,
-      @NotNull Object instance, @NotNull Consumer<E> eventConsumer) {
-    final var array = this.registrations.get(event);
-    final List<Registration> registrations;
-    if (array != null) {
-      registrations = new ArrayList<>(array.length + 1);
-      Collections.addAll(registrations, array);
+      boolean async, @NotNull Object instance, @NotNull Consumer<E> eventConsumer) {
+    var registrations = this.registrations.get(event);
+    if (registrations != null) {
+      registrations = Arrays.copyOf(registrations, registrations.length + 1);
     } else {
-      registrations = new ArrayList<>(1);
+      registrations = new Registration[1];
     }
-    registrations.add(new Registration(plugin, order, instance, (Consumer<Object>) eventConsumer));
-    registrations.sort(this.orderComparator);
-    this.registrations.put(event, registrations.toArray(new Registration[0]));
+    registrations[registrations.length - 1] = new Registration(plugin, order, async, instance,
+        (Consumer<Object>) eventConsumer);
+    Arrays.sort(registrations);
+    this.registrations.put(event, registrations);
   }
 
   @Override
@@ -104,41 +89,36 @@ public final class SculkEventHandler implements EventHandler {
       return CompletableFuture.completedFuture(event);
     }
     final var future = new CompletableFuture<E>();
-    this.executor.execute(() -> this.call(event, future));
+    this.call(event, future);
     return future;
   }
 
   @Override
   public <E> void justCall(E event) {
     if (this.registrations.containsKey(event.getClass())) {
-      this.executor.execute(() -> this.call(event, null));
-    }
-  }
-
-  @Override
-  public <E> E callSync(E event) {
-    if (this.registrations.containsKey(event.getClass())) {
       this.call(event, null);
     }
-    return event;
-  }
-
-  public boolean shutdown() throws InterruptedException {
-    this.executor.shutdown();
-    return this.executor.awaitTermination(10, TimeUnit.SECONDS);
   }
 
   private <E> void call(E event, CompletableFuture<E> future) {
     for (final var registration : this.registrations.get(event.getClass())) {
-      registration.consumer.accept(event);
+      if (registration.async) {
+        registration.plugin.getExecutorService().execute(() -> registration.consumer.accept(event));
+      } else {
+        registration.consumer.accept(event);
+      }
     }
     if (future != null) {
       future.complete(event);
     }
   }
 
-  private record Registration(Plugin plugin, short order, Object instance,
-                              Consumer<Object> consumer) {
+  private record Registration(Plugin plugin, short order, boolean async, Object instance,
+                              Consumer<Object> consumer) implements Comparable<Registration> {
 
+    @Override
+    public int compareTo(@NotNull SculkEventHandler.Registration other) {
+      return this.order - other.order;
+    }
   }
 }

@@ -12,6 +12,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Subscribe {
 
+  /**
+   * The order of the listener.
+   *
+   * @return the order.
+   */
   short order() default EventOrder.NORMAL;
+
+  /**
+   * Whether the listener should be called async.
+   *
+   * @return whether the listener should be async.
+   */
+  boolean async() default false;
 
 }

@@ -20,15 +20,6 @@ public interface EventHandler {
   void register(@NotNull Plugin plugin, @NotNull Object listener);
 
   /**
-   * Registers the event listeners.
-   *
-   * @param plugin    the plugin that registers the event listener
-   * @param listeners the listeners
-   * @since 1.0.0
-   */
-  void register(@NotNull Plugin plugin, @NotNull Object... listeners);
-
-  /**
    * Registers an event listener consumer.
    *
    * @param plugin        the plugin that registers the event listener
@@ -90,14 +81,4 @@ public interface EventHandler {
    * @since 1.0.0
    */
   <E> void justCall(E event);
-
-  /**
-   * Calls the event sync.
-   *
-   * @param event the event to call
-   * @param <E>   the event type to call
-   * @return the called event.
-   * @since 1.0.0
-   */
-  <E> E callSync(E event);
 }

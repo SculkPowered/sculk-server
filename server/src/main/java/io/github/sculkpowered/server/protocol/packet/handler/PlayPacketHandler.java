@@ -97,7 +97,7 @@ public final class PlayPacketHandler extends PacketHandler {
   public boolean handle(ChatMessage chatMessage) {
     this.server.getEventHandler().call(new PlayerChatEvent(this.player, chatMessage.message()))
         .exceptionally(throwable -> {
-          LOGGER.error("Exception while handling PlayerChatEvent for " + this.player.getUsername(),
+          LOGGER.error("Exception while handling PlayerChatEvent for " + this.player.name(),
               throwable);
           return null;
         });
@@ -136,7 +136,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(ClickContainerButton clickContainerButton) {
-    if (this.player.getOpenedContainer() == null) { // there should be a container
+    if (this.player.openedContainer() == null) { // there should be a container
       this.player.send(new CloseContainer(1));
       return true;
     }
@@ -144,7 +144,7 @@ public final class PlayPacketHandler extends PacketHandler {
         .call(new PlayerClickContainerButtonEvent(this.player, clickContainerButton.buttonId()))
         .exceptionally(throwable -> {
           LOGGER.error(
-              "Exception while handling container click button for " + this.player.getUsername(),
+              "Exception while handling container click button for " + this.player.name(),
               throwable);
           return null;
         });
@@ -153,9 +153,9 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(ClickContainer clickContainer) {
-    final var inventory = this.player.getInventory();
-    final var container = (this.player.getOpenedContainer() != null
-        ? this.player.getOpenedContainer() : inventory);
+    final var inventory = this.player.inventory();
+    final var container = (this.player.openedContainer() != null
+        ? this.player.openedContainer() : inventory);
     this.server.getEventHandler().call(
             new PlayerClickContainerEvent(this.player, container, clickContainer.carriedItem(),
                 clickContainer.slot()))
@@ -165,9 +165,9 @@ public final class PlayPacketHandler extends PacketHandler {
               this.player.send(new ContainerContent((byte) 0, 1, inventory.items));
             } else {
               final var sculkContainer = (SculkContainer) container;
-              final var items = new ItemList(container.getType().size() + 36);
+              final var items = new ItemList(container.type().size() + 36);
               for (var i = 8; i < 44; i++) {
-                items.set(i - 9 + container.getType().size(), inventory.items.get(i));
+                items.set(i - 9 + container.type().size(), inventory.items.get(i));
               }
               for (var i = 0; i < sculkContainer.items.size(); i++) {
                 items.set(i, sculkContainer.items.get(i));
@@ -181,7 +181,7 @@ public final class PlayPacketHandler extends PacketHandler {
           }
         }, this.connection.executor())
         .exceptionally(throwable -> {
-          LOGGER.error("Exception while handling container click for " + this.player.getUsername(),
+          LOGGER.error("Exception while handling container click for " + this.player.name(),
               throwable);
           return null;
         });
@@ -190,8 +190,8 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(CloseContainer closeContainer) {
-    if (this.player.getOpenedContainer() != null) {
-      this.player.getOpenedContainer().removeViewer(this.player);
+    if (this.player.openedContainer() != null) {
+      this.player.openedContainer().removeViewer(this.player);
       this.player.setContainer(null);
     }
     return true;
@@ -220,12 +220,12 @@ public final class PlayPacketHandler extends PacketHandler {
     final var y = playerPosition.y();
     final var z = playerPosition.z();
 
-    final var position = this.player.getPosition();
-    this.player.sendViewers(new EntityPosition(this.player.getId(),
+    final var position = this.player.position();
+    this.player.sendViewers(new EntityPosition(this.player.id(),
         this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
         playerPosition.onGround()));
     this.player.setPosition(new Position(x, y, z, position.yaw(), position.pitch()));
-    this.player.calculateChunks(position, this.player.getPosition());
+    this.player.calculateChunks(position, this.player.position());
     return true;
   }
 
@@ -237,14 +237,14 @@ public final class PlayPacketHandler extends PacketHandler {
     final var yaw = playerPositionAndRotation.yaw();
     final var pitch = playerPositionAndRotation.pitch();
 
-    final var position = this.player.getPosition();
+    final var position = this.player.position();
     this.player.sendViewers(
-        new EntityPositionAndRotation(this.player.getId(),
+        new EntityPositionAndRotation(this.player.id(),
             this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
             yaw, pitch, playerPositionAndRotation.onGround()),
-        new HeadRotation(this.player.getId(), yaw));
+        new HeadRotation(this.player.id(), yaw));
     this.player.setPosition(new Position(x, y, z, yaw, pitch));
-    this.player.calculateChunks(position, this.player.getPosition());
+    this.player.calculateChunks(position, this.player.position());
     return true;
   }
 
@@ -253,10 +253,10 @@ public final class PlayPacketHandler extends PacketHandler {
     final var yaw = playerRotation.yaw();
     final var pitch = playerRotation.pitch();
 
-    final var position = this.player.getPosition();
+    final var position = this.player.position();
     this.player.sendViewers(
-        new EntityRotation(this.player.getId(), yaw, pitch, playerRotation.onGround()),
-        new HeadRotation(this.player.getId(), yaw)
+        new EntityRotation(this.player.id(), yaw, pitch, playerRotation.onGround()),
+        new HeadRotation(this.player.id(), yaw)
     );
     this.player.setPosition(new Position(position.x(), position.y(), position.z(), yaw, pitch));
     return true;
@@ -277,7 +277,7 @@ public final class PlayPacketHandler extends PacketHandler {
   public boolean handle(PlayerAction playerAction) {
     switch (playerAction.status()) {
       case 0 -> { // started digging
-        if (this.player.canInstantBreak()) {
+        if (this.player.instantBreak()) {
           this.callBlockBreak(playerAction.position());
         }
       }
@@ -285,23 +285,26 @@ public final class PlayPacketHandler extends PacketHandler {
 
       }
       case 2 -> this.callBlockBreak(playerAction.position()); // finished digging
-      case 3 -> this.player.getInventory()
-          .setItem(this.player.getHeldItemSlot(), ItemStack.empty()); // drop stack
+      case 3 -> this.player.inventory()
+          .item(this.player.heldItemSlot(), ItemStack.empty()); // drop stack
       case 4 -> { // drop item
-        final var itemInHand = this.player.getInventory().getItemInMainHand();
+        final var itemInHand = this.player.inventory().itemInHand();
         if (!itemInHand.isEmpty()) {
           itemInHand.amount(itemInHand.amount() - 1);
+          if (itemInHand.amount() < 1) {
+            this.player.inventory().item(this.player.heldItemSlot(), ItemStack.empty());
+          }
         }
       }
       case 5 -> { // shoot arrow / finish eating
 
       }
       case 6 -> { // swap item
-        final var inventory = this.player.getInventory();
-        final var itemInMainHand = inventory.getItemInMainHand();
-        final var itemInOffHand = inventory.getItemInOffHand();
-        inventory.setItem(this.player.getHeldItemSlot(), itemInOffHand);
-        inventory.setItemInOffHand(itemInMainHand);
+        final var inventory = this.player.inventory();
+        final var itemInMainHand = inventory.itemInHand();
+        final var itemInOffHand = inventory.itemInOffHand();
+        inventory.item(this.player.heldItemSlot(), itemInOffHand);
+        inventory.itemInOffHand(itemInMainHand);
       }
     }
     return true;
@@ -309,17 +312,17 @@ public final class PlayPacketHandler extends PacketHandler {
 
   private void callBlockBreak(Position position) {
     this.server.getEventHandler()
-        .call(new BlockBreakEvent(this.player, position, this.player.getWorld().getBlock(position)))
+        .call(new BlockBreakEvent(this.player, position, this.player.world().getBlock(position)))
         .thenAcceptAsync(event -> {
           if (event.getResult().isAllowed()) {
-            this.player.getWorld().setBlock(position, Block.AIR);
+            this.player.world().setBlock(position, Block.AIR);
           } else {
-            this.player.getWorld().getChunkAt((int) position.x(), (int) position.y())
+            this.player.world().getChunkAt((int) position.x(), (int) position.y())
                 .send(this.player);
           }
         }, this.connection.executor())
         .exceptionally(throwable -> {
-          LOGGER.error("Exception while block break from " + this.player.getUsername(), throwable);
+          LOGGER.error("Exception while block break from " + this.player.name(), throwable);
           return null;
         });
   }
@@ -327,8 +330,8 @@ public final class PlayPacketHandler extends PacketHandler {
   @Override
   public boolean handle(PlayerCommand playerCommand) {
     switch (playerCommand.action()) {
-      case START_SNEAKING -> this.player.setPose(Entity.Pose.SNEAKING);
-      case STOP_SNEAKING -> this.player.setPose(Entity.Pose.STANDING);
+      case START_SNEAKING -> this.player.pose(Entity.Pose.SNEAKING);
+      case STOP_SNEAKING -> this.player.pose(Entity.Pose.STANDING);
     }
     return true;
   }
@@ -341,32 +344,32 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(CreativeModeSlot creativeModeSlot) {
-    if (this.player.getGameMode() != GameMode.CREATIVE) {
-      LOGGER.info(this.player.getUsername() + " tried to set a slot, but is not in creative mode.");
+    if (this.player.gameMode() != GameMode.CREATIVE) {
+      LOGGER.info(this.player.name() + " tried to set a slot, but is not in creative mode.");
       return false;
     }
-    this.player.getInventory().items.set(creativeModeSlot.slot(), creativeModeSlot.clickedItem());
+    this.player.inventory().items.set(creativeModeSlot.slot(), creativeModeSlot.clickedItem());
     return true;
   }
 
   @Override
   public boolean handle(SwingArm swingArm) {
     this.player.sendViewers(
-        new EntityAnimation(this.player.getId(), (byte) (swingArm.hand() == 1 ? 3 : 0)));
+        new EntityAnimation(this.player.id(), (byte) (swingArm.hand() == 1 ? 3 : 0)));
     return true;
   }
 
   @Override
   public boolean handle(TeleportToEntity teleportToEntity) {
-    if (this.player.getGameMode() == GameMode.SPECTATOR) {
+    if (this.player.gameMode() == GameMode.SPECTATOR) {
       final var target = this.server.getPlayer(teleportToEntity.target());
       if (target != null) {
-        if (target.getWorld() != this.player.getWorld()) {
-          this.player.setWorld(target.getWorld());
+        if (target.world() != this.player.world()) {
+          this.player.world(target.world());
         }
-        final var old = this.player.getPosition();
-        final var position = target.getPosition();
-        this.player.send(new EntityPositionAndRotation(this.player.getId(),
+        final var old = this.player.position();
+        final var position = target.position();
+        this.player.send(new EntityPositionAndRotation(this.player.id(),
             this.delta(old.x(), position.x()),
             this.delta(old.y(), position.y()),
             this.delta(old.y(), position.y()),
@@ -376,33 +379,33 @@ public final class PlayPacketHandler extends PacketHandler {
         ));
       }
     } else {
-      LOGGER.info(this.player.getUsername() + " tried to teleport, but is not in spectator mode.");
+      LOGGER.info(this.player.name() + " tried to teleport, but is not in spectator mode.");
     }
     return true;
   }
 
   @Override
   public boolean handle(UseItemOn useItemOn) {
-    final var inventory = this.player.getInventory();
-    final var slot = (useItemOn.hand() == 0 ? inventory.getItemInMainHand()
-        : inventory.getItemInOffHand());
+    final var inventory = this.player.inventory();
+    final var slot = (useItemOn.hand() == 0 ? inventory.itemInHand()
+        : inventory.itemInOffHand());
     this.server.getEventHandler().call(new PlayerUseItemEvent(this.player, slot))
         .thenAcceptAsync(event -> {
           if (slot.isEmpty()) {
             return;
           }
           var position = this.calculatePosition(useItemOn.position(), useItemOn.face());
-          if (this.player.getOpenedContainer() != null) {
+          if (this.player.openedContainer() != null) {
             this.player.send(new BlockAcknowledge(useItemOn.sequence()));
             if (useItemOn.hand() == 0) {
-              inventory.setItemInMainHand(slot);
+              inventory.itemInHand(slot);
             } else {
-              inventory.setItemInOffHand(slot);
+              inventory.itemInOffHand(slot);
             }
             return;
           }
 
-          final var currentBlock = this.player.getWorld().getBlock(position);
+          final var currentBlock = this.player.world().getBlock(position);
           if (currentBlock != Block.AIR) {
             return; // block at position, don't set
           }
@@ -412,7 +415,7 @@ public final class PlayPacketHandler extends PacketHandler {
           }
           if (block instanceof BlockState.Facing<?> facing) { // let's set the correct facing
             final var rotation =
-                (int) Math.floor(this.player.getPosition().yaw() / 90.0D + 0.5D) & 3;
+                (int) Math.floor(this.player.position().yaw() / 90.0D + 0.5D) & 3;
             block = facing.facing(switch (rotation % 4) {
               case 0 -> SOUTH;
               case 1 -> WEST;
@@ -424,12 +427,12 @@ public final class PlayPacketHandler extends PacketHandler {
           this.server.getEventHandler().call(new BlockPlaceEvent(this.player, position, block))
               .thenAcceptAsync(placeEvent -> {
                 if (placeEvent.getResult().isAllowed()) {
-                  this.player.getWorld().setBlock(placeEvent.getPosition(), placeEvent.getBlock());
+                  this.player.world().setBlock(placeEvent.getPosition(), placeEvent.getBlock());
                 } else {
                   this.player.send(new BlockUpdate(placeEvent.getPosition(), currentBlock.getId()));
                 }
               }, this.connection.executor()).exceptionally(throwable -> {
-                LOGGER.error("Exception while handling block place for " + this.player.getUsername(),
+                LOGGER.error("Exception while handling block place for " + this.player.name(),
                     throwable);
                 return null;
               });
@@ -439,9 +442,9 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(UseItem useItem) {
-    final var inventory = this.player.getInventory();
+    final var inventory = this.player.inventory();
     this.server.getEventHandler().call(new PlayerUseItemEvent(this.player,
-        (useItem.hand() == 0 ? inventory.getItemInMainHand() : inventory.getItemInOffHand())));
+        (useItem.hand() == 0 ? inventory.itemInHand() : inventory.itemInOffHand())));
     return true;
   }
 
