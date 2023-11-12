@@ -2,7 +2,9 @@ package io.github.sculkpowered.server.world.block;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.StringBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 class SculkBlockState implements BlockState {
@@ -18,13 +20,25 @@ class SculkBlockState implements BlockState {
   }
 
   @Override
-  public @NotNull String key() {
-    return this.block.name();
+  public @NotNull Key key() {
+    return this.block.key();
   }
 
   @Override
   public int id() {
     return this.id;
+  }
+
+  @Override
+  public @NotNull CompoundBinaryTag asNBT() {
+    final var properties = CompoundBinaryTag.builder();
+    for (final var entry : this.properties().entrySet()) {
+      properties.put(entry.getKey(), StringBinaryTag.stringBinaryTag(entry.getValue()));
+    }
+    return CompoundBinaryTag.builder()
+        .putString("Name", this.name())
+        .put("Properties", properties.build())
+        .build();
   }
 
   @Override

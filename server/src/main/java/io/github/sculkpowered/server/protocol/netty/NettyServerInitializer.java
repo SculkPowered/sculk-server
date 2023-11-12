@@ -18,13 +18,11 @@ import io.github.sculkpowered.server.protocol.netty.codec.VarIntLengthEncoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 
-public final class NettyServerInitializer extends ChannelInitializer<Channel> {
-
-  public static final boolean IS_JAVA_CIPHER = Natives.cipher.get() == JavaVelocityCipher.FACTORY;
+final class NettyServerInitializer extends ChannelInitializer<Channel> {
 
   private final SculkServer server;
 
-  public NettyServerInitializer(final SculkServer server) {
+  NettyServerInitializer(final SculkServer server) {
     this.server = server;
   }
 

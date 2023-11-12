@@ -1,9 +1,10 @@
 package io.github.sculkpowered.server.protocol.netty.codec;
 
+import static io.github.sculkpowered.server.util.Constants.IS_JAVA_CIPHER;
+
 import com.velocitypowered.natives.compression.VelocityCompressor;
 import com.velocitypowered.natives.util.MoreByteBufUtils;
 import io.github.sculkpowered.server.MinecraftConfig;
-import io.github.sculkpowered.server.protocol.netty.NettyServerInitializer;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -49,7 +50,7 @@ public final class CompressorEncoder extends MessageToByteEncoder<ByteBuf> {
     var size = buf.readableBytes();
     if (size < this.threshold) {
       size += 1 + PacketUtils.varIntLength(size + 1);
-      return NettyServerInitializer.IS_JAVA_CIPHER ? ctx.alloc().heapBuffer(size)
+      return IS_JAVA_CIPHER ? ctx.alloc().heapBuffer(size)
           : ctx.alloc().directBuffer(size);
     } else {
       size += 2 + PacketUtils.varIntLength(size);

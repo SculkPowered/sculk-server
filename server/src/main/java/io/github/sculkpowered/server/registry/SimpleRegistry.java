@@ -11,10 +11,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class SimpleRegistry<E extends Registry.Entry> implements Registry<E> {
 
-  private final Map<String, E> byKey = new HashMap<>();
-  private final Int2ObjectMap<E> byId = new Int2ObjectOpenHashMap<>();
-  private final String type;
-  private final E def;
+  protected final Map<String, E> byKey = new HashMap<>();
+  protected final Int2ObjectMap<E> byId = new Int2ObjectOpenHashMap<>();
+  protected final String type;
+  protected E def;
+
+  public SimpleRegistry(@NotNull String type) {
+    this.type = type;
+  }
 
   public SimpleRegistry(@NotNull String type, @NotNull E def) {
     this.type = type;

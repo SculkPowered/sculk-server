@@ -1028,7 +1028,7 @@ public final class Block {
    * @return the block of the name
    */
   public static BlockState get(final @NotNull String name) {
-    return Blocks.get(name);
+    return Blocks.registry().get(name);
   }
 
   /**
@@ -1038,7 +1038,7 @@ public final class Block {
    * @return the block of the id
    */
   public static BlockState get(final int id) {
-    return Blocks.get(id);
+    return Blocks.registry().get(id);
   }
 
   public interface Entity<B extends BlockState> extends BlockState {

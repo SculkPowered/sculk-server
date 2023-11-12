@@ -44,7 +44,7 @@ public final class SculkPluginHandler implements PluginHandler {
       for (final var path : stream) {
         this.loadPlugin(path);
       }
-      LOGGER.info("Loaded " + this.plugins.size() + " plugin");
+      LOGGER.info("Loaded " + this.plugins.size() + " plugins");
     } catch (IOException e) {
       LOGGER.error("Error during loading of plugins", e);
     }

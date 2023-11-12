@@ -1,9 +1,13 @@
 package io.github.sculkpowered.server.world;
 
+import static io.github.sculkpowered.server.util.Constants.EMPTY_BYTE_ARRAY;
+import static io.github.sculkpowered.server.util.CoordinateUtil.chunkPositionXFromBlockIndex;
+import static io.github.sculkpowered.server.util.CoordinateUtil.chunkPositionYFromBlockIndex;
+import static io.github.sculkpowered.server.util.CoordinateUtil.chunkPositionZFromBlockIndex;
+
 import com.github.luben.zstd.Zstd;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.entity.Entity;
-import io.github.sculkpowered.server.util.Constants;
 import io.github.sculkpowered.server.world.chunk.SculkChunk;
 import io.github.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import io.github.sculkpowered.server.world.section.Section;
@@ -26,7 +30,9 @@ import org.apache.logging.log4j.Logger;
 public final class SlimeFormat {
 
   private static final short HEADER = (short) 0xB10B;
-  private static final byte VERSION = 0x0A;
+  private static final byte VERSION_10 = 0x0A;
+  private static final byte VERSION_11 = 0x0B;
+  private static final int LIGHT_SIZE = 2048;
   private static final Logger LOGGER = LogManager.getLogger(SlimeFormat.class);
 
   // LOADING
@@ -40,25 +46,18 @@ public final class SlimeFormat {
       if (inputStream.readShort() != HEADER) {
         throw new AssertionError();
       }
-      if (inputStream.readUnsignedByte() != VERSION) {
-        throw new UnsupportedOperationException("Currently only slime version 10 is supported!");
+      final var version = inputStream.readUnsignedByte();
+      if (version != VERSION_10 && version != VERSION_11) {
+        throw new UnsupportedOperationException(
+            "Currently only slime version 10 and 11 are supported!");
       }
-      inputStream.readInt();
-      readChunks(server, world, readCompressed(inputStream));
+      inputStream.readInt(); // world version
 
-      final var tileEntityData = readCompressed(inputStream);
-      if (loader.blockEntities()) {
-        final var tileEntities = readCompound(tileEntityData);
-        for (final var tiles : tileEntities.getList("tiles")) {
-          final var tilesCompound = (CompoundBinaryTag) tiles;
-          AnvilLoader.loadBlockEntity(world
-              .chunkAt(tilesCompound.getInt("x"), tilesCompound.getInt("z")), tilesCompound);
-        }
-      }
-
-      final var entityData = readCompressed(inputStream);
-      if (loader.entities()) {
-        loadEntities(server, world, readCompound(entityData));
+      if (version == VERSION_10) {
+        readChunks10(server, world, readCompressed(inputStream));
+        readEntities(server, world, loader, inputStream);
+      } else {
+        readChunks11(server, world, loader, readCompressed(inputStream));
       }
       readCompressed(inputStream);
     } catch (IOException e) {
@@ -66,7 +65,7 @@ public final class SlimeFormat {
     }
   }
 
-  private static void readChunks(final SculkServer server, final SculkWorld world,
+  private static void readChunks10(final SculkServer server, final SculkWorld world,
       final byte[] bytes) {
     try (final var inputStream = new DataInputStream(new ByteArrayInputStream(bytes))) {
       final var chunks = inputStream.readInt();
@@ -75,36 +74,75 @@ public final class SlimeFormat {
         final var z = inputStream.readInt();
 
         final var heightmaps = readCompound(inputStream);
-
-        final var sections = new Section[inputStream.readInt()];
-        for (var j = 0; j < sections.length; j++) {
-          byte[] blockLight = Constants.EMPTY_BYTE_ARRAY;
-          if (inputStream.readBoolean()) {
-            blockLight = new byte[2048];
-            if (inputStream.read(blockLight) != 2048) {
-              throw new AssertionError();
-            }
-          }
-          byte[] skyLight = Constants.EMPTY_BYTE_ARRAY;
-          if (inputStream.readBoolean()) {
-            skyLight = new byte[2048];
-            if (inputStream.read(skyLight) != 2048) {
-              throw new AssertionError();
-            }
-          }
-
-          final var section = new Section(blockLight, skyLight);
-
-          final var blockData = readCompound(inputStream);
-          AnvilLoader.loadBlocks(section, blockData.getList("palette"), blockData);
-          AnvilLoader.loadBiomes(server, section, readCompound(inputStream));
-
-          sections[j] = section;
-        }
+        final var sections = readSections(server, inputStream);
         world.putChunk(new SculkChunk(world, x, z, sections, heightmaps));
       }
     } catch (IOException e) {
       LOGGER.error("Couldn't read slime chunks", e);
+    }
+  }
+
+  private static void readChunks11(final SculkServer server, final SculkWorld world,
+      final WorldLoader.Slime loader, final byte[] bytes) {
+    try (final var inputStream = new DataInputStream(new ByteArrayInputStream(bytes))) {
+      final var chunks = inputStream.readInt();
+      for (var i = 0; i < chunks; i++) {
+        final var x = inputStream.readInt();
+        final var z = inputStream.readInt();
+
+        final var sections = readSections(server, inputStream);
+        final var heightmaps = readCompound(inputStream);
+        readEntities(server, world, loader, inputStream);
+        world.putChunk(new SculkChunk(world, x, z, sections, heightmaps));
+      }
+    } catch (IOException e) {
+      LOGGER.error("Couldn't read slime chunks", e);
+    }
+  }
+
+  private static Section[] readSections(final SculkServer server, final DataInputStream inputStream)
+      throws IOException {
+    final var sections = new Section[inputStream.readInt()];
+    for (var j = 0; j < sections.length; j++) {
+      var blockLight = EMPTY_BYTE_ARRAY;
+      if (inputStream.readBoolean()) {
+        blockLight = new byte[LIGHT_SIZE];
+        if (inputStream.read(blockLight) != LIGHT_SIZE) {
+          throw new AssertionError();
+        }
+      }
+      var skyLight = EMPTY_BYTE_ARRAY;
+      if (inputStream.readBoolean()) {
+        skyLight = new byte[LIGHT_SIZE];
+        if (inputStream.read(skyLight) != LIGHT_SIZE) {
+          throw new AssertionError();
+        }
+      }
+      final var section = new Section(blockLight, skyLight);
+      final var blockData = readCompound(inputStream);
+      AnvilLoader.loadBlocks(section, blockData.getList("palette"), blockData);
+      AnvilLoader.loadBiomes(server, section, readCompound(inputStream));
+
+      sections[j] = section;
+    }
+    return sections;
+  }
+
+  private static void readEntities(final SculkServer server, final SculkWorld world,
+      final WorldLoader.Slime loader, final DataInputStream inputStream) throws IOException {
+    final var tileEntityData = readCompressed(inputStream);
+    if (loader.blockEntities()) {
+      final var tileEntities = readCompound(tileEntityData);
+      for (final var tiles : tileEntities.getList("tiles")) {
+        final var tilesCompound = (CompoundBinaryTag) tiles;
+        AnvilLoader.loadBlockEntity(world
+            .chunkAt(tilesCompound.getInt("x"), tilesCompound.getInt("z")), tilesCompound);
+      }
+    }
+
+    final var entityData = readCompressed(inputStream);
+    if (loader.entities()) {
+      loadEntities(server, world, readCompound(entityData));
     }
   }
 
@@ -161,7 +199,7 @@ public final class SlimeFormat {
       final OutputStream outputStream) {
     try (final var dataOutput = new DataOutputStream(outputStream)) {
       dataOutput.writeShort(HEADER);
-      dataOutput.writeByte(VERSION);
+      dataOutput.writeByte(VERSION_10);
       dataOutput.writeInt(3465);
 
       final var chunks = world.chunks().values();
@@ -171,12 +209,12 @@ public final class SlimeFormat {
       final var tiles = ListBinaryTag.builder();
       final var entities = ListBinaryTag.builder();
       for (final var chunk : chunks) {
-        for (final var entry : chunk.blockEntities().entrySet()) {
-          final var point = entry.getKey();
+        for (final var entry : chunk.blockEntries().int2ObjectEntrySet()) {
+          final var point = entry.getIntKey();
           tiles.add(CompoundBinaryTag.builder()
-              .putInt("x", point.x())
-              .putInt("y", point.y())
-              .putInt("z", point.z())
+              .putInt("x", chunkPositionXFromBlockIndex(point))
+              .putInt("y", chunkPositionYFromBlockIndex(point))
+              .putInt("z", chunkPositionZFromBlockIndex(point))
               .putByte("keepPacked", (byte) 0)
               .put(entry.getValue().nbt())
               .build());
@@ -222,13 +260,13 @@ public final class SlimeFormat {
         final var sections = chunk.sections();
         outputSteam.writeInt(sections.length);
         for (final var section : sections) {
-          if (section.skyLight() != Constants.EMPTY_BYTE_ARRAY) {
+          if (section.skyLight() != EMPTY_BYTE_ARRAY) {
             outputSteam.writeBoolean(true);
             outputSteam.write(section.skyLight());
           } else {
             outputSteam.writeBoolean(false);
           }
-          if (section.blockLight() != Constants.EMPTY_BYTE_ARRAY) {
+          if (section.blockLight() != EMPTY_BYTE_ARRAY) {
             outputSteam.writeBoolean(true);
             outputSteam.write(section.blockLight());
           } else {

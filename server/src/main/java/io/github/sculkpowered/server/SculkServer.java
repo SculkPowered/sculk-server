@@ -46,7 +46,7 @@ import io.github.sculkpowered.server.world.SlimeFormat;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.WorldLoader;
 import io.github.sculkpowered.server.world.biome.Biome;
-import io.github.sculkpowered.server.world.block.BlockParent;
+import io.github.sculkpowered.server.world.block.BlockRegistry;
 import io.github.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import io.github.sculkpowered.server.world.chunk.loader.ChunkLoader;
 import io.github.sculkpowered.server.world.chunk.loader.DefaultChunkLoader;
@@ -143,7 +143,7 @@ public final class SculkServer implements Server {
     this.scheduler = new SculkScheduler();
     this.bossBarListener = new BossBarListener();
 
-    BlockParent.addBlocks();
+    BlockRegistry.addBlocks();
     this.loadMaterials();
 
     this.pluginHandler.loadPlugins();

@@ -222,15 +222,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
     final var paletteToValue = palette.paletteToValue();
     final var blocks = ListBinaryTag.builder();
     for (final var value : paletteToValue) {
-      final var block = Block.get(value);
-      final var properties = CompoundBinaryTag.builder();
-      for (final var entry : block.properties().entrySet()) {
-        properties.put(entry.getKey(), StringBinaryTag.stringBinaryTag(entry.getValue()));
-      }
-      blocks.add(CompoundBinaryTag.builder()
-          .putString("Name", block.key())
-          .put("Properties", properties.build())
-          .build());
+      blocks.add(Block.get(value).asNBT());
     }
     final var nbt = CompoundBinaryTag.builder().put("palette", blocks.build());
     if (paletteToValue.length != 1) {

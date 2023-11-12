@@ -1,14 +1,16 @@
 package io.github.sculkpowered.server.world.block;
 
+import io.github.sculkpowered.server.registry.Registry.Entry;
 import io.github.sculkpowered.server.world.Direction;
 import java.util.Map;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 /**
  * Represents a state of a block.
  */
-public interface BlockState {
+public interface BlockState extends Entry {
 
   /**
    * Gets the key of the state.
@@ -16,7 +18,7 @@ public interface BlockState {
    * @return the state's id
    * @since 1.0.0
    */
-  @NotNull String key();
+  @NotNull Key key();
 
   /**
    * Gets the id of the state.

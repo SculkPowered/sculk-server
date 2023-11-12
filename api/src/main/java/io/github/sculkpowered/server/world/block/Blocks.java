@@ -1,6 +1,6 @@
 package io.github.sculkpowered.server.world.block;
 
-import java.util.Map;
+import io.github.sculkpowered.server.registry.Registry;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -9,23 +9,17 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 final class Blocks {
 
-  private static Map<String, BlockState> BLOCKS_BY_NAME;
-  private static Map<Integer, BlockState> BLOCKS_BY_ID;
+  private static Registry<BlockState> REGISTRY;
 
   private Blocks() {
     throw new AssertionError();
   }
 
-  static BlockState get(final String name) {
-    return BLOCKS_BY_NAME.get(name);
+  static Registry<BlockState> registry() {
+    return REGISTRY;
   }
 
-  static BlockState get(int id) {
-    return BLOCKS_BY_ID.get(id);
-  }
-
-  static void set(final Map<String, BlockState> byName, final Map<Integer, BlockState> byId) {
-    BLOCKS_BY_NAME = byName;
-    BLOCKS_BY_ID = byId;
+  static void set(final Registry<BlockState> registry) {
+    REGISTRY = registry;
   }
 }

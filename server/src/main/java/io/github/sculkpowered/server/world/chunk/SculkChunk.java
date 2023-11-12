@@ -1,5 +1,6 @@
 package io.github.sculkpowered.server.world.chunk;
 
+import static io.github.sculkpowered.server.util.CoordinateUtil.blockIndex;
 import static io.github.sculkpowered.server.util.CoordinateUtil.chunkCoordinate;
 import static io.github.sculkpowered.server.util.CoordinateUtil.relativeCoordinate;
 
@@ -9,20 +10,21 @@ import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockEntityData;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockUpdate;
-import io.github.sculkpowered.server.world.Point;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.biome.Biome;
 import io.github.sculkpowered.server.world.block.Block;
+import io.github.sculkpowered.server.world.block.Block.Entity;
 import io.github.sculkpowered.server.world.block.BlockState;
 import io.github.sculkpowered.server.world.dimension.Dimension;
 import io.github.sculkpowered.server.world.section.Section;
 import io.netty.buffer.ByteBufAllocator;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +37,7 @@ public final class SculkChunk implements Chunk {
   private final CompoundBinaryTag heightmaps;
   private final Set<SculkPlayer> viewers = new HashSet<>();
   private final Set<AbstractEntity> entities = new HashSet<>();
-  private final Map<Point, Block.Entity<?>> blockEntities = new ConcurrentHashMap<>();
+  private final Int2ObjectMap<Block.Entity<?>> blockEntities = new Int2ObjectOpenHashMap<>();
 
   private ChunkDataAndUpdateLight packet;
 
@@ -70,11 +72,11 @@ public final class SculkChunk implements Chunk {
     this.section(y).blocks()
         .set(relativeCoordinate(x), relativeCoordinate(y), relativeCoordinate(z), id);
     this.packet = null;
-    final var point = new Point(x, y, z);
+    final var blockIndex = blockIndex(x, y, z);
     if (block instanceof Block.Entity<?> entity) {
-      this.blockEntities.put(point, entity);
+      this.blockEntities.put(blockIndex, entity);
     } else {
-      this.blockEntities.remove(point);
+      this.blockEntities.remove(blockIndex);
     }
     if (!this.viewers.isEmpty()) {
       final var packet = new BlockUpdate(x, y, z, id);
@@ -163,7 +165,7 @@ public final class SculkChunk implements Chunk {
     return this.heightmaps;
   }
 
-  public Map<Point, Block.Entity<?>> blockEntities() {
+  public Int2ObjectMap<Entity<?>> blockEntries() {
     return this.blockEntities;
   }
 

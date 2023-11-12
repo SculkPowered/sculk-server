@@ -1,11 +1,15 @@
 package io.github.sculkpowered.server.protocol.packet.play.chunk;
 
+import static io.github.sculkpowered.server.util.CoordinateUtil.chunkPositionXFromBlockIndex;
+import static io.github.sculkpowered.server.util.CoordinateUtil.chunkPositionYFromBlockIndex;
+import static io.github.sculkpowered.server.util.CoordinateUtil.chunkPositionZFromBlockIndex;
+
 import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.world.Point;
 import io.github.sculkpowered.server.world.block.Block;
+import io.github.sculkpowered.server.world.block.Block.Entity;
 import io.github.sculkpowered.server.world.chunk.LightData;
-import java.util.Map;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 public final class ChunkDataAndUpdateLight implements Packet {
@@ -15,14 +19,14 @@ public final class ChunkDataAndUpdateLight implements Packet {
   private final CompoundBinaryTag heightmaps;
   private final byte[] data;
   private final LightData lightData;
-  private final Map<Point, Block.Entity<?>> blockEntities;
+  private final Int2ObjectMap<Entity<?>> blockEntities;
 
   public ChunkDataAndUpdateLight(final int chunkX,
       final int chunkZ,
       final CompoundBinaryTag heightmaps,
       final byte[] data,
       final LightData lightData,
-      final Map<Point, Block.Entity<?>> blockEntities) {
+      final Int2ObjectMap<Block.Entity<?>> blockEntities) {
     this.chunkX = chunkX;
     this.chunkZ = chunkZ;
     this.heightmaps = heightmaps;
@@ -39,12 +43,13 @@ public final class ChunkDataAndUpdateLight implements Packet {
         .writeCompoundTag(this.heightmaps)
         .writeByteArray(this.data)
         .writeVarInt(this.blockEntities.size());
-    for (final var entry : this.blockEntities.entrySet()) {
-      final var point = entry.getKey();
+    for (final var entry : this.blockEntities.int2ObjectEntrySet()) {
+      final var point = entry.getIntKey();
       final var block = entry.getValue();
       buf
-          .writeByte((byte) (((point.x() & 15) << 4) | (point.z() & 15)))
-          .writeShort((short) point.y())
+          .writeByte((byte) (((chunkPositionXFromBlockIndex(point) & 15) << 4) | (
+              (chunkPositionZFromBlockIndex(point) & 0xF) & 15)))
+          .writeShort((short) chunkPositionYFromBlockIndex(point))
           .writeVarInt(block.getEntityId())
           .writeCompoundTag(block.nbt());
     }

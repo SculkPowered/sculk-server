@@ -1,5 +1,8 @@
 package io.github.sculkpowered.server.util;
 
+import com.velocitypowered.natives.encryption.JavaVelocityCipher;
+import com.velocitypowered.natives.util.Natives;
+
 public final class Constants {
 
   public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
@@ -13,4 +16,5 @@ public final class Constants {
   public static final String COMPRESSOR_DECODER = "compressor-decoder";
   public static final String COMPRESSOR_ENCODER = "compressor-encoder";
   public static final String HANDLER = "handler";
+  public static final boolean IS_JAVA_CIPHER = Natives.cipher.get() == JavaVelocityCipher.FACTORY;
 }

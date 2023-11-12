@@ -128,7 +128,7 @@ final class BlockGenerator extends Generator {
       }
 
       final var id = states[0].get("id").getAsInt();
-      blockAdder.add(key + "," + this.creatorClass(clazz) + "," + id + "," + (defId - id) +
+      blockAdder.add(key.split(":")[1] + "," + this.creatorClass(clazz) + "," + id + "," + (defId - id) +
           (stringBuilder.isEmpty() ? "" : "," + stringBuilder) + "\n");
 
       blocks.add("public static final " + clazz + " " +
