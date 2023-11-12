@@ -5,6 +5,7 @@ import io.github.sculkpowered.server.connection.Connection;
 import io.github.sculkpowered.server.container.Container;
 import io.github.sculkpowered.server.container.Inventory;
 import io.github.sculkpowered.server.entity.LivingEntity;
+import net.kyori.adventure.bossbar.BossBarViewer;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents a player.
  */
-public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Connection {
+public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Connection,
+    BossBarViewer {
 
   /**
    * Gets the name of the player.

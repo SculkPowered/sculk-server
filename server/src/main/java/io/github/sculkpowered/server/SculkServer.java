@@ -3,7 +3,6 @@ package io.github.sculkpowered.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.velocitypowered.natives.util.Natives;
-import io.github.sculkpowered.server.adventure.BossBarListener;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.command.SculkCommandHandler;
 import io.github.sculkpowered.server.command.defaults.InfoCommand;
@@ -103,7 +102,6 @@ public final class SculkServer implements Server {
   private final SculkCommandHandler commandHandler;
   private final SculkTeamHandler teamHandler;
   private final SculkScheduler scheduler;
-  private final BossBarListener bossBarListener;
   private final NettyServer nettyServer;
   private final EntityClassToSupplierMap entities = EntityClassToSupplierMap.get();
 
@@ -141,7 +139,6 @@ public final class SculkServer implements Server {
         .register(InfoCommand.get());
     this.teamHandler = new SculkTeamHandler(this);
     this.scheduler = new SculkScheduler();
-    this.bossBarListener = new BossBarListener();
 
     BlockRegistry.addBlocks();
     this.loadMaterials();
@@ -385,10 +382,6 @@ public final class SculkServer implements Server {
 
   public KeyPair getKeyPair() {
     return this.keyPair;
-  }
-
-  public BossBarListener getBossBarListener() {
-    return this.bossBarListener;
   }
 
   public void sendAll(final Packet packet) {

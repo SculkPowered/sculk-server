@@ -120,7 +120,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   public void channelInactive(@NotNull ChannelHandlerContext ctx) {
     if (this.player != null) {
       this.server.removePlayer(this.player.uniqueId());
-      this.server.getBossBarListener().onDisconnect(this.player);
+      this.player.onDisconnect();
 
       final var world = this.player.world();
       final var position = this.player.position();

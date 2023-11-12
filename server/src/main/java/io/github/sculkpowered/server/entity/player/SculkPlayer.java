@@ -1,8 +1,12 @@
 package io.github.sculkpowered.server.entity.player;
 
+import static io.github.sculkpowered.server.protocol.packet.play.BossBar.add;
+import static io.github.sculkpowered.server.protocol.packet.play.BossBar.remove;
 import static io.github.sculkpowered.server.util.CoordinateUtil.chunkCoordinate;
 
 import io.github.sculkpowered.server.SculkServer;
+import io.github.sculkpowered.server.adventure.BossBarProvider;
+import io.github.sculkpowered.server.adventure.BossBarProvider.Impl;
 import io.github.sculkpowered.server.container.Container;
 import io.github.sculkpowered.server.container.MineInventory;
 import io.github.sculkpowered.server.container.SculkContainer;
@@ -37,7 +41,10 @@ import io.github.sculkpowered.server.world.chunk.SculkChunk;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBarImplementation;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.pointer.Pointers;
@@ -46,7 +53,9 @@ import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
+@SuppressWarnings("UnstableApiUsage")
 public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   private final Pointers pointers = Pointers.builder()
@@ -74,6 +83,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private float flyingSpeed = 0.05F;
   private boolean instantBreak;
   private float viewModifier = 0.01F;
+  private final Set<BossBar> bossBars = new HashSet<>();
 
   public SculkPlayer(final SculkServer server, final SculkConnection connection,
       final GameProfile profile) {
@@ -282,12 +292,20 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void showBossBar(@NotNull BossBar bar) {
-    this.server.getBossBarListener().showBossBar(this, bar);
+    @SuppressWarnings("UnstableApiUsage")
+    final var impl = BossBarImplementation.get(bar, Impl.class);
+    if (impl.players().add(this)) {
+      this.send(add(impl.uniqueId(), bar.name(), bar.progress(), bar.color().ordinal(),
+          bar.overlay().ordinal(), BossBarProvider.flags(bar)));
+    }
   }
 
   @Override
   public void hideBossBar(@NotNull BossBar bar) {
-    this.server.getBossBarListener().hideBossBar(this, bar);
+    final var impl = BossBarImplementation.get(bar, Impl.class);
+    if (impl.players().remove(this)) {
+      this.send(remove(impl.uniqueId()));
+    }
   }
 
   @NotNull
@@ -366,6 +384,11 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public boolean hasPermission(@NotNull String permission) {
     return this.permissionChecker.test(permission);
+  }
+
+  @Override
+  public @UnmodifiableView @NotNull Iterable<? extends BossBar> activeBossBars() {
+    return this.bossBars;
   }
 
   public void init(final GameMode gameMode, final Position position, final World world,
@@ -453,6 +476,12 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void send(final Packet packet) {
     this.connection.send(packet);
+  }
+
+  public void onDisconnect() {
+    for (final var bossBar : this.bossBars) {
+      BossBarImplementation.get(bossBar, Impl.class).players().remove(this);
+    }
   }
 
   public void sendViewersAndSelf(final Packet packet) {
