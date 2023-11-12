@@ -25,7 +25,6 @@ public final class SculkWorld implements World {
   private final Position spawnPosition;
   private final GameMode defaultGameMode;
   private final Long2ObjectMap<SculkChunk> chunks;
-  private Worker worker;
   private boolean alive;
 
   public SculkWorld(
@@ -41,8 +40,6 @@ public final class SculkWorld implements World {
     this.defaultGameMode = builder.defaultGameMode();
     this.chunks = new Long2ObjectOpenHashMap<>();
     this.alive = true;
-    this.worker = new Worker(this);
-    this.worker.start();
   }
 
   @Override
@@ -154,7 +151,6 @@ public final class SculkWorld implements World {
       }
     }
     this.chunks.clear();
-    this.worker = null;
   }
 
   @Override

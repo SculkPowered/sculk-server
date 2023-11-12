@@ -262,7 +262,11 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   }
 
   public void send(final Packet packet) {
-    this.channel.writeAndFlush(packet);
+    if (this.state == State.PLAY) {
+      this.channel.write(packet);
+    } else {
+      this.channel.writeAndFlush(packet);
+    }
   }
 
   public void sendAndClose(final Packet packet) {
@@ -325,6 +329,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   public void setUsername(final String username) {
     this.username = username;
+  }
+
+  public void flush() {
+    this.channel.flush();
   }
 
   public void close() {

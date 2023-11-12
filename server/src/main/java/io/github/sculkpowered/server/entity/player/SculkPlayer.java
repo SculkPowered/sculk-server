@@ -350,6 +350,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         this.send(new KeepAlive(time));
       }
     }
+    this.connection.flush();
   }
 
   @Override

@@ -164,6 +164,8 @@ public final class SculkServer implements Server {
           this.configuration.compressionThreshold());
     }
 
+    final var worker = new Worker(this);
+    worker.start();
     this.terminal.start();
   }
 
@@ -375,6 +377,10 @@ public final class SculkServer implements Server {
       materials.put(material.ordinal(), material);
     }
     Material.setMaterials(materials);
+  }
+
+  public Collection<SculkWorld> worlds() {
+    return this.worlds.values();
   }
 
   public KeyPair getKeyPair() {

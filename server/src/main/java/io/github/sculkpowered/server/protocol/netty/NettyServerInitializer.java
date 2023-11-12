@@ -6,8 +6,6 @@ import static io.github.sculkpowered.server.util.Constants.HANDLER;
 import static io.github.sculkpowered.server.util.Constants.MINECRAFT_DECODER;
 import static io.github.sculkpowered.server.util.Constants.MINECRAFT_ENCODER;
 
-import com.velocitypowered.natives.encryption.JavaVelocityCipher;
-import com.velocitypowered.natives.util.Natives;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.protocol.Protocol;
 import io.github.sculkpowered.server.protocol.SculkConnection;
