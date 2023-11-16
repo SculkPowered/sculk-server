@@ -1,11 +1,8 @@
 package io.github.sculkpowered.server.container.item;
 
-import net.kyori.adventure.nbt.BinaryTag;
+import java.util.function.Consumer;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
-import net.kyori.adventure.nbt.StringBinaryTag;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,8 +16,8 @@ public class ItemStack {
   private static final ItemStack EMPTY = ItemStack.itemStack(Material.AIR, 0);
 
   private final Material material;
-  private int amount;
-  private CompoundBinaryTag nbt;
+  private final int amount;
+  private final CompoundBinaryTag nbt;
 
   private ItemStack(final @NotNull Material material) {
     this(material, 1);
@@ -64,47 +61,14 @@ public class ItemStack {
    * @since 1.0.0
    */
   public @NotNull ItemStack amount(final int amount) {
-    this.amount = amount;
-    return this;
+    return new ItemStack(this.material, amount, this.nbt);
   }
 
-  /**
-   * Sets the display name of item.
-   *
-   * @return the same item
-   * @since 1.0.0
-   */
-  public @NotNull ItemStack displayName(final Component displayName) {
-    this.display("Name",
-        StringBinaryTag.stringBinaryTag(GsonComponentSerializer.gson().serialize(displayName)));
-    return this;
-  }
-
-  /**
-   * Sets the lore of item.
-   *
-   * @return the same item
-   * @since 1.0.0
-   */
-  public @NotNull ItemStack lore(final Component... lore) {
-    final var list = ListBinaryTag.builder();
-    for (final var component : lore) {
-      list.add(
-          StringBinaryTag.stringBinaryTag(GsonComponentSerializer.gson().serialize(component)));
-    }
-    this.display("Lore", list.build());
-    return this;
-  }
-
-  /**
-   * Sets the item unbreakable or not.
-   *
-   * @return the same item
-   * @since 1.0.0
-   */
-  public @NotNull ItemStack unbreakable(final boolean unbreakable) {
-    this.nbt = this.nbt.putBoolean("Unbreakable", unbreakable);
-    return this;
+  public @NotNull ItemStack withMeta(final Consumer<ItemMeta> consumer) {
+    final var itemMeta = new ItemMeta(CompoundBinaryTag.builder().put(this.nbt),
+        CompoundBinaryTag.builder().put(this.nbt.getCompound("display")));
+    consumer.accept(itemMeta);
+    return new ItemStack(this.material, this.amount, itemMeta.build());
   }
 
   /**
@@ -135,11 +99,6 @@ public class ItemStack {
         '}';
   }
 
-  private void display(final String key, final BinaryTag value) {
-    final var tag = this.nbt.getCompound("display");
-    this.nbt = this.nbt.put("display", tag.put(key, value));
-  }
-
   public static @NotNull ItemStack itemStack(final @NotNull Material material) {
     return new ItemStack(material);
   }
@@ -148,6 +107,7 @@ public class ItemStack {
     return new ItemStack(material, amount);
   }
 
+  @ApiStatus.Internal
   public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount,
       final CompoundBinaryTag nbt) {
     return new ItemStack(material, amount, nbt);

@@ -290,12 +290,13 @@ public final class PlayPacketHandler extends PacketHandler {
       case 3 -> this.player.inventory()
           .item(this.player.heldItemSlot(), ItemStack.empty()); // drop stack
       case 4 -> { // drop item
-        final var itemInHand = this.player.inventory().itemInHand();
+        var itemInHand = this.player.inventory().itemInHand();
         if (!itemInHand.isEmpty()) {
-          itemInHand.amount(itemInHand.amount() - 1);
+          itemInHand = itemInHand.amount(itemInHand.amount() - 1);
           if (itemInHand.amount() < 1) {
-            this.player.inventory().item(this.player.heldItemSlot(), ItemStack.empty());
+            itemInHand = ItemStack.empty();
           }
+          this.player.inventory().item(this.player.heldItemSlot(), itemInHand);
         }
       }
       case 5 -> { // shoot arrow / finish eating
@@ -412,9 +413,6 @@ public final class PlayPacketHandler extends PacketHandler {
             return; // block at position, don't set
           }
           var block = Block.get(slot.material().key());
-          if (block == null) {
-            return;
-          }
           if (block instanceof BlockState.Facing<?> facing) { // let's set the correct facing
             final var rotation =
                 (int) Math.floor(this.player.position().yaw() / 90.0D + 0.5D) & 3;

@@ -3,7 +3,7 @@ package io.github.sculkpowered.server.world.block;
 import java.util.Map;
 import net.kyori.adventure.key.Key;
 
-final class BlockParent {
+public final class BlockParent {
 
   private final Key key;
   private SculkBlockState[] states;

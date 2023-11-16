@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnstableApiUsage")
-public final class BossBarListener implements BossBar.Listener {
+final class BossBarListener implements BossBar.Listener {
 
   @Override
   public void bossBarNameChanged(@NotNull BossBar bar, @NotNull Component oldName,
