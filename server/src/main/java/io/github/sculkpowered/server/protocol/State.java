@@ -89,6 +89,7 @@ import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositio
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.DisplayObjective;
+import io.github.sculkpowered.server.protocol.packet.play.scoreboard.ResetScore;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateObjectives;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateScore;
 import io.github.sculkpowered.server.protocol.packet.play.title.ClearTitles;
@@ -172,6 +173,7 @@ public enum State {
       this.serverBound.register(ClickContainerButton.class, ClickContainerButton::new);
       this.serverBound.register(ClickContainer.class, ClickContainer::new);
       this.serverBound.register(CloseContainer.class, CloseContainer::new);
+      this.serverBound.skip(); // Change Container Slot State
       this.serverBound.register(PluginMessage.class, PluginMessage.SUPPLIER);
       this.serverBound.register(EditBook.class, EditBook::new);
       this.serverBound.skip(); // Query Entity Tag
@@ -211,7 +213,6 @@ public enum State {
       this.serverBound.register(TeleportToEntity.class, TeleportToEntity::new);
       this.serverBound.register(UseItemOn.class, UseItemOn::new);
       this.serverBound.register(UseItem.class, UseItem::new);
-
       this.clientBound.skip(); // Bundle Delimiter
       this.clientBound.register(SpawnEntity.class);
       this.clientBound.register(SpawnExperienceOrb.class);
@@ -278,6 +279,7 @@ public enum State {
       this.clientBound.skip(); // Update Recipe Book
       this.clientBound.register(RemoveEntities.class);
       this.clientBound.skip(); // Remove Entity Effect
+      this.clientBound.register(ResetScore.class);
       this.clientBound.skip(); // Resource Pack
       this.clientBound.register(Respawn.class);
       this.clientBound.register(HeadRotation.class);
@@ -320,6 +322,8 @@ public enum State {
       this.clientBound.skip(); // Tag Query Response
       this.clientBound.register(PickupItem.class);
       this.clientBound.skip(); // Teleport Entity
+      this.clientBound.skip(); // Set Ticking State
+      this.clientBound.skip(); // Step Tick
       this.clientBound.skip(); // Update Advancements
       this.clientBound.register(UpdateAttributes.class);
       this.clientBound.skip(); // Entity Effects
