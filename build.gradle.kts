@@ -7,7 +7,7 @@ defaultTasks("build", "test", "shadowJar")
 
 allprojects {
     group = "io.github.sculkpowered.server"
-    version = "1.0.0-SNAPSHOT"
+    version = "1.0.0-PRE1"
 
     repositories {
         mavenCentral()
