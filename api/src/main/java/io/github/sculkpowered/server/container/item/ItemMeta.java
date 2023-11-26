@@ -1,5 +1,8 @@
 package io.github.sculkpowered.server.container.item;
 
+import io.github.sculkpowered.server.attribute.Attribute;
+import io.github.sculkpowered.server.attribute.AttributeModifier;
+import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.StringBinaryTag;
@@ -11,10 +14,13 @@ public class ItemMeta {
 
   private final CompoundBinaryTag.Builder builder;
   private final CompoundBinaryTag.Builder display;
+  private final ListBinaryTag.Builder<BinaryTag> attributeModifiers;
 
-  ItemMeta(final CompoundBinaryTag.Builder builder, final CompoundBinaryTag.Builder display) {
-    this.builder = builder;
-    this.display = display;
+  ItemMeta(final CompoundBinaryTag old) {
+    this.builder = CompoundBinaryTag.builder().put(old);
+    this.display = CompoundBinaryTag.builder().put(old.getCompound("display"));
+    this.attributeModifiers = ListBinaryTag.builder().add(
+        (Iterable<? extends BinaryTag>) old.getList("AttributeModifiers"));
   }
 
   /**
@@ -56,7 +62,33 @@ public class ItemMeta {
     return this;
   }
 
+  /**
+   * Adds an attribute modifier.
+   *
+   * @return this
+   * @since 1.0.0
+   */
+  public @NotNull ItemMeta attributeModifier(@NotNull Attribute attribute, @NotNull AttributeModifier modifier) {
+    final var uuid = modifier.uniqueId();
+    this.attributeModifiers.add(CompoundBinaryTag.builder()
+        .putIntArray("UUID", new int[]{
+            (int) (uuid.getMostSignificantBits() >> 32),
+            (int) (uuid.getMostSignificantBits() | 0xFFFFFFFFL),
+            (int) (uuid.getLeastSignificantBits() >> 32),
+            (int) (uuid.getLeastSignificantBits() | 0xFFFFFFFFL)
+        })
+        .putDouble("Amount", modifier.amount())
+        .putString("Slot", modifier.slot())
+        .putString("AttributeName", attribute.key())
+        .putInt("Operation", modifier.operation().ordinal())
+        .build());
+    return this;
+  }
+
   CompoundBinaryTag build() {
-    return this.builder.put("display", this.display.build()).build();
+    return this.builder
+        .put("display", this.display.build())
+        .put("AttributeModifiers", this.attributeModifiers.build())
+        .build();
   }
 }

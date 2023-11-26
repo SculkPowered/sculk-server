@@ -7,6 +7,7 @@ import static io.github.sculkpowered.server.util.CoordinateUtil.chunkCoordinate;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.adventure.BossBarProvider;
 import io.github.sculkpowered.server.adventure.BossBarProvider.Impl;
+import io.github.sculkpowered.server.attribute.SculkAttributeValue;
 import io.github.sculkpowered.server.container.Container;
 import io.github.sculkpowered.server.container.MineInventory;
 import io.github.sculkpowered.server.container.SculkContainer;
@@ -30,6 +31,7 @@ import io.github.sculkpowered.server.protocol.packet.play.Respawn;
 import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.SystemChatMessage;
 import io.github.sculkpowered.server.protocol.packet.play.TabListHeaderFooter;
+import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
 import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
@@ -390,6 +392,11 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public @UnmodifiableView @NotNull Iterable<? extends BossBar> activeBossBars() {
     return this.bossBars;
+  }
+
+  @Override
+  protected void attributeChange(SculkAttributeValue value) {
+    this.sendViewersAndSelf(new UpdateAttributes(this.id, value));
   }
 
   public void init(final GameMode gameMode, final Position position, final World world,

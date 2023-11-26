@@ -1,5 +1,9 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.attribute.Attribute;
+import io.github.sculkpowered.server.attribute.AttributeValue;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Represents a living entity.
  */
@@ -84,4 +88,13 @@ public interface LivingEntity extends Entity {
    * @since 1.0.0
    */
   void numberOfBeeStingers(int beeStingers);
+
+  /**
+   * Gets the attribute value by the attribute.
+   *
+   * @param attribute the attribute
+   * @return the value
+   * @since 1.0.0
+   */
+  @NotNull AttributeValue attribute(@NotNull Attribute attribute);
 }
