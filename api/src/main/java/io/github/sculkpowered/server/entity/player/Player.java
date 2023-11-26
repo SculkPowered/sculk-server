@@ -210,4 +210,12 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @param data       the data to send
    */
   void sendPluginMessage(@NotNull String identifier, byte @NotNull [] data);
+
+  /**
+   * Whether the player is on ground.
+   *
+   * @return whether the player is on ground
+   * @since 1.0.0
+   */
+  boolean onGround();
 }
