@@ -18,6 +18,10 @@ public final class PlayerOnGround implements Packet {
     return handler.handle(this);
   }
 
+  public boolean onGround() {
+    return this.onGround;
+  }
+
   @Override
   public String toString() {
     return "PlayerOnGround{" +
