@@ -164,6 +164,15 @@ public interface Server {
   <T extends Entity> T createEntity(@NotNull Class<T> clazz);
 
   /**
+   * Gets an entity by its id.
+   *
+   * @param id the id of the entity
+   * @return the entity or null
+   * @since 1.0.0
+   */
+  @Nullable Entity entity(int id);
+
+  /**
    * Creates a container by its type.
    *
    * @param type  the type of the container
