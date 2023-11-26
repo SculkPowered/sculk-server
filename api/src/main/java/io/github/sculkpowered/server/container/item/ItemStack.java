@@ -1,6 +1,11 @@
 package io.github.sculkpowered.server.container.item;
 
-import java.util.function.Consumer;
+import io.github.sculkpowered.server.attribute.Attribute;
+import io.github.sculkpowered.server.attribute.AttributeModifier;
+import io.github.sculkpowered.server.enchantment.Enchantment;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents an item.
  */
-public class ItemStack {
+public final class ItemStack {
 
   /**
    * The default item.
@@ -17,21 +22,16 @@ public class ItemStack {
 
   private final Material material;
   private final int amount;
-  private final CompoundBinaryTag nbt;
+  private final ItemMeta meta;
 
-  private ItemStack(final @NotNull Material material) {
-    this(material, 1);
-  }
-
-  private ItemStack(final @NotNull Material material, final int amount) {
-    this(material, amount, CompoundBinaryTag.empty());
-  }
-
-  private ItemStack(final @NotNull Material material, final int amount,
-      final @NotNull CompoundBinaryTag nbt) {
+  private ItemStack(
+      final @NotNull Material material,
+      final int amount,
+      final @NotNull ItemMeta meta
+  ) {
     this.material = material;
     this.amount = amount;
-    this.nbt = nbt;
+    this.meta = meta;
   }
 
   /**
@@ -61,23 +61,21 @@ public class ItemStack {
    * @since 1.0.0
    */
   public @NotNull ItemStack amount(final int amount) {
-    return new ItemStack(this.material, amount, this.nbt);
+    return new ItemStack(this.material, amount, this.meta);
   }
 
-  public @NotNull ItemStack withMeta(final Consumer<ItemMeta> consumer) {
-    final var itemMeta = new ItemMeta(this.nbt);
-    consumer.accept(itemMeta);
-    return new ItemStack(this.material, this.amount, itemMeta.build());
+  public @NotNull ItemStack withMeta(final ItemMeta itemMeta) {
+    return new ItemStack(this.material, this.amount, itemMeta);
   }
 
   /**
-   * Gets the nbt of item.
+   * Gets the metadata of the item.
    *
-   * @return the nbt of item
+   * @return the metadata of the item
    * @since 1.0.0
    */
-  public @NotNull CompoundBinaryTag nbt() {
-    return this.nbt;
+  public @NotNull ItemMeta meta() {
+    return this.meta;
   }
 
   /**
@@ -99,17 +97,30 @@ public class ItemStack {
   }
 
   public static @NotNull ItemStack itemStack(final @NotNull Material material) {
-    return new ItemStack(material);
+    return itemStack(material, 1);
   }
 
   public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount) {
-    return new ItemStack(material, amount);
+    return new ItemStack(material, amount,
+        new ItemMeta(CompoundBinaryTag.empty(), Map.of(), Map.of()));
   }
 
   @ApiStatus.Internal
   public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount,
       final CompoundBinaryTag nbt) {
-    return new ItemStack(material, amount, nbt);
+    final var attributeModifiers = new HashMap<Attribute, List<AttributeModifier>>();
+    for (final var tag : nbt.getList("AttributeModifiers")) {
+      final var compound = (CompoundBinaryTag) tag;
+      // TODO complete attribute modifiers
+    }
+    final var enchantments = new HashMap<Enchantment, Short>();
+    for (final var tag : nbt.getList("Enchantments")) {
+      final var compound = (CompoundBinaryTag) tag;
+      // TODO: better registry for enchantments
+      enchantments.put(Enchantment.valueOf(compound.getString("id").split(":")[1]),
+          compound.getShort("lvl"));
+    }
+    return new ItemStack(material, amount, new ItemMeta(nbt, attributeModifiers, enchantments));
   }
 
   public static @NotNull ItemStack empty() {

@@ -5,10 +5,12 @@ import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
+import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
 import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
 import io.github.sculkpowered.server.protocol.packet.play.SpawnEntity;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.SculkWorld;
+import io.github.sculkpowered.server.world.Vector;
 import io.github.sculkpowered.server.world.World;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,6 +33,7 @@ public abstract class AbstractEntity implements Entity {
   protected final Set<SculkPlayer> viewers = new HashSet<>();
   protected SculkWorld world;
   protected Position position = Position.zero();
+  protected Vector velocity = Vector.zero();
 
   public AbstractEntity(final SculkServer server) {
     this(server, UUID.randomUUID());
@@ -39,6 +42,7 @@ public abstract class AbstractEntity implements Entity {
   public AbstractEntity(final SculkServer server, final UUID uniqueId) {
     this.server = server;
     this.uniqueId = uniqueId;
+    this.server.addEntity(this);
   }
 
   @Override
@@ -74,14 +78,23 @@ public abstract class AbstractEntity implements Entity {
     return this.position;
   }
 
-  public void setPosition(final Position position) {
-    final var oldChunk = this.world.chunkAt(this.position);
-    final var newChunk = this.world.chunkAt(position);
+  public void position(final Position position) {
     this.server.addTask(() -> {
-      oldChunk.entities().remove(this);
-      newChunk.entities().add(this);
+      this.world.chunkAt(this.position).entities().remove(this);
+      this.position = position;
+      this.world.chunkAt(this.position).entities().add(this);
     });
-    this.position = position;
+  }
+
+  @Override
+  public void velocity(@NotNull Vector vector) {
+    this.velocity = vector;
+    this.sendViewers(this.velocityPacket(vector));
+  }
+
+  @Override
+  public @NotNull Vector velocity() {
+    return this.velocity;
   }
 
   @Override
@@ -175,7 +188,12 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void teleport(@NotNull Position position) {
-    this.setPosition(position);
+    this.server.addTask(() -> {
+      this.world.chunkAt(this.position).entities().remove(this);
+      this.world.chunkAt(position).entities().add(this);
+    });
+    this.position = position;
+    this.sendViewers(new TeleportEntity(this.id, this.position, true));
   }
 
   @Override
@@ -199,7 +217,7 @@ public abstract class AbstractEntity implements Entity {
     final var added = this.viewers.add(sculkPlayer);
     if (added) {
       sculkPlayer.send(
-          new SpawnEntity(this.id, this.uniqueId, this.type().ordinal(), this.position));
+          new SpawnEntity(this.id, this.uniqueId, this.type().ordinal(), this.position, this.velocity));
       if (this.metadata.entries().isEmpty()) {
         sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
       }
@@ -226,6 +244,8 @@ public abstract class AbstractEntity implements Entity {
         player.send(entityMetadata);
       }
     }
+
+    //this.velocity = Vector.zero(); // TODO
   }
 
   public void sendViewers(final Packet packet) {
@@ -239,5 +259,14 @@ public abstract class AbstractEntity implements Entity {
       player.send(packet1);
       player.send(packet2);
     }
+  }
+
+  protected EntityVelocity velocityPacket(final Vector vector) {
+    vector.multiply(400D);
+    return new EntityVelocity(this.id,
+        (short) Math.min(Math.max(vector.x(), Short.MIN_VALUE), Short.MAX_VALUE),
+        (short) Math.min(Math.max(vector.y(), Short.MIN_VALUE), Short.MAX_VALUE),
+        (short) Math.min(Math.max(vector.z(), Short.MIN_VALUE), Short.MAX_VALUE)
+    );
   }
 }

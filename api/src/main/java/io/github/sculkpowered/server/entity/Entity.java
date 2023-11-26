@@ -2,6 +2,7 @@ package io.github.sculkpowered.server.entity;
 
 import io.github.sculkpowered.server.Viewable;
 import io.github.sculkpowered.server.world.Position;
+import io.github.sculkpowered.server.world.Vector;
 import io.github.sculkpowered.server.world.World;
 import java.util.UUID;
 import net.kyori.adventure.sound.Sound;
@@ -44,6 +45,16 @@ public interface Entity extends Viewable, Sound.Emitter {
    * @since 1.0.0
    */
   @NotNull Position position();
+
+  /**
+   * @since 1.0.0
+   */
+  void velocity(@NotNull Vector vector);
+
+  /**
+   * @since 1.0.0
+   */
+  @NotNull Vector velocity();
 
   /**
    * @since 1.0.0

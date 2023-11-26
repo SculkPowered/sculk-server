@@ -44,6 +44,7 @@ import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
 import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
 import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
+import io.github.sculkpowered.server.world.Vector;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.chunk.SculkChunk;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -93,6 +94,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private boolean instantBreak;
   private float viewModifier = 0.01F;
   private final Set<BossBar> bossBars = new HashSet<>();
+  public boolean onGround;
+  private boolean receivedTeleportConfirmation;
 
   public SculkPlayer(final SculkServer server, final SculkConnection connection,
       final GameProfile profile) {
@@ -248,6 +251,11 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
+  public boolean onGround() {
+    return this.onGround;
+  }
+
+  @Override
   public void world(@NotNull World world) {
     this.position = world.spawnPosition();
     this.gameMode = world.defaultGameMode();
@@ -260,14 +268,27 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     super.world(world);
     this.send(
         new Respawn(world.dimension().name(), world.name(), 0, this.gameMode, (byte) 3));
-    this.setPosition(world.spawnPosition());
+    this.position = world.spawnPosition();
+    this.world.chunkAt(world.spawnPosition()).entities().add(this);
     this.calculateChunks(this.position, this.position, false, false);
   }
 
   @Override
+  public void velocity(@NotNull Vector vector) {
+    this.velocity = vector;
+    this.sendViewersAndSelf(this.velocityPacket(vector));
+  }
+
+  @Override
   public void teleport(@NotNull Position position) {
-    this.connection.send(new SynchronizePlayerPosition(position));
     super.teleport(position);
+    this.send(new SynchronizePlayerPosition(this.position));
+    this.receivedTeleportConfirmation = false;
+    for (final var viewer : this.viewers) {
+      viewer.removeViewer(this);
+      this.removeViewer(viewer);
+    }
+    this.calculateChunks(this.position, position, false, true);
   }
 
   @Override
@@ -540,6 +561,14 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void setKeepAlivePending(boolean pending) {
     this.keepAlivePending = pending;
+  }
+
+  public boolean receivedTeleportConfirmation() {
+    return this.receivedTeleportConfirmation;
+  }
+
+  public void receivedTeleportConfirmation(boolean received) {
+    this.receivedTeleportConfirmation = received;
   }
 
   private void updateAttributes() {
