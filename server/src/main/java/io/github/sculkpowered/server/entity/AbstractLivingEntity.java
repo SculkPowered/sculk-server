@@ -1,9 +1,12 @@
 package io.github.sculkpowered.server.entity;
 
 import io.github.sculkpowered.server.SculkServer;
+import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
+  
+  private final Map<Attribute, AttributeValue> attributes = new HashMap<>();
 
   public AbstractLivingEntity(final SculkServer server) {
     super(server);
