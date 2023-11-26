@@ -16,6 +16,7 @@ import io.github.sculkpowered.server.entity.player.GameMode;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.event.block.BlockBreakEvent;
 import io.github.sculkpowered.server.event.block.BlockPlaceEvent;
+import io.github.sculkpowered.server.event.player.PlayerAttackedEntityEvent;
 import io.github.sculkpowered.server.event.player.PlayerChatEvent;
 import io.github.sculkpowered.server.event.player.PlayerClickContainerButtonEvent;
 import io.github.sculkpowered.server.event.player.PlayerClickContainerEvent;
@@ -85,6 +86,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(ConfirmTeleportation confirmTeleportation) {
+    this.player.receivedTeleportConfirmation(true);
     return true;
   }
 
@@ -208,6 +210,13 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(Interact interact) {
+    final var entity = this.server.entity(interact.entityId());
+    if (entity == null || entity.world() != this.player.world()) { // impossible
+      return true;
+    }
+    if (interact.type() == 1) {
+      this.server.eventHandler().justCall(new PlayerAttackedEntityEvent(this.player, entity));
+    }
     return true;
   }
 
@@ -219,6 +228,10 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(PlayerPosition playerPosition) {
+    if (!this.player.receivedTeleportConfirmation()) {
+      return true;
+    }
+
     final var x = playerPosition.x();
     final var y = playerPosition.y();
     final var z = playerPosition.z();
@@ -227,13 +240,18 @@ public final class PlayPacketHandler extends PacketHandler {
     this.player.sendViewers(new EntityPosition(this.player.id(),
         this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
         playerPosition.onGround()));
-    this.player.setPosition(Position.position(x, y, z, position.yaw(), position.pitch()));
+    this.player.position(Position.position(x, y, z, position.yaw(), position.pitch()));
     this.player.calculateChunks(position, this.player.position());
+    this.player.onGround = playerPosition.onGround();
     return true;
   }
 
   @Override
   public boolean handle(PlayerPositionAndRotation playerPositionAndRotation) {
+    if (!this.player.receivedTeleportConfirmation()) {
+      return true;
+    }
+
     final var x = playerPositionAndRotation.x();
     final var y = playerPositionAndRotation.y();
     final var z = playerPositionAndRotation.z();
@@ -246,13 +264,18 @@ public final class PlayPacketHandler extends PacketHandler {
             this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
             yaw, pitch, playerPositionAndRotation.onGround()),
         new HeadRotation(this.player.id(), yaw));
-    this.player.setPosition(Position.position(x, y, z, yaw, pitch));
+    this.player.position(Position.position(x, y, z, yaw, pitch));
     this.player.calculateChunks(position, this.player.position());
+    this.player.onGround = playerPositionAndRotation.onGround();
     return true;
   }
 
   @Override
   public boolean handle(PlayerRotation playerRotation) {
+    if (!this.player.receivedTeleportConfirmation()) {
+      return true;
+    }
+
     final var yaw = playerRotation.yaw();
     final var pitch = playerRotation.pitch();
 
@@ -261,13 +284,15 @@ public final class PlayPacketHandler extends PacketHandler {
         new EntityRotation(this.player.id(), yaw, pitch, playerRotation.onGround()),
         new HeadRotation(this.player.id(), yaw)
     );
-    this.player.setPosition(
+    this.player.position(
         Position.position(position.x(), position.y(), position.z(), yaw, pitch));
+    this.player.onGround = playerRotation.onGround();
     return true;
   }
 
   @Override
   public boolean handle(PlayerOnGround playerOnGround) {
+    this.player.onGround = playerOnGround.onGround();
     return true;
   }
 

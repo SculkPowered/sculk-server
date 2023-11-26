@@ -1,12 +1,23 @@
 package io.github.sculkpowered.server.entity;
 
 import io.github.sculkpowered.server.SculkServer;
+import io.github.sculkpowered.server.attribute.Attribute;
+import io.github.sculkpowered.server.attribute.AttributeValue;
+import io.github.sculkpowered.server.attribute.SculkAttributeValue;
+import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
   
   private final Map<Attribute, AttributeValue> attributes = new HashMap<>();
+
+  @Override
+  public @NotNull AttributeValue attribute(@NotNull Attribute attribute) {
+    return this.attributes.computeIfAbsent(attribute, attr -> new SculkAttributeValue(attr, this::attributeChange));
+  }
 
   public AbstractLivingEntity(final SculkServer server) {
     super(server);
@@ -64,5 +75,9 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
   @Override
   public void numberOfBeeStingers(int beeStingers) {
     this.metadata.setVarInt(13, beeStingers);
+  }
+
+  protected void attributeChange(SculkAttributeValue value) {
+    this.sendViewers(new UpdateAttributes(this.id, value));
   }
 }

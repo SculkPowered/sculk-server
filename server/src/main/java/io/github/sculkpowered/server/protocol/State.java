@@ -1,5 +1,6 @@
 package io.github.sculkpowered.server.protocol;
 
+import io.github.sculkpowered.server.entity.TeleportEntity;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
 import io.github.sculkpowered.server.protocol.packet.config.RegistryData;
@@ -16,6 +17,7 @@ import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
 import io.github.sculkpowered.server.protocol.packet.play.AwardStatistics;
 import io.github.sculkpowered.server.protocol.packet.play.BossBar;
+import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
 import io.github.sculkpowered.server.protocol.packet.play.ChangeDifficulty;
@@ -298,7 +300,7 @@ public enum State {
       this.clientBound.register(DisplayObjective.class);
       this.clientBound.register(EntityMetadata.class);
       this.clientBound.skip(); // Link Entities
-      this.clientBound.skip(); // Entity Velocity
+      this.clientBound.register(EntityVelocity.class);
       this.clientBound.register(Equipment.class);
       this.clientBound.register(Experience.class);
       this.clientBound.register(Health.class);
@@ -319,7 +321,7 @@ public enum State {
       this.clientBound.register(TabListHeaderFooter.class);
       this.clientBound.skip(); // Tag Query Response
       this.clientBound.register(PickupItem.class);
-      this.clientBound.skip(); // Teleport Entity
+      this.clientBound.register(TeleportEntity.class);
       this.clientBound.skip(); // Update Advancements
       this.clientBound.register(UpdateAttributes.class);
       this.clientBound.skip(); // Entity Effects

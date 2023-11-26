@@ -44,6 +44,34 @@ public final class Interact implements Packet {
     return 28;
   }
 
+  public int entityId() {
+    return this.entityId;
+  }
+
+  public int type() {
+    return this.type;
+  }
+
+  public float x() {
+    return this.x;
+  }
+
+  public float y() {
+    return this.y;
+  }
+
+  public float z() {
+    return this.z;
+  }
+
+  public int hand() {
+    return this.hand;
+  }
+
+  public boolean sneaking() {
+    return this.sneaking;
+  }
+
   @Override
   public String toString() {
     return "Interact{" +

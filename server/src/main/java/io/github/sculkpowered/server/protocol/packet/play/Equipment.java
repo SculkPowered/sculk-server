@@ -25,7 +25,7 @@ public final class Equipment implements Packet {
       var index = 0;
       for (final var entry : this.equipment.int2ObjectEntrySet()) {
         var key = (byte) entry.getIntKey();
-        if (index != this.equipment.size()) {
+        if (index != this.equipment.size() - 1) {
           key |= (byte) 0x80; // isn't last so set first bit
         }
         buf

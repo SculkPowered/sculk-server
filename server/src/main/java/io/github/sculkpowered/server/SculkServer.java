@@ -19,6 +19,7 @@ import io.github.sculkpowered.server.container.SculkStonecutterContainer;
 import io.github.sculkpowered.server.container.item.Material;
 import io.github.sculkpowered.server.damage.DamageType;
 import io.github.sculkpowered.server.damage.DamageTypeRegistry;
+import io.github.sculkpowered.server.entity.AbstractEntity;
 import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.EntityClassToSupplierMap;
 import io.github.sculkpowered.server.entity.player.GameProfile;
@@ -52,6 +53,7 @@ import io.github.sculkpowered.server.world.chunk.loader.DefaultChunkLoader;
 import io.github.sculkpowered.server.world.dimension.Dimension;
 import io.github.sculkpowered.server.world.dimension.DimensionRegistry;
 import io.netty.channel.epoll.Epoll;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -92,6 +94,7 @@ public final class SculkServer implements Server {
   private KeyPair keyPair;
 
   private final Map<UUID, SculkPlayer> players = new ConcurrentHashMap<>();
+  private final Int2ObjectMap<AbstractEntity> entities = new Int2ObjectOpenHashMap<>();
   private final Map<String, SculkWorld> worlds = new ConcurrentHashMap<>();
   private final SimpleTerminal terminal;
   private final Registry<Dimension> dimensionRegistry;
@@ -104,7 +107,7 @@ public final class SculkServer implements Server {
   private final SculkScheduler scheduler;
   private final Worker worker;
   private final NettyServer nettyServer;
-  private final EntityClassToSupplierMap entities = EntityClassToSupplierMap.get();
+  private final EntityClassToSupplierMap entitySupplier = EntityClassToSupplierMap.get();
 
   SculkServer() {
     final var startTime = System.currentTimeMillis();
@@ -328,11 +331,16 @@ public final class SculkServer implements Server {
   @SuppressWarnings("unchecked")
   @Override
   public <T extends Entity> T createEntity(@NotNull Class<T> clazz) {
-    final var supplier = this.entities.get(clazz);
+    final var supplier = this.entitySupplier.get(clazz);
     if (supplier == null) {
       throw new NullPointerException("No supplier for class" + clazz + " found!");
     }
     return (T) supplier.apply(this);
+  }
+
+  @Override
+  public @Nullable AbstractEntity entity(int id) {
+    return this.entities.get(id);
   }
 
   @Override
@@ -401,5 +409,9 @@ public final class SculkServer implements Server {
 
   public void removePlayer(final UUID uniqueId) {
     this.players.remove(uniqueId);
+  }
+
+  public void addEntity(final AbstractEntity abstractEntity) {
+    this.entities.put(abstractEntity.id(), abstractEntity);
   }
 }
