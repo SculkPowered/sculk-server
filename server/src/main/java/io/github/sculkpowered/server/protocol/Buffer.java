@@ -230,7 +230,7 @@ public final class Buffer {
           .writeBoolean(true)
           .writeVarInt(slot.material().ordinal())
           .writeByte((byte) slot.amount())
-          .writeCompoundTag(slot.nbt());
+          .writeCompoundTag(slot.meta().asNbt());
     } else {
       this.buf.writeBoolean(false);
     }

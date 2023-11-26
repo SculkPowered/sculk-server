@@ -217,6 +217,7 @@ public enum State {
       this.serverBound.register(TeleportToEntity.class, TeleportToEntity::new);
       this.serverBound.register(UseItemOn.class, UseItemOn::new);
       this.serverBound.register(UseItem.class, UseItem::new);
+
       this.clientBound.skip(); // Bundle Delimiter
       this.clientBound.register(SpawnEntity.class);
       this.clientBound.register(SpawnExperienceOrb.class);
@@ -305,7 +306,7 @@ public enum State {
       this.clientBound.register(DisplayObjective.class);
       this.clientBound.register(EntityMetadata.class);
       this.clientBound.skip(); // Link Entities
-      this.clientBound.skip(); // Entity Velocity
+      this.clientBound.register(EntityVelocity.class);
       this.clientBound.register(Equipment.class);
       this.clientBound.register(Experience.class);
       this.clientBound.register(Health.class);
@@ -326,7 +327,7 @@ public enum State {
       this.clientBound.register(TabListHeaderFooter.class);
       this.clientBound.skip(); // Tag Query Response
       this.clientBound.register(PickupItem.class);
-      this.clientBound.skip(); // Teleport Entity
+      this.clientBound.register(TeleportToEntity.class);
       this.clientBound.skip(); // Set Ticking State
       this.clientBound.skip(); // Step Tick
       this.clientBound.skip(); // Update Advancements
