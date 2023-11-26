@@ -411,7 +411,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void calculateChunks(final Position from, final Position to,
       boolean check, boolean checkAlreadyLoaded,
-      int range, int oldRange) {
+      byte range, byte oldRange) {
     final var fromChunkX = chunkCoordinate(from.x());
     final var fromChunkZ = chunkCoordinate(from.z());
     final var chunkX = chunkCoordinate(to.x());
@@ -420,8 +420,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       if (fromChunkX == chunkX && fromChunkZ == chunkZ) {
         return;
       }
-      this.send(new CenterChunk(chunkX, chunkZ));
     }
+    this.send(new CenterChunk(chunkX, chunkZ));
     final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
     this.connection.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
       final var chunk = world.chunk(x, z);
