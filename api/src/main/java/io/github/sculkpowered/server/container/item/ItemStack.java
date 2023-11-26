@@ -65,8 +65,7 @@ public class ItemStack {
   }
 
   public @NotNull ItemStack withMeta(final Consumer<ItemMeta> consumer) {
-    final var itemMeta = new ItemMeta(CompoundBinaryTag.builder().put(this.nbt),
-        CompoundBinaryTag.builder().put(this.nbt.getCompound("display")));
+    final var itemMeta = new ItemMeta(this.nbt);
     consumer.accept(itemMeta);
     return new ItemStack(this.material, this.amount, itemMeta.build());
   }
