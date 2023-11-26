@@ -1,5 +1,6 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
@@ -23,6 +24,7 @@ public abstract class AbstractEntity implements Entity {
 
   private static final AtomicInteger CURRENT_ID = new AtomicInteger(0);
 
+  protected final SculkServer server;
   protected final UUID uniqueId;
   protected final int id = CURRENT_ID.getAndIncrement();
   protected final Metadata metadata = new Metadata();
@@ -30,11 +32,12 @@ public abstract class AbstractEntity implements Entity {
   protected SculkWorld world;
   protected Position position = Position.zero();
 
-  public AbstractEntity() {
-    this(UUID.randomUUID());
+  public AbstractEntity(final SculkServer server) {
+    this(server, UUID.randomUUID());
   }
 
-  public AbstractEntity(UUID uniqueId) {
+  public AbstractEntity(final SculkServer server, final UUID uniqueId) {
+    this.server = server;
     this.uniqueId = uniqueId;
   }
 
@@ -55,11 +58,15 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void world(@NotNull World world) {
-    if (this.world != null) {
-      this.world.chunkAt(this.position).entities().remove(this);
-    }
-    this.world = (SculkWorld) world;
-    this.world.chunkAt(this.position).entities().add(this);
+    final var sculkWorld = (SculkWorld) world;
+    var inWorld = this.world != null;
+    this.server.addTask(() -> {
+      if (inWorld) {
+        this.world.chunkAt(this.position).entities().remove(this);
+      }
+      sculkWorld.chunkAt(this.position).entities().add(this);
+    });
+    this.world = sculkWorld;
   }
 
   @Override
@@ -68,9 +75,13 @@ public abstract class AbstractEntity implements Entity {
   }
 
   public void setPosition(final Position position) {
-    this.world.chunkAt(this.position).entities().remove(this);
+    final var oldChunk = this.world.chunkAt(this.position);
+    final var newChunk = this.world.chunkAt(position);
+    this.server.addTask(() -> {
+      oldChunk.entities().remove(this);
+      newChunk.entities().add(this);
+    });
     this.position = position;
-    this.world.chunkAt(this.position).entities().add(this);
   }
 
   @Override

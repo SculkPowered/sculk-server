@@ -129,10 +129,12 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             this.player.settings().viewDistance(), (x, z) -> {
               final var chunk = world.chunk(x, z);
               chunk.viewers().remove(this.player);
-              for (final var entity : chunk.entities()) {
-                entity.removeViewer(this.player);
-              }
-              chunk.entities().remove(this.player);
+              this.server.addTask(() -> {
+                for (final var entity : chunk.entities()) {
+                  entity.removeViewer(this.player);
+                }
+                chunk.entities().remove(this.player);
+              });
             });
       }
       this.player.sendViewers(new RemoveEntities(this.player.id()));

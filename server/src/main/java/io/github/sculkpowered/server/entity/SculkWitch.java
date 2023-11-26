@@ -1,8 +1,13 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import org.jetbrains.annotations.NotNull;
 
 public final class SculkWitch extends AbstractRaider implements Witch {
+
+  public SculkWitch(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public @NotNull EntityType type() {

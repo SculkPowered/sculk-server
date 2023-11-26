@@ -1,9 +1,14 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class SculkItemFrame extends AbstractEntity implements ItemFrame {
+
+  public SculkItemFrame(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public @NotNull EntityType type() {

@@ -29,6 +29,7 @@ import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
 import io.github.sculkpowered.server.protocol.packet.play.ConfirmTeleportation;
 import io.github.sculkpowered.server.protocol.packet.play.CreativeModeSlot;
 import io.github.sculkpowered.server.protocol.packet.play.EntityAnimation;
+import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
 import io.github.sculkpowered.server.protocol.packet.play.Interact;
 import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
@@ -41,7 +42,6 @@ import io.github.sculkpowered.server.protocol.packet.play.TeleportToEntity;
 import io.github.sculkpowered.server.protocol.packet.play.UseItem;
 import io.github.sculkpowered.server.protocol.packet.play.UseItemOn;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockUpdate;
 import io.github.sculkpowered.server.protocol.packet.play.command.ChatCommand;
 import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsRequest;
 import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsResponse;
@@ -58,6 +58,7 @@ import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositio
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
 import io.github.sculkpowered.server.util.ItemList;
+import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.block.Block;
 import io.github.sculkpowered.server.world.block.BlockState;
@@ -164,12 +165,12 @@ public final class PlayPacketHandler extends PacketHandler {
         .thenAcceptAsync(event -> {
           if (event.result().denied()) { // let's resend to override client prediction
             if (container == inventory) {
-              this.player.send(new ContainerContent((byte) 0, 1, inventory.items));
+              this.player.send(new ContainerContent((byte) 0, 1, inventory.items()));
             } else {
               final var sculkContainer = (SculkContainer) container;
               final var items = new ItemList(container.type().size() + 36);
               for (var i = 8; i < 44; i++) {
-                items.set(i - 9 + container.type().size(), inventory.items.get(i));
+                items.set(i - 9 + container.type().size(), inventory.items().get(i));
               }
               for (var i = 0; i < sculkContainer.items.size(); i++) {
                 items.set(i, sculkContainer.items.get(i));
@@ -178,7 +179,7 @@ public final class PlayPacketHandler extends PacketHandler {
             }
           } else {
             for (final var entry : clickContainer.slots().int2ObjectEntrySet()) {
-              inventory.items.set(entry.getIntKey(), entry.getValue());
+              inventory.items().set(entry.getIntKey(), entry.getValue());
             }
           }
         }, this.connection.executor())
@@ -260,7 +261,8 @@ public final class PlayPacketHandler extends PacketHandler {
         new EntityRotation(this.player.id(), yaw, pitch, playerRotation.onGround()),
         new HeadRotation(this.player.id(), yaw)
     );
-    this.player.setPosition(Position.position(position.x(), position.y(), position.z(), yaw, pitch));
+    this.player.setPosition(
+        Position.position(position.x(), position.y(), position.z(), yaw, pitch));
     return true;
   }
 
@@ -280,13 +282,13 @@ public final class PlayPacketHandler extends PacketHandler {
     switch (playerAction.status()) {
       case 0 -> { // started digging
         if (this.player.instantBreak()) {
-          this.callBlockBreak(playerAction.position());
+          this.callBlockBreak(playerAction);
         }
       }
       case 1 -> { // cancelled digging
 
       }
-      case 2 -> this.callBlockBreak(playerAction.position()); // finished digging
+      case 2 -> this.callBlockBreak(playerAction); // finished digging
       case 3 -> this.player.inventory()
           .item(this.player.heldItemSlot(), ItemStack.empty()); // drop stack
       case 4 -> { // drop item
@@ -313,15 +315,15 @@ public final class PlayPacketHandler extends PacketHandler {
     return true;
   }
 
-  private void callBlockBreak(Position position) {
+  private void callBlockBreak(PlayerAction playerAction) {
     this.server.eventHandler()
-        .call(new BlockBreakEvent(this.player, position, this.player.world().block(position)))
+        .call(new BlockBreakEvent(this.player, playerAction.position(),
+            this.player.world().block(playerAction.position())))
         .thenAcceptAsync(event -> {
           if (event.result().allowed()) {
-            this.player.world().block(position, Block.AIR);
+            this.player.world().block(event.position(), Block.AIR);
           } else {
-            this.player.world().chunkAt((int) position.x(), (int) position.y())
-                .send(this.player);
+            this.player.send(new BlockAcknowledge(playerAction.sequence()));
           }
         }, this.connection.executor())
         .exceptionally(throwable -> {
@@ -342,6 +344,8 @@ public final class PlayPacketHandler extends PacketHandler {
   @Override
   public boolean handle(HeldItem heldItem) {
     this.player.heldItem = heldItem.slot();
+    this.player.sendViewers(new Equipment(this.player.id(),
+        OneInt2ObjectMap.of(0, this.player.inventory().item(heldItem.slot()))));
     return true;
   }
 
@@ -351,7 +355,11 @@ public final class PlayPacketHandler extends PacketHandler {
       LOGGER.info(this.player.name() + " tried to set a slot, but is not in creative mode.");
       return false;
     }
-    this.player.inventory().items.set(creativeModeSlot.slot(), creativeModeSlot.clickedItem());
+    final var slot = creativeModeSlot.slot();
+    if (slot == -1) { // ignore dropping
+      return true;
+    }
+    this.player.inventory().item0(creativeModeSlot.slot(), creativeModeSlot.clickedItem(), false);
     return true;
   }
 
@@ -429,7 +437,7 @@ public final class PlayPacketHandler extends PacketHandler {
                 if (placeEvent.result().allowed()) {
                   this.player.world().block(placeEvent.position(), placeEvent.block());
                 } else {
-                  this.player.send(new BlockUpdate(placeEvent.position(), currentBlock.id()));
+                  this.player.send(new BlockAcknowledge(useItemOn.sequence()));
                 }
               }, this.connection.executor()).exceptionally(throwable -> {
                 LOGGER.error("Exception while handling block place for " + this.player.name(),

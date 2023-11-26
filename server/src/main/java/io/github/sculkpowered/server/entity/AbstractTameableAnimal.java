@@ -1,9 +1,14 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractTameableAnimal extends AbstractAnimal implements Tameable {
+
+  public AbstractTameableAnimal(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public boolean sitting() {

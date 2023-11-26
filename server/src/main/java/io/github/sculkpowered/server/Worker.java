@@ -1,11 +1,15 @@
 package io.github.sculkpowered.server;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 final class Worker extends Thread {
 
   private static final int TPS = 20;
   private static final int MILLIS_BETWEEN_TICK = 1000 / TPS;
 
   private final SculkServer server;
+  private Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
 
   public Worker(final SculkServer server) {
     super("Sculk Worker");
@@ -16,6 +20,11 @@ final class Worker extends Thread {
   public void run() {
     while (this.server.isRunning()) {
       final var time = System.currentTimeMillis();
+
+      for (final var task : this.tasks) {
+        task.run();
+      }
+      this.tasks.clear();
 
       for (final var world : this.server.worlds()) {
         // tick over chunks -> and entities
@@ -34,5 +43,9 @@ final class Worker extends Thread {
         }
       }
     }
+  }
+
+  public void addTask(final Runnable task) {
+    this.tasks.add(task);
   }
 }

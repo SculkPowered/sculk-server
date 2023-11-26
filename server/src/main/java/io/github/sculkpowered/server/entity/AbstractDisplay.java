@@ -1,8 +1,13 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractDisplay extends AbstractEntity implements Display {
+
+  public AbstractDisplay(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public int getInterpolationDelay() {

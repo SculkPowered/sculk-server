@@ -1,10 +1,15 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.world.block.Block;
 import io.github.sculkpowered.server.world.block.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public final class SculkBlockDisplay extends AbstractDisplay implements BlockDisplay {
+
+  public SculkBlockDisplay(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public @NotNull EntityType type() {

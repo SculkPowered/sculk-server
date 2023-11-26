@@ -1,6 +1,12 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
+
 public abstract class AbstractAnimal extends AbstractMob implements Animal {
+
+  public AbstractAnimal(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public boolean baby() {

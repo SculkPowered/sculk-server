@@ -1,8 +1,13 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import org.jetbrains.annotations.NotNull;
 
 public final class SculkSlime extends AbstractMob implements Slime {
+
+  public SculkSlime(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public @NotNull EntityType type() {
