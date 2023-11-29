@@ -35,6 +35,7 @@ import io.github.sculkpowered.server.protocol.packet.play.container.ContainerCon
 import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
 import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
 import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
+import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.chunk.SculkChunk;
@@ -66,7 +67,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       .withDynamic(PermissionChecker.POINTER, () -> this.permissionChecker)
       .build();
 
-  private final SculkServer server;
   private final SculkConnection connection;
   private final GameProfile profile;
   private final ClientInformationWrapper settings = new ClientInformationWrapper();
@@ -87,8 +87,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public SculkPlayer(final SculkServer server, final SculkConnection connection,
       final GameProfile profile) {
-    super(profile.uniqueId());
-    this.server = server;
+    super(server, profile.uniqueId());
     this.connection = connection;
     this.profile = profile;
   }
@@ -172,6 +171,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   public void heldItemSlot(int slot) {
     this.heldItem = slot;
     this.send(new HeldItem((byte) slot));
+    this.sendViewers(new Equipment(this.id(),
+        OneInt2ObjectMap.of(0, this.inventory.item(this.heldItem))));
   }
 
   @Override
@@ -411,7 +412,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void calculateChunks(final Position from, final Position to,
       boolean check, boolean checkAlreadyLoaded,
-      int range, int oldRange) {
+      byte range, byte oldRange) {
     final var fromChunkX = chunkCoordinate(from.x());
     final var fromChunkZ = chunkCoordinate(from.z());
     final var chunkX = chunkCoordinate(to.x());
@@ -420,37 +421,39 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       if (fromChunkX == chunkX && fromChunkZ == chunkZ) {
         return;
       }
-      this.send(new CenterChunk(chunkX, chunkZ));
     }
-    final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
-    this.connection.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
-      final var chunk = world.chunk(x, z);
-      chunks.add(chunk);
-      chunk.viewers().add(this); // new in range
-      for (final var entity : chunk.entities()) {
-        if (entity == this) {
-          continue;
-        }
-        if (entity instanceof Player viewer) {
-          this.addViewer(viewer);
-        }
-        entity.addViewer(this);
-      }
-    });
-    if (checkAlreadyLoaded) {
-      this.connection.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
+    this.send(new CenterChunk(chunkX, chunkZ));
+    this.server.addTask(() -> {
+      final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
+      this.connection.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
         final var chunk = world.chunk(x, z);
-        if (!chunks.remove(chunk)) {
-          chunk.viewers().remove(this); // chunk not in range
-          for (final var entity : chunk.entities()) {
-            entity.removeViewer(this);
+        chunks.add(chunk);
+        chunk.viewers().add(this); // new in range
+        for (final var entity : chunk.entities()) {
+          if (entity == this) {
+            continue;
           }
+          if (entity instanceof Player viewer) {
+            this.addViewer(viewer);
+          }
+          entity.addViewer(this);
         }
       });
-    }
-    for (final var chunk : chunks) { // send all new chunks
-      chunk.send(this);
-    }
+      if (checkAlreadyLoaded) {
+        this.connection.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
+          final var chunk = world.chunk(x, z);
+          if (!chunks.remove(chunk)) {
+            chunk.viewers().remove(this); // chunk not in range
+            for (final var entity : chunk.entities()) {
+              entity.removeViewer(this);
+            }
+          }
+        });
+      }
+      for (final var chunk : chunks) { // send all new chunks
+        chunk.send(this);
+      }
+    });
   }
 
   public void handleClientInformation(final ClientInformation clientInformation) {

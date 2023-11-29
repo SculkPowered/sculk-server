@@ -1,8 +1,13 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import org.jetbrains.annotations.NotNull;
 
 public final class SculkAxolotl extends AbstractAnimal implements Axolotl {
+
+  public SculkAxolotl(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public @NotNull EntityType type() {

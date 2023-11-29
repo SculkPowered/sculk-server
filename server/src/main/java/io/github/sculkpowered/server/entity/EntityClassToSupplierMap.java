@@ -1,10 +1,12 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import java.util.HashMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class EntityClassToSupplierMap extends
-    HashMap<Class<? extends Entity>, Supplier<AbstractEntity>> {
+    HashMap<Class<? extends Entity>, Function<SculkServer, AbstractEntity>> {
 
   private EntityClassToSupplierMap() {}
 

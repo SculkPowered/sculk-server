@@ -1,14 +1,16 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import java.util.UUID;
 
 public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
 
-  public AbstractLivingEntity() {
+  public AbstractLivingEntity(final SculkServer server) {
+    super(server);
   }
 
-  public AbstractLivingEntity(UUID uuid) {
-    super(uuid);
+  public AbstractLivingEntity(final SculkServer server, final UUID uuid) {
+    super(server, uuid);
   }
 
   @Override

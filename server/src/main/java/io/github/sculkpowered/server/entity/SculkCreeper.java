@@ -1,8 +1,13 @@
 package io.github.sculkpowered.server.entity;
 
+import io.github.sculkpowered.server.SculkServer;
 import org.jetbrains.annotations.NotNull;
 
 public final class SculkCreeper extends AbstractMob implements Creeper {
+
+  public SculkCreeper(final SculkServer server) {
+    super(server);
+  }
 
   @Override
   public @NotNull EntityType type() {

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class MineInventory implements Inventory {
 
-  public final ItemList items = new ItemList(this.type().size());
+  private final ItemList items = new ItemList(this.type().size());
   private final SculkPlayer player;
 
   public MineInventory(final SculkPlayer player) {
@@ -27,8 +27,33 @@ public final class MineInventory implements Inventory {
     } else if (index > 35) {
       index = 8 - (index - 36);
     }
+    this.item0(index, itemStack, true);
+  }
+
+  public void item0(int index, @NotNull ItemStack itemStack, boolean slotPacket) {
     this.items.set(index, itemStack);
-    this.player.send(new ContainerSlot((byte) 0, 1, (short) index, itemStack));
+    if (index == 5) {
+      this.player.sendViewersAndSelf(
+          new Equipment(this.player.id(), OneInt2ObjectMap.of(5, itemStack)));
+    } else if (index == 6) {
+      this.player.sendViewersAndSelf(
+          new Equipment(this.player.id(), OneInt2ObjectMap.of(4, itemStack)));
+    } else if (index == 7) {
+      this.player.sendViewersAndSelf(
+          new Equipment(this.player.id(), OneInt2ObjectMap.of(3, itemStack)));
+    } else if (index == 8) {
+      this.player.sendViewersAndSelf(
+          new Equipment(this.player.id(), OneInt2ObjectMap.of(2, itemStack)));
+    } else if (index == 45) {
+      this.player.sendViewersAndSelf(
+          new Equipment(this.player.id(), OneInt2ObjectMap.of(1, itemStack)));
+    } else if ((index - 36) == this.player.heldItemSlot()) {
+      this.player.sendViewersAndSelf(
+          new Equipment(this.player.id(), OneInt2ObjectMap.of(0, itemStack)));
+    }
+    if (slotPacket) {
+      this.player.send(new ContainerSlot((byte) 0, 1, (short) index, itemStack));
+    }
   }
 
   @Override
@@ -60,7 +85,7 @@ public final class MineInventory implements Inventory {
 
   @Override
   public void itemInOffHand(@NotNull ItemStack item) {
-    this.item(40, item);
+    this.item0(45, item, false);
   }
 
   @Override
@@ -76,8 +101,7 @@ public final class MineInventory implements Inventory {
 
   @Override
   public void chestplate(@NotNull ItemStack chestplate) {
-    this.items.set(6, chestplate);
-    this.player.sendViewersAndSelf(new Equipment(this.player.id(), OneInt2ObjectMap.of(4, chestplate)));
+    this.item0(6, chestplate, false);
   }
 
   @Override
@@ -87,8 +111,7 @@ public final class MineInventory implements Inventory {
 
   @Override
   public void leggings(@NotNull ItemStack leggings) {
-    this.items.set(7, leggings);
-    this.player.sendViewersAndSelf(new Equipment(this.player.id(), OneInt2ObjectMap.of(3, leggings)));
+    this.item0(7, leggings, false);
   }
 
   @Override
@@ -98,8 +121,7 @@ public final class MineInventory implements Inventory {
 
   @Override
   public void boots(@NotNull ItemStack boots) {
-    this.items.set(8, boots);
-    this.player.sendViewersAndSelf(new Equipment(this.player.id(), OneInt2ObjectMap.of(2, boots)));
+    this.item0(8, boots, false);
   }
 
   @Override
@@ -115,5 +137,9 @@ public final class MineInventory implements Inventory {
   @Override
   public @NotNull Type type() {
     return Type.PLAYER;
+  }
+
+  public ItemList items() {
+    return this.items;
   }
 }

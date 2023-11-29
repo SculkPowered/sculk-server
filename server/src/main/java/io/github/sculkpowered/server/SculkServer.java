@@ -102,6 +102,7 @@ public final class SculkServer implements Server {
   private final SculkCommandHandler commandHandler;
   private final SculkTeamHandler teamHandler;
   private final SculkScheduler scheduler;
+  private final Worker worker;
   private final NettyServer nettyServer;
   private final EntityClassToSupplierMap entities = EntityClassToSupplierMap.get();
 
@@ -144,6 +145,7 @@ public final class SculkServer implements Server {
     this.loadMaterials();
 
     this.pluginHandler.loadPlugins();
+    this.worker = new Worker(this);
 
     this.eventHandler.call(new ServerInitializeEvent()).join();
 
@@ -161,8 +163,7 @@ public final class SculkServer implements Server {
           this.configuration.compressionThreshold());
     }
 
-    final var worker = new Worker(this);
-    worker.start();
+    this.worker.start();
     this.terminal.start();
   }
 
@@ -331,7 +332,7 @@ public final class SculkServer implements Server {
     if (supplier == null) {
       throw new NullPointerException("No supplier for class" + clazz + " found!");
     }
-    return (T) supplier.get();
+    return (T) supplier.apply(this);
   }
 
   @Override
@@ -365,6 +366,10 @@ public final class SculkServer implements Server {
   @Override
   public void shutdown() {
     this.shutdown(true);
+  }
+
+  public void addTask(final Runnable task) {
+    this.worker.addTask(task);
   }
 
   private void loadMaterials() {
