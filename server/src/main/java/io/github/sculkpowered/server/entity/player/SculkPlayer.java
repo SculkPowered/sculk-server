@@ -12,6 +12,7 @@ import io.github.sculkpowered.server.container.MineInventory;
 import io.github.sculkpowered.server.container.SculkContainer;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.AbstractLivingEntity;
+import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.EntityType;
 import io.github.sculkpowered.server.event.connection.PluginMessageEvent;
 import io.github.sculkpowered.server.protocol.SculkConnection;
@@ -33,6 +34,10 @@ import io.github.sculkpowered.server.protocol.packet.play.TabListHeaderFooter;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
 import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
+import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
+import io.github.sculkpowered.server.protocol.packet.play.sound.SoundEffect;
+import io.github.sculkpowered.server.protocol.packet.play.sound.StopSound;
+import io.github.sculkpowered.server.protocol.packet.play.title.ClearTitles;
 import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
 import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
 import io.github.sculkpowered.server.util.OneInt2ObjectMap;
@@ -49,6 +54,8 @@ import net.kyori.adventure.bossbar.BossBarImplementation;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
@@ -292,6 +299,16 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
+  public void clearTitle() {
+    this.send(new ClearTitles(false));
+  }
+
+  @Override
+  public void resetTitle() {
+    this.send(new ClearTitles(true));
+  }
+
+  @Override
   public void showBossBar(@NotNull BossBar bar) {
     @SuppressWarnings("UnstableApiUsage")
     final var impl = BossBarImplementation.get(bar, Impl.class);
@@ -307,6 +324,28 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     if (impl.players().remove(this)) {
       this.send(remove(impl.uniqueId()));
     }
+  }
+
+  @Override
+  public void playSound(@NotNull Sound sound) {
+    this.send(new EntitySoundEffect(sound, this.id));
+  }
+
+  @Override
+  public void playSound(@NotNull Sound sound, double x, double y, double z) {
+    this.send(new SoundEffect(sound, (int) (x * 8), (int) (y * 8), (int) (z * 8)));
+  }
+
+  @Override
+  public void playSound(@NotNull Sound sound, @NotNull Sound.Emitter emitter) {
+    if (emitter instanceof Entity entity) {
+      this.send(new EntitySoundEffect(sound, entity.id()));
+    }
+  }
+
+  @Override
+  public void stopSound(@NotNull SoundStop stop) {
+    this.send(new StopSound(stop));
   }
 
   @NotNull
