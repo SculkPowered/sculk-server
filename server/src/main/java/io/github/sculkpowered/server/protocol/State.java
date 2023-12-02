@@ -93,6 +93,9 @@ import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotatio
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.DisplayObjective;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateObjectives;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateScore;
+import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
+import io.github.sculkpowered.server.protocol.packet.play.sound.SoundEffect;
+import io.github.sculkpowered.server.protocol.packet.play.sound.StopSound;
 import io.github.sculkpowered.server.protocol.packet.play.title.ClearTitles;
 import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
 import io.github.sculkpowered.server.protocol.packet.play.title.Title;
@@ -313,10 +316,10 @@ public enum State {
       this.clientBound.skip(); // Update Time
       this.clientBound.register(Title.class);
       this.clientBound.register(TitleAnimationTimes.class);
-      this.clientBound.skip(); // Entity Sound Effect
-      this.clientBound.skip(); // Sound Effect
+      this.clientBound.register(EntitySoundEffect.class);
+      this.clientBound.register(SoundEffect.class);
       this.clientBound.skip(); // Start Configuration
-      this.clientBound.skip(); // Stop Sound
+      this.clientBound.register(StopSound.class);
       this.clientBound.register(SystemChatMessage.class);
       this.clientBound.register(TabListHeaderFooter.class);
       this.clientBound.skip(); // Tag Query Response

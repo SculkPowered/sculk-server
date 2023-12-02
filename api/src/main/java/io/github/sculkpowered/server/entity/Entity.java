@@ -5,6 +5,7 @@ import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.Vector;
 import io.github.sculkpowered.server.world.World;
 import java.util.UUID;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents an entity.
  */
-public interface Entity extends Viewable {
+public interface Entity extends Viewable, Sound.Emitter {
 
   /**
    * @since 1.0.0
