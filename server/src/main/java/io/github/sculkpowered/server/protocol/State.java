@@ -154,7 +154,8 @@ public enum State {
       this.clientBound.register(KeepAlive.class);
       this.clientBound.skip(); // Ping
       this.clientBound.register(RegistryData.class);
-      this.clientBound.skip(); // Resource Pack
+      this.clientBound.skip(); // Remove Resource Pack
+      this.clientBound.skip(); // Add Resource Pack
       this.clientBound.register(FeatureFlags.class);
       // Update Tags
     }
@@ -283,7 +284,8 @@ public enum State {
       this.clientBound.register(RemoveEntities.class);
       this.clientBound.skip(); // Remove Entity Effect
       this.clientBound.register(ResetScore.class);
-      this.clientBound.skip(); // Resource Pack
+      this.clientBound.skip(); // Remove Resource Pack
+      this.clientBound.skip(); // Add Resource Pack
       this.clientBound.register(Respawn.class);
       this.clientBound.register(HeadRotation.class);
       this.clientBound.skip(); // Update Section Blocks
