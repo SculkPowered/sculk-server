@@ -43,7 +43,6 @@ public final class Dimension implements Registry.Entry {
   private final CompoundBinaryTag nbt;
   private final int minimumSections;
   private final int maximumSections;
-  private CompoundBinaryTag heightmaps;
 
   private Dimension(final Key key, final CompoundBinaryTag nbt) {
     this.key = key;
@@ -52,10 +51,6 @@ public final class Dimension implements Registry.Entry {
     final var minY = this.nbt.getCompound("element").getInt("min_y");
     this.minimumSections = minY / Chunk.CHUNK_SECTION_SIZE;
     this.maximumSections = (minY + dimensionHeight) / Chunk.CHUNK_SECTION_SIZE;
-  }
-
-  public void heightmaps(final CompoundBinaryTag heightmaps) {
-    this.heightmaps = heightmaps;
   }
 
   public static @NotNull Builder builder(final @NotNull Key key) {
@@ -83,10 +78,6 @@ public final class Dimension implements Registry.Entry {
   @Override
   public @NotNull CompoundBinaryTag asNBT() {
     return this.nbt;
-  }
-
-  public @NotNull CompoundBinaryTag heightmaps() {
-    return this.heightmaps;
   }
 
   public int minimumSections() {

@@ -50,7 +50,6 @@ import io.github.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import io.github.sculkpowered.server.world.chunk.loader.ChunkLoader;
 import io.github.sculkpowered.server.world.chunk.loader.DefaultChunkLoader;
 import io.github.sculkpowered.server.world.dimension.Dimension;
-import io.github.sculkpowered.server.world.dimension.DimensionRegistry;
 import io.netty.channel.epoll.Epoll;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.IOException;
@@ -130,7 +129,7 @@ public final class SculkServer implements Server {
         Epoll.isAvailable() ? "epoll" : "nio", Natives.compress.getLoadedVariant(),
         Natives.cipher.getLoadedVariant());
 
-    this.dimensionRegistry = new DimensionRegistry();
+    this.dimensionRegistry = new SimpleRegistry<>("minecraft:dimension_type", Dimension.OVERWORLD);
     this.biomeRegistry = new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS);
     this.damageTypeRegistry = DamageTypeRegistry.get();
     this.pluginHandler = new SculkPluginHandler(this);

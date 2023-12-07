@@ -9,7 +9,7 @@ final class Worker extends Thread {
   private static final int MILLIS_BETWEEN_TICK = 1000 / TPS;
 
   private final SculkServer server;
-  private Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
+  private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
 
   public Worker(final SculkServer server) {
     super("Sculk Worker");
