@@ -13,7 +13,7 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
   private PotionEffect secondPotionEffect;
 
   public SculkBeaconContainer(final Component title) {
-    super(title);
+    super(Type.BEACON, title);
   }
 
   @Override
@@ -47,11 +47,6 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
   @Override
   public @NotNull PotionEffect secondPotionEffect() {
     return this.secondPotionEffect;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return Type.BEACON;
   }
 
   @Override

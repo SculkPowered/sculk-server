@@ -15,12 +15,20 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class SculkContainer implements Container, Viewable {
 
-  public final ItemList items = new ItemList(this.type().size());
+  private final Type type;
   private final Component title;
   private final List<Player> viewers = new ArrayList<>();
+  public final ItemList items;
 
-  public SculkContainer(final Component title) {
+  public SculkContainer(final Type type, final Component title) {
+    this.type = type;
     this.title = title;
+    this.items = new ItemList(type.size());
+  }
+
+  @Override
+  public @NotNull Container.Type type() {
+    return this.type;
   }
 
   @Override

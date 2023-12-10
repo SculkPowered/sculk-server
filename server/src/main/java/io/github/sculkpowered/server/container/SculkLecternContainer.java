@@ -2,14 +2,13 @@ package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 public final class SculkLecternContainer extends SculkContainer implements LecternContainer {
 
   private int page;
 
   public SculkLecternContainer(final Component title) {
-    super(title);
+    super(Type.LECTERN, title);
   }
 
   @Override
@@ -21,11 +20,6 @@ public final class SculkLecternContainer extends SculkContainer implements Lecte
   @Override
   public int page() {
     return this.page;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return Type.LECTERN;
   }
 
   @Override

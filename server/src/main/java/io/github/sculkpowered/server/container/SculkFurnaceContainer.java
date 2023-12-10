@@ -2,19 +2,16 @@ package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 public final class SculkFurnaceContainer extends SculkContainer implements FurnaceContainer {
 
-  private final Type type;
   private int fuelLeft;
   private int maxFuelBurnTime;
   private int progressArrow;
   private int maximumProgress;
 
   public SculkFurnaceContainer(final Type type, final Component title) {
-    super(title);
-    this.type = type;
+    super(type, title);
   }
 
   @Override
@@ -59,11 +56,6 @@ public final class SculkFurnaceContainer extends SculkContainer implements Furna
   @Override
   public int maximumProgress() {
     return this.maximumProgress;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return this.type;
   }
 
   @Override

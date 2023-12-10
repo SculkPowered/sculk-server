@@ -2,14 +2,13 @@ package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 public final class SculkLoomContainer extends SculkContainer implements LoomContainer {
 
   private int selectedPattern;
 
   public SculkLoomContainer(Component title) {
-    super(title);
+    super(Type.LOOM, title);
   }
 
   @Override
@@ -21,11 +20,6 @@ public final class SculkLoomContainer extends SculkContainer implements LoomCont
   @Override
   public int selectedPattern() {
     return this.selectedPattern;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return Type.LOOM;
   }
 
   @Override

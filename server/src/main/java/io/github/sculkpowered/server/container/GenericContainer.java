@@ -2,20 +2,11 @@ package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 public final class GenericContainer extends SculkContainer {
 
-  private final Type type;
-
   public GenericContainer(final Type type, final Component title) {
-    super(title);
-    this.type = type;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return this.type;
+    super(type, title);
   }
 
   @Override
