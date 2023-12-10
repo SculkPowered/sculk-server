@@ -2,7 +2,6 @@ package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 public final class SculkStonecutterContainer extends SculkContainer implements
     StonecutterContainer {
@@ -10,7 +9,7 @@ public final class SculkStonecutterContainer extends SculkContainer implements
   private int selectedRecipe;
 
   public SculkStonecutterContainer(final Component title) {
-    super(title);
+    super(Type.STONECUTTER, title);
   }
 
   @Override
@@ -22,11 +21,6 @@ public final class SculkStonecutterContainer extends SculkContainer implements
   @Override
   public int selectedRecipe() {
     return this.selectedRecipe;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return Type.STONECUTTER;
   }
 
   @Override

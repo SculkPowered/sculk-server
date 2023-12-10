@@ -20,7 +20,7 @@ public final class SculkEnchantingTableContainer extends SculkContainer implemen
   private int bottomEnchantingLevel;
 
   public SculkEnchantingTableContainer(final Component title) {
-    super(title);
+    super(Type.ENCHANTMENT, title);
   }
 
   @Override
@@ -131,11 +131,6 @@ public final class SculkEnchantingTableContainer extends SculkContainer implemen
   @Override
   public int bottomEnchantingLevel() {
     return this.bottomEnchantingLevel;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return Type.ENCHANTMENT;
   }
 
   @Override
