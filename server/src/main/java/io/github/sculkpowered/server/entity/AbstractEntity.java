@@ -245,7 +245,7 @@ public abstract class AbstractEntity implements Entity {
       }
     }
 
-    //this.velocity = Vector.zero(); // TODO
+    this.velocity = Vector.zero(); // for now we reset every tick // TODO: make a calculation
   }
 
   public void sendViewers(final Packet packet) {
