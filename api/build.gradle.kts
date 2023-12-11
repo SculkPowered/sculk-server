@@ -41,12 +41,14 @@ publishing {
 
 tasks {
     javadoc {
-        (options as StandardJavadocDocletOptions).links = listOf(
-                "https://docs.oracle.com/en/java/javase/17/docs/api/",
-                "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/",
-                "https://jd.advntr.dev/nbt/${libs.versions.adventure.get()}/",
-                "https://jd.advntr.dev/text-logger-slf4j/${libs.versions.adventure.get()}/",
-                "https://guava.dev/releases/${libs.guava.get().version}/api/docs/"
+        val options = options as StandardJavadocDocletOptions
+        options.addStringOption("Xdoclint:none", "-quiet")
+        options.links = listOf(
+            "https://docs.oracle.com/en/java/javase/17/docs/api/",
+            "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/",
+            "https://jd.advntr.dev/nbt/${libs.versions.adventure.get()}/",
+            "https://jd.advntr.dev/text-logger-slf4j/${libs.versions.adventure.get()}/",
+            "https://guava.dev/releases/${libs.guava.get().version}/api/docs/"
         )
     }
 }
