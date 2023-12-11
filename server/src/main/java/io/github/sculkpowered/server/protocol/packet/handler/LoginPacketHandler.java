@@ -48,15 +48,16 @@ public final class LoginPacketHandler extends PacketHandler {
   @Override
   public boolean handle(EncryptionResponse encryptionResponse) {
     try {
-      if (encryptionResponse.verifyToken() != null) {
-        final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.verifyToken());
-        if (!MessageDigest.isEqual(decryptedVerifyToken, this.verifyToken)) {
-          this.connection.send(new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
-          return true;
-        }
+      final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.server.getKeyPair(),
+          encryptionResponse.verifyToken());
+      if (!MessageDigest.isEqual(decryptedVerifyToken, this.verifyToken)) {
+        this.connection.send(
+            new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
+        return true;
       }
 
-      final var decryptedSecret = EncryptionUtil.decryptRsa(this.server.getKeyPair(), encryptionResponse.sharedSecret());
+      final var decryptedSecret = EncryptionUtil.decryptRsa(this.server.getKeyPair(),
+          encryptionResponse.sharedSecret());
       final var gameProfile = MojangUtil.hasJoined(this.connection.username(),
           EncryptionUtil.generateServerId(this.server.getKeyPair(), decryptedSecret));
 

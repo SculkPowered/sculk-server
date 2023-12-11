@@ -132,7 +132,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
         sections[i] = section;
       }
       final var chunk = new SculkChunk(world, chunkX, chunkZ, sections,
-          nbt.getCompound("Heightmaps", world.dimension().heightmaps()));
+          nbt.getCompound("Heightmaps"));
       if (AnvilLoader.this.loader.blockEntities()) {
         for (final var blockEntity : nbt.getList("block_entities")) {
           loadBlockEntity(chunk, (CompoundBinaryTag) blockEntity);

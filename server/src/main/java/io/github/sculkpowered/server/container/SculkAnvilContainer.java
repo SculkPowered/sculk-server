@@ -2,14 +2,13 @@ package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 
 public final class SculkAnvilContainer extends SculkContainer implements AnvilContainer {
 
   private int repairCost;
 
   public SculkAnvilContainer(final Component title) {
-    super(title);
+    super(Type.ANVIL, title);
   }
 
   @Override
@@ -21,11 +20,6 @@ public final class SculkAnvilContainer extends SculkContainer implements AnvilCo
   @Override
   public int repairCost() {
     return this.repairCost;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return Type.ANVIL;
   }
 
   @Override

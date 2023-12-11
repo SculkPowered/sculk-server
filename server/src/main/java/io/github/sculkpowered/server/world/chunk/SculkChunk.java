@@ -7,9 +7,9 @@ import static io.github.sculkpowered.server.util.CoordinateUtil.relativeCoordina
 import io.github.sculkpowered.server.entity.AbstractEntity;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.Buffer;
-import io.github.sculkpowered.server.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockEntityData;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockUpdate;
+import io.github.sculkpowered.server.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.biome.Biome;
 import io.github.sculkpowered.server.world.block.Block;
@@ -42,12 +42,11 @@ public final class SculkChunk implements Chunk {
 
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ) {
     this(world, chunkX, chunkZ, newSections(world.dimension()),
-        world.dimension().heightmaps());
+        CompoundBinaryTag.empty()); // TODO: calculate heightmaps
   }
 
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ,
-      final Section[] sections,
-      final CompoundBinaryTag heightmaps) {
+      final Section[] sections, final CompoundBinaryTag heightmaps) {
     this.dimension = world.dimension();
     this.x = chunkX;
     this.z = chunkZ;

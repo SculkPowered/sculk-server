@@ -2,7 +2,6 @@ package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 public final class SculkBrewingStandContainer extends SculkContainer implements
@@ -12,7 +11,7 @@ public final class SculkBrewingStandContainer extends SculkContainer implements
   private int fuelTime;
 
   public SculkBrewingStandContainer(final Component title) {
-    super(title);
+    super(Type.BREWING_STAND, title);
   }
 
   @Override
@@ -35,11 +34,6 @@ public final class SculkBrewingStandContainer extends SculkContainer implements
   @Override
   public int fuelTime() {
     return this.fuelTime;
-  }
-
-  @Override
-  public @NotNull Type type() {
-    return Type.BREWING_STAND;
   }
 
   @Override

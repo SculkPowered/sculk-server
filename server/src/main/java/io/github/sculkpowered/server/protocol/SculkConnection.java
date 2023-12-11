@@ -205,7 +205,6 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   }
 
   public void play() {
-    this.server.addPlayer(this.player);
     this.setState(State.PLAY);
     this.server.eventHandler().call(new PlayerInitialEvent(this.player))
         .thenAcceptAsync(event -> {
@@ -225,6 +224,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
             event.permissionChecker(PermissionChecker.always(TriState.NOT_SET));
           }
           this.player.init(event.gameMode(), position, world, event.permissionChecker());
+          this.server.addPlayer(this.player);
 
           this.send(new Login(this.player.id(), (byte) this.player.gameMode().ordinal(),
               world.dimension().name()));
