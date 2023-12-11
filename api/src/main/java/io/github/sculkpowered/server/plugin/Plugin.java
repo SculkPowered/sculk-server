@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.plugin;
 
 import io.github.sculkpowered.server.Server;
+import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,12 +15,14 @@ public abstract class Plugin {
   private Server server;
   private PluginDescription description;
   private ComponentLogger logger;
+  private Path dataDirectory;
   private volatile ExecutorService executorService;
 
-  final void init(final Server server) {
+  final void init(final Server server, final Path pluginDirectory) {
     this.server = server;
     this.description = this.getClass().getAnnotation(PluginDescription.class);
     this.logger = ComponentLogger.logger(this.description.name());
+    this.dataDirectory = pluginDirectory.resolve(this.description.name());
   }
 
   /**
@@ -50,6 +53,16 @@ public abstract class Plugin {
    */
   public ComponentLogger logger() {
     return this.logger;
+  }
+
+  /**
+   * Gets the data directory of this plugin.
+   *
+   * @return the plugin's data directory
+   * @since 1.0.0
+   */
+  public Path dataDirectory() {
+    return this.dataDirectory;
   }
 
   /**

@@ -64,7 +64,7 @@ public final class SculkPluginHandler implements PluginHandler {
         @SuppressWarnings("resource") final var classLoader = new PluginClassLoader(
             new URL[]{path.toUri().toURL()}, Main.class.getClassLoader());
         final var plugin = (Plugin) classLoader.loadClass(main).getConstructor().newInstance();
-        plugin.init(this.server);
+        plugin.init(this.server, PLUGINS_DIRECTORY);
         this.plugins.put(plugin.description().name(), plugin);
         this.server.eventHandler().register(plugin, plugin);
       } catch (ClassNotFoundException e) {
