@@ -31,7 +31,7 @@ public final class SculkAttributeValue implements AttributeValue {
   }
 
   @Override
-  public void setBaseValue(final double value) {
+  public void baseValue(final double value) {
     this.baseValue = value;
     this.consumer.accept(this);
   }

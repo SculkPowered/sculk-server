@@ -10,7 +10,7 @@ public interface AttributeValue {
    * @param value the new base value
    * @since 1.0.0
    */
-  void setBaseValue(double value);
+  void baseValue(double value);
 
   /**
    * Gets the base value.
@@ -31,7 +31,7 @@ public interface AttributeValue {
   void removeModifier(@NotNull AttributeModifier modifier);
 
   /**
-   * @return
+   * @return the calculated value
    * @since 1.0.0
    */
   double calculatedValue();
