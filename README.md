@@ -13,3 +13,21 @@ This software is not ready for production use!
 
 - no vanilla features (when you need them, but you can implement things yourself)
 - no support for Bukkit plugins
+
+## For Developers
+##### Gradle
+```kotlin
+repositories {
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://libraries.minecraft.net")
+}
+
+dependencies {
+    compileOnly("io.github.sculkpowered.server:api:1.0.0-SNAPSHOT")
+    annotationProcessor("io.github.sculkpowered.server:api:1.0.0-SNAPSHOT")
+}
+```
+##### Example Plugins
+- https://github.com/SculkPowered/example-plugin
+- https://github.com/SculkPowered/flux
+- https://github.com/SculkPowered/LuckPerms
