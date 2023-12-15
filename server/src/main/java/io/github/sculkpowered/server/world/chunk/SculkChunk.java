@@ -20,6 +20,7 @@ import io.github.sculkpowered.server.world.section.Section;
 import io.netty.buffer.ByteBufAllocator;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
@@ -38,7 +39,7 @@ public final class SculkChunk implements Chunk {
   private final Set<AbstractEntity> entities = new HashSet<>();
   private final Int2ObjectMap<Block.Entity<?>> blockEntities = new Int2ObjectOpenHashMap<>();
 
-  private ChunkDataAndUpdateLight packet;
+  private SoftReference<ChunkDataAndUpdateLight> packet;
 
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ) {
     this(world, chunkX, chunkZ, newSections(world.dimension()),
@@ -137,7 +138,7 @@ public final class SculkChunk implements Chunk {
           emptyBlockMask.set(index);
         }
       }
-      this.packet = new ChunkDataAndUpdateLight(
+      this.packet = new SoftReference<>(new ChunkDataAndUpdateLight(
           this.x,
           this.z,
           this.heightmaps,
@@ -145,10 +146,10 @@ public final class SculkChunk implements Chunk {
           new LightData(skyMask, blockMask, emptySkyMask, emptyBlockMask,
               skyLight.toArray(new byte[][]{}), blockLight.toArray(new byte[][]{})),
           this.blockEntities
-      );
+      ));
       buf.close();
     }
-    player.send(this.packet);
+    player.send(this.packet.get());
   }
 
   public Section section(final int y) {
