@@ -89,8 +89,8 @@ final class CodeGenerator extends Generator {
         try (final var reader = Files.newBufferedReader(path)) {
           final var damageData = Constants.GSON.fromJson(reader, JsonObject.class);
           final var stringBuilder = new StringBuilder(
-              "public static final DamageType " + upperCaseName + " = builder(Key.key(\""
-                  + name + "\"))");
+              "public static final DamageType " + upperCaseName +
+                  " = builder(Key.key(MINECRAFT_NAMESPACE, \"" + name + "\"))");
           if (damageData.has("exhaustion")) {
             stringBuilder.append(".exhaustion(").append(damageData.get("exhaustion").getAsDouble())
                 .append(")");

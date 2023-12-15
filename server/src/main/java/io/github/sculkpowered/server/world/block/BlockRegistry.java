@@ -28,7 +28,7 @@ public final class BlockRegistry extends SimpleRegistry<BlockState> {
       final var entryArray = new Map.Entry<?, ?>[0];
       while ((line = reader.readLine()) != null) {
         @Subst("") final var split = line.split(",");
-        final var block = new BlockParent(Key.key(split[0]));
+        final var block = new BlockParent(Key.key(Key.MINECRAFT_NAMESPACE, split[0]));
         var id = Integer.parseInt(split[2]);
         final var defId = Integer.parseInt(split[3]);
         var capacity = split.length - 4;
