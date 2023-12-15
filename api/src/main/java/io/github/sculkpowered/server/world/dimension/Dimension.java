@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class Dimension implements Registry.Entry {
 
-  public static final Dimension OVERWORLD = builder(Key.key("overworld"))
+  public static final Dimension OVERWORLD = builder(Key.key(Key.MINECRAFT_NAMESPACE, "overworld"))
       .piglinSafe(false)
       .hasRaids(true)
       .monsterSpawnLightLevel(CompoundBinaryTag.builder()
