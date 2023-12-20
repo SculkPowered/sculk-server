@@ -6,7 +6,7 @@ import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
-public interface Registry<E extends Registry.Entry> {
+public interface Registry<E extends Registry.Entry> extends Iterable<E> {
 
   /**
    * Gets the type key of the registry.

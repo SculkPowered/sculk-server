@@ -1,12 +1,15 @@
 package io.github.sculkpowered.server.container.item;
 
-import java.util.Map;
+import io.github.sculkpowered.server.registry.Registries;
+import io.github.sculkpowered.server.registry.Registry.Entry;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * An enum of all materials supported.
  */
-public enum Material {
+public enum Material implements Entry {
 
   // START
   AIR("minecraft:air"),
@@ -1267,23 +1270,29 @@ public enum Material {
   // END
   ;
 
-  private static Map<Integer, Material> MATERIALS;
-
-  public static void setMaterials(final @NotNull Map<Integer, Material> materials) {
-    MATERIALS = materials;
-  }
-
-  private final String key;
+  private final Key key;
 
   Material(final String key) {
-    this.key = key;
+    this.key = Key.key(key);
+    Registries.materials().register(this);
   }
 
-  public String key() {
+  @Override
+  public @NotNull Key key() {
     return this.key;
   }
 
-  public static Material get(final int protocolId) {
-    return MATERIALS.get(protocolId);
+  @Override
+  public int id() {
+    return this.ordinal();
+  }
+
+  @Override
+  public @NotNull CompoundBinaryTag asNBT() {
+    return null;
+  }
+
+  public static Material get(final int id) {
+    return Registries.materials().get(id);
   }
 }

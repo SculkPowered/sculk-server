@@ -16,9 +16,6 @@ import io.github.sculkpowered.server.container.SculkEnchantingTableContainer;
 import io.github.sculkpowered.server.container.SculkFurnaceContainer;
 import io.github.sculkpowered.server.container.SculkLoomContainer;
 import io.github.sculkpowered.server.container.SculkStonecutterContainer;
-import io.github.sculkpowered.server.container.item.Material;
-import io.github.sculkpowered.server.damage.DamageType;
-import io.github.sculkpowered.server.damage.DamageTypeRegistry;
 import io.github.sculkpowered.server.entity.AbstractEntity;
 import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.EntityClassToSupplierMap;
@@ -36,8 +33,6 @@ import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.NettyServer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
-import io.github.sculkpowered.server.registry.Registry;
-import io.github.sculkpowered.server.registry.SimpleRegistry;
 import io.github.sculkpowered.server.scheduler.SculkScheduler;
 import io.github.sculkpowered.server.team.SculkTeamHandler;
 import io.github.sculkpowered.server.terminal.SimpleTerminal;
@@ -45,12 +40,10 @@ import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.SlimeFormat;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.WorldLoader;
-import io.github.sculkpowered.server.world.biome.Biome;
 import io.github.sculkpowered.server.world.block.BlockRegistry;
 import io.github.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import io.github.sculkpowered.server.world.chunk.loader.ChunkLoader;
 import io.github.sculkpowered.server.world.chunk.loader.DefaultChunkLoader;
-import io.github.sculkpowered.server.world.dimension.Dimension;
 import io.netty.channel.epoll.Epoll;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -96,9 +89,6 @@ public final class SculkServer implements Server {
   private final Int2ObjectMap<AbstractEntity> entities = new Int2ObjectOpenHashMap<>();
   private final Map<String, SculkWorld> worlds = new ConcurrentHashMap<>();
   private final SimpleTerminal terminal;
-  private final Registry<Dimension> dimensionRegistry;
-  private final Registry<Biome> biomeRegistry;
-  private final Registry<DamageType> damageTypeRegistry;
   private final SculkPluginHandler pluginHandler;
   private final SculkEventHandler eventHandler;
   private final SculkCommandHandler commandHandler;
@@ -132,9 +122,9 @@ public final class SculkServer implements Server {
         Epoll.isAvailable() ? "epoll" : "nio", Natives.compress.getLoadedVariant(),
         Natives.cipher.getLoadedVariant());
 
-    this.dimensionRegistry = new SimpleRegistry<>("minecraft:dimension_type", Dimension.OVERWORLD);
+    /*this.dimensionRegistry = new SimpleRegistry<>("minecraft:dimension_type", Dimension.OVERWORLD);
     this.biomeRegistry = new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS);
-    this.damageTypeRegistry = DamageTypeRegistry.get();
+    this.damageTypeRegistry = DamageTypeRegistry.get();*/
     this.pluginHandler = new SculkPluginHandler(this);
     this.eventHandler = new SculkEventHandler();
     this.commandHandler = (SculkCommandHandler) new SculkCommandHandler(this) // register defaults
@@ -144,7 +134,6 @@ public final class SculkServer implements Server {
     this.scheduler = new SculkScheduler();
 
     BlockRegistry.addBlocks();
-    this.loadMaterials();
 
     this.pluginHandler.loadPlugins();
     this.worker = new Worker(this);
@@ -238,21 +227,6 @@ public final class SculkServer implements Server {
   }
 
   @Override
-  public @NotNull Registry<Dimension> dimensionRegistry() {
-    return this.dimensionRegistry;
-  }
-
-  @Override
-  public @NotNull Registry<Biome> biomeRegistry() {
-    return this.biomeRegistry;
-  }
-
-  @Override
-  public @NotNull Registry<DamageType> damageTypeRegistry() {
-    return this.damageTypeRegistry;
-  }
-
-  @Override
   public @NotNull SculkPluginHandler pluginHandler() {
     return this.pluginHandler;
   }
@@ -297,7 +271,7 @@ public final class SculkServer implements Server {
     final var loader = builder.loader();
     ChunkLoader chunkLoader;
     if (loader instanceof WorldLoader.Anvil anvil) {
-      chunkLoader = new AnvilLoader(this, builder.generator(), anvil);
+      chunkLoader = new AnvilLoader(builder.generator(), anvil);
     } else {
       chunkLoader = new DefaultChunkLoader(builder.generator());
     }
@@ -377,15 +351,6 @@ public final class SculkServer implements Server {
 
   public void addTask(final Runnable task) {
     this.worker.addTask(task);
-  }
-
-  private void loadMaterials() {
-    final var materialArray = Material.values();
-    final var materials = new Int2ObjectOpenHashMap<Material>(materialArray.length);
-    for (final var material : materialArray) {
-      materials.put(material.ordinal(), material);
-    }
-    Material.setMaterials(materials);
   }
 
   public Collection<SculkWorld> worlds() {

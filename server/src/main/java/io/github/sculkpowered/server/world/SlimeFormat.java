@@ -54,7 +54,7 @@ public final class SlimeFormat {
       inputStream.readInt(); // world version
 
       if (version == VERSION_10) {
-        readChunks10(server, world, readCompressed(inputStream));
+        readChunks10(world, readCompressed(inputStream));
         readEntities(server, world, loader, inputStream);
       } else {
         readChunks11(server, world, loader, readCompressed(inputStream));
@@ -65,7 +65,7 @@ public final class SlimeFormat {
     }
   }
 
-  private static void readChunks10(final SculkServer server, final SculkWorld world,
+  private static void readChunks10(final SculkWorld world,
       final byte[] bytes) {
     try (final var inputStream = new DataInputStream(new ByteArrayInputStream(bytes))) {
       final var chunks = inputStream.readInt();
@@ -74,7 +74,7 @@ public final class SlimeFormat {
         final var z = inputStream.readInt();
 
         final var heightmaps = readCompound(inputStream);
-        final var sections = readSections(server, inputStream);
+        final var sections = readSections(inputStream);
         world.putChunk(new SculkChunk(world, x, z, sections, heightmaps));
       }
     } catch (IOException e) {
@@ -90,7 +90,7 @@ public final class SlimeFormat {
         final var x = inputStream.readInt();
         final var z = inputStream.readInt();
 
-        final var sections = readSections(server, inputStream);
+        final var sections = readSections(inputStream);
         final var heightmaps = readCompound(inputStream);
         readEntities(server, world, loader, inputStream);
         world.putChunk(new SculkChunk(world, x, z, sections, heightmaps));
@@ -100,7 +100,7 @@ public final class SlimeFormat {
     }
   }
 
-  private static Section[] readSections(final SculkServer server, final DataInputStream inputStream)
+  private static Section[] readSections(final DataInputStream inputStream)
       throws IOException {
     final var sections = new Section[inputStream.readInt()];
     for (var j = 0; j < sections.length; j++) {
@@ -121,7 +121,7 @@ public final class SlimeFormat {
       final var section = new Section(blockLight, skyLight);
       final var blockData = readCompound(inputStream);
       AnvilLoader.loadBlocks(section, blockData.getList("palette"), blockData);
-      AnvilLoader.loadBiomes(server, section, readCompound(inputStream));
+      AnvilLoader.loadBiomes(section, readCompound(inputStream));
 
       sections[j] = section;
     }
@@ -274,7 +274,7 @@ public final class SlimeFormat {
           }
 
           writeCompound(outputSteam, AnvilLoader.blockStatesToNbt(section.blocks()));
-          writeCompound(outputSteam, AnvilLoader.biomesToNbt(server, section.biomes()));
+          writeCompound(outputSteam, AnvilLoader.biomesToNbt(section.biomes()));
         }
       }
       writeCompressed(dataOutput, byteStream.toByteArray());

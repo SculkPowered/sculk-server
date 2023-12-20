@@ -1,5 +1,6 @@
 package io.github.sculkpowered.server.world.block;
 
+import io.github.sculkpowered.server.registry.Registries;
 import java.util.HashMap;
 import java.util.Map;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -1028,7 +1029,7 @@ public final class Block {
    * @return the block of the name
    */
   public static BlockState get(final @NotNull String name) {
-    return Blocks.registry().get(name);
+    return Registries.blocks().get(name);
   }
 
   /**
@@ -1038,7 +1039,7 @@ public final class Block {
    * @return the block of the id
    */
   public static BlockState get(final int id) {
-    return Blocks.registry().get(id);
+    return Registries.blocks().get(id);
   }
 
   public interface Entity<B extends BlockState> extends BlockState {

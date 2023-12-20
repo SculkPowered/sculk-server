@@ -1,6 +1,6 @@
 package io.github.sculkpowered.server.world.chunk.loader;
 
-import io.github.sculkpowered.server.SculkServer;
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.CoordinateUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.WorldLoader;
@@ -28,15 +28,13 @@ public final class AnvilLoader extends DefaultChunkLoader {
 
   private static final int SECTOR_SIZE = 4096;
 
-  private final SculkServer server;
   private final WorldLoader loader;
   private final Path regionPath;
   private final Map<String, RegionFile> regionCache;
 
-  public AnvilLoader(final SculkServer server, final ChunkGenerator generator,
+  public AnvilLoader(final ChunkGenerator generator,
       final WorldLoader.Anvil loader) {
     super(generator);
-    this.server = server;
     this.loader = loader;
     this.regionPath = loader.path().resolve("region");
     this.regionCache = new HashMap<>();
@@ -57,7 +55,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
           return super.loadChunk(world, x, z);
         }
       }
-      chunk = this.regionCache.get(fileName).getChunk(this.server, world, x, z);
+      chunk = this.regionCache.get(fileName).getChunk(world, x, z);
       if (chunk == null) {
         chunk = super.loadChunk(world, x, z);
       }
@@ -83,8 +81,8 @@ public final class AnvilLoader extends DefaultChunkLoader {
       }
     }
 
-    private SculkChunk getChunk(final SculkServer server, final SculkWorld world, final int chunkX,
-        final int chunkZ) throws IOException {
+    private SculkChunk getChunk(final SculkWorld world, final int chunkX, final int chunkZ)
+        throws IOException {
       final var offset =
           this.sectorOffset(this.locations[(chunkX & 31) + (chunkZ & 31) * 32]) * SECTOR_SIZE;
       var buf = ByteBuffer.allocate(5);
@@ -101,7 +99,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
       this.accessFile.getChannel().read(buf, offset + 5);
       buf.flip();
 
-      final var nbt = BinaryTagIO.reader(Integer.MAX_VALUE)
+      final var nbt = BinaryTagIO.unlimitedReader()
           .read(new ByteArrayInputStream(buf.array(), buf.position(), length - buf.position()),
               switch (compressionScheme) {
                 case 1 -> BinaryTagIO.Compression.GZIP;
@@ -127,7 +125,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
             compound.getByteArray("BlockLight"));
 
         loadBlocks(section, blockPalette, states);
-        loadBiomes(server, section, compound.getCompound("biomes"));
+        loadBiomes(section, compound.getCompound("biomes"));
 
         sections[i] = section;
       }
@@ -177,14 +175,13 @@ public final class AnvilLoader extends DefaultChunkLoader {
   }
 
   public static void loadBiomes(
-      final SculkServer server,
       final Section section,
       final CompoundBinaryTag biomeData
   ) {
     final var biomes = (PaletteHolder) section.biomes();
     final var biomePalette = biomeData.getList("palette");
     final var palette = new int[biomePalette.size()];
-    final var registry = server.biomeRegistry();
+    final var registry = Registries.biomes();
     var unknownBiome = false;
     for (var k = 0; k < palette.length; k++) {
       final var value = biomePalette.getCompound(k).getString("value");
@@ -231,12 +228,12 @@ public final class AnvilLoader extends DefaultChunkLoader {
     return nbt.build();
   }
 
-  public static CompoundBinaryTag biomesToNbt(final SculkServer server, final Palette palette) {
+  public static CompoundBinaryTag biomesToNbt(final Palette palette) {
     final var paletteToValue = palette.paletteToValue();
     final var biomes = ListBinaryTag.builder();
     for (final var value : paletteToValue) {
       biomes.add(CompoundBinaryTag.builder()
-          .putString("value", server.biomeRegistry().get(value).name())
+          .putString("value", Registries.biomes().get(value).name())
           .build());
     }
 

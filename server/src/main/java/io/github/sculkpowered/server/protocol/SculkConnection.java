@@ -17,6 +17,7 @@ import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.connection.Connection;
 import io.github.sculkpowered.server.entity.player.GameProfile;
+import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.entity.player.PlayerInfoEntry;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.event.player.PlayerDisconnectEvent;
@@ -49,8 +50,8 @@ import io.github.sculkpowered.server.protocol.packet.play.SpawnPosition;
 import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
 import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.MojangUtil;
-import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -197,10 +198,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   public void configuration() {
     this.send(SculkConnection.BRAND_PACKET);
     this.send(new RegistryData(
-        this.server.biomeRegistry(),
-        this.server.dimensionRegistry(),
-        this.server.damageTypeRegistry())
-    );
+        Registries.biomes(),
+        Registries.dimensions(),
+        Registries.damageTypes()
+    ));
     this.send(FinishConfiguration.INSTANCE);
   }
 
