@@ -6,7 +6,8 @@ import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
 import io.github.sculkpowered.server.protocol.packet.config.RegistryData;
 import io.github.sculkpowered.server.protocol.packet.handshake.Handshake;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
-import io.github.sculkpowered.server.protocol.packet.login.Disconnect;
+import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
+import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.login.EncryptionRequest;
 import io.github.sculkpowered.server.protocol.packet.login.EncryptionResponse;
 import io.github.sculkpowered.server.protocol.packet.login.LoginAcknowledged;
@@ -15,9 +16,11 @@ import io.github.sculkpowered.server.protocol.packet.login.LoginPluginResponse;
 import io.github.sculkpowered.server.protocol.packet.login.LoginStart;
 import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
+import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.AwardStatistics;
 import io.github.sculkpowered.server.protocol.packet.play.BossBar;
 import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
+import io.github.sculkpowered.server.protocol.packet.play.RemoveResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
 import io.github.sculkpowered.server.protocol.packet.play.ChangeDifficulty;
@@ -91,6 +94,7 @@ import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositio
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.DisplayObjective;
+import io.github.sculkpowered.server.protocol.packet.play.scoreboard.ResetScore;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateObjectives;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateScore;
 import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
@@ -133,7 +137,7 @@ public enum State {
       this.serverBound.register(LoginPluginResponse.class, LoginPluginResponse::new);
       this.serverBound.register(LoginAcknowledged.class, () -> LoginAcknowledged.INSTANCE);
 
-      this.clientBound.register(Disconnect.class);
+      this.clientBound.register(LoginDisconnect.class);
       this.clientBound.register(EncryptionRequest.class);
       this.clientBound.register(LoginSuccess.class);
       this.clientBound.register(CompressionPacket.class);
@@ -155,9 +159,10 @@ public enum State {
       this.clientBound.register(KeepAlive.class);
       this.clientBound.skip(); // Ping
       this.clientBound.register(RegistryData.class);
-      this.clientBound.skip(); // Resource Pack
+      this.clientBound.register(RemoveResourcePack.class);
+      this.clientBound.register(AddResourcePack.class);
       this.clientBound.register(FeatureFlags.class);
-      // Update Tags
+      this.clientBound.register(UpdateTags.class);
     }
   },
   PLAY {
@@ -177,6 +182,7 @@ public enum State {
       this.serverBound.register(ClickContainerButton.class, ClickContainerButton::new);
       this.serverBound.register(ClickContainer.class, ClickContainer::new);
       this.serverBound.register(CloseContainer.class, CloseContainer::new);
+      this.serverBound.skip(); // Change Container Slot State
       this.serverBound.register(PluginMessage.class, PluginMessage.SUPPLIER);
       this.serverBound.register(EditBook.class, EditBook::new);
       this.serverBound.skip(); // Query Entity Tag
@@ -283,7 +289,9 @@ public enum State {
       this.clientBound.skip(); // Update Recipe Book
       this.clientBound.register(RemoveEntities.class);
       this.clientBound.skip(); // Remove Entity Effect
-      this.clientBound.skip(); // Resource Pack
+      this.clientBound.register(ResetScore.class);
+      this.clientBound.register(RemoveResourcePack.class);
+      this.clientBound.register(AddResourcePack.class);
       this.clientBound.register(Respawn.class);
       this.clientBound.register(HeadRotation.class);
       this.clientBound.skip(); // Update Section Blocks
@@ -325,6 +333,8 @@ public enum State {
       this.clientBound.skip(); // Tag Query Response
       this.clientBound.register(PickupItem.class);
       this.clientBound.register(TeleportEntity.class);
+      this.clientBound.skip(); // Ticking State
+      this.clientBound.skip(); // Step Tick
       this.clientBound.skip(); // Update Advancements
       this.clientBound.register(UpdateAttributes.class);
       this.clientBound.skip(); // Entity Effects

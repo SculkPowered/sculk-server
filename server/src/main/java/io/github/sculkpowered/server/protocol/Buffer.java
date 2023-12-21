@@ -175,12 +175,12 @@ public final class Buffer {
     return this.writeVarInt(bytes.length).writeBytes(bytes);
   }
 
-  public @NotNull Buffer writeComponent(final Component component) {
-    return this.writeString(MODERN_SERIALIZER.serialize(component));
+  public @NotNull Buffer writeComponent(final @NotNull Component component) {
+    return this.writeCompoundTag(CompoundBinaryTag.builder().putString("text", "").build()); // TODO: serialize into nbt
   }
 
-  public @NotNull Buffer writeComponent(final Component component, final int version) {
-    return this.writeString(getGsonSerializer(version).serialize(component));
+  public @NotNull Buffer writeComponentJson(final @NotNull Component component) {
+    return this.writeString(MODERN_SERIALIZER.serialize(component));
   }
 
   public @NotNull CompoundBinaryTag readCompoundTag() {

@@ -5,7 +5,7 @@ import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.State;
 import io.github.sculkpowered.server.protocol.packet.PacketHandler;
 import io.github.sculkpowered.server.protocol.packet.handshake.Handshake;
-import io.github.sculkpowered.server.protocol.packet.login.Disconnect;
+import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
 import net.kyori.adventure.text.Component;
 
 public final class HandshakePacketHandler extends PacketHandler {
@@ -21,7 +21,7 @@ public final class HandshakePacketHandler extends PacketHandler {
     this.connection.setState(handshake.nextStatus());
     if (handshake.nextStatus() == State.LOGIN
         && (handshake.version() != Protocol.VERSION_PROTOCOL)) {
-      this.connection.send(new Disconnect(Component
+      this.connection.send(new LoginDisconnect(Component
           .translatable("multiplayer.disconnect.outdated_client",
               Component.text(Protocol.VERSION_NAME))));
       this.connection.close();

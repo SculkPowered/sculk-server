@@ -1,20 +1,23 @@
 package io.github.sculkpowered.server.protocol;
 
+import io.github.sculkpowered.server.protocol.State.PacketRegistry;
+
 public final class Protocol {
 
-  public static final String VERSION_NAME = "1.20.2";
-  public static final int VERSION_PROTOCOL = 764;
+  public static final String VERSION_NAME = "1.20.3/4";
+  public static final int VERSION_PROTOCOL = 765;
 
-  public enum Direction {
-    SERVERBOUND {
+  public static abstract class Direction {
+
+    public static final Direction SERVERBOUND = new Direction() {
       @Override
-      public State.PacketRegistry getRegistry(State state) {
+      public PacketRegistry getRegistry(State state) {
         return state.serverBound;
       }
-    },
-    CLIENTBOUND {
+    };
+    public static final Direction CLIENTBOUND = new Direction() {
       @Override
-      public State.PacketRegistry getRegistry(State state) {
+      public PacketRegistry getRegistry(State state) {
         return state.clientBound;
       }
     };
