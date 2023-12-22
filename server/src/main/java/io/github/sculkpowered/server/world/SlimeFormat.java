@@ -222,7 +222,7 @@ public final class SlimeFormat {
         for (final var entity : chunk.entities()) {
           final var position = entity.position();
           entities.add(CompoundBinaryTag.builder()
-              .putString("id", entity.type().key())
+              .putString("id", entity.type().name())
               .put("Pos", ListBinaryTag.builder()
                   .add(DoubleBinaryTag.doubleBinaryTag(position.x()))
                   .add(DoubleBinaryTag.doubleBinaryTag(position.y()))

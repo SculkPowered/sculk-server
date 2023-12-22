@@ -33,6 +33,7 @@ import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.NettyServer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
+import io.github.sculkpowered.server.registry.RegistrySetter;
 import io.github.sculkpowered.server.scheduler.SculkScheduler;
 import io.github.sculkpowered.server.team.SculkTeamHandler;
 import io.github.sculkpowered.server.terminal.SimpleTerminal;
@@ -40,7 +41,6 @@ import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.SlimeFormat;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.WorldLoader;
-import io.github.sculkpowered.server.world.block.BlockRegistry;
 import io.github.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import io.github.sculkpowered.server.world.chunk.loader.ChunkLoader;
 import io.github.sculkpowered.server.world.chunk.loader.DefaultChunkLoader;
@@ -122,9 +122,6 @@ public final class SculkServer implements Server {
         Epoll.isAvailable() ? "epoll" : "nio", Natives.compress.getLoadedVariant(),
         Natives.cipher.getLoadedVariant());
 
-    /*this.dimensionRegistry = new SimpleRegistry<>("minecraft:dimension_type", Dimension.OVERWORLD);
-    this.biomeRegistry = new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS);
-    this.damageTypeRegistry = DamageTypeRegistry.get();*/
     this.pluginHandler = new SculkPluginHandler(this);
     this.eventHandler = new SculkEventHandler();
     this.commandHandler = (SculkCommandHandler) new SculkCommandHandler(this) // register defaults
@@ -133,7 +130,7 @@ public final class SculkServer implements Server {
     this.teamHandler = new SculkTeamHandler(this);
     this.scheduler = new SculkScheduler();
 
-    BlockRegistry.addBlocks();
+    RegistrySetter.set();
 
     this.pluginHandler.loadPlugins();
     this.worker = new Worker(this);
