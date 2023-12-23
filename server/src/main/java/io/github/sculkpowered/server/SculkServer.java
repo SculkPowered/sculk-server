@@ -35,6 +35,8 @@ import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
 import io.github.sculkpowered.server.registry.RegistrySetter;
 import io.github.sculkpowered.server.scheduler.SculkScheduler;
+import io.github.sculkpowered.server.tag.SculkTagHandler;
+import io.github.sculkpowered.server.tag.TagHandler;
 import io.github.sculkpowered.server.team.SculkTeamHandler;
 import io.github.sculkpowered.server.terminal.SimpleTerminal;
 import io.github.sculkpowered.server.world.SculkWorld;
@@ -94,6 +96,7 @@ public final class SculkServer implements Server {
   private final SculkCommandHandler commandHandler;
   private final SculkTeamHandler teamHandler;
   private final SculkScheduler scheduler;
+  private final TagHandler tagHandler;
   private final Worker worker;
   private final NettyServer nettyServer;
   private final EntityClassToSupplierMap entitySupplier = EntityClassToSupplierMap.get();
@@ -129,6 +132,7 @@ public final class SculkServer implements Server {
         .register(InfoCommand.get());
     this.teamHandler = new SculkTeamHandler(this);
     this.scheduler = new SculkScheduler();
+    this.tagHandler = new SculkTagHandler();
 
     RegistrySetter.set();
 
@@ -246,6 +250,11 @@ public final class SculkServer implements Server {
   @Override
   public @NotNull SculkScheduler scheduler() {
     return this.scheduler;
+  }
+
+  @Override
+  public @NotNull TagHandler tagHandler() {
+    return this.tagHandler;
   }
 
   @Override

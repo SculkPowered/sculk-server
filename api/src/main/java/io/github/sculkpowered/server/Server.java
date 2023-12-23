@@ -8,6 +8,7 @@ import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.event.EventHandler;
 import io.github.sculkpowered.server.plugin.PluginHandler;
 import io.github.sculkpowered.server.scheduler.Scheduler;
+import io.github.sculkpowered.server.tag.TagHandler;
 import io.github.sculkpowered.server.team.TeamHandler;
 import io.github.sculkpowered.server.world.World;
 import java.util.Collection;
@@ -62,6 +63,14 @@ public interface Server {
    * @since 1.0.0
    */
   @NotNull Scheduler scheduler();
+
+  /**
+   * Gets the {@link TagHandler} instance
+   *
+   * @return the tag handler instance
+   * @since 1.0.0
+   */
+  @NotNull TagHandler tagHandler();
 
   /**
    * Gets all players currently connected.
