@@ -19,6 +19,7 @@ import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -176,7 +177,9 @@ public final class Buffer {
   }
 
   public @NotNull Buffer writeComponent(final @NotNull Component component) {
-    return this.writeCompoundTag(CompoundBinaryTag.builder().putString("text", "").build()); // TODO: serialize into nbt
+    return this.writeCompoundTag(CompoundBinaryTag.builder().putString("text",
+            PlainTextComponentSerializer.plainText().serialize(component))
+        .build()); // TODO: serialize into nbt
   }
 
   public @NotNull Buffer writeComponentJson(final @NotNull Component component) {
@@ -221,7 +224,8 @@ public final class Buffer {
     if (!this.readBoolean()) {
       return ItemStack.empty();
     }
-    return ItemStack.itemStack(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
+    return ItemStack.itemStack(Material.get(this.readVarInt()), this.readByte(),
+        this.readCompoundTag());
   }
 
   public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
