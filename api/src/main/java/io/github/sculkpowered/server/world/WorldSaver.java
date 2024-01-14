@@ -1,5 +1,6 @@
 package io.github.sculkpowered.server.world;
 
+import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,10 @@ public abstract class WorldSaver {
   }
 
   public static @NotNull Slime slime(@NotNull OutputStream outputStream) {
+    return slime(new DataOutputStream(outputStream));
+  }
+
+  public static @NotNull Slime slime(@NotNull DataOutputStream outputStream) {
     return new Slime(outputStream);
   }
 
@@ -32,13 +37,13 @@ public abstract class WorldSaver {
 
   public static final class Slime extends WorldSaver {
 
-    private final OutputStream outputStream;
+    private final DataOutputStream outputStream;
 
-    public Slime(OutputStream outputStream) {
+    public Slime(DataOutputStream outputStream) {
       this.outputStream = outputStream;
     }
 
-    public OutputStream outputStream() {
+    public DataOutputStream outputStream() {
       return this.outputStream;
     }
   }

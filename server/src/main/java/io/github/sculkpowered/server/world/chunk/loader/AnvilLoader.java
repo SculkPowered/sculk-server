@@ -45,7 +45,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
   @Override
   public @NotNull SculkChunk loadChunk(final SculkWorld world, final int x, final int z) {
     final var fileName =
-        "r." + CoordinateUtil.regionCoordinate(x) + "." + CoordinateUtil.regionCoordinate(z)
+        "r." + CoordinateUtil.regionCoordinate(x) + '.' + CoordinateUtil.regionCoordinate(z)
             + ".mca";
     try {
       SculkChunk chunk;

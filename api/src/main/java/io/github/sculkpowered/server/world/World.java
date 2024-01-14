@@ -7,6 +7,7 @@ import io.github.sculkpowered.server.world.chunk.Chunk;
 import io.github.sculkpowered.server.world.chunk.ChunkGenerator;
 import io.github.sculkpowered.server.world.chunk.VoidGenerator;
 import io.github.sculkpowered.server.world.dimension.Dimension;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -136,6 +137,22 @@ public interface World {
    * @since 1.0.0
    */
   void spawnEntity(@NotNull Entity entity, @NotNull Position position);
+
+  /**
+   * Gets the extra world data.
+   * In the anvil folder it is the level dat file.
+   *
+   * @since 1.0.0
+   */
+  @NotNull CompoundBinaryTag extraData();
+
+  /**
+   * Sets the extra data.
+   *
+   * @param data the data in a compound binary tag
+   * @since 1.0.0
+   */
+  void extraData(@NotNull CompoundBinaryTag data);
 
   /**
    * Checks if the world is alive.

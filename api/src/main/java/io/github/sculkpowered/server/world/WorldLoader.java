@@ -1,6 +1,9 @@
 package io.github.sculkpowered.server.world;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
@@ -38,11 +41,19 @@ public abstract class WorldLoader {
   }
 
   public static @NotNull Slime slime(byte @NotNull [] bytes) {
-    return new Slime(bytes);
+    return slime(new ByteArrayInputStream(bytes));
   }
 
-  public static @NotNull WorldLoader slime(@NotNull Path path) throws IOException {
-    return slime(Files.readAllBytes(path));
+  public static @NotNull Slime slime(@NotNull Path path) throws IOException {
+    return slime(Files.newInputStream(path));
+  }
+
+  public static @NotNull Slime slime(@NotNull InputStream inputStream) {
+    return slime(new DataInputStream(inputStream));
+  }
+
+  public static @NotNull Slime slime(@NotNull DataInputStream inputStream) {
+    return new Slime(inputStream);
   }
 
   public static final class Anvil extends WorldLoader {
@@ -60,14 +71,14 @@ public abstract class WorldLoader {
 
   public static final class Slime extends WorldLoader {
 
-    private final byte[] bytes;
+    private final DataInputStream inputStream;
 
-    public Slime(byte[] bytes) {
-      this.bytes = bytes;
+    public Slime(DataInputStream inputStream) {
+      this.inputStream = inputStream;
     }
 
-    public byte[] bytes() {
-      return this.bytes;
+    public DataInputStream inputStream() {
+      return this.inputStream;
     }
   }
 }
