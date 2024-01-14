@@ -14,6 +14,7 @@ import io.github.sculkpowered.server.world.dimension.Dimension;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.function.Consumer;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 public final class SculkWorld implements World {
@@ -25,6 +26,7 @@ public final class SculkWorld implements World {
   private final Position spawnPosition;
   private final GameMode defaultGameMode;
   private final Long2ObjectMap<SculkChunk> chunks;
+  private CompoundBinaryTag extraData = CompoundBinaryTag.empty();
   private boolean alive;
 
   public SculkWorld(
@@ -107,6 +109,16 @@ public final class SculkWorld implements World {
     for (final var viewer : this.chunkAt(position).viewers()) {
       abstractEntity.addViewer(viewer);
     }
+  }
+
+  @Override
+  public @NotNull CompoundBinaryTag extraData() {
+    return this.extraData;
+  }
+
+  @Override
+  public void extraData(@NotNull CompoundBinaryTag data) {
+    this.extraData = data;
   }
 
   @Override

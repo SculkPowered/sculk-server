@@ -69,6 +69,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import net.kyori.adventure.nbt.BinaryTagIO;
+import net.kyori.adventure.nbt.BinaryTagIO.Compression;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.logging.log4j.LogManager;
@@ -304,6 +306,15 @@ public final class SculkServer implements Server {
     final var world = this.createWorld(builder, chunkLoader);
     if (loader instanceof WorldLoader.Slime slime) {
       SlimeFormat.load(this, (SculkWorld) world, slime);
+    } else if (loader instanceof WorldLoader.Anvil anvil) {
+      final var levelData = anvil.path().resolve("level.dat");
+      if (Files.exists(levelData)) {
+        try {
+          world.extraData(BinaryTagIO.reader().read(levelData, Compression.GZIP));
+        } catch (IOException e) {
+          LOGGER.warn("Error during level data loading: ", e);
+        }
+      }
     }
     return world;
   }

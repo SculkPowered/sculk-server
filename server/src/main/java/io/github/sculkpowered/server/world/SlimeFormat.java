@@ -17,7 +17,6 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Collection;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -42,24 +41,22 @@ public final class SlimeFormat {
       final SculkWorld world,
       final WorldLoader.Slime loader
   ) {
-    try (final var inputStream = new DataInputStream(new ByteArrayInputStream(loader.bytes()))) {
+    try (final var inputStream = loader.inputStream()) {
       if (inputStream.readShort() != HEADER) {
         throw new AssertionError();
       }
       final var version = inputStream.readUnsignedByte();
-      if (version != VERSION_10 && version != VERSION_11) {
-        throw new UnsupportedOperationException(
-            "Currently only slime version 10 and 11 are supported!");
-      }
       inputStream.readInt(); // world version
-
-      if (version == VERSION_10) {
-        readChunks10(server, world, readCompressed(inputStream));
-        readEntities(server, world, loader, inputStream);
-      } else {
-        readChunks11(server, world, loader, readCompressed(inputStream));
+      switch (version) {
+        case VERSION_10 -> {
+          readChunks10(server, world, readCompressed(inputStream));
+          readEntities(server, world, loader, inputStream);
+        }
+        case VERSION_11 -> readChunks11(server, world, loader, readCompressed(inputStream));
+        default -> throw new UnsupportedOperationException("Slime version " + version + " not supported!");
       }
-      readCompressed(inputStream);
+
+      world.extraData(readCompound(readCompressed(inputStream)));
     } catch (IOException e) {
       LOGGER.error("Couldn't load slime world", e);
     }
@@ -196,8 +193,8 @@ public final class SlimeFormat {
   // SAVING
 
   public static void save(final SculkServer server, final SculkWorld world,
-      final OutputStream outputStream) {
-    try (final var dataOutput = new DataOutputStream(outputStream)) {
+      final DataOutputStream outputStream) {
+    try (final var dataOutput = outputStream) {
       dataOutput.writeShort(HEADER);
       dataOutput.writeByte(VERSION_10);
       dataOutput.writeInt(3465);
@@ -240,7 +237,7 @@ public final class SlimeFormat {
           CompoundBinaryTag.builder().put("tiles", tiles.build()).build());
       writeCompoundCompressed(dataOutput,
           CompoundBinaryTag.builder().put("entities", entities.build()).build());
-      writeCompoundCompressed(dataOutput, CompoundBinaryTag.empty());
+      writeCompoundCompressed(dataOutput, world.extraData());
     } catch (IOException e) {
       LOGGER.error("Error while saving world", e);
     }
