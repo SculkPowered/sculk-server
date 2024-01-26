@@ -417,8 +417,9 @@ public final class SculkServer implements Server {
     this.players.put(player.uniqueId(), player);
   }
 
-  public void removePlayer(final UUID uniqueId) {
-    this.players.remove(uniqueId);
+  public void removePlayer(final SculkPlayer player) {
+    this.players.remove(player.uniqueId());
+    this.entities.remove(player.id());
   }
 
   public void addEntity(final AbstractEntity abstractEntity) {

@@ -108,7 +108,7 @@ public final class SculkChunk implements Chunk {
   }
 
   public void send(SculkPlayer player) {
-    if (this.packet == null) {
+    if (this.packet == null || this.packet.get() == null) {
       final var buf = new Buffer(
           ByteBufAllocator.DEFAULT.buffer(this.sections.length * 8)); // minimum amount
       final var skyMask = new BitSet();

@@ -17,6 +17,7 @@ import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.connection.Connection;
 import io.github.sculkpowered.server.entity.player.GameProfile;
+import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.entity.player.PlayerInfoEntry;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.event.player.PlayerDisconnectEvent;
@@ -50,7 +51,6 @@ import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosit
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
 import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
 import io.github.sculkpowered.server.util.MojangUtil;
-import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -119,28 +119,31 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   @Override
   public void channelInactive(@NotNull ChannelHandlerContext ctx) {
     if (this.player != null) {
-      this.server.removePlayer(this.player.uniqueId());
+      this.server.removePlayer(this.player);
       this.player.onDisconnect();
 
       final var world = this.player.world();
       final var position = this.player.position();
       if (world != null) {
-        this.forChunksInRange(chunkCoordinate(position.x()), chunkCoordinate(position.z()),
+        this.server.addTask(() -> this.forChunksInRange(
+            chunkCoordinate(position.x()), chunkCoordinate(position.z()),
             this.player.settings().viewDistance(), (x, z) -> {
               final var chunk = world.chunk(x, z);
               chunk.viewers().remove(this.player);
-              this.server.addTask(() -> {
-                for (final var entity : chunk.entities()) {
-                  entity.removeViewer(this.player);
-                }
-                chunk.entities().remove(this.player);
-              });
-            });
+              for (final var entity : chunk.entities()) {
+                entity.removeViewer(this.player);
+              }
+              chunk.entities().remove(this.player);
+            }));
       }
       this.player.sendViewers(new RemoveEntities(this.player.id()));
       this.server.sendAll(new PlayerInfoRemove(List.of(this.player)));
       if (this.player.openedContainer() != null) {
         this.player.openedContainer().removeViewer(this.player);
+      }
+
+      for (final var bossBar : this.player.activeBossBars()) {
+        this.player.hideBossBar(bossBar);
       }
 
       LOGGER.info(this.username + " has disconnected.");
@@ -230,7 +233,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
               world.dimension().name()));
 
           this.sendCommands();
+          this.player.calculateChunks(position, position, false, false);
           this.send(new SpawnPosition(position));
+          this.send(new SynchronizePlayerPosition(position));
+
           this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.onlinePlayers()));
           final var playerInfo = PlayerInfo.add(List.of(this.player));
           for (final var other : this.server.onlinePlayers()) {
@@ -242,9 +248,6 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           for (final var team : this.server.teamHandler().teams()) {
             this.send(new UpdateTeams(team, (byte) 0, team.entries().toArray(new String[]{})));
           }
-
-          this.player.calculateChunks(position, position, false, false);
-          this.send(new SynchronizePlayerPosition(position));
 
           this.server.eventHandler().justCall(new PlayerJoinEvent(this.player));
         }, this.executor()).exceptionally(throwable -> {
