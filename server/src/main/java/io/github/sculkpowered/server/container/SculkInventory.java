@@ -9,12 +9,12 @@ import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
-public final class MineInventory implements Inventory {
+public final class SculkInventory implements Inventory {
 
   private final ItemList items = new ItemList(this.type().size());
   private final SculkPlayer player;
 
-  public MineInventory(final SculkPlayer player) {
+  public SculkInventory(final SculkPlayer player) {
     this.player = player;
   }
 

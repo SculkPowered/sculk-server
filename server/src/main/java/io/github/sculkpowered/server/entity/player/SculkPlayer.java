@@ -9,7 +9,7 @@ import io.github.sculkpowered.server.adventure.BossBarProvider;
 import io.github.sculkpowered.server.adventure.BossBarProvider.Impl;
 import io.github.sculkpowered.server.attribute.SculkAttributeValue;
 import io.github.sculkpowered.server.container.Container;
-import io.github.sculkpowered.server.container.MineInventory;
+import io.github.sculkpowered.server.container.SculkInventory;
 import io.github.sculkpowered.server.container.SculkContainer;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.AbstractLivingEntity;
@@ -80,7 +80,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private final SculkConnection connection;
   private final GameProfile profile;
   private final ClientInformationWrapper settings = new ClientInformationWrapper();
-  private final MineInventory inventory = new MineInventory(this);
+  private final SculkInventory inventory = new SculkInventory(this);
   private SculkContainer container;
   private long lastSendKeepAlive;
   private boolean keepAlivePending;
@@ -152,7 +152,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public @NotNull MineInventory inventory() {
+  public @NotNull SculkInventory inventory() {
     return this.inventory;
   }
 
