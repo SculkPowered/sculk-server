@@ -1,7 +1,7 @@
 [versions]
-netty = "4.1.104.Final"
+netty = "4.1.107.Final"
 adventure = "4.14.0"
-log4j = "2.22.1"
+log4j = "2.23.0"
 jline = "3.25.1"
 
 [plugins]
@@ -29,15 +29,15 @@ log4j-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", 
 jline = { group = "org.jline", name = "jline-reader", version.ref = "jline" }
 jansi = { group = "org.jline", name = "jansi", version.ref = "jline" }
 
-slf4j = "org.slf4j:slf4j-api:2.0.11"
-fastutil = "it.unimi.dsi:fastutil-core:8.5.12"
+slf4j = "org.slf4j:slf4j-api:2.0.12"
+fastutil = "it.unimi.dsi:fastutil-core:8.5.13"
 gson = "com.google.code.gson:gson:2.10.1"
 guava = "com.google.guava:guava:33.0.0-jre"
 brigadier = "com.mojang:brigadier:1.0.18"
 velocity-native = "com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"
 zstd = "com.github.luben:zstd-jni:1.5.5-11"
 
-junit = "org.junit.jupiter:junit-jupiter:5.10.1"
+junit = "org.junit.jupiter:junit-jupiter:5.10.2"
 
 [bundles]
 netty = ["netty-codec", "netty-transport", "netty-transport-epoll"]
