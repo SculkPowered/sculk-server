@@ -1,7 +1,7 @@
 [versions]
 netty = "4.1.104.Final"
 adventure = "4.14.0"
-log4j = "2.22.1"
+log4j = "2.23.0"
 jline = "3.25.1"
 
 [plugins]
