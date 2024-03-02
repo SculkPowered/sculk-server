@@ -20,6 +20,7 @@ import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.login.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
+import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
 import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
@@ -253,6 +254,21 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public boolean onGround() {
     return this.onGround;
+  }
+
+  @Override
+  public void addChatSuggestions(@NotNull String... suggestions) {
+    this.send(new ChatSuggestions(0, suggestions));
+  }
+
+  @Override
+  public void removeChatSuggestions(@NotNull String... suggestions) {
+    this.send(new ChatSuggestions(1, suggestions));
+  }
+
+  @Override
+  public void setChatSuggestions(@NotNull String... suggestions) {
+    this.send(new ChatSuggestions(2, suggestions));
   }
 
   @Override

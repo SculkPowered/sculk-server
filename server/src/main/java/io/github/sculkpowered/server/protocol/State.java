@@ -17,6 +17,7 @@ import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
 import io.github.sculkpowered.server.protocol.packet.play.AwardStatistics;
 import io.github.sculkpowered.server.protocol.packet.play.BossBar;
+import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
@@ -240,7 +241,7 @@ public enum State {
       this.clientBound.register(ContainerProperty.class);
       this.clientBound.register(ContainerSlot.class);
       this.clientBound.register(Cooldown.class);
-      this.clientBound.skip(); // Chat Suggestions
+      this.clientBound.register(ChatSuggestions.class);
       this.clientBound.register(PluginMessage.class);
       this.clientBound.skip(); // Damage Event
       this.clientBound.skip(); // Delete Message
