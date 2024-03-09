@@ -7,7 +7,6 @@ import static io.github.sculkpowered.server.util.Constants.MINECRAFT_DECODER;
 import static io.github.sculkpowered.server.util.Constants.MINECRAFT_ENCODER;
 
 import io.github.sculkpowered.server.SculkServer;
-import io.github.sculkpowered.server.protocol.Protocol;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.codec.MinecraftDecoder;
 import io.github.sculkpowered.server.protocol.netty.codec.MinecraftEncoder;
@@ -29,8 +28,8 @@ final class NettyServerInitializer extends ChannelInitializer<Channel> {
     channel.pipeline()
         .addLast(FRAME_DECODER, new VarIntFrameDecoder())
         .addLast(FRAME_ENCODER, VarIntLengthEncoder.INSTANCE)
-        .addLast(MINECRAFT_DECODER, new MinecraftDecoder(Protocol.Direction.SERVERBOUND))
-        .addLast(MINECRAFT_ENCODER, new MinecraftEncoder(Protocol.Direction.CLIENTBOUND))
+        .addLast(MINECRAFT_DECODER, new MinecraftDecoder())
+        .addLast(MINECRAFT_ENCODER, new MinecraftEncoder())
         .addLast(HANDLER, new SculkConnection(this.server, channel));
   }
 }

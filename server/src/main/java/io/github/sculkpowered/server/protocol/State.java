@@ -2,6 +2,7 @@ package io.github.sculkpowered.server.protocol;
 
 import io.github.sculkpowered.server.entity.TeleportEntity;
 import io.github.sculkpowered.server.protocol.packet.Packet;
+import io.github.sculkpowered.server.protocol.packet.config.FeatureFlags;
 import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
 import io.github.sculkpowered.server.protocol.packet.config.RegistryData;
 import io.github.sculkpowered.server.protocol.packet.handshake.Handshake;
@@ -18,12 +19,8 @@ import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
 import io.github.sculkpowered.server.protocol.packet.play.AwardStatistics;
 import io.github.sculkpowered.server.protocol.packet.play.BossBar;
 import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
-import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
-import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
 import io.github.sculkpowered.server.protocol.packet.play.ChangeDifficulty;
 import io.github.sculkpowered.server.protocol.packet.play.ChatMessage;
-import io.github.sculkpowered.server.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
 import io.github.sculkpowered.server.protocol.packet.play.ClientCommand;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
 import io.github.sculkpowered.server.protocol.packet.play.ConfirmTeleportation;
@@ -33,9 +30,9 @@ import io.github.sculkpowered.server.protocol.packet.play.EditBook;
 import io.github.sculkpowered.server.protocol.packet.play.EntityAnimation;
 import io.github.sculkpowered.server.protocol.packet.play.EntityEvent;
 import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
+import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.Experience;
-import io.github.sculkpowered.server.protocol.packet.config.FeatureFlags;
 import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.Health;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
@@ -69,9 +66,12 @@ import io.github.sculkpowered.server.protocol.packet.play.UpdateTags;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
 import io.github.sculkpowered.server.protocol.packet.play.UseItem;
 import io.github.sculkpowered.server.protocol.packet.play.UseItemOn;
+import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockAction;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockEntityData;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockUpdate;
+import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
+import io.github.sculkpowered.server.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
 import io.github.sculkpowered.server.protocol.packet.play.command.ChatCommand;
 import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsRequest;
 import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsResponse;
@@ -115,256 +115,286 @@ public enum State {
 
   HANDSHAKE {
     {
-      this.serverBound.register(Handshake.class, Handshake::new);
+      this.serverBound
+          .register(Handshake::new);
     }
   },
   STATUS {
     {
-      this.serverBound.register(StatusRequest.class, () -> StatusRequest.INSTANCE);
-      this.serverBound.register(StatusPing.class, StatusPing::new);
+      this.serverBound
+          .register(() -> StatusRequest.INSTANCE)
+          .register(StatusPing::new);
 
-      this.clientBound.register(StatusResponse.class);
-      this.clientBound.register(StatusPing.class);
+      this.clientBound
+          .register(StatusResponse.class)
+          .register(StatusPing.class);
     }
   },
   LOGIN {
     {
-      this.serverBound.register(LoginStart.class, LoginStart::new);
-      this.serverBound.register(EncryptionResponse.class, EncryptionResponse::new);
-      this.serverBound.register(LoginPluginResponse.class, LoginPluginResponse::new);
-      this.serverBound.register(LoginAcknowledged.class, () -> LoginAcknowledged.INSTANCE);
+      this.serverBound
+          .register(LoginStart::new)
+          .register(EncryptionResponse::new)
+          .register(LoginPluginResponse::new)
+          .register(() -> LoginAcknowledged.INSTANCE);
 
-      this.clientBound.register(Disconnect.class);
-      this.clientBound.register(EncryptionRequest.class);
-      this.clientBound.register(LoginSuccess.class);
-      this.clientBound.register(CompressionPacket.class);
-      this.clientBound.register(LoginPluginRequest.class);
+      this.clientBound
+          .register(Disconnect.class)
+          .register(EncryptionRequest.class)
+          .register(LoginSuccess.class)
+          .register(CompressionPacket.class)
+          .register(LoginPluginRequest.class);
     }
   },
   CONFIG {
     {
-      this.serverBound.register(ClientInformation.class, ClientInformation.SUPPLIER);
-      this.serverBound.register(PluginMessage.class, PluginMessage.SUPPLIER);
-      this.serverBound.register(FinishConfiguration.class, () -> FinishConfiguration.INSTANCE);
-      this.serverBound.register(KeepAlive.class, KeepAlive.SUPPLIER);
+      this.serverBound
+          .register(ClientInformation.SUPPLIER)
+          .register(PluginMessage.SUPPLIER)
+          .register(() -> FinishConfiguration.INSTANCE)
+          .register(KeepAlive.SUPPLIER);
       // Pong
       // Resource Pack
 
-      this.clientBound.register(PluginMessage.class);
-      this.clientBound.register(Disconnect.class);
-      this.clientBound.register(FinishConfiguration.class);
-      this.clientBound.register(KeepAlive.class);
-      this.clientBound.skip(); // Ping
-      this.clientBound.register(RegistryData.class);
-      this.clientBound.skip(); // Resource Pack
-      this.clientBound.register(FeatureFlags.class);
+      this.clientBound
+          .register(PluginMessage.class)
+          .register(Disconnect.class)
+          .register(FinishConfiguration.class)
+          .register(KeepAlive.class)
+          .skip() // Ping
+          .register(RegistryData.class)
+          .skip() // Resource Pack
+          .register(FeatureFlags.class);
       // Update Tags
     }
   },
   PLAY {
     {
-      this.serverBound.register(ConfirmTeleportation.class, ConfirmTeleportation::new);
-      this.serverBound.skip(); // Query Block Entity Tag
-      this.serverBound.skip(); // Change Difficulty - only Single-player
-      this.serverBound.skip(); // Message Acknowledgment
-      this.serverBound.register(ChatCommand.class, ChatCommand::new);
-      this.serverBound.register(ChatMessage.class, ChatMessage::new);
-      this.serverBound.register(PlayerSession.class, PlayerSession::new); // Player Session
-      this.serverBound.skip(); // Chunk Batch Received
-      this.serverBound.register(ClientCommand.class, ClientCommand::new);
-      this.serverBound.register(ClientInformation.class, ClientInformation.SUPPLIER);
-      this.serverBound.register(CommandSuggestionsRequest.class, CommandSuggestionsRequest::new);
-      this.serverBound.skip(); // Configuration Acknowledged
-      this.serverBound.register(ClickContainerButton.class, ClickContainerButton::new);
-      this.serverBound.register(ClickContainer.class, ClickContainer::new);
-      this.serverBound.register(CloseContainer.class, CloseContainer::new);
-      this.serverBound.register(PluginMessage.class, PluginMessage.SUPPLIER);
-      this.serverBound.register(EditBook.class, EditBook::new);
-      this.serverBound.skip(); // Query Entity Tag
-      this.serverBound.register(Interact.class, Interact::new);
-      this.serverBound.skip(); // Jigsaw Generate
-      this.serverBound.register(KeepAlive.class, KeepAlive.SUPPLIER);
-      this.serverBound.skip(); // Lock Difficult
-      this.serverBound.register(PlayerPosition.class, PlayerPosition::new);
-      this.serverBound.register(PlayerPositionAndRotation.class, PlayerPositionAndRotation::new);
-      this.serverBound.register(PlayerRotation.class, PlayerRotation::new);
-      this.serverBound.register(PlayerOnGround.class, PlayerOnGround::new);
-      this.serverBound.skip(); // Move Vehicle
-      this.serverBound.skip(); // Paddle Boat
-      this.serverBound.skip(); // Pick Item
-      this.serverBound.skip(); // Ping Request
-      this.serverBound.skip(); // Place Recipe
-      this.serverBound.register(PlayerAbilities.class, PlayerAbilities::new);
-      this.serverBound.register(PlayerAction.class, PlayerAction::new);
-      this.serverBound.register(PlayerCommand.class, PlayerCommand::new);
-      this.serverBound.skip(); // Player Input
-      this.serverBound.skip(); // Pong
-      this.serverBound.register(RecipeBookSettings.class, RecipeBookSettings::new);
-      this.serverBound.skip(); // Seen Recipe
-      this.serverBound.skip(); // Rename Item
-      this.serverBound.skip(); // Resource Pack
-      this.serverBound.skip(); // Advancements
-      this.serverBound.skip(); // Select Trade
-      this.serverBound.skip(); // Beacon Effect
-      this.serverBound.register(HeldItem.class, HeldItem::new);
-      this.serverBound.skip(); // Program Command Block
-      this.serverBound.skip(); // Program Command Block Minecart
-      this.serverBound.register(CreativeModeSlot.class, CreativeModeSlot::new);
-      this.serverBound.skip(); // Program Jigsaw Block
-      this.serverBound.skip(); // Program Structure Block
-      this.serverBound.skip(); // Update Sign
-      this.serverBound.register(SwingArm.class, SwingArm::new);
-      this.serverBound.register(TeleportToEntity.class, TeleportToEntity::new);
-      this.serverBound.register(UseItemOn.class, UseItemOn::new);
-      this.serverBound.register(UseItem.class, UseItem::new);
+      this.serverBound
+          .register(ConfirmTeleportation::new)
+          .skip() // Query Block Entity Tag
+          .skip() // Change Difficulty - only Single-player
+          .skip() // Message Acknowledgment
+          .register(ChatCommand::new)
+          .register(ChatMessage::new)
+          .register(PlayerSession::new) // Player Session
+          .skip() // Chunk Batch Received
+          .register(ClientCommand::new)
+          .register(ClientInformation.SUPPLIER)
+          .register(CommandSuggestionsRequest::new)
+          .skip() // Configuration Acknowledged
+          .register(ClickContainerButton::new)
+          .register(ClickContainer::new)
+          .register(CloseContainer::new)
+          .register(PluginMessage.SUPPLIER)
+          .register(EditBook::new)
+          .skip() // Query Entity Tag
+          .register(Interact::new)
+          .skip() // Jigsaw Generate
+          .register(KeepAlive.SUPPLIER)
+          .skip() // Lock Difficult
+          .register(PlayerPosition::new)
+          .register(PlayerPositionAndRotation::new)
+          .register(PlayerRotation::new)
+          .register(PlayerOnGround::new)
+          .skip() // Move Vehicle
+          .skip() // Paddle Boat
+          .skip() // Pick Item
+          .skip() // Ping Request
+          .skip() // Place Recipe
+          .register(PlayerAbilities::new)
+          .register(PlayerAction::new)
+          .register(PlayerCommand::new)
+          .skip() // Player Input
+          .skip() // Pong
+          .register(RecipeBookSettings::new)
+          .skip() // Seen Recipe
+          .skip() // Rename Item
+          .skip() // Resource Pack
+          .skip() // Advancements
+          .skip() // Select Trade
+          .skip() // Beacon Effect
+          .register(HeldItem::new)
+          .skip() // Program Command Block
+          .skip() // Program Command Block Minecart
+          .register(CreativeModeSlot::new)
+          .skip() // Program Jigsaw Block
+          .skip() // Program Structure Block
+          .skip() // Update Sign
+          .register(SwingArm::new)
+          .register(TeleportToEntity::new)
+          .register(UseItemOn::new)
+          .register(UseItem::new);
 
-      this.clientBound.skip(); // Bundle Delimiter
-      this.clientBound.register(SpawnEntity.class);
-      this.clientBound.register(SpawnExperienceOrb.class);
-      this.clientBound.register(EntityAnimation.class);
-      this.clientBound.register(AwardStatistics.class);
-      this.clientBound.register(BlockAcknowledge.class);
-      this.clientBound.skip(); // Block Destroy Stage
-      this.clientBound.register(BlockEntityData.class);
-      this.clientBound.register(BlockAction.class);
-      this.clientBound.register(BlockUpdate.class);
-      this.clientBound.register(BossBar.class);
-      this.clientBound.register(ChangeDifficulty.class);
-      this.clientBound.skip(); // Chunk Batch Finished
-      this.clientBound.skip(); // Chunk Batch Start
-      this.clientBound.skip(); // Chunk Biomes
-      this.clientBound.register(ClearTitles.class);
-      this.clientBound.register(CommandSuggestionsResponse.class);
-      this.clientBound.register(Commands.class);
-      this.clientBound.register(CloseContainer.class);
-      this.clientBound.register(ContainerContent.class);
-      this.clientBound.register(ContainerProperty.class);
-      this.clientBound.register(ContainerSlot.class);
-      this.clientBound.register(Cooldown.class);
-      this.clientBound.register(ChatSuggestions.class);
-      this.clientBound.register(PluginMessage.class);
-      this.clientBound.skip(); // Damage Event
-      this.clientBound.skip(); // Delete Message
-      this.clientBound.register(Disconnect.class);
-      this.clientBound.skip(); // Disguised Chat Message
-      this.clientBound.register(EntityEvent.class);
-      this.clientBound.skip(); // Explosion
-      this.clientBound.skip(); // Unload Chunk
-      this.clientBound.register(GameEvent.class);
-      this.clientBound.skip(); // Open Horse Screen
-      this.clientBound.skip(); // Hurt Animation
-      this.clientBound.skip(); // Initialize World Border
-      this.clientBound.register(KeepAlive.class);
-      this.clientBound.register(ChunkDataAndUpdateLight.class);
-      this.clientBound.skip(); // World Event
-      this.clientBound.skip(); // Particle
-      this.clientBound.skip(); // Update Light
-      this.clientBound.register(Login.class);
-      this.clientBound.skip(); // Map Data
-      this.clientBound.skip(); // Merchant Offers
-      this.clientBound.register(EntityPosition.class);
-      this.clientBound.register(EntityPositionAndRotation.class);
-      this.clientBound.register(EntityRotation.class);
-      this.clientBound.skip(); // Move Vehicle
-      this.clientBound.skip(); // Open Book
-      this.clientBound.register(OpenScreen.class);
-      this.clientBound.skip(); // Open Sign Editor
-      this.clientBound.skip(); // Ping
-      this.clientBound.skip(); // Ping Response
-      this.clientBound.skip(); // Place Ghost Recipe
-      this.clientBound.register(PlayerAbilities.class);
-      this.clientBound.skip(); // Player Chat Message
-      this.clientBound.skip(); // End Combat - was once used for Twitch
-      this.clientBound.skip(); // Enter Combat - was once used for Twitch
-      this.clientBound.skip(); // Combat Death
-      this.clientBound.register(PlayerInfoRemove.class);
-      this.clientBound.register(PlayerInfo.class);
-      this.clientBound.skip(); // Look At
-      this.clientBound.register(SynchronizePlayerPosition.class);
-      this.clientBound.skip(); // Update Recipe Book
-      this.clientBound.register(RemoveEntities.class);
-      this.clientBound.skip(); // Remove Entity Effect
-      this.clientBound.skip(); // Resource Pack
-      this.clientBound.register(Respawn.class);
-      this.clientBound.register(HeadRotation.class);
-      this.clientBound.skip(); // Update Section Blocks
-      this.clientBound.skip(); // Select Advancements Tab
-      this.clientBound.skip(); // Server Data
-      this.clientBound.register(ActionBar.class);
-      this.clientBound.skip(); // Border Center
-      this.clientBound.skip(); // Border Lerp Size
-      this.clientBound.skip(); // Border Size
-      this.clientBound.skip(); // Border Warning Delay
-      this.clientBound.skip(); // Border Warning Distance
-      this.clientBound.skip(); // Set Camera
-      this.clientBound.register(HeldItem.class);
-      this.clientBound.register(CenterChunk.class);
-      this.clientBound.register(RenderDistance.class);
-      this.clientBound.register(SpawnPosition.class);
-      this.clientBound.register(DisplayObjective.class);
-      this.clientBound.register(EntityMetadata.class);
-      this.clientBound.skip(); // Link Entities
-      this.clientBound.register(EntityVelocity.class);
-      this.clientBound.register(Equipment.class);
-      this.clientBound.register(Experience.class);
-      this.clientBound.register(Health.class);
-      this.clientBound.register(UpdateObjectives.class);
-      this.clientBound.skip(); // Set Passengers
-      this.clientBound.register(UpdateTeams.class);
-      this.clientBound.register(UpdateScore.class);
-      this.clientBound.register(SimulationDistance.class);
-      this.clientBound.register(Subtitle.class);
-      this.clientBound.skip(); // Update Time
-      this.clientBound.register(Title.class);
-      this.clientBound.register(TitleAnimationTimes.class);
-      this.clientBound.register(EntitySoundEffect.class);
-      this.clientBound.register(SoundEffect.class);
-      this.clientBound.skip(); // Start Configuration
-      this.clientBound.register(StopSound.class);
-      this.clientBound.register(SystemChatMessage.class);
-      this.clientBound.register(TabListHeaderFooter.class);
-      this.clientBound.skip(); // Tag Query Response
-      this.clientBound.register(PickupItem.class);
-      this.clientBound.register(TeleportEntity.class);
-      this.clientBound.skip(); // Update Advancements
-      this.clientBound.register(UpdateAttributes.class);
-      this.clientBound.skip(); // Entity Effects
-      this.clientBound.register(UpdateRecipes.class);
-      this.clientBound.register(UpdateTags.class);
+      this.clientBound
+          .skip() // Bundle Delimiter
+          .register(SpawnEntity.class)
+          .register(SpawnExperienceOrb.class)
+          .register(EntityAnimation.class)
+          .register(AwardStatistics.class)
+          .register(BlockAcknowledge.class)
+          .skip() // Block Destroy Stage
+          .register(BlockEntityData.class)
+          .register(BlockAction.class)
+          .register(BlockUpdate.class)
+          .register(BossBar.class)
+          .register(ChangeDifficulty.class)
+          .skip() // Chunk Batch Finished
+          .skip() // Chunk Batch Start
+          .skip() // Chunk Biomes
+          .register(ClearTitles.class)
+          .register(CommandSuggestionsResponse.class)
+          .register(Commands.class)
+          .register(CloseContainer.class)
+          .register(ContainerContent.class)
+          .register(ContainerProperty.class)
+          .register(ContainerSlot.class)
+          .register(Cooldown.class)
+          .register(ChatSuggestions.class)
+          .register(PluginMessage.class)
+          .skip() // Damage Event
+          .skip() // Delete Message
+          .register(Disconnect.class)
+          .skip() // Disguised Chat Message
+          .register(EntityEvent.class)
+          .skip() // Explosion
+          .skip() // Unload Chunk
+          .register(GameEvent.class)
+          .skip() // Open Horse Screen
+          .skip() // Hurt Animation
+          .skip() // Initialize World Border
+          .register(KeepAlive.class)
+          .register(ChunkDataAndUpdateLight.class)
+          .skip() // World Event
+          .skip() // Particle
+          .skip() // Update Light
+          .register(Login.class)
+          .skip() // Map Data
+          .skip() // Merchant Offers
+          .register(EntityPosition.class)
+          .register(EntityPositionAndRotation.class)
+          .register(EntityRotation.class)
+          .skip() // Move Vehicle
+          .skip() // Open Book
+          .register(OpenScreen.class)
+          .skip() // Open Sign Editor
+          .skip() // Ping
+          .skip() // Ping Response
+          .skip() // Place Ghost Recipe
+          .register(PlayerAbilities.class)
+          .skip() // Player Chat Message
+          .skip() // End Combat - was once used for Twitch
+          .skip() // Enter Combat - was once used for Twitch
+          .skip() // Combat Death
+          .register(PlayerInfoRemove.class)
+          .register(PlayerInfo.class)
+          .skip() // Look At
+          .register(SynchronizePlayerPosition.class)
+          .skip() // Update Recipe Book
+          .register(RemoveEntities.class)
+          .skip() // Remove Entity Effect
+          .skip() // Resource Pack
+          .register(Respawn.class)
+          .register(HeadRotation.class)
+          .skip() // Update Section Blocks
+          .skip() // Select Advancements Tab
+          .skip() // Server Data
+          .register(ActionBar.class)
+          .skip() // Border Center
+          .skip() // Border Lerp Size
+          .skip() // Border Size
+          .skip() // Border Warning Delay
+          .skip() // Border Warning Distance
+          .skip() // Set Camera
+          .register(HeldItem.class)
+          .register(CenterChunk.class)
+          .register(RenderDistance.class)
+          .register(SpawnPosition.class)
+          .register(DisplayObjective.class)
+          .register(EntityMetadata.class)
+          .skip() // Link Entities
+          .register(EntityVelocity.class)
+          .register(Equipment.class)
+          .register(Experience.class)
+          .register(Health.class)
+          .register(UpdateObjectives.class)
+          .skip() // Set Passengers
+          .register(UpdateTeams.class)
+          .register(UpdateScore.class)
+          .register(SimulationDistance.class)
+          .register(Subtitle.class)
+          .skip() // Update Time
+          .register(Title.class)
+          .register(TitleAnimationTimes.class)
+          .register(EntitySoundEffect.class)
+          .register(SoundEffect.class)
+          .skip() // Start Configuration
+          .register(StopSound.class)
+          .register(SystemChatMessage.class)
+          .register(TabListHeaderFooter.class)
+          .skip() // Tag Query Response
+          .register(PickupItem.class)
+          .register(TeleportEntity.class)
+          .skip() // Update Advancements
+          .register(UpdateAttributes.class)
+          .skip() // Entity Effects
+          .register(UpdateRecipes.class)
+          .register(UpdateTags.class);
     }
   };
 
-  protected final PacketRegistry clientBound = new PacketRegistry();
-  protected final PacketRegistry serverBound = new PacketRegistry();
+  public final ClientboundRegistry clientBound = new ClientboundRegistry();
+  public final ServerboundRegistry serverBound = new ServerboundRegistry();
 
-  public static class PacketRegistry {
+  public static class ClientboundRegistry {
 
-    protected final IntObjectMap<Supplier<? extends Packet>> packetIdToSupplier = new IntObjectHashMap<>(
-        16, 0.5f);
-    protected final Object2IntMap<Class<? extends Packet>> packetClassToId = new Object2IntOpenHashMap<>(
-        16, 0.5f);
+    protected final Object2IntMap<Class<? extends Packet>> packetClassToId =
+        new Object2IntOpenHashMap<>(16, 0.5f);
     protected int id;
 
-    PacketRegistry() {
+    ClientboundRegistry() {
       this.packetClassToId.defaultReturnValue(-1);
     }
 
-    protected <P extends Packet> void register(final Class<P> clazz) {
-      this.register(clazz, null);
-    }
-
-    protected <P extends Packet> void register(final Class<P> clazz,
-        final Supplier<P> packetSupplier) {
+    protected <P extends Packet> ClientboundRegistry register(final Class<P> clazz) {
       final var id = this.id;
       this.packetClassToId.put(clazz, id);
+      this.id++;
+      return this;
+    }
+
+    public ClientboundRegistry skip() {
+      this.id++;
+      return this;
+    }
+
+    public int packetId(final Packet packet) {
+      final var id = this.packetClassToId.getInt(packet.getClass());
+      if (id == Integer.MIN_VALUE) {
+        throw new EncoderException("Couldn't find an id for " + packet.getClass());
+      }
+      return id;
+    }
+  }
+
+  public static class ServerboundRegistry {
+
+    protected final IntObjectMap<Supplier<? extends Packet>> packetIdToSupplier =
+        new IntObjectHashMap<>(16, 0.5f);
+    protected int id;
+
+    protected <P extends Packet> ServerboundRegistry register(final Supplier<P> packetSupplier) {
+      final var id = this.id;
       if (packetSupplier != null) {
         this.packetIdToSupplier.put(id, packetSupplier);
       }
       this.id++;
+      return this;
     }
 
-    public void skip() {
+    public ServerboundRegistry skip() {
       this.id++;
+      return this;
     }
 
     public Packet createPacket(final int id) {
@@ -373,14 +403,6 @@ public enum State {
         return supplier.get();
       }
       return null;
-    }
-
-    public int getPacketId(final Packet packet) {
-      final var id = this.packetClassToId.getInt(packet.getClass());
-      if (id == Integer.MIN_VALUE) {
-        throw new EncoderException("Couldn't find an id for " + packet.getClass());
-      }
-      return id;
     }
   }
 }
