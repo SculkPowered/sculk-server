@@ -17,12 +17,13 @@ import io.github.sculkpowered.server.world.dimension.Dimension;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Server {
+public interface Server extends ForwardingAudience {
 
   Consumer<Player> DEFAULT_WORLD_UNLOAD = player ->
       player.disconnect(Component.text("The world was unloaded!", NamedTextColor.RED));

@@ -69,6 +69,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.BinaryTagIO.Compression;
 import net.kyori.adventure.text.Component;
@@ -379,6 +380,11 @@ public final class SculkServer implements Server {
   @Override
   public @NotNull SculkConfiguration config() {
     return this.configuration;
+  }
+
+  @Override
+  public @NotNull Iterable<? extends Audience> audiences() {
+    return this.players.values();
   }
 
   @Override
