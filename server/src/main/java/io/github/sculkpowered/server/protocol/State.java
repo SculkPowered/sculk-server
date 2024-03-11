@@ -170,7 +170,7 @@ public enum State {
           .register(RemoveResourcePack.class)
           .register(AddResourcePack.class)
           .register(FeatureFlags.class)
-          .register(UpdateTags.class)
+          .register(UpdateTags.class);
     }
   },
   PLAY {
