@@ -9,7 +9,7 @@ import io.github.sculkpowered.server.adventure.BossBarProvider;
 import io.github.sculkpowered.server.adventure.BossBarProvider.Impl;
 import io.github.sculkpowered.server.attribute.SculkAttributeValue;
 import io.github.sculkpowered.server.container.Container;
-import io.github.sculkpowered.server.container.MineInventory;
+import io.github.sculkpowered.server.container.SculkInventory;
 import io.github.sculkpowered.server.container.SculkContainer;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.AbstractLivingEntity;
@@ -21,6 +21,7 @@ import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
+import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
 import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
@@ -84,7 +85,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private final SculkConnection connection;
   private final GameProfile profile;
   private final ClientInformationWrapper settings = new ClientInformationWrapper();
-  private final MineInventory inventory = new MineInventory(this);
+  private final SculkInventory inventory = new SculkInventory(this);
   private SculkContainer container;
   private long lastSendKeepAlive;
   private boolean keepAlivePending;
@@ -156,7 +157,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public @NotNull MineInventory inventory() {
+  public @NotNull SculkInventory inventory() {
     return this.inventory;
   }
 
@@ -257,6 +258,21 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public boolean onGround() {
     return this.onGround;
+  }
+
+  @Override
+  public void addChatSuggestions(@NotNull String... suggestions) {
+    this.send(new ChatSuggestions(0, suggestions));
+  }
+
+  @Override
+  public void removeChatSuggestions(@NotNull String... suggestions) {
+    this.send(new ChatSuggestions(1, suggestions));
+  }
+
+  @Override
+  public void setChatSuggestions(@NotNull String... suggestions) {
+    this.send(new ChatSuggestions(2, suggestions));
   }
 
   @Override

@@ -1,7 +1,6 @@
 package io.github.sculkpowered.server.protocol.netty.codec;
 
 import io.github.sculkpowered.server.protocol.Buffer;
-import io.github.sculkpowered.server.protocol.Protocol;
 import io.github.sculkpowered.server.protocol.State;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
 import io.netty.buffer.ByteBuf;
@@ -16,12 +15,7 @@ public final class MinecraftDecoder extends ChannelInboundHandlerAdapter {
 
   private static final Logger LOGGER = LogManager.getLogger(MinecraftDecoder.class);
 
-  private final Protocol.Direction direction;
-  private State.PacketRegistry registry;
-
-  public MinecraftDecoder(Protocol.Direction direction) {
-    this.direction = direction;
-  }
+  private State.ServerboundRegistry registry;
 
   @Override
   public void channelRead(@NotNull ChannelHandlerContext ctx, @NotNull Object message) {
@@ -73,6 +67,6 @@ public final class MinecraftDecoder extends ChannelInboundHandlerAdapter {
   }
 
   public void setState(final State state) {
-    this.registry = this.direction.getRegistry(state);
+    this.registry = state.serverBound;
   }
 }

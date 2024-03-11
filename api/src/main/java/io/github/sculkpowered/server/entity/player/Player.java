@@ -218,4 +218,28 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @since 1.0.0
    */
   boolean onGround();
+
+  /**
+   * Adds custom chat suggestions to the client.
+   *
+   * @param suggestions the suggestions to add
+   * @since 1.0.0
+   */
+  void addChatSuggestions(@NotNull String... suggestions);
+
+  /**
+   * Removes custom chat suggestions to the client.
+   *
+   * @param suggestions the suggestions to remove
+   * @since 1.0.0
+   */
+  void removeChatSuggestions(@NotNull String... suggestions);
+
+  /**
+   * Sets the custom chat suggestions of the client.
+   *
+   * @param suggestions the suggestions to set
+   * @since 1.0.0
+   */
+  void setChatSuggestions(@NotNull String... suggestions);
 }
