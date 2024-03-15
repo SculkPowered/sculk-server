@@ -21,10 +21,11 @@ final class Worker extends Thread {
     while (this.server.isRunning()) {
       final var time = System.currentTimeMillis();
 
-      for (final var task : this.tasks) {
-        task.run();
+      final var tasks = this.tasks.iterator();
+      while (tasks.hasNext()) {
+        tasks.next().run();
+        tasks.remove();
       }
-      this.tasks.clear();
 
       for (final var world : this.server.worlds()) {
         // tick over chunks -> and entities
