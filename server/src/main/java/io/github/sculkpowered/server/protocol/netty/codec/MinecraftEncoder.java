@@ -16,7 +16,6 @@ public final class MinecraftEncoder extends MessageToByteEncoder<Packet> {
   protected void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf buf) {
     PacketUtils.writeVarInt(buf, this.registry.packetId(packet));
     packet.encode(new Buffer(buf));
-    System.out.println("encode " + packet);
   }
 
   @Override

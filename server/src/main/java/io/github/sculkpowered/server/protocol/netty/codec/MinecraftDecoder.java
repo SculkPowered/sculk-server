@@ -48,7 +48,6 @@ public final class MinecraftDecoder extends ChannelInboundHandlerAdapter {
 
           try {
             packet.decode(new Buffer(buf));
-            System.out.println("decode " + packet);
           } catch (Exception e) {
             LOGGER.error("Error during decoding of " + packet.getClass(), e);
           }
