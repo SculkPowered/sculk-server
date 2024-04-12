@@ -15,11 +15,11 @@ import io.netty.handler.codec.EncoderException;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.UUID;
+import net.kyori.adventure.nbt.BinaryTag;
+import net.kyori.adventure.nbt.BinaryTagType;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -178,7 +178,8 @@ public final class Buffer {
   }
 
   public @NotNull Buffer writeComponent(final @NotNull Component component) {
-    return this.writeCompoundTag(serializeComponentToNbt(component)); // TODO: replace with adventures one
+    return this.writeBinaryTag(
+        ComponentSerializer.serializeToNbt(component)); // TODO: replace with adventures one
   }
 
   public @NotNull Buffer writeComponentJson(final @NotNull Component component) {
@@ -200,12 +201,14 @@ public final class Buffer {
     }
   }
 
-  public @NotNull Buffer writeCompoundTag(final CompoundBinaryTag binaryTag) {
+  @SuppressWarnings("unchecked")
+  public <T extends BinaryTag> @NotNull Buffer writeBinaryTag(final T binaryTag) {
     try (final var outputStream = new ByteBufOutputStream(this.buf)) {
-      outputStream.write(BinaryTagTypes.COMPOUND.id());
-      BinaryTagTypes.COMPOUND.write(binaryTag, outputStream);
+      final var type = (BinaryTagType<T>) binaryTag.type();
+      outputStream.write(type.id());
+      type.write(binaryTag, outputStream);
     } catch (IOException e) {
-      throw new EncoderException("Unable to encode compound tag: " + e.getMessage());
+      throw new EncoderException("Unable to encode binary tag: " + e.getMessage());
     }
     return this;
   }
@@ -233,7 +236,7 @@ public final class Buffer {
           .writeBoolean(true)
           .writeVarInt(slot.material().ordinal())
           .writeByte((byte) slot.amount())
-          .writeCompoundTag(slot.meta().asNbt());
+          .writeBinaryTag(slot.meta().asNbt());
     } else {
       this.buf.writeBoolean(false);
     }
@@ -290,34 +293,5 @@ public final class Buffer {
 
   public static GsonComponentSerializer getGsonSerializer(final int version) {
     return version >= 735 ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
-  }
-
-  private static @NotNull CompoundBinaryTag serializeComponentToNbt(final Component component) {
-    if (component instanceof TextComponent textComponent) {
-      final var builder = CompoundBinaryTag.builder()
-          .putString("text", textComponent.content());
-
-      // add children
-      if (!component.children().isEmpty()) {
-        final var children = ListBinaryTag.builder();
-        for (final var child : component.children()) {
-          children.add(serializeComponentToNbt(child));
-        }
-        builder.put("extra", children.build());
-      }
-
-      // add style
-      final var style = textComponent.style();
-      final var font = style.font();
-      if (font != null) {
-        builder.putString("font", font.asString());
-      }
-      final var color = style.color();
-      if (color != null) {
-        builder.putString("color", color.toString());
-      }
-      return builder.build();
-    }
-    return CompoundBinaryTag.empty();
   }
 }

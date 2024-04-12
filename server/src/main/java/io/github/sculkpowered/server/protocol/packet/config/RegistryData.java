@@ -24,7 +24,7 @@ public final class RegistryData implements Packet {
 
   @Override
   public void encode(Buffer buf) {
-    buf.writeCompoundTag(CompoundBinaryTag.builder()
+    buf.writeBinaryTag(CompoundBinaryTag.builder()
         .put(this.biomeRegistry.type(), this.biomeRegistry.asNBT())
         .put(this.dimensionRegistry.type(), this.dimensionRegistry.asNBT())
         .put(this.damageTypeRegistry.type(), this.damageTypeRegistry.asNBT())

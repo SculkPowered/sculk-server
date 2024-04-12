@@ -26,7 +26,7 @@ public final class BlockEntityData implements Packet {
     buf
         .writePosition(this.x, this.y, this.z)
         .writeVarInt(this.type)
-        .writeCompoundTag(this.nbt);
+        .writeBinaryTag(this.nbt);
   }
 
   @Override

@@ -40,7 +40,7 @@ public final class ChunkDataAndUpdateLight implements Packet {
     buf
         .writeInt(this.chunkX)
         .writeInt(this.chunkZ)
-        .writeCompoundTag(this.heightmaps)
+        .writeBinaryTag(this.heightmaps)
         .writeByteArray(this.data)
         .writeVarInt(this.blockEntities.size());
     for (final var entry : this.blockEntities.int2ObjectEntrySet()) {
@@ -51,7 +51,7 @@ public final class ChunkDataAndUpdateLight implements Packet {
               (chunkPositionZFromBlockIndex(point) & 0xF) & 15)))
           .writeShort((short) chunkPositionYFromBlockIndex(point))
           .writeVarInt(block.getEntityId())
-          .writeCompoundTag(block.nbt());
+          .writeBinaryTag(block.nbt());
     }
     this.lightData.write(buf);
   }
