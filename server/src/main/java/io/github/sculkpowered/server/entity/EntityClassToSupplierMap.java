@@ -22,6 +22,7 @@ public final class EntityClassToSupplierMap extends
     map.put(Blaze.class, SculkBlaze::new);
     map.put(BlockDisplay.class, SculkBlockDisplay::new);
     map.put(Boat.class, SculkBoat::new);
+    map.put(Breeze.class, SculkBreeze::new);
     map.put(Camel.class, SculkCamel::new);
     map.put(Cat.class, SculkCat::new);
     map.put(CaveSpider.class, SculkCaveSpider::new);
@@ -124,6 +125,7 @@ public final class EntityClassToSupplierMap extends
     map.put(Vindicator.class, SculkVindicator::new);
     map.put(WanderingTrader.class, SculkWanderingTrader::new);
     map.put(Warden.class, SculkWarden::new);
+    map.put(WindCharge.class, SculkWindCharge::new);
     map.put(Witch.class, SculkWitch::new);
     map.put(Wither.class, SculkWither::new);
     map.put(WitherSkeleton.class, SculkWitherSkeleton::new);

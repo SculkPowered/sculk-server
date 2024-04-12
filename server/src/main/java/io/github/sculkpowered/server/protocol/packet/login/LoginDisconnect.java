@@ -4,17 +4,17 @@ import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import net.kyori.adventure.text.Component;
 
-public final class Disconnect implements Packet {
+public final class LoginDisconnect implements Packet {
 
   private final Component text;
 
-  public Disconnect(final Component text) {
+  public LoginDisconnect(final Component text) {
     this.text = text;
   }
 
   @Override
   public void encode(Buffer buf) {
-    buf.writeComponent(this.text);
+    buf.writeComponentJson(this.text);
   }
 
   @Override

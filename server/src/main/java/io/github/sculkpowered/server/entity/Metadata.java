@@ -163,7 +163,7 @@ public final class Metadata {
   }
 
   public void setNbt(final int index, final CompoundBinaryTag value) {
-    this.set(index, new Entry<>(NBT_TYPE, value, Buffer::writeCompoundTag));
+    this.set(index, new Entry<>(NBT_TYPE, value, Buffer::writeBinaryTag));
   }
 
   public CompoundBinaryTag getNbt(final int index, final CompoundBinaryTag def) {

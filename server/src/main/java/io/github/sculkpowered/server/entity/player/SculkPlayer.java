@@ -18,7 +18,8 @@ import io.github.sculkpowered.server.entity.EntityType;
 import io.github.sculkpowered.server.event.connection.PluginMessageEvent;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.login.Disconnect;
+import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
+import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
 import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
@@ -29,6 +30,7 @@ import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
 import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
 import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
+import io.github.sculkpowered.server.protocol.packet.play.RemoveResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.Respawn;
 import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.SystemChatMessage;
@@ -53,11 +55,13 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBarImplementation;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.pointer.Pointers;
+import net.kyori.adventure.resource.ResourcePackRequest;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
@@ -385,6 +389,27 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public void stopSound(@NotNull SoundStop stop) {
     this.send(new StopSound(stop));
+  }
+
+  @Override
+  public void sendResourcePacks(@NotNull ResourcePackRequest request) {
+    for (final var pack : request.packs()) {
+      this.send(new AddResourcePack(pack.id(), pack.uri().toString(),
+          pack.hash(), request.required(), request.prompt()));
+    }
+  }
+
+  @Override
+  public void removeResourcePacks(@NotNull UUID id, @NotNull UUID @NotNull ... others) {
+    this.send(new RemoveResourcePack(id));
+    for (final var other : others) {
+      this.send(new RemoveResourcePack(other));
+    }
+  }
+
+  @Override
+  public void clearResourcePacks() {
+    this.send(new RemoveResourcePack(null));
   }
 
   @NotNull

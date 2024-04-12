@@ -5,7 +5,7 @@ import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.State;
 import io.github.sculkpowered.server.protocol.packet.PacketHandler;
-import io.github.sculkpowered.server.protocol.packet.login.Disconnect;
+import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
 import io.github.sculkpowered.server.protocol.packet.login.EncryptionRequest;
 import io.github.sculkpowered.server.protocol.packet.login.EncryptionResponse;
 import io.github.sculkpowered.server.protocol.packet.login.LoginAcknowledged;
@@ -52,7 +52,7 @@ public final class LoginPacketHandler extends PacketHandler {
           encryptionResponse.verifyToken());
       if (!MessageDigest.isEqual(decryptedVerifyToken, this.verifyToken)) {
         this.connection.send(
-            new Disconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
+            new LoginDisconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
         return true;
       }
 

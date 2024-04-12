@@ -15,6 +15,8 @@ import io.netty.handler.codec.EncoderException;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.UUID;
+import net.kyori.adventure.nbt.BinaryTag;
+import net.kyori.adventure.nbt.BinaryTagType;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
@@ -175,12 +177,13 @@ public final class Buffer {
     return this.writeVarInt(bytes.length).writeBytes(bytes);
   }
 
-  public @NotNull Buffer writeComponent(final Component component) {
-    return this.writeString(MODERN_SERIALIZER.serialize(component));
+  public @NotNull Buffer writeComponent(final @NotNull Component component) {
+    return this.writeBinaryTag(
+        ComponentSerializer.serializeToNbt(component)); // TODO: replace with adventures one
   }
 
-  public @NotNull Buffer writeComponent(final Component component, final int version) {
-    return this.writeString(getGsonSerializer(version).serialize(component));
+  public @NotNull Buffer writeComponentJson(final @NotNull Component component) {
+    return this.writeString(MODERN_SERIALIZER.serialize(component));
   }
 
   public @NotNull CompoundBinaryTag readCompoundTag() {
@@ -198,12 +201,14 @@ public final class Buffer {
     }
   }
 
-  public @NotNull Buffer writeCompoundTag(final CompoundBinaryTag binaryTag) {
+  @SuppressWarnings("unchecked")
+  public <T extends BinaryTag> @NotNull Buffer writeBinaryTag(final T binaryTag) {
     try (final var outputStream = new ByteBufOutputStream(this.buf)) {
-      outputStream.write(BinaryTagTypes.COMPOUND.id());
-      BinaryTagTypes.COMPOUND.write(binaryTag, outputStream);
+      final var type = (BinaryTagType<T>) binaryTag.type();
+      outputStream.write(type.id());
+      type.write(binaryTag, outputStream);
     } catch (IOException e) {
-      throw new EncoderException("Unable to encode compound tag: " + e.getMessage());
+      throw new EncoderException("Unable to encode binary tag: " + e.getMessage());
     }
     return this;
   }
@@ -221,7 +226,8 @@ public final class Buffer {
     if (!this.readBoolean()) {
       return ItemStack.empty();
     }
-    return ItemStack.itemStack(Material.get(this.readVarInt()), this.readByte(), this.readCompoundTag());
+    return ItemStack.itemStack(Material.get(this.readVarInt()), this.readByte(),
+        this.readCompoundTag());
   }
 
   public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
@@ -230,7 +236,7 @@ public final class Buffer {
           .writeBoolean(true)
           .writeVarInt(slot.material().ordinal())
           .writeByte((byte) slot.amount())
-          .writeCompoundTag(slot.meta().asNbt());
+          .writeBinaryTag(slot.meta().asNbt());
     } else {
       this.buf.writeBoolean(false);
     }

@@ -39,8 +39,9 @@ import io.github.sculkpowered.server.protocol.packet.handler.LoginPacketHandler;
 import io.github.sculkpowered.server.protocol.packet.handler.PlayPacketHandler;
 import io.github.sculkpowered.server.protocol.packet.handler.StatusPacketHandler;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
-import io.github.sculkpowered.server.protocol.packet.login.Disconnect;
+import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
 import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
+import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.Login;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerInfo;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerInfoRemove;
@@ -176,7 +177,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
               List.of(properties));
         } catch (Exception e) {
           this.send(
-              new Disconnect(Component.text("Connect through your proxy!", NamedTextColor.RED)));
+              new LoginDisconnect(Component.text("Connect through your proxy!", NamedTextColor.RED)));
           return;
         }
       } else {
@@ -233,6 +234,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
               world.dimension().name()));
 
           this.sendCommands();
+          this.send(new GameEvent(13, -1));
           this.player.calculateChunks(position, position, false, false);
           this.send(new SpawnPosition(position));
           this.send(new SynchronizePlayerPosition(position));

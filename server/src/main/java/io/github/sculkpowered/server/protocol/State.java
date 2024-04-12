@@ -7,15 +7,16 @@ import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
 import io.github.sculkpowered.server.protocol.packet.config.RegistryData;
 import io.github.sculkpowered.server.protocol.packet.handshake.Handshake;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
-import io.github.sculkpowered.server.protocol.packet.login.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.login.EncryptionRequest;
 import io.github.sculkpowered.server.protocol.packet.login.EncryptionResponse;
 import io.github.sculkpowered.server.protocol.packet.login.LoginAcknowledged;
+import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
 import io.github.sculkpowered.server.protocol.packet.login.LoginPluginRequest;
 import io.github.sculkpowered.server.protocol.packet.login.LoginPluginResponse;
 import io.github.sculkpowered.server.protocol.packet.login.LoginStart;
 import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
+import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.AwardStatistics;
 import io.github.sculkpowered.server.protocol.packet.play.BossBar;
 import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
@@ -26,6 +27,7 @@ import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
 import io.github.sculkpowered.server.protocol.packet.play.ConfirmTeleportation;
 import io.github.sculkpowered.server.protocol.packet.play.Cooldown;
 import io.github.sculkpowered.server.protocol.packet.play.CreativeModeSlot;
+import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.EditBook;
 import io.github.sculkpowered.server.protocol.packet.play.EntityAnimation;
 import io.github.sculkpowered.server.protocol.packet.play.EntityEvent;
@@ -49,6 +51,7 @@ import io.github.sculkpowered.server.protocol.packet.play.PlayerSession;
 import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
 import io.github.sculkpowered.server.protocol.packet.play.RecipeBookSettings;
 import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
+import io.github.sculkpowered.server.protocol.packet.play.RemoveResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.RenderDistance;
 import io.github.sculkpowered.server.protocol.packet.play.Respawn;
 import io.github.sculkpowered.server.protocol.packet.play.SimulationDistance;
@@ -92,6 +95,7 @@ import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositio
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.DisplayObjective;
+import io.github.sculkpowered.server.protocol.packet.play.scoreboard.ResetScore;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateObjectives;
 import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateScore;
 import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
@@ -139,7 +143,7 @@ public enum State {
           .register(() -> LoginAcknowledged.INSTANCE);
 
       this.clientBound
-          .register(Disconnect.class)
+          .register(LoginDisconnect.class)
           .register(EncryptionRequest.class)
           .register(LoginSuccess.class)
           .register(CompressionPacket.class)
@@ -163,9 +167,10 @@ public enum State {
           .register(KeepAlive.class)
           .skip() // Ping
           .register(RegistryData.class)
-          .skip() // Resource Pack
-          .register(FeatureFlags.class);
-      // Update Tags
+          .register(RemoveResourcePack.class)
+          .register(AddResourcePack.class)
+          .register(FeatureFlags.class)
+          .register(UpdateTags.class);
     }
   },
   PLAY {
@@ -186,6 +191,7 @@ public enum State {
           .register(ClickContainerButton::new)
           .register(ClickContainer::new)
           .register(CloseContainer::new)
+          .skip() // Change Container Slot State
           .register(PluginMessage.SUPPLIER)
           .register(EditBook::new)
           .skip() // Query Entity Tag
@@ -293,7 +299,9 @@ public enum State {
           .skip() // Update Recipe Book
           .register(RemoveEntities.class)
           .skip() // Remove Entity Effect
-          .skip() // Resource Pack
+          .register(ResetScore.class)
+          .register(RemoveResourcePack.class)
+          .register(AddResourcePack.class)
           .register(Respawn.class)
           .register(HeadRotation.class)
           .skip() // Update Section Blocks

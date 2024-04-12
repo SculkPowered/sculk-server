@@ -1,6 +1,6 @@
 [versions]
-netty = "4.1.107.Final"
-adventure = "4.14.0"
+netty = "4.1.108.Final"
+adventure = "4.16.0"
 log4j = "2.23.1"
 jline = "3.25.1"
 
@@ -29,7 +29,7 @@ log4j-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", 
 jline = { group = "org.jline", name = "jline-reader", version.ref = "jline" }
 jansi = { group = "org.jline", name = "jansi", version.ref = "jline" }
 
-slf4j = "org.slf4j:slf4j-api:2.0.12"
+slf4j = "org.slf4j:slf4j-api:2.0.13"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.13"
 gson = "com.google.code.gson:gson:2.10.1"
 guava = "com.google.guava:guava:33.1.0-jre"
