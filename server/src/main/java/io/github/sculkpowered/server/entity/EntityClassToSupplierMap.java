@@ -14,6 +14,7 @@ public final class EntityClassToSupplierMap extends
     // START
     map.put(Allay.class, SculkAllay::new);
     map.put(AreaEffectCloud.class, SculkAreaEffectCloud::new);
+    map.put(Armadillo.class, SculkArmadillo::new);
     map.put(ArmorStand.class, SculkArmorStand::new);
     map.put(Arrow.class, SculkArrow::new);
     map.put(Axolotl.class, SculkAxolotl::new);
@@ -22,7 +23,9 @@ public final class EntityClassToSupplierMap extends
     map.put(Blaze.class, SculkBlaze::new);
     map.put(BlockDisplay.class, SculkBlockDisplay::new);
     map.put(Boat.class, SculkBoat::new);
+    map.put(Bogged.class, SculkBogged::new);
     map.put(Breeze.class, SculkBreeze::new);
+    map.put(BreezeWindCharge.class, SculkBreezeWindCharge::new);
     map.put(Camel.class, SculkCamel::new);
     map.put(Cat.class, SculkCat::new);
     map.put(CaveSpider.class, SculkCaveSpider::new);
@@ -81,6 +84,7 @@ public final class EntityClassToSupplierMap extends
     map.put(Mooshroom.class, SculkMooshroom::new);
     map.put(Mule.class, SculkMule::new);
     map.put(Ocelot.class, SculkOcelot::new);
+    map.put(OminousItemSpawner.class, SculkOminousItemSpawner::new);
     map.put(Painting.class, SculkPainting::new);
     map.put(Panda.class, SculkPanda::new);
     map.put(Parrot.class, SculkParrot::new);

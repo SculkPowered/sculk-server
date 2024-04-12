@@ -42,6 +42,7 @@ public final class DamageTypeRegistry {
     registry.register(DamageType.PLAYER_ATTACK);
     registry.register(DamageType.PLAYER_EXPLOSION);
     registry.register(DamageType.SONIC_BOOM);
+    registry.register(DamageType.SPIT);
     registry.register(DamageType.STALAGMITE);
     registry.register(DamageType.STARVE);
     registry.register(DamageType.STING);

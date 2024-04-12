@@ -26,7 +26,7 @@ public enum Enchantment {
   KNOCKBACK("minecraft:knockback"),
   FIRE_ASPECT("minecraft:fire_aspect"),
   LOOTING("minecraft:looting"),
-  SWEEPING("minecraft:sweeping"),
+  SWEEPING_EDGE("minecraft:sweeping_edge"),
   EFFICIENCY("minecraft:efficiency"),
   SILK_TOUCH("minecraft:silk_touch"),
   UNBREAKING("minecraft:unbreaking"),
@@ -44,6 +44,9 @@ public enum Enchantment {
   MULTISHOT("minecraft:multishot"),
   QUICK_CHARGE("minecraft:quick_charge"),
   PIERCING("minecraft:piercing"),
+  DENSITY("minecraft:density"),
+  BREACH("minecraft:breach"),
+  WIND_BURST("minecraft:wind_burst"),
   MENDING("minecraft:mending"),
   VANISHING_CURSE("minecraft:vanishing_curse"),
   // END

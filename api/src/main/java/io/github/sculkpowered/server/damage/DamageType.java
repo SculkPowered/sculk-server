@@ -44,6 +44,7 @@ public final class DamageType implements Entry {
   public static final DamageType PLAYER_ATTACK = builder(Key.key(MINECRAFT_NAMESPACE, "player_attack")).exhaustion(0.1).messageId("player").scaling("when_caused_by_living_non_player").build();
   public static final DamageType PLAYER_EXPLOSION = builder(Key.key(MINECRAFT_NAMESPACE, "player_explosion")).exhaustion(0.1).messageId("explosion.player").scaling("always").build();
   public static final DamageType SONIC_BOOM = builder(Key.key(MINECRAFT_NAMESPACE, "sonic_boom")).exhaustion(0.0).messageId("sonic_boom").scaling("always").build();
+  public static final DamageType SPIT = builder(Key.key(MINECRAFT_NAMESPACE, "spit")).exhaustion(0.1).messageId("mob").scaling("when_caused_by_living_non_player").build();
   public static final DamageType STALAGMITE = builder(Key.key(MINECRAFT_NAMESPACE, "stalagmite")).exhaustion(0.0).messageId("stalagmite").scaling("when_caused_by_living_non_player").build();
   public static final DamageType STARVE = builder(Key.key(MINECRAFT_NAMESPACE, "starve")).exhaustion(0.0).messageId("starve").scaling("when_caused_by_living_non_player").build();
   public static final DamageType STING = builder(Key.key(MINECRAFT_NAMESPACE, "sting")).exhaustion(0.1).messageId("sting").scaling("when_caused_by_living_non_player").build();

@@ -7,7 +7,6 @@ package io.github.sculkpowered.server.potion;
 public enum PotionEffect {
 
   // START
-  EMPTY("minecraft:empty"),
   WATER("minecraft:water"),
   MUNDANE("minecraft:mundane"),
   THICK("minecraft:thick"),
@@ -50,6 +49,10 @@ public enum PotionEffect {
   LUCK("minecraft:luck"),
   SLOW_FALLING("minecraft:slow_falling"),
   LONG_SLOW_FALLING("minecraft:long_slow_falling"),
+  WIND_CHARGED("minecraft:wind_charged"),
+  WEAVING("minecraft:weaving"),
+  OOZING("minecraft:oozing"),
+  INFESTED("minecraft:infested"),
   // END
   ;
 
