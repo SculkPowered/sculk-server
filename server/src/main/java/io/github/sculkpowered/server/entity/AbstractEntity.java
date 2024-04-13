@@ -8,6 +8,9 @@ import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
 import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
 import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
 import io.github.sculkpowered.server.protocol.packet.play.SpawnEntity;
+import io.github.sculkpowered.server.protocol.packet.play.position.EntityPositionAndRotation;
+import io.github.sculkpowered.server.protocol.packet.play.position.EntityRotation;
+import io.github.sculkpowered.server.protocol.packet.play.position.HeadRotation;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.Vector;
@@ -32,7 +35,8 @@ public abstract class AbstractEntity implements Entity {
   protected final Metadata metadata = new Metadata();
   protected final Set<SculkPlayer> viewers = new HashSet<>();
   protected SculkWorld world;
-  protected Position position = Position.zero();
+  public Position position = Position.zero();
+  public boolean onGround;
   protected Vector velocity = Vector.zero();
 
   public AbstractEntity(final SculkServer server) {
@@ -76,14 +80,6 @@ public abstract class AbstractEntity implements Entity {
   @Override
   public @NotNull Position position() {
     return this.position;
-  }
-
-  public void position(final Position position) {
-    this.server.addTask(() -> {
-      this.world.chunkAt(this.position).entities().remove(this);
-      this.position = position;
-      this.world.chunkAt(this.position).entities().add(this);
-    });
   }
 
   @Override
@@ -188,12 +184,7 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void teleport(@NotNull Position position) {
-    this.server.addTask(() -> {
-      this.world.chunkAt(this.position).entities().remove(this);
-      this.world.chunkAt(position).entities().add(this);
-    });
-    this.position = position;
-    this.sendViewers(new TeleportEntity(this.id, this.position, true));
+    this.move(position);
   }
 
   @Override
@@ -217,7 +208,8 @@ public abstract class AbstractEntity implements Entity {
     final var added = this.viewers.add(sculkPlayer);
     if (added) {
       sculkPlayer.send(
-          new SpawnEntity(this.id, this.uniqueId, this.type().ordinal(), this.position, this.velocity));
+          new SpawnEntity(this.id, this.uniqueId, this.type().ordinal(),
+              this.position, this.velocity));
       if (this.metadata.entries().isEmpty()) {
         sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
       }
@@ -248,6 +240,51 @@ public abstract class AbstractEntity implements Entity {
     this.velocity = Vector.zero(); // for now we reset every tick // TODO: make a calculation
   }
 
+  public void move(final Position position) {
+    final var previous = this.position;
+    final var distanceX = Math.abs(position.x() - previous.x());
+    final var distanceY = Math.abs(position.y() - previous.y());
+    final var distanceZ = Math.abs(position.z() - previous.z());
+    this.server.addTask(() -> {
+      this.world.chunkAt(previous).entities().remove(this);
+      this.world.chunkAt(position).entities().add(this);
+    });
+    this.position = position;
+
+    if (distanceX > 8 || distanceY > 8 || distanceZ > 8) {
+      this.sendViewers(new TeleportEntity(this.id, position, this.onGround));
+      return;
+    }
+    final var positionChange = (distanceX + distanceY + distanceZ) > 0;
+    final var viewChange = !(Float.compare(position.yaw(), previous.yaw()) == 0
+        && Float.compare(position.pitch(), previous.pitch()) == 0);
+
+    if (positionChange) {
+      if (this instanceof SculkPlayer player) {
+        player.calculateChunks(previous, position);
+      }
+      if (viewChange) {
+        this.sendViewers(
+            new EntityPositionAndRotation(this.id,
+                this.delta(position.x(), previous.x()), this.delta(position.y(), previous.y()),
+                this.delta(position.z(), previous.z()),
+                position.yaw(), position.pitch(), this.onGround),
+            new HeadRotation(this.id, position.yaw())
+        );
+      } else {
+        this.sendViewers(
+            new EntityPositionAndRotation(this.id, this.delta(position.x(), previous.x()),
+                this.delta(position.y(), previous.y()), this.delta(position.z(), previous.z()),
+                position.yaw(), position.pitch(), this.onGround));
+      }
+    } else if (viewChange) {
+      this.sendViewers(
+          new EntityRotation(this.id, position.yaw(), position.pitch(), this.onGround),
+          new HeadRotation(this.id, position.yaw())
+      );
+    }
+  }
+
   public void sendViewers(final Packet packet) {
     for (final var player : this.viewers) {
       player.send(packet);
@@ -268,5 +305,9 @@ public abstract class AbstractEntity implements Entity {
         (short) Math.min(Math.max(vector.y(), Short.MIN_VALUE), Short.MAX_VALUE),
         (short) Math.min(Math.max(vector.z(), Short.MIN_VALUE), Short.MAX_VALUE)
     );
+  }
+
+  private short delta(final double current, final double previous) {
+    return (short) ((current * 32 - previous * 32) * 128);
   }
 }

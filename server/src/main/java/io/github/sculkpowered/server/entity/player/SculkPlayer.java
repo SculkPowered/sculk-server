@@ -99,7 +99,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private boolean instantBreak;
   private float viewModifier = 0.01F;
   private final Set<BossBar> bossBars = new HashSet<>();
-  public boolean onGround;
   private boolean receivedTeleportConfirmation;
 
   public SculkPlayer(final SculkServer server, final SculkConnection connection,

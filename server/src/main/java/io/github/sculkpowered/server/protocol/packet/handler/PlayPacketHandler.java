@@ -50,10 +50,6 @@ import io.github.sculkpowered.server.protocol.packet.play.container.ClickContain
 import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainerButton;
 import io.github.sculkpowered.server.protocol.packet.play.container.CloseContainer;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityPosition;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityPositionAndRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.HeadRotation;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerOnGround;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
@@ -235,14 +231,14 @@ public final class PlayPacketHandler extends PacketHandler {
     final var x = playerPosition.x();
     final var y = playerPosition.y();
     final var z = playerPosition.z();
-
     final var position = this.player.position();
-    this.player.sendViewers(new EntityPosition(this.player.id(),
-        this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
-        playerPosition.onGround()));
-    this.player.position(Position.position(x, y, z, position.yaw(), position.pitch()));
-    this.player.calculateChunks(position, this.player.position());
+
+    if (position.x() == x && position.y() == y && position.z() == z) {
+      return true; // same location nothing to do
+    }
+
     this.player.onGround = playerPosition.onGround();
+    this.player.move(Position.position(x, y, z, position.yaw(), position.pitch()));
     return true;
   }
 
@@ -257,16 +253,15 @@ public final class PlayPacketHandler extends PacketHandler {
     final var z = playerPositionAndRotation.z();
     final var yaw = playerPositionAndRotation.yaw();
     final var pitch = playerPositionAndRotation.pitch();
-
     final var position = this.player.position();
-    this.player.sendViewers(
-        new EntityPositionAndRotation(this.player.id(),
-            this.delta(position.x(), x), this.delta(position.y(), y), this.delta(position.z(), z),
-            yaw, pitch, playerPositionAndRotation.onGround()),
-        new HeadRotation(this.player.id(), yaw));
-    this.player.position(Position.position(x, y, z, yaw, pitch));
-    this.player.calculateChunks(position, this.player.position());
+
+    if (position.x() == x && position.y() == y && position.z() == z
+        && position.yaw() == yaw && position.pitch() == pitch) {
+      return true; // same location nothing to do
+    }
+
     this.player.onGround = playerPositionAndRotation.onGround();
+    this.player.move(Position.position(x, y, z, yaw, pitch));
     return true;
   }
 
@@ -278,15 +273,14 @@ public final class PlayPacketHandler extends PacketHandler {
 
     final var yaw = playerRotation.yaw();
     final var pitch = playerRotation.pitch();
-
     final var position = this.player.position();
-    this.player.sendViewers(
-        new EntityRotation(this.player.id(), yaw, pitch, playerRotation.onGround()),
-        new HeadRotation(this.player.id(), yaw)
-    );
-    this.player.position(
-        Position.position(position.x(), position.y(), position.z(), yaw, pitch));
+
+    if (position.yaw() == yaw && position.pitch() == pitch) {
+      return true; // same location nothing to do
+    }
+
     this.player.onGround = playerRotation.onGround();
+    this.player.move(Position.position(position.x(), position.y(), position.z(), yaw, pitch));
     return true;
   }
 
@@ -405,17 +399,12 @@ public final class PlayPacketHandler extends PacketHandler {
         }
         final var old = this.player.position();
         final var position = target.position();
-        this.player.send(new EntityPositionAndRotation(this.player.id(),
-            this.delta(old.x(), position.x()),
-            this.delta(old.y(), position.y()),
-            this.delta(old.y(), position.y()),
-            position.yaw(),
-            position.pitch(),
-            true
-        ));
+        if (!old.equals(position)) {
+          this.player.move(position);
+        }
       }
     } else {
-      LOGGER.info(this.player.name() + " tried to teleport, but is not in spectator mode.");
+      LOGGER.info("{} tried to teleport, but is not in spectator mode.", this.player.name());
     }
     return true;
   }
@@ -496,9 +485,5 @@ public final class PlayPacketHandler extends PacketHandler {
       position = position.add(1, 0, 0);
     }
     return position;
-  }
-
-  private short delta(final double previous, final double current) {
-    return (short) ((current * 32 - previous * 32) * 128);
   }
 }
