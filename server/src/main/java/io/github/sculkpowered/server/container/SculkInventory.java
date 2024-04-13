@@ -53,7 +53,7 @@ public final class SculkInventory implements Inventory {
           new Equipment(this.player.id(), OneInt2ObjectMap.of(0, itemStack)));
     }
     if (slotPacket) {
-      this.player.send(new ContainerSlot((byte) 0, 1, (short) index, itemStack));
+      // TODO: this.player.send(new ContainerSlot((byte) 0, 1, (short) index, itemStack));
     }
   }
 

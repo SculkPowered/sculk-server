@@ -16,10 +16,8 @@ public final class Dimension implements Registry.Entry {
       .hasRaids(true)
       .monsterSpawnLightLevel(CompoundBinaryTag.builder()
           .putString("type", "minecraft:uniform")
-          .put("value", CompoundBinaryTag.builder()
-              .putInt("max_inclusive", 7)
-              .putInt("min_inclusive", 0)
-              .build())
+          .putInt("max_inclusive", 7)
+          .putInt("min_inclusive", 0)
           .build())
       .monsterSpawnBlockLightLimit(0)
       .natural(true)
@@ -40,12 +38,14 @@ public final class Dimension implements Registry.Entry {
   private static int CURRENT_ID = 0;
 
   private final Key key;
+  private final int id;
   private final CompoundBinaryTag nbt;
   private final int minimumSections;
   private final int maximumSections;
 
-  private Dimension(final Key key, final CompoundBinaryTag nbt) {
+  private Dimension(final Key key, final int id, final CompoundBinaryTag nbt) {
     this.key = key;
+    this.id = id;
     this.nbt = nbt;
     final var dimensionHeight = this.nbt.getCompound("element").getInt("height");
     final var minY = this.nbt.getCompound("element").getInt("min_y");
@@ -72,7 +72,7 @@ public final class Dimension implements Registry.Entry {
 
   @Override
   public int id() {
-    return this.nbt.getInt("id");
+    return this.id;
   }
 
   @Override
@@ -203,11 +203,7 @@ public final class Dimension implements Registry.Entry {
     }
 
     public @NotNull Dimension build() {
-      return new Dimension(this.key, CompoundBinaryTag.builder()
-          .putString("name", this.key.asString())
-          .putInt("id", this.id)
-          .put("element", this.builder.build())
-          .build());
+      return new Dimension(this.key, this.id, this.builder.build());
     }
 
   }

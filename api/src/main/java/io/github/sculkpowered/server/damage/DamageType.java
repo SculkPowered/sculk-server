@@ -60,10 +60,12 @@ public final class DamageType implements Entry {
   private static int CURRENT_ID = 0;
 
   private final Key key;
+  private final int id;
   private final CompoundBinaryTag nbt;
 
-  public DamageType(final Key key, final CompoundBinaryTag nbt) {
+  public DamageType(final Key key, final int id, final CompoundBinaryTag nbt) {
     this.key = key;
+    this.id = id;
     this.nbt = nbt;
   }
 
@@ -74,7 +76,7 @@ public final class DamageType implements Entry {
 
   @Override
   public int id() {
-    return this.nbt.getInt("id");
+    return this.id;
   }
 
   @Override
@@ -128,11 +130,7 @@ public final class DamageType implements Entry {
     }
 
     public @NotNull DamageType build() {
-      return new DamageType(this.key, CompoundBinaryTag.builder()
-          .putString("name", this.key.asString())
-          .putInt("id", this.id)
-          .put("element", this.builder.build())
-          .build());
+      return new DamageType(this.key, this.id, this.builder.build());
     }
   }
 }

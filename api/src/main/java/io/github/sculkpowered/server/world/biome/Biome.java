@@ -25,10 +25,12 @@ public final class Biome implements Registry.Entry {
   private static int CURRENT_ID = 0;
 
   private final Key key;
+  private final int id;
   private final CompoundBinaryTag nbt;
 
-  private Biome(final Key key, final CompoundBinaryTag nbt) {
+  private Biome(final Key key, final int id, final CompoundBinaryTag nbt) {
     this.key = key;
+    this.id = id;
     this.nbt = nbt;
   }
 
@@ -47,7 +49,7 @@ public final class Biome implements Registry.Entry {
 
   @Override
   public int id() {
-    return this.nbt.getInt("id");
+    return this.id;
   }
 
   @Override
@@ -112,11 +114,7 @@ public final class Biome implements Registry.Entry {
     }
 
     public @NotNull Biome build() {
-      return new Biome(this.key, CompoundBinaryTag.builder()
-          .putString("name", this.key.asString())
-          .putInt("id", this.id)
-          .put("element", this.builder.build())
-          .build());
+      return new Biome(this.key, this.id, this.builder.build());
     }
   }
 

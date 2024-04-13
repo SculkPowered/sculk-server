@@ -293,7 +293,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       this.position = world.spawnPosition();
       this.gameMode = world.defaultGameMode();
       this.send(
-          new Respawn(world.dimension().name(), world.name(), 0, this.gameMode, (byte) 3));
+          new Respawn(world.dimension(), world.name(), 0, this.gameMode, (byte) 3));
       this.calculateChunks(this.position, this.position, false, false);
       this.inventory().resend();
       this.send(new GameEvent(13, -1));

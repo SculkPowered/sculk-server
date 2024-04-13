@@ -141,37 +141,46 @@ public enum State {
           .register(LoginStart::new)
           .register(EncryptionResponse::new)
           .register(LoginPluginResponse::new)
-          .register(() -> LoginAcknowledged.INSTANCE);
+          .register(() -> LoginAcknowledged.INSTANCE)
+          .skip(); // Cookie Response
 
       this.clientBound
           .register(LoginDisconnect.class)
           .register(EncryptionRequest.class)
           .register(LoginSuccess.class)
           .register(CompressionPacket.class)
-          .register(LoginPluginRequest.class);
+          .register(LoginPluginRequest.class)
+          .skip(); // Cookie Request
     }
   },
   CONFIG {
     {
       this.serverBound
           .register(ClientInformation.SUPPLIER)
+          .skip() // Cookie Response
           .register(PluginMessage.SUPPLIER)
           .register(() -> FinishConfiguration.INSTANCE)
-          .register(KeepAlive.SUPPLIER);
-      // Pong
-      // Resource Pack
+          .register(KeepAlive.SUPPLIER)
+          .skip() // Pong
+          .skip() // Resource Pack Response
+          .skip(); // Known Packs
 
       this.clientBound
+          .skip() // Cookie Request
           .register(PluginMessage.class)
           .register(Disconnect.class)
           .register(FinishConfiguration.class)
           .register(KeepAlive.class)
           .skip() // Ping
+          .skip() // Reset Chat
           .register(RegistryData.class)
           .register(RemoveResourcePack.class)
           .register(AddResourcePack.class)
+          .skip() // Store Cookie
+          .skip() // Transfer
           .register(FeatureFlags.class)
-          .register(UpdateTags.class);
+          .register(UpdateTags.class)
+          .skip(); // Known Packs
     }
   },
   PLAY {
@@ -182,6 +191,7 @@ public enum State {
           .skip() // Change Difficulty - only Single-player
           .skip() // Message Acknowledgment
           .register(ChatCommand::new)
+          .skip() // Signed Chat Command
           .register(ChatMessage::new)
           .register(PlayerSession::new) // Player Session
           .skip() // Chunk Batch Received
@@ -193,7 +203,9 @@ public enum State {
           .register(ClickContainer::new)
           .register(CloseContainer::new)
           .skip() // Change Container Slot State
+          .skip() // Cookie Response
           .register(PluginMessage.SUPPLIER)
+          .skip() // Debug Sample Subscription
           .register(EditBook::new)
           .skip() // Query Entity Tag
           .register(Interact::new)
@@ -256,10 +268,12 @@ public enum State {
           .register(ContainerContent.class)
           .register(ContainerProperty.class)
           .register(ContainerSlot.class)
+          .skip() // Cookie Request
           .register(Cooldown.class)
           .register(ChatSuggestions.class)
           .register(PluginMessage.class)
           .skip() // Damage Event
+          .skip() // Debug Sample
           .skip() // Delete Message
           .register(Disconnect.class)
           .skip() // Disguised Chat Message
@@ -346,6 +360,7 @@ public enum State {
           .register(TeleportEntity.class)
           .skip() // Ticking State
           .skip() // Step Tick
+          .skip() // Transfer
           .skip() // Update Advancements
           .register(UpdateAttributes.class)
           .skip() // Entity Effects

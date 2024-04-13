@@ -204,11 +204,9 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   public void configuration() {
     this.send(SculkConnection.BRAND_PACKET);
-    this.send(new RegistryData(
-        this.server.biomeRegistry(),
-        this.server.dimensionRegistry(),
-        this.server.damageTypeRegistry())
-    );
+    this.send(new RegistryData(this.server.biomeRegistry()));
+    this.send(new RegistryData(this.server.dimensionRegistry()));
+    this.send(new RegistryData(this.server.damageTypeRegistry()));
     this.send(FinishConfiguration.INSTANCE);
   }
 
@@ -235,7 +233,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           this.server.addPlayer(this.player);
 
           this.send(new Login(this.player.id(), (byte) this.player.gameMode().ordinal(),
-              world.dimension().name()));
+              world.dimension()));
 
           this.sendCommands();
           this.send(new GameEvent(13, -1));
