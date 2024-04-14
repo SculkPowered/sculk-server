@@ -303,11 +303,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     super.teleport(position);
     this.send(new SynchronizePlayerPosition(this.position));
     this.receivedTeleportConfirmation = false;
-    for (final var viewer : this.viewers) {
-      viewer.removeViewer(this);
-      this.removeViewer(viewer);
-    }
-    this.calculateChunks(this.position, position, false, true);
   }
 
   @Override
