@@ -34,7 +34,7 @@ public final class SpawnEntity implements Packet {
         .writeDouble(this.position.z())
         .writeAngel(this.position.yaw())
         .writeAngel(this.position.pitch())
-        .writeAngel(0)
+        .writeAngel(this.position.yaw())
         .writeVarInt(0)
         .writeShort((short) Math.min(Math.max(this.velocity.x(), Short.MIN_VALUE), Short.MAX_VALUE))
         .writeShort((short) Math.min(Math.max(this.velocity.y(), Short.MIN_VALUE), Short.MAX_VALUE))

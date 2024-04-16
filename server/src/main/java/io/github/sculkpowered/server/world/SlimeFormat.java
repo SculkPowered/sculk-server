@@ -8,6 +8,7 @@ import static io.github.sculkpowered.server.util.CoordinateUtil.chunkPositionZFr
 import com.github.luben.zstd.Zstd;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.entity.Entity;
+import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.world.chunk.SculkChunk;
 import io.github.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import io.github.sculkpowered.server.world.section.Section;
@@ -160,7 +161,7 @@ public final class SlimeFormat {
             Position.position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
                 rotation.getFloat(0), rotation.getFloat(1)));
       } catch (ClassNotFoundException e) {
-        LOGGER.error("Couldn't find entity " + id, e);
+        LOGGER.error("Couldn't find entity {}", id, e);
       }
     }
   }
@@ -217,6 +218,10 @@ public final class SlimeFormat {
               .build());
         }
         for (final var entity : chunk.entities()) {
+          if (entity instanceof Player) {
+            continue; // do not save players!
+          }
+
           final var position = entity.position();
           entities.add(CompoundBinaryTag.builder()
               .putString("id", entity.type().key())

@@ -343,6 +343,8 @@ public enum State {
           .skip() // Tag Query Response
           .register(PickupItem.class)
           .register(TeleportEntity.class)
+          .skip() // Ticking State
+          .skip() // Step Tick
           .skip() // Update Advancements
           .register(UpdateAttributes.class)
           .skip() // Entity Effects

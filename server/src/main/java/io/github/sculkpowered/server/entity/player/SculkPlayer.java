@@ -47,6 +47,7 @@ import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
 import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
 import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
+import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.Vector;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.chunk.SculkChunk;
@@ -71,7 +72,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-@SuppressWarnings("UnstableApiUsage")
 public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   private final Pointers pointers = Pointers.builder()
@@ -276,20 +276,21 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void world(@NotNull World world) {
-    this.position = world.spawnPosition();
-    this.gameMode = world.defaultGameMode();
-    if (this.world != null) {
-      this.connection.forChunksInRange(chunkCoordinate(this.position.x()),
-          chunkCoordinate(this.position.z()),
+    if (this.world != world) {
+      this.position = world.spawnPosition();
+      this.gameMode = world.defaultGameMode();
+      this.server.addTask(() -> this.connection.forChunksInRange(
+          chunkCoordinate(this.position.x()), chunkCoordinate(this.position.z()),
           this.settings.viewDistance(),
-          (x, z) -> this.world.chunk(x, z).entities().remove(this));
+          (x, z) -> this.world.chunk(x, z).viewers().remove(this)));
+      this.position = world.spawnPosition();
+      super.world(world);
+      this.send(
+          new Respawn(world.dimension().name(), world.name(), 0, this.gameMode, (byte) 3));
+      this.calculateChunks(this.position, this.position, false, false);
+      this.send(new ContainerContent((byte) 0, 0, this.inventory.items()));
+      this.send(new GameEvent(13, -1));
     }
-    super.world(world);
-    this.send(
-        new Respawn(world.dimension().name(), world.name(), 0, this.gameMode, (byte) 3));
-    this.position = world.spawnPosition();
-    this.world.chunkAt(world.spawnPosition()).entities().add(this);
-    this.calculateChunks(this.position, this.position, false, false);
   }
 
   @Override
@@ -494,12 +495,14 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.sendViewersAndSelf(new UpdateAttributes(this.id, value));
   }
 
-  public void init(final GameMode gameMode, final Position position, final World world,
+  public void init(final GameMode gameMode, final Position position, final SculkWorld world,
       final PermissionChecker permissionChecker) {
     this.gameMode = gameMode;
     this.position = position;
-    super.world(world);
+    this.world = world;
     this.permissionChecker = permissionChecker;
+    this.world.chunkAt(world.spawnPosition()).entities().add(this);
+    this.calculateChunks(this.position, this.position, false, false);
   }
 
   public void calculateChunks(final Position from, final Position to) {

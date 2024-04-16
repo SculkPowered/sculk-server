@@ -6,14 +6,20 @@ import net.kyori.adventure.key.Key;
 public final class BlockParent {
 
   private final Key key;
+  private float destroyTime;
   private SculkBlockState[] states;
 
-  BlockParent(final Key key) {
+  BlockParent(final Key key, final float destroyTime) {
     this.key = key;
+    this.destroyTime = destroyTime;
   }
 
   public Key key() {
     return this.key;
+  }
+
+  public float destroyTime() {
+    return this.destroyTime;
   }
 
   void setStates(SculkBlockState[] states) {

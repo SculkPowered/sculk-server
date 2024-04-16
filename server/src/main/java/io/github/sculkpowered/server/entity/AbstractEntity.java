@@ -34,7 +34,7 @@ public abstract class AbstractEntity implements Entity {
   protected final int id = CURRENT_ID.getAndIncrement();
   protected final Metadata metadata = new Metadata();
   protected final Set<SculkPlayer> viewers = new HashSet<>();
-  protected SculkWorld world;
+  public SculkWorld world;
   public Position position = Position.zero();
   public boolean onGround;
   protected Vector velocity = Vector.zero();
@@ -66,15 +66,17 @@ public abstract class AbstractEntity implements Entity {
 
   @Override
   public void world(@NotNull World world) {
-    final var sculkWorld = (SculkWorld) world;
-    var inWorld = this.world != null;
-    this.server.addTask(() -> {
-      if (inWorld) {
+    if (this.world != world) {
+      final var sculkWorld = (SculkWorld) world;
+      this.server.addTask(() -> {
+        for (final var viewer : this.viewers) {
+          this.removeViewer(viewer);
+        }
         this.world.chunkAt(this.position).entities().remove(this);
-      }
-      sculkWorld.chunkAt(this.position).entities().add(this);
-    });
-    this.world = sculkWorld;
+        sculkWorld.chunkAt(this.position).entities().add(this);
+      });
+      this.world = sculkWorld;
+    }
   }
 
   @Override

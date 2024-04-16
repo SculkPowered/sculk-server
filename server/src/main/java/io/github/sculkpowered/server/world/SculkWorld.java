@@ -105,7 +105,8 @@ public final class SculkWorld implements World {
   public void spawnEntity(@NotNull Entity entity, @NotNull Position position) {
     final var abstractEntity = (AbstractEntity) entity;
     abstractEntity.position = position;
-    abstractEntity.world(this);
+    abstractEntity.world = this;
+    this.chunkAt(position).entities().add(abstractEntity);
     for (final var viewer : this.chunkAt(position).viewers()) {
       abstractEntity.addViewer(viewer);
     }

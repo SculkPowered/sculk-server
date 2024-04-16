@@ -210,12 +210,13 @@ public final class AnvilLoader extends DefaultChunkLoader {
   }
 
   public static void loadBlockEntity(SculkChunk chunk, CompoundBinaryTag compound) {
-    final var x = compound.getInt("x");
+    /*final var x = compound.getInt("x");
     final var y = compound.getInt("y");
     final var z = compound.getInt("z");
     final var entity = (Block.Entity<?>) chunk.block(x, y, z);
     chunk.block(x, y, z, entity.nbt(compound.remove("id")
-        .remove("x").remove("y").remove("z").remove("keepPacked")));
+        .remove("x").remove("y").remove("z").remove("keepPacked")));*/
+    // TODO: make block entities available again
   }
 
   public static CompoundBinaryTag blockStatesToNbt(final Palette palette) {

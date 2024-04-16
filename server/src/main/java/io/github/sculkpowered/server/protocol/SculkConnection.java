@@ -52,6 +52,7 @@ import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosit
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
 import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
 import io.github.sculkpowered.server.util.MojangUtil;
+import io.github.sculkpowered.server.world.SculkWorld;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -212,7 +213,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     this.setState(State.PLAY);
     this.server.eventHandler().call(new PlayerInitialEvent(this.player))
         .thenAcceptAsync(event -> {
-          final var world = event.world();
+          final var world = (SculkWorld) event.world();
           var position = event.position();
           if (world == null || !world.isAlive()) {
             this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));

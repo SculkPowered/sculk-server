@@ -300,14 +300,24 @@ public final class PlayPacketHandler extends PacketHandler {
   public boolean handle(PlayerAction playerAction) {
     switch (playerAction.status()) {
       case 0 -> { // started digging
-        if (this.player.instantBreak()) {
-          this.callBlockBreak(playerAction);
+        final var block = this.player.world().block(playerAction.position());
+        if (this.player.instantBreak() || block.destroyTime() == 0.0F) {
+          this.callBlockBreak(block, playerAction);
+        } else {
+          this.player.send(new BlockAcknowledge(playerAction.sequence()));
         }
       }
       case 1 -> { // cancelled digging
 
       }
-      case 2 -> this.callBlockBreak(playerAction); // finished digging
+      case 2 -> {
+        final var block = this.player.world().block(playerAction.position());
+        if (block.destroyTime() == -1) {
+          return true; // impossible
+        }
+
+        this.callBlockBreak(block, playerAction); // finished digging
+      }
       case 3 -> this.player.inventory()
           .item(this.player.heldItemSlot(), ItemStack.empty()); // drop stack
       case 4 -> { // drop item
@@ -334,10 +344,9 @@ public final class PlayPacketHandler extends PacketHandler {
     return true;
   }
 
-  private void callBlockBreak(PlayerAction playerAction) {
+  private void callBlockBreak(final BlockState block, final PlayerAction playerAction) {
     this.server.eventHandler()
-        .call(new BlockBreakEvent(this.player, playerAction.position(),
-            this.player.world().block(playerAction.position())))
+        .call(new BlockBreakEvent(this.player, playerAction.position(), block))
         .thenAcceptAsync(event -> {
           if (event.result().allowed()) {
             this.player.world().block(event.position(), Block.AIR);
@@ -346,7 +355,7 @@ public final class PlayPacketHandler extends PacketHandler {
           }
         }, this.connection.executor())
         .exceptionally(throwable -> {
-          LOGGER.error("Exception while block break from " + this.player.name(), throwable);
+          LOGGER.error("Exception while block break from {}", this.player.name(), throwable);
           return null;
         });
   }
@@ -435,14 +444,14 @@ public final class PlayPacketHandler extends PacketHandler {
             return; // block at position, don't set
           }
           var block = Block.get(slot.material().key());
-          if (block instanceof BlockState.Facing<?> facing) { // let's set the correct facing
+          if (block.hasProperty("facing")) { // let's set the correct facing
             final var rotation =
                 (int) Math.floor(this.player.position().yaw() / 90.0D + 0.5D) & 3;
-            block = facing.facing(switch (rotation % 4) {
-              case 0 -> SOUTH;
-              case 1 -> WEST;
-              case 2 -> NORTH;
-              case 3 -> EAST;
+            block = block.property("facing", switch (rotation % 4) {
+              case 0 -> SOUTH.toString();
+              case 1 -> WEST.toString();
+              case 2 -> NORTH.toString();
+              case 3 -> EAST.toString();
               default -> null;
             });
           }
