@@ -68,11 +68,11 @@ public abstract class AbstractEntity implements Entity {
   public void world(@NotNull World world) {
     if (this.world != world) {
       final var sculkWorld = (SculkWorld) world;
+      final var oldWorld = this.world;
       this.server.addTask(() -> {
-        for (final var viewer : this.viewers) {
-          this.removeViewer(viewer);
-        }
-        this.world.chunkAt(this.position).entities().remove(this);
+        this.sendViewers(new RemoveEntities(this.id));
+        this.viewers.clear();
+        oldWorld.chunkAt(this.position).entities().remove(this);
         sculkWorld.chunkAt(this.position).entities().add(this);
       });
       this.world = sculkWorld;
@@ -212,7 +212,7 @@ public abstract class AbstractEntity implements Entity {
       sculkPlayer.send(
           new SpawnEntity(this.id, this.uniqueId, this.type().ordinal(),
               this.position, this.velocity));
-      if (this.metadata.entries().isEmpty()) {
+      if (!this.metadata.entries().isEmpty()) {
         sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
       }
     }

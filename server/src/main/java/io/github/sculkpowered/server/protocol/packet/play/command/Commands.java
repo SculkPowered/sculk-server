@@ -27,7 +27,7 @@ public final class Commands implements Packet {
     while (!nodeQueue.isEmpty()) {
       final var node = nodeQueue.poll();
       if (nodes.containsKey(node)) {
-        return;
+        continue;
       }
       nodes.put(node, nodes.size());
       nodeQueue.addAll(node.getChildren());

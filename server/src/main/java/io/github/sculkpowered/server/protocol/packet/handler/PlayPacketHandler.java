@@ -163,7 +163,7 @@ public final class PlayPacketHandler extends PacketHandler {
         .thenAcceptAsync(event -> {
           if (event.result().denied()) { // let's resend to override client prediction
             if (container == inventory) {
-              this.player.send(new ContainerContent((byte) 0, 1, inventory.items()));
+              this.player.inventory().resend();
             } else {
               final var sculkContainer = (SculkContainer) container;
               final var items = new ItemList(container.type().size() + 36);
@@ -182,7 +182,7 @@ public final class PlayPacketHandler extends PacketHandler {
           }
         }, this.connection.executor())
         .exceptionally(throwable -> {
-          LOGGER.error("Exception while handling container click for " + this.player.name(),
+          LOGGER.error("Exception while handling container click for {}", this.player.name(),
               throwable);
           return null;
         });

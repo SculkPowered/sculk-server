@@ -67,4 +67,11 @@ public interface Inventory extends Container {
    * @since 1.0.0
    */
   @NotNull ItemStack boots();
+
+  /**
+   * Resends the full inventory to the player.
+   *
+   * @since 1.0.0
+   */
+  void resend();
 }

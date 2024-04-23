@@ -47,6 +47,11 @@ public abstract class SculkContainer implements Container, Viewable {
   }
 
   @Override
+  public @NotNull ItemList items() {
+    return this.items;
+  }
+
+  @Override
   public @NotNull Collection<Player> viewers() {
     return this.viewers;
   }

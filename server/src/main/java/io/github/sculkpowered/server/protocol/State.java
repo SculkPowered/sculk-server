@@ -67,6 +67,7 @@ import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateRecipes;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTags;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
+import io.github.sculkpowered.server.protocol.packet.play.UpdateTime;
 import io.github.sculkpowered.server.protocol.packet.play.UseItem;
 import io.github.sculkpowered.server.protocol.packet.play.UseItemOn;
 import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
@@ -331,7 +332,7 @@ public enum State {
           .register(UpdateScore.class)
           .register(SimulationDistance.class)
           .register(Subtitle.class)
-          .skip() // Update Time
+          .register(UpdateTime.class)
           .register(Title.class)
           .register(TitleAnimationTimes.class)
           .register(EntitySoundEffect.class)

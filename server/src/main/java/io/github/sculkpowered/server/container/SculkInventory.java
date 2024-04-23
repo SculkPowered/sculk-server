@@ -3,6 +3,7 @@ package io.github.sculkpowered.server.container;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
+import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerSlot;
 import io.github.sculkpowered.server.util.ItemList;
 import io.github.sculkpowered.server.util.OneInt2ObjectMap;
@@ -130,6 +131,11 @@ public final class SculkInventory implements Inventory {
   }
 
   @Override
+  public void resend() {
+    this.player.send(new ContainerContent((byte) 0, 1, this.items));
+  }
+
+  @Override
   public @NotNull Component title() {
     return Component.empty();
   }
@@ -139,7 +145,8 @@ public final class SculkInventory implements Inventory {
     return Type.PLAYER;
   }
 
-  public ItemList items() {
+  @Override
+  public @NotNull ItemList items() {
     return this.items;
   }
 }

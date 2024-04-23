@@ -50,6 +50,7 @@ import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
 import io.github.sculkpowered.server.protocol.packet.play.SpawnPosition;
 import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
+import io.github.sculkpowered.server.protocol.packet.play.UpdateTime;
 import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
 import io.github.sculkpowered.server.util.MojangUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
@@ -127,16 +128,18 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       final var world = this.player.world();
       final var position = this.player.position();
       if (world != null) {
-        this.server.addTask(() -> this.forChunksInRange(
-            chunkCoordinate(position.x()), chunkCoordinate(position.z()),
-            this.player.settings().viewDistance(), (x, z) -> {
-              final var chunk = world.chunk(x, z);
-              chunk.viewers().remove(this.player);
-              for (final var entity : chunk.entities()) {
-                entity.removeViewer(this.player);
-              }
-              chunk.entities().remove(this.player);
-            }));
+        this.server.addTask(() -> {
+          world.chunkAt(position).entities().remove(this.player);
+          this.forChunksInRange(
+              chunkCoordinate(position.x()), chunkCoordinate(position.z()),
+              this.player.settings().viewDistance(), (x, z) -> {
+                final var chunk = world.chunk(x, z);
+                chunk.viewers().remove(this.player);
+                for (final var entity : chunk.entities()) {
+                  entity.removeViewer(this.player);
+                }
+              });
+        });
       }
       this.player.sendViewers(new RemoveEntities(this.player.id()));
       this.server.sendAll(new PlayerInfoRemove(List.of(this.player)));
@@ -148,7 +151,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
         this.player.hideBossBar(bossBar);
       }
 
-      LOGGER.info(this.username + " has disconnected.");
+      LOGGER.info("{} has disconnected.", this.username);
       this.server.eventHandler().call(new PlayerDisconnectEvent(this.player));
     }
     ctx.close();
@@ -161,7 +164,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     }
 
     if (cause instanceof TimeoutException) {
-      LOGGER.error(this.username + " timed out");
+      LOGGER.error("{} timed out", this.username);
     } else {
       super.exceptionCaught(ctx, cause);
     }
@@ -239,6 +242,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           this.player.calculateChunks(position, position, false, false);
           this.send(new SpawnPosition(position));
           this.send(new SynchronizePlayerPosition(position));
+          this.send(new UpdateTime(0, -6000));
 
           this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.onlinePlayers()));
           final var playerInfo = PlayerInfo.add(List.of(this.player));

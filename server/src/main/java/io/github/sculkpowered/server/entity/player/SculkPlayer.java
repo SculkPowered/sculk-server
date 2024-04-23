@@ -23,13 +23,13 @@ import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
 import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
-import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
 import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
 import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
+import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
 import io.github.sculkpowered.server.protocol.packet.play.RemoveResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.Respawn;
 import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
@@ -277,18 +277,25 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public void world(@NotNull World world) {
     if (this.world != world) {
+      final var oldWorld = this.world;
+      final var oldPosition = this.position;
+      this.world = (SculkWorld) world;
+      this.server.addTask(() -> {
+        this.connection.forChunksInRange(
+            chunkCoordinate(oldPosition.x()), chunkCoordinate(oldPosition.z()),
+            this.settings.viewDistance(),
+            (x, z) -> oldWorld.chunk(x, z).viewers().remove(this));
+        this.sendViewers(new RemoveEntities(this.id));
+        this.viewers.clear();
+        oldWorld.chunkAt(oldPosition).entities().remove(this);
+        this.world.chunkAt(this.position).entities().add(this);
+      });
       this.position = world.spawnPosition();
       this.gameMode = world.defaultGameMode();
-      this.server.addTask(() -> this.connection.forChunksInRange(
-          chunkCoordinate(this.position.x()), chunkCoordinate(this.position.z()),
-          this.settings.viewDistance(),
-          (x, z) -> this.world.chunk(x, z).viewers().remove(this)));
-      this.position = world.spawnPosition();
-      super.world(world);
       this.send(
           new Respawn(world.dimension().name(), world.name(), 0, this.gameMode, (byte) 3));
       this.calculateChunks(this.position, this.position, false, false);
-      this.send(new ContainerContent((byte) 0, 0, this.inventory.items()));
+      this.inventory().resend();
       this.send(new GameEvent(13, -1));
     }
   }
@@ -424,7 +431,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       final var added = super.addViewer(player);
       if (added) {
         final var sculkPlayer = (SculkPlayer) player;
-        sculkPlayer.send(new EntityMetadata(this.id(), this.metadata.entries()));
         final var inventory = this.inventory();
         final var equipment = new Int2ObjectOpenHashMap<ItemStack>();
         if (!inventory.itemInHand().isEmpty()) {
@@ -455,7 +461,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     super.tick();
     final var time = System.currentTimeMillis();
 
-    final var elapsedTime = System.currentTimeMillis() - this.lastSendKeepAlive;
+    final var elapsedTime = time - this.lastSendKeepAlive;
     if (this.keepAlivePending) {
       if (elapsedTime > 30000) { // disconnect after 30 seconds
         this.disconnect(Component.translatable("disconnect.timeout"));
@@ -501,8 +507,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.position = position;
     this.world = world;
     this.permissionChecker = permissionChecker;
-    this.world.chunkAt(world.spawnPosition()).entities().add(this);
-    this.calculateChunks(this.position, this.position, false, false);
+    this.server.addTask(() -> this.world.chunkAt(world.spawnPosition()).entities().add(this));
   }
 
   public void calculateChunks(final Position from, final Position to) {
@@ -531,7 +536,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.server.addTask(() -> {
       final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
       this.connection.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
-        final var chunk = world.chunk(x, z);
+        final var chunk = this.world.chunk(x, z);
         chunks.add(chunk);
         chunk.viewers().add(this); // new in range
         for (final var entity : chunk.entities()) {
@@ -546,7 +551,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       });
       if (checkAlreadyLoaded) {
         this.connection.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
-          final var chunk = world.chunk(x, z);
+          final var chunk = this.world.chunk(x, z);
           if (!chunks.remove(chunk)) {
             chunk.viewers().remove(this); // chunk not in range
             for (final var entity : chunk.entities()) {

@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.container.item.ItemStack;
+import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +43,14 @@ public interface Container {
    * @since 1.0.0
    */
   @NotNull ItemStack item(int index);
+
+  /**
+   * Gets the underlying list of items.
+   *
+   * @return the list of items
+   * @since 1.0.0
+   */
+  @NotNull List<ItemStack> items();
 
   /**
    * All possible types a container can have.

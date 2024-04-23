@@ -106,10 +106,12 @@ public final class SculkWorld implements World {
     final var abstractEntity = (AbstractEntity) entity;
     abstractEntity.position = position;
     abstractEntity.world = this;
-    this.chunkAt(position).entities().add(abstractEntity);
-    for (final var viewer : this.chunkAt(position).viewers()) {
-      abstractEntity.addViewer(viewer);
-    }
+    this.server.addTask(() -> {
+      this.chunkAt(position).entities().add(abstractEntity);
+      for (final var viewer : this.chunkAt(position).viewers()) {
+        abstractEntity.addViewer(viewer);
+      }
+    });
   }
 
   @Override
