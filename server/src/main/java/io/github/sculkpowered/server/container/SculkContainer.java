@@ -7,9 +7,9 @@ import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerProperty;
 import io.github.sculkpowered.server.util.ItemList;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +17,7 @@ public abstract class SculkContainer implements Container, Viewable {
 
   private final Type type;
   private final Component title;
-  private final List<Player> viewers = new ArrayList<>();
+  private final Set<Player> viewers = new HashSet<>();
   public final ItemList items;
 
   public SculkContainer(final Type type, final Component title) {

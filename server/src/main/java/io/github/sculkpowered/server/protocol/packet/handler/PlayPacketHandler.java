@@ -173,7 +173,7 @@ public final class PlayPacketHandler extends PacketHandler {
               for (var i = 0; i < sculkContainer.items.size(); i++) {
                 items.set(i, sculkContainer.items.get(i));
               }
-              this.player.send(new ContainerContent((byte) 1, 1, items));
+              this.player.send(new ContainerContent((byte) 1, 1, items, ItemStack.empty()));
             }
           } else {
             for (final var entry : clickContainer.slots().int2ObjectEntrySet()) {
@@ -323,7 +323,7 @@ public final class PlayPacketHandler extends PacketHandler {
       case 4 -> { // drop item
         var itemInHand = this.player.inventory().itemInHand();
         if (!itemInHand.isEmpty()) {
-          itemInHand = itemInHand.amount(itemInHand.amount() - 1);
+          itemInHand = itemInHand.amount((byte) (itemInHand.amount() - 1));
           if (itemInHand.amount() < 1) {
             itemInHand = ItemStack.empty();
           }

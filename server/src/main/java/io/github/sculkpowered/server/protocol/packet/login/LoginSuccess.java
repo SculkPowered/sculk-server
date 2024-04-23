@@ -27,6 +27,7 @@ public final class LoginSuccess implements Packet {
         buf.writeBoolean(false);
       }
     }
+    buf.writeBoolean(true);
   }
 
   @Override

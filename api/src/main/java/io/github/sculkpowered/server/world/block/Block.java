@@ -440,6 +440,7 @@ public final class Block {
   public static final BlockState GRINDSTONE = get("minecraft:grindstone");
   public static final BlockState HANGING_ROOTS = get("minecraft:hanging_roots");
   public static final BlockState HAY_BLOCK = get("minecraft:hay_block");
+  public static final BlockState HEAVY_CORE = get("minecraft:heavy_core");
   public static final BlockState HEAVY_WEIGHTED_PRESSURE_PLATE = get("minecraft:heavy_weighted_pressure_plate");
   public static final BlockState HONEY_BLOCK = get("minecraft:honey_block");
   public static final BlockState HONEYCOMB_BLOCK = get("minecraft:honeycomb_block");
@@ -962,6 +963,7 @@ public final class Block {
   public static final BlockState TURTLE_EGG = get("minecraft:turtle_egg");
   public static final BlockState TWISTING_VINES = get("minecraft:twisting_vines");
   public static final BlockState TWISTING_VINES_PLANT = get("minecraft:twisting_vines_plant");
+  public static final BlockState VAULT = get("minecraft:vault");
   public static final BlockState VERDANT_FROGLIGHT = get("minecraft:verdant_froglight");
   public static final BlockState VINE = get("minecraft:vine");
   public static final BlockState VOID_AIR = get("minecraft:void_air");

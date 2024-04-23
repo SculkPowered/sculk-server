@@ -353,6 +353,7 @@ public enum State {
           .register(SoundEffect.class)
           .skip() // Start Configuration
           .register(StopSound.class)
+          .skip() // Store Cookie
           .register(SystemChatMessage.class)
           .register(TabListHeaderFooter.class)
           .skip() // Tag Query Response

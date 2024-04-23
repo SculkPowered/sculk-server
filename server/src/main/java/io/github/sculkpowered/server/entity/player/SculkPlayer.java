@@ -174,7 +174,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.container = (SculkContainer) container;
     this.container.addViewer(this);
     this.send(new OpenScreen(1, container.type().ordinal(), container.title()));
-    this.send(new ContainerContent((byte) 1, 1, ((SculkContainer) container).items));
+    this.inventory.resend();
     this.container.sendProperties(this);
   }
 

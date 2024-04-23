@@ -21,7 +21,7 @@ public final class ItemStack {
   private static final ItemStack EMPTY = ItemStack.itemStack(Material.AIR, 0);
 
   private final Material material;
-  private final int amount;
+  private final byte amount;
   private final ItemMeta meta;
 
   private ItemStack(
@@ -30,7 +30,7 @@ public final class ItemStack {
       final @NotNull ItemMeta meta
   ) {
     this.material = material;
-    this.amount = amount;
+    this.amount = (byte) amount;
     this.meta = meta;
   }
 
