@@ -16,7 +16,7 @@ public final class BlockRegistry extends SimpleRegistry<BlockState> {
     super("minecraft:block");
   }
 
-  public static void addBlocks() {
+  public static BlockRegistry get() {
     try (final var reader = new BufferedReader(
         new InputStreamReader(Objects.requireNonNull(BlockParent.class.getClassLoader()
             .getResourceAsStream("registries/blocks"))))) {
@@ -52,7 +52,7 @@ public final class BlockRegistry extends SimpleRegistry<BlockState> {
         registry.byKey.put(block.key().asString(), states[defId]);
       }
       registry.def = registry.get("minecraft:air");
-      Blocks.set(registry);
+      return registry;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -9,7 +9,7 @@ import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
-public class SimpleRegistry<E extends Registry.Entry> implements Registry<E> {
+public class SimpleRegistry<E extends Registry.Entry> implements Registry.Mutable<E> {
 
   protected final Map<String, E> byKey = new HashMap<>();
   protected final Int2ObjectMap<E> byId = new Int2ObjectOpenHashMap<>();

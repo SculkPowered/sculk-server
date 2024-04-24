@@ -132,7 +132,7 @@ public final class SculkWorld implements World {
   @Override
   public void save(@NotNull WorldSaver saver) {
     if (saver instanceof WorldSaver.Slime slime) {
-      SlimeFormat.save(this.server, this, slime.outputStream());
+      SlimeFormat.save(this, slime.outputStream());
     } else if (saver instanceof WorldSaver.Anvil) {
       throw new UnsupportedOperationException("Anvil not implemented yet!");
     }

@@ -52,6 +52,7 @@ import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosit
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTime;
 import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.MojangUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.netty.channel.Channel;
@@ -204,9 +205,9 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   public void configuration() {
     this.send(SculkConnection.BRAND_PACKET);
-    this.send(new RegistryData(this.server.biomeRegistry()));
-    this.send(new RegistryData(this.server.dimensionRegistry()));
-    this.send(new RegistryData(this.server.damageTypeRegistry()));
+    this.send(new RegistryData(Registries.biomes()));
+    this.send(new RegistryData(Registries.dimensions()));
+    this.send(new RegistryData(Registries.damageTypes()));
     this.send(FinishConfiguration.INSTANCE);
   }
 

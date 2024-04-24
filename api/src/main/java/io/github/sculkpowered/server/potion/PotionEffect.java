@@ -1,68 +1,84 @@
 package io.github.sculkpowered.server.potion;
 
+import io.github.sculkpowered.server.registry.Registry;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An enum of all supported potion effects.
  */
 @SuppressWarnings("unused")
-public enum PotionEffect {
+public enum PotionEffect implements Registry.Entry {
 
   // START
-  WATER("minecraft:water"),
-  MUNDANE("minecraft:mundane"),
-  THICK("minecraft:thick"),
-  AWKWARD("minecraft:awkward"),
-  NIGHT_VISION("minecraft:night_vision"),
-  LONG_NIGHT_VISION("minecraft:long_night_vision"),
-  INVISIBILITY("minecraft:invisibility"),
-  LONG_INVISIBILITY("minecraft:long_invisibility"),
-  LEAPING("minecraft:leaping"),
-  LONG_LEAPING("minecraft:long_leaping"),
-  STRONG_LEAPING("minecraft:strong_leaping"),
-  FIRE_RESISTANCE("minecraft:fire_resistance"),
-  LONG_FIRE_RESISTANCE("minecraft:long_fire_resistance"),
-  SWIFTNESS("minecraft:swiftness"),
-  LONG_SWIFTNESS("minecraft:long_swiftness"),
-  STRONG_SWIFTNESS("minecraft:strong_swiftness"),
-  SLOWNESS("minecraft:slowness"),
-  LONG_SLOWNESS("minecraft:long_slowness"),
-  STRONG_SLOWNESS("minecraft:strong_slowness"),
-  TURTLE_MASTER("minecraft:turtle_master"),
-  LONG_TURTLE_MASTER("minecraft:long_turtle_master"),
-  STRONG_TURTLE_MASTER("minecraft:strong_turtle_master"),
-  WATER_BREATHING("minecraft:water_breathing"),
-  LONG_WATER_BREATHING("minecraft:long_water_breathing"),
-  HEALING("minecraft:healing"),
-  STRONG_HEALING("minecraft:strong_healing"),
-  HARMING("minecraft:harming"),
-  STRONG_HARMING("minecraft:strong_harming"),
-  POISON("minecraft:poison"),
-  LONG_POISON("minecraft:long_poison"),
-  STRONG_POISON("minecraft:strong_poison"),
-  REGENERATION("minecraft:regeneration"),
-  LONG_REGENERATION("minecraft:long_regeneration"),
-  STRONG_REGENERATION("minecraft:strong_regeneration"),
-  STRENGTH("minecraft:strength"),
-  LONG_STRENGTH("minecraft:long_strength"),
-  STRONG_STRENGTH("minecraft:strong_strength"),
-  WEAKNESS("minecraft:weakness"),
-  LONG_WEAKNESS("minecraft:long_weakness"),
-  LUCK("minecraft:luck"),
-  SLOW_FALLING("minecraft:slow_falling"),
-  LONG_SLOW_FALLING("minecraft:long_slow_falling"),
-  WIND_CHARGED("minecraft:wind_charged"),
-  WEAVING("minecraft:weaving"),
-  OOZING("minecraft:oozing"),
-  INFESTED("minecraft:infested"),
+  WATER("water"),
+  MUNDANE("mundane"),
+  THICK("thick"),
+  AWKWARD("awkward"),
+  NIGHT_VISION("night_vision"),
+  LONG_NIGHT_VISION("long_night_vision"),
+  INVISIBILITY("invisibility"),
+  LONG_INVISIBILITY("long_invisibility"),
+  LEAPING("leaping"),
+  LONG_LEAPING("long_leaping"),
+  STRONG_LEAPING("strong_leaping"),
+  FIRE_RESISTANCE("fire_resistance"),
+  LONG_FIRE_RESISTANCE("long_fire_resistance"),
+  SWIFTNESS("swiftness"),
+  LONG_SWIFTNESS("long_swiftness"),
+  STRONG_SWIFTNESS("strong_swiftness"),
+  SLOWNESS("slowness"),
+  LONG_SLOWNESS("long_slowness"),
+  STRONG_SLOWNESS("strong_slowness"),
+  TURTLE_MASTER("turtle_master"),
+  LONG_TURTLE_MASTER("long_turtle_master"),
+  STRONG_TURTLE_MASTER("strong_turtle_master"),
+  WATER_BREATHING("water_breathing"),
+  LONG_WATER_BREATHING("long_water_breathing"),
+  HEALING("healing"),
+  STRONG_HEALING("strong_healing"),
+  HARMING("harming"),
+  STRONG_HARMING("strong_harming"),
+  POISON("poison"),
+  LONG_POISON("long_poison"),
+  STRONG_POISON("strong_poison"),
+  REGENERATION("regeneration"),
+  LONG_REGENERATION("long_regeneration"),
+  STRONG_REGENERATION("strong_regeneration"),
+  STRENGTH("strength"),
+  LONG_STRENGTH("long_strength"),
+  STRONG_STRENGTH("strong_strength"),
+  WEAKNESS("weakness"),
+  LONG_WEAKNESS("long_weakness"),
+  LUCK("luck"),
+  SLOW_FALLING("slow_falling"),
+  LONG_SLOW_FALLING("long_slow_falling"),
+  WIND_CHARGED("wind_charged"),
+  WEAVING("weaving"),
+  OOZING("oozing"),
+  INFESTED("infested"),
   // END
   ;
 
-  private final String key;
+  private final Key key;
 
   PotionEffect(final String key) {
-    this.key = key;
+    this.key = Key.key(Key.MINECRAFT_NAMESPACE, key);
   }
 
-  public String key() {
+  @Override
+  public @NotNull Key key() {
     return this.key;
+  }
+
+  @Override
+  public int id() {
+    return this.ordinal();
+  }
+
+  @Override
+  public @NotNull CompoundBinaryTag asNBT() {
+    return CompoundBinaryTag.empty();
   }
 }

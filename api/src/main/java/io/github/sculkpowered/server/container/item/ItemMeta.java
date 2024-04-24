@@ -67,7 +67,7 @@ public class ItemMeta {
     final var enchantments = ListBinaryTag.builder();
     for (final var entry : this.enchantments.entrySet()) {
       enchantments.add(CompoundBinaryTag.builder()
-          .putString("id", entry.getKey().key())
+          .putString("id", entry.getKey().key().asString())
           .putShort("lvl", entry.getValue())
           .build());
     }

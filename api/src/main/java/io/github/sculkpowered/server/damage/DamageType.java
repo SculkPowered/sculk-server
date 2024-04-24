@@ -56,13 +56,12 @@ public final class DamageType implements Entry {
   public static final DamageType WITHER = builder(Key.key(MINECRAFT_NAMESPACE, "wither")).exhaustion(0.0).messageId("wither").scaling("when_caused_by_living_non_player").build();
   public static final DamageType WITHER_SKULL = builder(Key.key(MINECRAFT_NAMESPACE, "wither_skull")).exhaustion(0.1).messageId("witherSkull").scaling("when_caused_by_living_non_player").build();
   // END
-
   private static int CURRENT_ID = 0;
 
   private final Key key;
+
   private final int id;
   private final CompoundBinaryTag nbt;
-
   public DamageType(final Key key, final int id, final CompoundBinaryTag nbt) {
     this.key = key;
     this.id = id;

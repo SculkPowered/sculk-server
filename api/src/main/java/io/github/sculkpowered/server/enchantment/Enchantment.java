@@ -1,64 +1,80 @@
 package io.github.sculkpowered.server.enchantment;
 
+import io.github.sculkpowered.server.registry.Registry;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * An enum of all enchantments supported.
  */
 @SuppressWarnings("unused")
-public enum Enchantment {
+public enum Enchantment implements Registry.Entry {
 
   // START
-  PROTECTION("minecraft:protection"),
-  FIRE_PROTECTION("minecraft:fire_protection"),
-  FEATHER_FALLING("minecraft:feather_falling"),
-  BLAST_PROTECTION("minecraft:blast_protection"),
-  PROJECTILE_PROTECTION("minecraft:projectile_protection"),
-  RESPIRATION("minecraft:respiration"),
-  AQUA_AFFINITY("minecraft:aqua_affinity"),
-  THORNS("minecraft:thorns"),
-  DEPTH_STRIDER("minecraft:depth_strider"),
-  FROST_WALKER("minecraft:frost_walker"),
-  BINDING_CURSE("minecraft:binding_curse"),
-  SOUL_SPEED("minecraft:soul_speed"),
-  SWIFT_SNEAK("minecraft:swift_sneak"),
-  SHARPNESS("minecraft:sharpness"),
-  SMITE("minecraft:smite"),
-  BANE_OF_ARTHROPODS("minecraft:bane_of_arthropods"),
-  KNOCKBACK("minecraft:knockback"),
-  FIRE_ASPECT("minecraft:fire_aspect"),
-  LOOTING("minecraft:looting"),
-  SWEEPING_EDGE("minecraft:sweeping_edge"),
-  EFFICIENCY("minecraft:efficiency"),
-  SILK_TOUCH("minecraft:silk_touch"),
-  UNBREAKING("minecraft:unbreaking"),
-  FORTUNE("minecraft:fortune"),
-  POWER("minecraft:power"),
-  PUNCH("minecraft:punch"),
-  FLAME("minecraft:flame"),
-  INFINITY("minecraft:infinity"),
-  LUCK_OF_THE_SEA("minecraft:luck_of_the_sea"),
-  LURE("minecraft:lure"),
-  LOYALTY("minecraft:loyalty"),
-  IMPALING("minecraft:impaling"),
-  RIPTIDE("minecraft:riptide"),
-  CHANNELING("minecraft:channeling"),
-  MULTISHOT("minecraft:multishot"),
-  QUICK_CHARGE("minecraft:quick_charge"),
-  PIERCING("minecraft:piercing"),
-  DENSITY("minecraft:density"),
-  BREACH("minecraft:breach"),
-  WIND_BURST("minecraft:wind_burst"),
-  MENDING("minecraft:mending"),
-  VANISHING_CURSE("minecraft:vanishing_curse"),
+  PROTECTION("protection"),
+  FIRE_PROTECTION("fire_protection"),
+  FEATHER_FALLING("feather_falling"),
+  BLAST_PROTECTION("blast_protection"),
+  PROJECTILE_PROTECTION("projectile_protection"),
+  RESPIRATION("respiration"),
+  AQUA_AFFINITY("aqua_affinity"),
+  THORNS("thorns"),
+  DEPTH_STRIDER("depth_strider"),
+  FROST_WALKER("frost_walker"),
+  BINDING_CURSE("binding_curse"),
+  SOUL_SPEED("soul_speed"),
+  SWIFT_SNEAK("swift_sneak"),
+  SHARPNESS("sharpness"),
+  SMITE("smite"),
+  BANE_OF_ARTHROPODS("bane_of_arthropods"),
+  KNOCKBACK("knockback"),
+  FIRE_ASPECT("fire_aspect"),
+  LOOTING("looting"),
+  SWEEPING_EDGE("sweeping_edge"),
+  EFFICIENCY("efficiency"),
+  SILK_TOUCH("silk_touch"),
+  UNBREAKING("unbreaking"),
+  FORTUNE("fortune"),
+  POWER("power"),
+  PUNCH("punch"),
+  FLAME("flame"),
+  INFINITY("infinity"),
+  LUCK_OF_THE_SEA("luck_of_the_sea"),
+  LURE("lure"),
+  LOYALTY("loyalty"),
+  IMPALING("impaling"),
+  RIPTIDE("riptide"),
+  CHANNELING("channeling"),
+  MULTISHOT("multishot"),
+  QUICK_CHARGE("quick_charge"),
+  PIERCING("piercing"),
+  DENSITY("density"),
+  BREACH("breach"),
+  WIND_BURST("wind_burst"),
+  MENDING("mending"),
+  VANISHING_CURSE("vanishing_curse"),
   // END
   ;
 
-  private final String key;
+  private final Key key;
 
   Enchantment(final String key) {
-    this.key = key;
+    this.key = Key.key(Key.MINECRAFT_NAMESPACE, key);
   }
 
-  public String key() {
+  @Override
+  public @NotNull Key key() {
     return this.key;
+  }
+
+  @Override
+  public int id() {
+    return this.ordinal();
+  }
+
+  @Override
+  public @NotNull CompoundBinaryTag asNBT() {
+    return CompoundBinaryTag.empty();
   }
 }

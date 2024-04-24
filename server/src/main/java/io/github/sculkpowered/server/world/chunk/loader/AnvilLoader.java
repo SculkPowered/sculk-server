@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.world.chunk.loader;
 
 import io.github.sculkpowered.server.SculkServer;
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.CoordinateUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.WorldLoader;
@@ -184,11 +185,10 @@ public final class AnvilLoader extends DefaultChunkLoader {
     final var biomes = (PaletteHolder) section.biomes();
     final var biomePalette = biomeData.getList("palette");
     final var palette = new int[biomePalette.size()];
-    final var registry = server.biomeRegistry();
     var unknownBiome = false;
     for (var k = 0; k < palette.length; k++) {
       final var value = biomePalette.getCompound(k).getString("value");
-      final var biome = registry.get(value, null);
+      final var biome = Registries.biomes().get(value, null);
       if (biome != null) {
         palette[k] = k;
       } else {
@@ -200,7 +200,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
     if (palette.length == 1 || unknownBiome) {
       var biome = palette[0];
       if (biome == -1) {
-        biome = registry.defaultValue().id();
+        biome = Registries.biomes().defaultValue().id();
       }
       biomes.fill(biome);
       return;
@@ -232,12 +232,12 @@ public final class AnvilLoader extends DefaultChunkLoader {
     return nbt.build();
   }
 
-  public static CompoundBinaryTag biomesToNbt(final SculkServer server, final Palette palette) {
+  public static CompoundBinaryTag biomesToNbt(final Palette palette) {
     final var paletteToValue = palette.paletteToValue();
     final var biomes = ListBinaryTag.builder();
     for (final var value : paletteToValue) {
       biomes.add(CompoundBinaryTag.builder()
-          .putString("value", server.biomeRegistry().get(value).name())
+          .putString("value", Registries.biomes().get(value).name())
           .build());
     }
 

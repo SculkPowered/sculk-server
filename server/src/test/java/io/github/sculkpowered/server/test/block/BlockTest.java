@@ -8,6 +8,6 @@ public final class BlockTest {
 
   @Test
   public void test() {
-    Assertions.assertDoesNotThrow(BlockRegistry::addBlocks);
+    Assertions.assertDoesNotThrow(() -> BlockRegistry.get());
   }
 }
