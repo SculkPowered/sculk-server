@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.Material;
+import io.github.sculkpowered.server.container.item.data.DataComponent;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
 import io.github.sculkpowered.server.util.Utf8;
 import io.github.sculkpowered.server.world.Position;
@@ -14,6 +15,8 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagType;
@@ -223,22 +226,22 @@ public final class Buffer {
   }
 
   public @NotNull ItemStack readItem() {
-    if (!this.readBoolean()) {
+    final var amount = this.readVarInt();
+    if (amount == 0) {
       return ItemStack.empty();
     }
-    return ItemStack.itemStack(Material.get(this.readVarInt()), this.readByte(),
-        this.readCompoundTag());
+    return ItemStack.itemStack(Material.get(this.readVarInt()), amount, this.readDataComponents());
   }
 
   public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
     if (!slot.isEmpty()) {
       this
-          .writeBoolean(true)
-          .writeVarInt(slot.material().ordinal())
-          .writeByte((byte) slot.amount())
-          .writeBinaryTag(slot.meta().asNbt());
+          .writeVarInt(slot.amount())
+          .writeVarInt(slot.material().id())
+          .writeVarInt(0)
+          .writeVarInt(0);
     } else {
-      this.buf.writeBoolean(false);
+      this.writeVarInt(0);
     }
     return this;
   }
@@ -281,6 +284,24 @@ public final class Buffer {
 
   public <T extends Enum<T>> T readEnum(final Class<T> enumClass) {
     return enumClass.getEnumConstants()[this.readVarInt()];
+  }
+
+  private @NotNull Map<DataComponent<Object>, Object> readDataComponents() {
+    final var components = this.readVarInt();
+    final var removedComponents = this.readVarInt();
+    if (components == 0 && removedComponents == 0) {
+      return Map.of();
+    } else {
+      final var map = new HashMap<>(components + removedComponents);
+      for (int i = 0; i < components; i++) {
+
+      }
+
+      for (int i = 0; i < removedComponents; i++) {
+
+      }
+      return null;
+    }
   }
 
   public int readableBytes() {

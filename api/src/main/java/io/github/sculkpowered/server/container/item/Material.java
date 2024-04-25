@@ -1,9 +1,10 @@
 package io.github.sculkpowered.server.container.item;
 
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.registry.Registry;
-import java.util.Map;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -1345,15 +1346,9 @@ public enum Material implements Registry.Entry {
   // END
   ;
 
-  private static Map<Integer, Material> MATERIALS;
-
-  public static void setMaterials(final @NotNull Map<Integer, Material> materials) {
-    MATERIALS = materials;
-  }
-
   private final Key key;
 
-  Material(final String key) {
+  Material(@Subst("value") final String key) {
     this.key = Key.key(Key.MINECRAFT_NAMESPACE, key);
   }
 
@@ -1373,6 +1368,6 @@ public enum Material implements Registry.Entry {
   }
 
   public static Material get(final int protocolId) {
-    return MATERIALS.get(protocolId);
+    return Registries.materials().get(protocolId);
   }
 }

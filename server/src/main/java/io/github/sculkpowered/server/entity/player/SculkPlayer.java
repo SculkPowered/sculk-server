@@ -37,7 +37,6 @@ import io.github.sculkpowered.server.protocol.packet.play.SystemChatMessage;
 import io.github.sculkpowered.server.protocol.packet.play.TabListHeaderFooter;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
 import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
 import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
 import io.github.sculkpowered.server.protocol.packet.play.sound.SoundEffect;

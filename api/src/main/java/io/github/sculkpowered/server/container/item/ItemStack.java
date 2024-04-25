@@ -1,12 +1,7 @@
 package io.github.sculkpowered.server.container.item;
 
-import io.github.sculkpowered.server.attribute.Attribute;
-import io.github.sculkpowered.server.attribute.AttributeModifier;
-import io.github.sculkpowered.server.enchantment.Enchantment;
-import java.util.HashMap;
-import java.util.List;
+import io.github.sculkpowered.server.container.item.data.DataComponent;
 import java.util.Map;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +16,7 @@ public final class ItemStack {
   private static final ItemStack EMPTY = ItemStack.itemStack(Material.AIR, 0);
 
   private final Material material;
-  private final byte amount;
+  private final int amount;
   private final ItemMeta meta;
 
   private ItemStack(
@@ -30,7 +25,7 @@ public final class ItemStack {
       final @NotNull ItemMeta meta
   ) {
     this.material = material;
-    this.amount = (byte) amount;
+    this.amount = amount;
     this.meta = meta;
   }
 
@@ -101,26 +96,16 @@ public final class ItemStack {
   }
 
   public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount) {
-    return new ItemStack(material, amount,
-        new ItemMeta(CompoundBinaryTag.empty(), Map.of(), Map.of()));
+    return new ItemStack(material, amount, new ItemMeta(Map.of()));
   }
 
   @ApiStatus.Internal
-  public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount,
-      final CompoundBinaryTag nbt) {
-    final var attributeModifiers = new HashMap<Attribute, List<AttributeModifier>>();
-    for (final var tag : nbt.getList("AttributeModifiers")) {
-      final var compound = (CompoundBinaryTag) tag;
-      // TODO complete attribute modifiers
-    }
-    final var enchantments = new HashMap<Enchantment, Short>();
-    for (final var tag : nbt.getList("Enchantments")) {
-      final var compound = (CompoundBinaryTag) tag;
-      // TODO: better registry for enchantments
-      enchantments.put(Enchantment.valueOf(compound.getString("id").split(":")[1]),
-          compound.getShort("lvl"));
-    }
-    return new ItemStack(material, amount, new ItemMeta(nbt, attributeModifiers, enchantments));
+  public static @NotNull ItemStack itemStack(
+      final @NotNull Material material,
+      final int amount,
+      final Map<DataComponent<Object>, Object> components
+      ) {
+    return new ItemStack(material, amount, new ItemMeta(components));
   }
 
   public static @NotNull ItemStack empty() {
