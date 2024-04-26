@@ -4,6 +4,7 @@ import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
+import io.github.sculkpowered.server.protocol.packet.play.container.ContainerSlot;
 import io.github.sculkpowered.server.util.ItemList;
 import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import net.kyori.adventure.text.Component;
@@ -52,7 +53,7 @@ public final class SculkInventory implements Inventory {
           new Equipment(this.player.id(), OneInt2ObjectMap.of(0, itemStack)));
     }
     if (slotPacket) {
-      // TODO: this.player.send(new ContainerSlot((byte) 0, 1, (short) index, itemStack));
+      this.player.send(new ContainerSlot((byte) 0, 1, (short) index, itemStack));
     }
   }
 

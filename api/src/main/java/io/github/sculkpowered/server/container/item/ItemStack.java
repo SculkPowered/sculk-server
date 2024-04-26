@@ -2,6 +2,7 @@ package io.github.sculkpowered.server.container.item;
 
 import io.github.sculkpowered.server.container.item.data.DataComponent;
 import java.util.Map;
+import java.util.Optional;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -103,7 +104,7 @@ public final class ItemStack {
   public static @NotNull ItemStack itemStack(
       final @NotNull Material material,
       final int amount,
-      final Map<DataComponent<Object>, Object> components
+      final Map<DataComponent<?>, Optional<?>> components
       ) {
     return new ItemStack(material, amount, new ItemMeta(components));
   }

@@ -3,13 +3,15 @@ package io.github.sculkpowered.server.container.item;
 import io.github.sculkpowered.server.container.item.data.DataComponent;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ItemMeta {
 
-  private final Map<DataComponent<Object>, Object> components;
+  private final Map<DataComponent<?>, Optional<?>> components;
 
-  ItemMeta(final Map<DataComponent<Object>, Object> components) {
+  ItemMeta(final Map<DataComponent<?>, Optional<?>> components) {
     this.components = Map.copyOf(components);
   }
 
@@ -26,20 +28,23 @@ public class ItemMeta {
     return new Builder(new HashMap<>());
   }
 
+  public Map<DataComponent<?>, Optional<?>> components() {
+    return this.components;
+  }
+
   public static final class Builder {
 
-    private final Map<DataComponent<Object>, Object> components;
+    private final Map<DataComponent<?>, Optional<?>> components;
 
-    private Builder(final Map<DataComponent<Object>, Object> components) {
+    private Builder(final Map<DataComponent<?>, Optional<?>> components) {
       this.components = components;
     }
 
-    @SuppressWarnings("unchecked")
     public @NotNull <T> Builder set(
         final @NotNull DataComponent<T> component,
-        final @NotNull T value
+        final @Nullable T value
     ) {
-      this.components.put((DataComponent<Object>) component, value);
+      this.components.put(component, Optional.ofNullable(value));
       return this;
     }
 

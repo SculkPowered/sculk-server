@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagType;
@@ -233,13 +234,12 @@ public final class Buffer {
     return ItemStack.itemStack(Material.get(this.readVarInt()), amount, this.readDataComponents());
   }
 
-  public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
-    if (!slot.isEmpty()) {
+  public @NotNull Buffer writeItem(final @NotNull ItemStack item) {
+    if (!item.isEmpty()) {
       this
-          .writeVarInt(slot.amount())
-          .writeVarInt(slot.material().id())
-          .writeVarInt(0)
-          .writeVarInt(0);
+          .writeVarInt(item.amount())
+          .writeVarInt(item.material().id())
+          .writeDataComponents(item.meta().components());
     } else {
       this.writeVarInt(0);
     }
@@ -286,22 +286,60 @@ public final class Buffer {
     return enumClass.getEnumConstants()[this.readVarInt()];
   }
 
-  private @NotNull Map<DataComponent<Object>, Object> readDataComponents() {
+  private @NotNull Map<DataComponent<?>, Optional<?>> readDataComponents() {
     final var components = this.readVarInt();
     final var removedComponents = this.readVarInt();
     if (components == 0 && removedComponents == 0) {
       return Map.of();
     } else {
-      final var map = new HashMap<>(components + removedComponents);
-      for (int i = 0; i < components; i++) {
+      final var map = new HashMap<DataComponent<?>, Optional<?>>(components + removedComponents);
+      for (var i = 0; i < components; i++) {
 
       }
 
-      for (int i = 0; i < removedComponents; i++) {
+      for (var i = 0; i < removedComponents; i++) {
 
       }
-      return null;
+      return map;
     }
+  }
+
+  public @NotNull Buffer writeDataComponents(final @NotNull Map<DataComponent<?>, Optional<?>> map) {
+    if (map.isEmpty()) {
+      return this
+          .writeVarInt(0)
+          .writeVarInt(0);
+    }
+    var present = 0;
+    var empty = 0;
+    // TODO: optimize iterations here
+    for (final var entry : map.entrySet()) {
+      if (entry.getValue().isPresent()) {
+        present++;
+      } else {
+        empty++;
+      }
+    }
+    this
+        .writeVarInt(present)
+        .writeVarInt(empty);
+    for (final var entry : map.entrySet()) {
+      if (entry.getValue().isPresent()) {
+        final var key = entry.getKey();
+        this.writeVarInt(key.id());
+        if (key == DataComponent.CUSTOM_NAME || key == DataComponent.ITEM_NAME) {
+          this.writeComponent((Component) entry.getValue().get());
+        } else if (entry.getKey() == DataComponent.MAX_DAMAGE || key == DataComponent.DAMAGE) {
+          this.writeVarInt((int) entry.getValue().get());
+        }
+      }
+    }
+    for (final var entry : map.entrySet()) {
+      if (entry.getValue().isEmpty()) {
+        this.writeVarInt(entry.getKey().id());
+      }
+    }
+    return this;
   }
 
   public int readableBytes() {
