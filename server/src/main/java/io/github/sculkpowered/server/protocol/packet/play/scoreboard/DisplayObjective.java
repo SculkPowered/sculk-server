@@ -19,4 +19,12 @@ public final class DisplayObjective implements Packet {
         .writeByte(this.position)
         .writeString(this.scoreName);
   }
+
+  @Override
+  public String toString() {
+    return "DisplayObjective{" +
+        "position=" + this.position +
+        ", scoreName='" + this.scoreName + '\'' +
+        '}';
+  }
 }

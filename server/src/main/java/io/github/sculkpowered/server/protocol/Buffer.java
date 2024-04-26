@@ -5,6 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.Material;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
+import io.github.sculkpowered.server.scoreboard.NumberFormat;
 import io.github.sculkpowered.server.util.Utf8;
 import io.github.sculkpowered.server.world.Position;
 import io.netty.buffer.ByteBuf;
@@ -281,6 +282,40 @@ public final class Buffer {
 
   public <T extends Enum<T>> T readEnum(final Class<T> enumClass) {
     return enumClass.getEnumConstants()[this.readVarInt()];
+  }
+
+  public @NotNull Buffer writeNumberFormat(final NumberFormat numberFormat) {
+    if (numberFormat == null) {
+      return this.writeBoolean(false);
+    } else {
+      this.writeBoolean(true);
+      switch (numberFormat) {
+        case NumberFormat.Blank ignored -> {
+          return this.writeVarInt(0);
+        }
+        case NumberFormat.Styled styled -> {
+          this.writeVarInt(1);
+          // TODO: complete style serialization
+          final var style = styled.style();
+          final var builder = CompoundBinaryTag.builder();
+
+          final var font = style.font();
+          if (font != null) {
+            builder.putString("font", font.asString());
+          }
+          final var color = style.color();
+          if (color != null) {
+            builder.putString("color", color.toString());
+          }
+          return this.writeBinaryTag(builder.build());
+        }
+        case NumberFormat.Fixed fixed -> {
+          return this
+              .writeVarInt(2)
+              .writeComponent(fixed.component());
+        }
+      }
+    }
   }
 
   public int readableBytes() {
