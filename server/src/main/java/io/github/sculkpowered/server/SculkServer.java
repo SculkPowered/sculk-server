@@ -37,6 +37,7 @@ import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.NettyServer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
+import io.github.sculkpowered.server.container.item.data.DataComponentTypeRegistry;
 import io.github.sculkpowered.server.registry.EnumRegistry;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.registry.SimpleRegistry;
@@ -141,7 +142,8 @@ public final class SculkServer implements Server {
         BlockRegistry.get(),
         new EnumRegistry<>("minecraft:item", Material.AIR),
         new EnumRegistry<>("minecraft:enchantment", Enchantment.AQUA_AFFINITY),
-        new EnumRegistry<>("minecraft:potion", PotionEffect.AWKWARD)
+        new EnumRegistry<>("minecraft:potion", PotionEffect.AWKWARD),
+        DataComponentTypeRegistry.get()
     );
     this.pluginHandler = new SculkPluginHandler(this);
     this.eventHandler = new SculkEventHandler();

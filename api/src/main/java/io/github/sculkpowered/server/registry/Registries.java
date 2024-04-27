@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.registry;
 
 import io.github.sculkpowered.server.container.item.Material;
+import io.github.sculkpowered.server.container.item.data.DataComponentType;
 import io.github.sculkpowered.server.damage.DamageType;
 import io.github.sculkpowered.server.enchantment.Enchantment;
 import io.github.sculkpowered.server.potion.PotionEffect;
@@ -18,6 +19,7 @@ public final class Registries {
   private static Registry<Material> MATERIALS;
   private static Registry<Enchantment> ENCHANTMENTS;
   private static Registry<PotionEffect> POTION_EFFECTS;
+  private static Registry<DataComponentType<?>> DATA_COMPONENT_TYPES;
 
   Registries() {
     throw new AssertionError();
@@ -51,6 +53,10 @@ public final class Registries {
     return POTION_EFFECTS;
   }
 
+  public static Registry<DataComponentType<?>> dataComponentTypes() {
+    return DATA_COMPONENT_TYPES;
+  }
+
   @ApiStatus.Internal
   public static void set(
       final Registry.Mutable<Dimension> dimensions,
@@ -59,7 +65,8 @@ public final class Registries {
       final Registry<BlockState> blocks,
       final Registry<Material> materials,
       final Registry<Enchantment> enchantments,
-      final Registry<PotionEffect> potionEffects
+      final Registry<PotionEffect> potionEffects,
+      final Registry<DataComponentType<?>> dataComponentTypes
   ) {
     DIMENSIONS = dimensions;
     BIOMES = biomes;
@@ -68,5 +75,6 @@ public final class Registries {
     MATERIALS = materials;
     ENCHANTMENTS = enchantments;
     POTION_EFFECTS = potionEffects;
+    DATA_COMPONENT_TYPES = dataComponentTypes;
   }
 }

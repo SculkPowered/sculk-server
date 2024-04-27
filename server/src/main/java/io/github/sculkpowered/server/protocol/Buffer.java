@@ -4,8 +4,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.Material;
-import io.github.sculkpowered.server.container.item.data.DataComponent;
+import io.github.sculkpowered.server.container.item.data.DataComponentType;
+import io.github.sculkpowered.server.container.item.data.SculkDataComponentType;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.Utf8;
 import io.github.sculkpowered.server.world.Position;
 import io.netty.buffer.ByteBuf;
@@ -239,7 +241,7 @@ public final class Buffer {
       this
           .writeVarInt(item.amount())
           .writeVarInt(item.material().id())
-          .writeDataComponents(item.meta().components());
+          .writeDataComponents(item.components().components());
     } else {
       this.writeVarInt(0);
     }
@@ -286,25 +288,28 @@ public final class Buffer {
     return enumClass.getEnumConstants()[this.readVarInt()];
   }
 
-  private @NotNull Map<DataComponent<?>, Optional<?>> readDataComponents() {
+  private @NotNull Map<DataComponentType<?>, Optional<?>> readDataComponents() {
     final var components = this.readVarInt();
     final var removedComponents = this.readVarInt();
     if (components == 0 && removedComponents == 0) {
       return Map.of();
     } else {
-      final var map = new HashMap<DataComponent<?>, Optional<?>>(components + removedComponents);
+      final var map = new HashMap<DataComponentType<?>, Optional<?>>(
+          components + removedComponents);
       for (var i = 0; i < components; i++) {
-
+        final var type = (SculkDataComponentType<?>) Registries.dataComponentTypes().get(this.readVarInt());
+        map.put(type, Optional.of(type.read(this)));
       }
 
       for (var i = 0; i < removedComponents; i++) {
-
+        map.put(Registries.dataComponentTypes().get(this.readVarInt()), Optional.empty());
       }
       return map;
     }
   }
 
-  public @NotNull Buffer writeDataComponents(final @NotNull Map<DataComponent<?>, Optional<?>> map) {
+  public @NotNull Buffer writeDataComponents(
+      final @NotNull Map<DataComponentType<?>, Optional<?>> map) {
     if (map.isEmpty()) {
       return this
           .writeVarInt(0)
@@ -325,13 +330,9 @@ public final class Buffer {
         .writeVarInt(empty);
     for (final var entry : map.entrySet()) {
       if (entry.getValue().isPresent()) {
-        final var key = entry.getKey();
+        @SuppressWarnings("unchecked") final var key = (SculkDataComponentType<Object>) entry.getKey();
         this.writeVarInt(key.id());
-        if (key == DataComponent.CUSTOM_NAME || key == DataComponent.ITEM_NAME) {
-          this.writeComponent((Component) entry.getValue().get());
-        } else if (entry.getKey() == DataComponent.MAX_DAMAGE || key == DataComponent.DAMAGE) {
-          this.writeVarInt((int) entry.getValue().get());
-        }
+        key.write(this, entry.getValue().get());
       }
     }
     for (final var entry : map.entrySet()) {

@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.container.item;
 
-import io.github.sculkpowered.server.container.item.data.DataComponent;
+import io.github.sculkpowered.server.container.item.data.DataComponentType;
+import io.github.sculkpowered.server.container.item.data.DataComponents;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,16 +19,16 @@ public final class ItemStack {
 
   private final Material material;
   private final int amount;
-  private final ItemMeta meta;
+  private final DataComponents components;
 
   private ItemStack(
       final @NotNull Material material,
       final int amount,
-      final @NotNull ItemMeta meta
+      final @NotNull DataComponents components
   ) {
     this.material = material;
     this.amount = amount;
-    this.meta = meta;
+    this.components = components;
   }
 
   /**
@@ -57,21 +58,21 @@ public final class ItemStack {
    * @since 1.0.0
    */
   public @NotNull ItemStack amount(final int amount) {
-    return new ItemStack(this.material, amount, this.meta);
+    return new ItemStack(this.material, amount, this.components);
   }
 
-  public @NotNull ItemStack withMeta(final ItemMeta itemMeta) {
-    return new ItemStack(this.material, this.amount, itemMeta);
+  public @NotNull ItemStack withMeta(final DataComponents components) {
+    return new ItemStack(this.material, this.amount, components);
   }
 
   /**
-   * Gets the metadata of the item.
+   * Gets the data components of the item.
    *
-   * @return the metadata of the item
+   * @return the data components of the item
    * @since 1.0.0
    */
-  public @NotNull ItemMeta meta() {
-    return this.meta;
+  public @NotNull DataComponents components() {
+    return this.components;
   }
 
   /**
@@ -97,16 +98,16 @@ public final class ItemStack {
   }
 
   public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount) {
-    return new ItemStack(material, amount, new ItemMeta(Map.of()));
+    return new ItemStack(material, amount, DataComponents.empty());
   }
 
   @ApiStatus.Internal
   public static @NotNull ItemStack itemStack(
       final @NotNull Material material,
       final int amount,
-      final Map<DataComponent<?>, Optional<?>> components
+      final Map<DataComponentType<?>, Optional<?>> components
       ) {
-    return new ItemStack(material, amount, new ItemMeta(components));
+    return new ItemStack(material, amount, DataComponents.from(components));
   }
 
   public static @NotNull ItemStack empty() {

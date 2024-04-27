@@ -1,100 +1,76 @@
 package io.github.sculkpowered.server.container.item.data;
 
 import io.github.sculkpowered.server.container.item.ItemStack;
+import io.github.sculkpowered.server.registry.Registries;
 import java.util.List;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.key.Keyed;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
-import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.NotNull;
 
-public final class DataComponent<T> implements Keyed {
+public final class DataComponent {
 
-  public static final DataComponent<CompoundBinaryTag> CUSTOM_DATA = create(0, "custom_data");
-  public static final DataComponent<Integer> MAX_STACK_SIZE = create(1, "max_stack_size");
-  public static final DataComponent<Integer> MAX_DAMAGE = create(2, "max_damage");
-  public static final DataComponent<Integer> DAMAGE = create(3, "damage");
-  public static final DataComponent<Object> UNBREAKABLE = create(4, "unbreakable");
-  public static final DataComponent<Component> CUSTOM_NAME = create(5, "custom_name");
-  public static final DataComponent<Component> ITEM_NAME = create(6, "item_name");
-  public static final DataComponent<Object> LORE = create(7, "lore");
-  public static final DataComponent<Object> RARITY = create(8, "rarity");
-  public static final DataComponent<Object> ENCHANTMENTS = create(9, "enchantments");
-  public static final DataComponent<Object> CAN_PLACE_ON = create(10, "can_place_on");
-  public static final DataComponent<Object> CAN_BREAK = create(11, "can_break");
-  public static final DataComponent<Object> ATTRIBUTE_MODIFIERS = create(12, "attribute_modifiers");
-  public static final DataComponent<Object> CUSTOM_MODEL_DATA = create(13, "custom_model_data");
-  public static final DataComponent<Void> HIDE_ADDITIONAL_TOOLTIP = create(14,
-      "hide_additional_tooltip");
-  public static final DataComponent<Void> HIDE_TOOLTIP = create(15, "hide_tooltip");
-  public static final DataComponent<Integer> REPAIR_COST = create(16, "repair_cost");
-  public static final DataComponent<Void> CREATIVE_SLOT_LOCK = create(17, "creative_slot_lock");
-  public static final DataComponent<Boolean> ENCHANTMENT_GLINT_OVERRIDE = create(18,
-      "enchantment_glint_override");
-  public static final DataComponent<Object> INTANGIBLE_PROJECTILE = create(19,
-      "intangible_projectile");
-  public static final DataComponent<Object> FOOD = create(20, "food");
-  public static final DataComponent<Object> FIRE_RESISTANT = create(21, "fire_resistant");
-  public static final DataComponent<Object> TOOL = create(22, "tool");
-  public static final DataComponent<Object> STORED_ENCHANTMENTS = create(23, "stored_enchantments");
-  public static final DataComponent<Object> DYED_COLOR = create(24, "dyed_color");
-  public static final DataComponent<Object> MAP_COLOR = create(25, "map_color");
-  public static final DataComponent<Object> MAP_ID = create(26, "map_id");
-  public static final DataComponent<Object> MAP_DECORATIONS = create(27, "map_decorations");
-  public static final DataComponent<Object> MAP_POST_PROCESSING = create(28, "map_post_processing");
-  public static final DataComponent<Object> CHARGED_PROJECTILES = create(29, "charged_projectiles");
-  public static final DataComponent<Object> BUNDLE_CONTENTS = create(30, "bundle_contents");
-  public static final DataComponent<Object> POTION_CONTENTS = create(31, "potion_contents");
-  public static final DataComponent<Object> SUSPICIOUS_STEW_EFFECTS = create(32,
-      "suspicious_stew_effects");
-  public static final DataComponent<Object> WRITABLE_BOOK_CONTENT = create(33,
-      "writable_book_content");
-  public static final DataComponent<Object> WRITTEN_BOOK_CONTENT = create(34,
-      "written_book_content");
-  public static final DataComponent<Object> TRIM = create(35, "trim");
-  public static final DataComponent<Object> DEBUG_STICK_STATE = create(36, "debug_stick_state");
-  public static final DataComponent<CompoundBinaryTag> ENTITY_DATA = create(37, "entity_data");
-  public static final DataComponent<CompoundBinaryTag> BUCKET_ENTITY_DATA = create(38,
-      "bucket_entity_data");
-  public static final DataComponent<CompoundBinaryTag> BLOCK_ENTITY_DATA = create(39,
-      "block_entity_data");
-  public static final DataComponent<Object> INSTRUMENT = create(40, "instrument");
-  public static final DataComponent<Integer> OMINOUS_BOTTLE_AMPLIFIER = create(41,
-      "ominous_bottle_amplifier");
-  public static final DataComponent<Object> RECIPES = create(42, "recipes");
-  public static final DataComponent<Object> LODESTONE_TRACKER = create(43, "lodestone_tracker");
-  public static final DataComponent<Object> FIREWORK_EXPLOSION = create(44, "firework_explosion");
-  public static final DataComponent<Object> FIREWORKS = create(45, "fireworks");
-  public static final DataComponent<Object> PROFILE = create(46, "profile");
-  public static final DataComponent<Object> NOTE_BLOCK_SOUND = create(47, "note_block_sound");
-  public static final DataComponent<Object> BANNER_PATTERNS = create(48, "banner_patterns");
-  public static final DataComponent<Object> BASE_COLOR = create(49, "base_color");
-  public static final DataComponent<Object> POT_DECORATIONS = create(50, "pot_decorations");
-  public static final DataComponent<List<ItemStack>> CONTAINER = create(51, "container");
-  public static final DataComponent<Object> BLOCK_STATE = create(52, "block_state");
-  public static final DataComponent<Object> BEES = create(53, "bees");
-  public static final DataComponent<Object> LOCK = create(54, "lock");
-  public static final DataComponent<Object> CONTAINER_LOOT = create(55, "container_loot");
-
-  private final int id;
-  private final Key key;
-
-  private DataComponent(final int id, final Key key) {
-    this.id = id;
-    this.key = key;
+  public static final DataComponentType<CompoundBinaryTag> CUSTOM_DATA = get("minecraft:custom_data");
+  public static final DataComponentType<Integer> MAX_STACK_SIZE = get("minecraft:max_stack_size");
+  public static final DataComponentType<Integer> MAX_DAMAGE = get("minecraft:max_damage");
+  public static final DataComponentType<Integer> DAMAGE = get("minecraft:damage");
+  public static final DataComponentType<Object> UNBREAKABLE = get("minecraft:unbreakable");
+  public static final DataComponentType<Component> CUSTOM_NAME = get("minecraft:custom_name");
+  public static final DataComponentType<Component> ITEM_NAME = get("minecraft:item_name");
+  public static final DataComponentType<Object> LORE = get("minecraft:lore");
+  public static final DataComponentType<Object> RARITY = get("minecraft:rarity");
+  public static final DataComponentType<Object> ENCHANTMENTS = get("minecraft:enchantments");
+  public static final DataComponentType<Object> CAN_PLACE_ON = get("minecraft:can_place_on");
+  public static final DataComponentType<Object> CAN_BREAK = get("minecraft:can_break");
+  public static final DataComponentType<Object> ATTRIBUTE_MODIFIERS = get("minecraft:attribute_modifiers");
+  public static final DataComponentType<Object> CUSTOM_MODEL_DATA = get("minecraft:custom_model_data");
+  public static final DataComponentType<Void> HIDE_ADDITIONAL_TOOLTIP = get("minecraft:hide_additional_tooltip");
+  public static final DataComponentType<Void> HIDE_TOOLTIP = get("minecraft:hide_tooltip");
+  public static final DataComponentType<Integer> REPAIR_COST = get("minecraft:repair_cost");
+  public static final DataComponentType<Void> CREATIVE_SLOT_LOCK = get("minecraft:creative_slot_lock");
+  public static final DataComponentType<Boolean> ENCHANTMENT_GLINT_OVERRIDE = get("minecraft:enchantment_glint_override");
+  public static final DataComponentType<Object> INTANGIBLE_PROJECTILE = get("minecraft:intangible_projectile");
+  public static final DataComponentType<Object> FOOD = get("minecraft:food");
+  public static final DataComponentType<Object> FIRE_RESISTANT = get("minecraft:fire_resistant");
+  public static final DataComponentType<Object> TOOL = get("minecraft:tool");
+  public static final DataComponentType<Object> STORED_ENCHANTMENTS = get("minecraft:stored_enchantments");
+  public static final DataComponentType<Object> DYED_COLOR = get("minecraft:dyed_color");
+  public static final DataComponentType<Object> MAP_COLOR = get("minecraft:map_color");
+  public static final DataComponentType<Object> MAP_ID = get("minecraft:map_id");
+  public static final DataComponentType<Object> MAP_DECORATIONS = get("minecraft:map_decorations");
+  public static final DataComponentType<Object> MAP_POST_PROCESSING = get("minecraft:map_post_processing");
+  public static final DataComponentType<Object> CHARGED_PROJECTILES = get("minecraft:charged_projectiles");
+  public static final DataComponentType<Object> BUNDLE_CONTENTS = get("minecraft:bundle_contents");
+  public static final DataComponentType<Object> POTION_CONTENTS = get("minecraft:potion_contents");
+  public static final DataComponentType<Object> SUSPICIOUS_STEW_EFFECTS = get("minecraft:suspicious_stew_effects");
+  public static final DataComponentType<Object> WRITABLE_BOOK_CONTENT = get("minecraft:writable_book_content");
+  public static final DataComponentType<Object> WRITTEN_BOOK_CONTENT = get("minecraft:written_book_content");
+  public static final DataComponentType<Object> TRIM = get("minecraft:trim");
+  public static final DataComponentType<Object> DEBUG_STICK_STATE = get("minecraft:debug_stick_state");
+  public static final DataComponentType<CompoundBinaryTag> ENTITY_DATA = get("minecraft:entity_data");
+  public static final DataComponentType<CompoundBinaryTag> BUCKET_ENTITY_DATA = get("minecraft:bucket_entity_data");
+  public static final DataComponentType<CompoundBinaryTag> BLOCK_ENTITY_DATA = get("minecraft:block_entity_data");
+  public static final DataComponentType<Object> INSTRUMENT = get("minecraft:instrument");
+  public static final DataComponentType<Integer> OMINOUS_BOTTLE_AMPLIFIER = get("minecraft:ominous_bottle_amplifier");
+  public static final DataComponentType<Object> RECIPES = get("minecraft:recipes");
+  public static final DataComponentType<Object> LODESTONE_TRACKER = get("minecraft:lodestone_tracker");
+  public static final DataComponentType<Object> FIREWORK_EXPLOSION = get("minecraft:firework_explosion");
+  public static final DataComponentType<Object> FIREWORKS = get("minecraft:fireworks");
+  public static final DataComponentType<Object> PROFILE = get("minecraft:profile");
+  public static final DataComponentType<Object> NOTE_BLOCK_SOUND = get("minecraft:note_block_sound");
+  public static final DataComponentType<Object> BANNER_PATTERNS = get("minecraft:banner_patterns");
+  public static final DataComponentType<Object> BASE_COLOR = get("minecraft:base_color");
+  public static final DataComponentType<Object> POT_DECORATIONS = get("minecraft:pot_decorations");
+  public static final DataComponentType<List<ItemStack>> CONTAINER = get("container");
+  public static final DataComponentType<Object> BLOCK_STATE = get("block_state");
+  public static final DataComponentType<Object> BEES = get("bees");
+  public static final DataComponentType<Object> LOCK = get("lock");
+  public static final DataComponentType<Object> CONTAINER_LOOT = get("container_loot");
+  
+  DataComponent() {
+    throw new AssertionError();
   }
 
-  public int id() {
-    return this.id;
-  }
-
-  @Override
-  public @NotNull Key key() {
-    return this.key;
-  }
-
-  private static <T> DataComponent<T> create(final int id, final @Subst("value") String key) {
-    return new DataComponent<>(id, Key.key(Key.MINECRAFT_NAMESPACE, key));
+  @SuppressWarnings("unchecked")
+  private static <T> DataComponentType<T> get(final String key) {
+    return (DataComponentType<T>) Registries.dataComponentTypes().get(key);
   }
 }
