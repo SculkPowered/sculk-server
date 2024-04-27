@@ -9,7 +9,6 @@ import static io.github.sculkpowered.server.world.block.Block.Facing.WEST;
 
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.sculkpowered.server.SculkServer;
-import io.github.sculkpowered.server.container.SculkContainer;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.player.GameMode;
@@ -49,12 +48,10 @@ import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggest
 import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainer;
 import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainerButton;
 import io.github.sculkpowered.server.protocol.packet.play.container.CloseContainer;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerOnGround;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
-import io.github.sculkpowered.server.util.ItemList;
 import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.block.Block;
@@ -155,29 +152,45 @@ public final class PlayPacketHandler extends PacketHandler {
   @Override
   public boolean handle(ClickContainer clickContainer) {
     final var inventory = this.player.inventory();
-    final var container = (this.player.openedContainer() != null
+    var container = (this.player.openedContainer() != null
         ? this.player.openedContainer() : inventory);
-    this.server.eventHandler().call(
-            new PlayerClickContainerEvent(this.player, container, clickContainer.carriedItem(),
-                clickContainer.slot()))
+    var slot = clickContainer.slot();
+    if (container == inventory && slot > inventory.type().size()) {
+      return true; // should not be possible
+    }
+    if (slot >= container.type().size()) { // clicked in inventory
+      // calculate inventory slot, without inner inventory (equipment, crafting)
+      slot -= (short) (container.type().size() - 9);
+      container = inventory;
+    }
+    if (clickContainer.stateId() < container.state()) {
+      this.player.resendContainer();
+      return true; // out of sync
+    }
+
+    final var finalContainer = container;
+    this.server.eventHandler().call(new PlayerClickContainerEvent(
+        this.player, container, clickContainer.carriedItem(), slot))
         .thenAcceptAsync(event -> {
           if (event.result().denied()) { // let's resend to override client prediction
-            if (container == inventory) {
+            if (finalContainer == inventory) {
               this.player.inventory().resend();
             } else {
-              final var sculkContainer = (SculkContainer) container;
-              final var items = new ItemList(container.type().size() + 36);
-              for (var i = 8; i < 44; i++) {
-                items.set(i - 9 + container.type().size(), inventory.items().get(i));
-              }
-              for (var i = 0; i < sculkContainer.items.size(); i++) {
-                items.set(i, sculkContainer.items.get(i));
-              }
-              this.player.send(new ContainerContent((byte) 1, 1, items));
+              this.player.resendContainer();
             }
           } else {
+            // TODO: check, do not trust the client here!
             for (final var entry : clickContainer.slots().int2ObjectEntrySet()) {
-              inventory.items().set(entry.getIntKey(), entry.getValue());
+              var key = entry.getIntKey();
+              if (finalContainer != inventory) {
+                if (key < finalContainer.type().size()) {
+                  finalContainer.item(key, entry.getValue());
+                  continue;
+                } else {
+                  key -= finalContainer.type().size() - 9;
+                }
+              }
+              inventory.item0(key, entry.getValue(), false);
             }
           }
         }, this.connection.executor())
@@ -321,7 +334,7 @@ public final class PlayPacketHandler extends PacketHandler {
       case 3 -> this.player.inventory()
           .item(this.player.heldItemSlot(), ItemStack.empty()); // drop stack
       case 4 -> { // drop item
-        var itemInHand = this.player.inventory().itemInHand();
+        var itemInHand = this.player.inventory().itemInMainHand();
         if (!itemInHand.isEmpty()) {
           itemInHand = itemInHand.amount(itemInHand.amount() - 1);
           if (itemInHand.amount() < 1) {
@@ -335,7 +348,7 @@ public final class PlayPacketHandler extends PacketHandler {
       }
       case 6 -> { // swap item
         final var inventory = this.player.inventory();
-        final var itemInMainHand = inventory.itemInHand();
+        final var itemInMainHand = inventory.itemInMainHand();
         final var itemInOffHand = inventory.itemInOffHand();
         inventory.item(this.player.heldItemSlot(), itemInOffHand);
         inventory.itemInOffHand(itemInMainHand);
@@ -421,7 +434,7 @@ public final class PlayPacketHandler extends PacketHandler {
   @Override
   public boolean handle(UseItemOn useItemOn) {
     final var inventory = this.player.inventory();
-    final var slot = (useItemOn.hand() == 0 ? inventory.itemInHand()
+    final var slot = (useItemOn.hand() == 0 ? inventory.itemInMainHand()
         : inventory.itemInOffHand());
     this.server.eventHandler().call(new PlayerUseItemEvent(this.player, slot))
         .thenAcceptAsync(event -> {
@@ -432,7 +445,7 @@ public final class PlayPacketHandler extends PacketHandler {
           if (this.player.openedContainer() != null) {
             this.player.send(new BlockAcknowledge(useItemOn.sequence()));
             if (useItemOn.hand() == 0) {
-              inventory.itemInHand(slot);
+              inventory.itemInMainHand(slot);
             } else {
               inventory.itemInOffHand(slot);
             }
@@ -475,7 +488,7 @@ public final class PlayPacketHandler extends PacketHandler {
   public boolean handle(UseItem useItem) {
     final var inventory = this.player.inventory();
     this.server.eventHandler().call(new PlayerUseItemEvent(this.player,
-        (useItem.hand() == 0 ? inventory.itemInHand() : inventory.itemInOffHand())));
+        (useItem.hand() == 0 ? inventory.itemInMainHand() : inventory.itemInOffHand())));
     return true;
   }
 
