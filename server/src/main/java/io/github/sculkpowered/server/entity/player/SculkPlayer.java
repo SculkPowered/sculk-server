@@ -9,8 +9,8 @@ import io.github.sculkpowered.server.adventure.BossBarProvider;
 import io.github.sculkpowered.server.adventure.BossBarProvider.Impl;
 import io.github.sculkpowered.server.attribute.SculkAttributeValue;
 import io.github.sculkpowered.server.container.Container;
-import io.github.sculkpowered.server.container.SculkInventory;
 import io.github.sculkpowered.server.container.SculkContainer;
+import io.github.sculkpowered.server.container.SculkInventory;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.AbstractLivingEntity;
 import io.github.sculkpowered.server.entity.Entity;
@@ -18,11 +18,11 @@ import io.github.sculkpowered.server.entity.EntityType;
 import io.github.sculkpowered.server.event.connection.PluginMessageEvent;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
-import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
+import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
+import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
@@ -38,13 +38,13 @@ import io.github.sculkpowered.server.protocol.packet.play.TabListHeaderFooter;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
-import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
 import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
 import io.github.sculkpowered.server.protocol.packet.play.sound.SoundEffect;
 import io.github.sculkpowered.server.protocol.packet.play.sound.StopSound;
 import io.github.sculkpowered.server.protocol.packet.play.title.ClearTitles;
 import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
 import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
+import io.github.sculkpowered.server.util.ItemList;
 import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.SculkWorld;
@@ -173,9 +173,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   public void openContainer(@NotNull Container container) {
     this.container = (SculkContainer) container;
     this.container.addViewer(this);
-    this.send(new OpenScreen(1, container.type().ordinal(), container.title()));
-    this.send(new ContainerContent((byte) 1, 1, ((SculkContainer) container).items));
-    this.container.sendProperties(this);
   }
 
   @Override
@@ -331,7 +328,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public <T> void sendTitlePart(@NotNull TitlePart<T> part, @NotNull T value) {
     if (part == TitlePart.TITLE) {
-      this.send(new io.github.sculkpowered.server.protocol.packet.play.title.Title((Component) value));
+      this.send(
+          new io.github.sculkpowered.server.protocol.packet.play.title.Title((Component) value));
     } else if (part == TitlePart.SUBTITLE) {
       this.send(new Subtitle((Component) value));
     } else if (part == TitlePart.TIMES) {
@@ -355,8 +353,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void showBossBar(@NotNull BossBar bar) {
-    @SuppressWarnings("UnstableApiUsage")
-    final var impl = BossBarImplementation.get(bar, Impl.class);
+    @SuppressWarnings("UnstableApiUsage") final var impl = BossBarImplementation
+        .get(bar, Impl.class);
     if (impl.players().add(this)) {
       this.send(add(impl.uniqueId(), bar.name(), bar.progress(), bar.color().ordinal(),
           bar.overlay().ordinal(), BossBarProvider.flags(bar)));
@@ -433,17 +431,22 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         final var sculkPlayer = (SculkPlayer) player;
         final var inventory = this.inventory();
         final var equipment = new Int2ObjectOpenHashMap<ItemStack>();
-        if (!inventory.itemInHand().isEmpty()) {
-          equipment.put(0, inventory.itemInHand());
-        } else if (!inventory.itemInOffHand().isEmpty()) {
+        if (!inventory.itemInMainHand().isEmpty()) {
+          equipment.put(0, inventory.itemInMainHand());
+        }
+        if (!inventory.itemInOffHand().isEmpty()) {
           equipment.put(1, inventory.itemInOffHand());
-        } else if (!inventory.boots().isEmpty()) {
+        }
+        if (!inventory.boots().isEmpty()) {
           equipment.put(2, inventory.boots());
-        } else if (!inventory.leggings().isEmpty()) {
+        }
+        if (!inventory.leggings().isEmpty()) {
           equipment.put(3, inventory.leggings());
-        } else if (!inventory.chestplate().isEmpty()) {
+        }
+        if (!inventory.chestplate().isEmpty()) {
           equipment.put(4, inventory.chestplate());
-        } else if (!inventory.helmet().isEmpty()) {
+        }
+        if (!inventory.helmet().isEmpty()) {
           equipment.put(5, inventory.helmet());
         }
         if (!equipment.isEmpty()) {
@@ -612,6 +615,22 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void receivedTeleportConfirmation(boolean received) {
     this.receivedTeleportConfirmation = received;
+  }
+
+  public void resendContainer() {
+    if (this.container == null) {
+      this.inventory.resend();
+    } else {
+      // item list with container size and the 36 "chest inventory"
+      final var items = new ItemList(this.container.type().size() + 36);
+      for (var i = 8; i < 44; i++) {
+        items.set(i - 9 + this.container.type().size(), inventory.items().get(i));
+      }
+      for (var i = 0; i < this.container.items().size(); i++) {
+        items.set(i, this.container.items().get(i));
+      }
+      this.send(new ContainerContent((byte) 1, this.container.state(), items));
+    }
   }
 
   private void updateAttributes() {

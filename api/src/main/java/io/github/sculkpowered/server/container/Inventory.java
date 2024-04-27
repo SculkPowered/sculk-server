@@ -11,12 +11,12 @@ public interface Inventory extends Container {
   /**
    * @since 1.0.0
    */
-  @NotNull ItemStack itemInHand();
+  @NotNull ItemStack itemInMainHand();
 
   /**
    * @since 1.0.0
    */
-  void itemInHand(@NotNull ItemStack item);
+  void itemInMainHand(@NotNull ItemStack item);
 
   /**
    * @since 1.0.0

@@ -17,7 +17,6 @@ public final class ClickContainer implements Packet {
   private Int2ObjectMap<ItemStack> slots;
   private ItemStack carriedItem;
 
-  // something is not 100 percent correct  here
   @Override
   public void decode(Buffer buf) {
     this.windowId = buf.readByte();
@@ -28,14 +27,9 @@ public final class ClickContainer implements Packet {
     final var slotCount = buf.readVarInt();
     this.slots = new Int2ObjectOpenHashMap<>(slotCount);
     for (var i = 0; i < slotCount; i++) {
-      if (buf.readableBytes() == 0) {
-        return; // I guess nothing is there
-      }
       this.slots.put(buf.readShort(), buf.readItem());
     }
-    if (buf.readableBytes() != 0) { // I guess no carried item
-      this.carriedItem = buf.readItem();
-    }
+    this.carriedItem = buf.readItem();
   }
 
   @Override
