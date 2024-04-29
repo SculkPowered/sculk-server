@@ -52,6 +52,9 @@ import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosit
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTime;
 import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
+import io.github.sculkpowered.server.scoreboard.DisplaySlot;
+import io.github.sculkpowered.server.scoreboard.NumberFormat;
+import io.github.sculkpowered.server.scoreboard.SculkScoreboard;
 import io.github.sculkpowered.server.util.MojangUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.netty.channel.Channel;
@@ -71,6 +74,8 @@ import javax.crypto.spec.SecretKeySpec;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.util.TriState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -255,6 +260,12 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           for (final var team : this.server.teamHandler().teams()) {
             this.send(new UpdateTeams(team, (byte) 0, team.entries().toArray(new String[]{})));
           }
+
+          final var scoreboard = new SculkScoreboard("abc", Component.text("Scoreboard",
+              NamedTextColor.RED), NumberFormat.styled(NamedTextColor.YELLOW, TextDecoration.BOLD), DisplaySlot.SIDEBAR);
+          scoreboard.score("12").update(1, null, null);
+          scoreboard.score("lol").update(53, Component.text("dahus", TextColor.color(0x175322)), null);
+          scoreboard.addViewer(this.player);
 
           this.server.eventHandler().justCall(new PlayerJoinEvent(this.player));
         }, this.executor()).exceptionally(throwable -> {
