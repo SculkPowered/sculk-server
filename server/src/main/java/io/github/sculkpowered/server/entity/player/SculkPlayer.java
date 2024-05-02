@@ -3,6 +3,7 @@ package io.github.sculkpowered.server.entity.player;
 import static io.github.sculkpowered.server.protocol.packet.play.BossBar.add;
 import static io.github.sculkpowered.server.protocol.packet.play.BossBar.remove;
 import static io.github.sculkpowered.server.util.CoordinateUtil.chunkCoordinate;
+import static io.github.sculkpowered.server.util.CoordinateUtil.forChunksInRange;
 
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.adventure.BossBarProvider;
@@ -278,7 +279,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       final var oldPosition = this.position;
       this.world = (SculkWorld) world;
       this.server.addTask(() -> {
-        this.connection.forChunksInRange(
+        forChunksInRange(
             chunkCoordinate(oldPosition.x()), chunkCoordinate(oldPosition.z()),
             this.settings.viewDistance(),
             (x, z) -> oldWorld.chunk(x, z).viewers().remove(this));
@@ -538,7 +539,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.send(new CenterChunk(chunkX, chunkZ));
     this.server.addTask(() -> {
       final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
-      this.connection.forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
+      forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
         final var chunk = this.world.chunk(x, z);
         chunks.add(chunk);
         chunk.viewers().add(this); // new in range
@@ -553,7 +554,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         }
       });
       if (checkAlreadyLoaded) {
-        this.connection.forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
+        forChunksInRange(fromChunkX, fromChunkZ, oldRange, (x, z) -> {
           final var chunk = this.world.chunk(x, z);
           if (!chunks.remove(chunk)) {
             chunk.viewers().remove(this); // chunk not in range
