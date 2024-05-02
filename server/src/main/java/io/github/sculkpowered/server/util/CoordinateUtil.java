@@ -54,4 +54,20 @@ public final class CoordinateUtil {
   public static int chunkPositionZFromBlockIndex(final int index) {
     return (index >> 28) & 0xF;
   }
+
+  public static void forChunksInRange(
+      final int chunkX, final int chunkZ, final int range, final ChunkConsumer chunk
+  ) {
+    for (var x = -range; x <= range; x++) {
+      for (var z = -range; z <= range; z++) {
+        chunk.accept(chunkX + x, chunkZ + z);
+      }
+    }
+  }
+
+  @FunctionalInterface
+  public interface ChunkConsumer {
+
+    void accept(int chunkX, int chunkZ);
+  }
 }
