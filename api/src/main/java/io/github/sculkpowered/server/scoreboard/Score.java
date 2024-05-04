@@ -14,5 +14,13 @@ public interface Score {
 
   @Nullable NumberFormat numberFormat();
 
-  void update(int score, @Nullable Component displayName, @Nullable NumberFormat numberFormat);
+  default void set(int score) {
+    this.set(score, this.displayName());
+  }
+
+  default void set(int score, @Nullable Component displayName) {
+    this.set(score, displayName, this.numberFormat());
+  }
+
+  void set(int score, @Nullable Component displayName, @Nullable NumberFormat numberFormat);
 }

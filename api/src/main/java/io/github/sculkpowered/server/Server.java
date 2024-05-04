@@ -10,6 +10,9 @@ import io.github.sculkpowered.server.event.EventHandler;
 import io.github.sculkpowered.server.plugin.PluginHandler;
 import io.github.sculkpowered.server.registry.Registry;
 import io.github.sculkpowered.server.scheduler.Scheduler;
+import io.github.sculkpowered.server.scoreboard.DisplaySlot;
+import io.github.sculkpowered.server.scoreboard.NumberFormat;
+import io.github.sculkpowered.server.scoreboard.Scoreboard;
 import io.github.sculkpowered.server.team.TeamHandler;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.biome.Biome;
@@ -198,6 +201,9 @@ public interface Server extends ForwardingAudience {
    * @since 1.0.0
    */
   @NotNull MinecraftConfig config();
+
+  @NotNull Scoreboard createScoreboard(String name, Component displayName,
+      NumberFormat numberFormat, DisplaySlot displaySlot);
 
   /**
    * Shutdowns the server.

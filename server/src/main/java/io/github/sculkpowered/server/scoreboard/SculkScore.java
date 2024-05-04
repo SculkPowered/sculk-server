@@ -42,7 +42,7 @@ public final class SculkScore implements Score {
   }
 
   @Override
-  public void update(
+  public void set(
       int score,
       @Nullable Component displayName,
       @Nullable NumberFormat numberFormat

@@ -75,7 +75,7 @@ public final class SculkScoreboard implements Scoreboard {
 
   @Override
   public @NotNull Score score(@NotNull String name) {
-    return this.scores.computeIfAbsent(name, s -> new SculkScore(this, this.name));
+    return this.scores.computeIfAbsent(name, s -> new SculkScore(this, name));
   }
 
   @Override
