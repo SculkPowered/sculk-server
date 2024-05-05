@@ -3,6 +3,7 @@ package io.github.sculkpowered.server.container.item.data;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.registry.Registries;
 import java.util.List;
+import java.util.Map;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 
@@ -12,16 +13,16 @@ public final class DataComponent {
   public static final DataComponentType<Integer> MAX_STACK_SIZE = get("minecraft:max_stack_size");
   public static final DataComponentType<Integer> MAX_DAMAGE = get("minecraft:max_damage");
   public static final DataComponentType<Integer> DAMAGE = get("minecraft:damage");
-  public static final DataComponentType<Object> UNBREAKABLE = get("minecraft:unbreakable");
+  public static final DataComponentType<Boolean> UNBREAKABLE = get("minecraft:unbreakable");
   public static final DataComponentType<Component> CUSTOM_NAME = get("minecraft:custom_name");
   public static final DataComponentType<Component> ITEM_NAME = get("minecraft:item_name");
-  public static final DataComponentType<Object> LORE = get("minecraft:lore");
-  public static final DataComponentType<Object> RARITY = get("minecraft:rarity");
-  public static final DataComponentType<Object> ENCHANTMENTS = get("minecraft:enchantments");
+  public static final DataComponentType<List<Component>> LORE = get("minecraft:lore");
+  public static final DataComponentType<Rarity> RARITY = get("minecraft:rarity");
+  public static final DataComponentType<ItemEnchantments> ENCHANTMENTS = get("minecraft:enchantments");
   public static final DataComponentType<Object> CAN_PLACE_ON = get("minecraft:can_place_on");
   public static final DataComponentType<Object> CAN_BREAK = get("minecraft:can_break");
-  public static final DataComponentType<Object> ATTRIBUTE_MODIFIERS = get("minecraft:attribute_modifiers");
-  public static final DataComponentType<Object> CUSTOM_MODEL_DATA = get("minecraft:custom_model_data");
+  public static final DataComponentType<ItemAttributes> ATTRIBUTE_MODIFIERS = get("minecraft:attribute_modifiers");
+  public static final DataComponentType<Integer> CUSTOM_MODEL_DATA = get("minecraft:custom_model_data");
   public static final DataComponentType<Void> HIDE_ADDITIONAL_TOOLTIP = get("minecraft:hide_additional_tooltip");
   public static final DataComponentType<Void> HIDE_TOOLTIP = get("minecraft:hide_tooltip");
   public static final DataComponentType<Integer> REPAIR_COST = get("minecraft:repair_cost");
@@ -31,7 +32,7 @@ public final class DataComponent {
   public static final DataComponentType<Object> FOOD = get("minecraft:food");
   public static final DataComponentType<Object> FIRE_RESISTANT = get("minecraft:fire_resistant");
   public static final DataComponentType<Object> TOOL = get("minecraft:tool");
-  public static final DataComponentType<Object> STORED_ENCHANTMENTS = get("minecraft:stored_enchantments");
+  public static final DataComponentType<ItemEnchantments> STORED_ENCHANTMENTS = get("minecraft:stored_enchantments");
   public static final DataComponentType<Object> DYED_COLOR = get("minecraft:dyed_color");
   public static final DataComponentType<Object> MAP_COLOR = get("minecraft:map_color");
   public static final DataComponentType<Object> MAP_ID = get("minecraft:map_id");
@@ -59,11 +60,11 @@ public final class DataComponent {
   public static final DataComponentType<Object> BANNER_PATTERNS = get("minecraft:banner_patterns");
   public static final DataComponentType<Object> BASE_COLOR = get("minecraft:base_color");
   public static final DataComponentType<Object> POT_DECORATIONS = get("minecraft:pot_decorations");
-  public static final DataComponentType<List<ItemStack>> CONTAINER = get("container");
-  public static final DataComponentType<Object> BLOCK_STATE = get("block_state");
-  public static final DataComponentType<Object> BEES = get("bees");
-  public static final DataComponentType<Object> LOCK = get("lock");
-  public static final DataComponentType<Object> CONTAINER_LOOT = get("container_loot");
+  public static final DataComponentType<List<ItemStack>> CONTAINER = get("minecraft:container");
+  public static final DataComponentType<Map<String, String>> BLOCK_STATE = get("minecraft:block_state");
+  public static final DataComponentType<Object> BEES = get("minecraft:bees");
+  public static final DataComponentType<Object> LOCK = get("minecraft:lock");
+  public static final DataComponentType<Object> CONTAINER_LOOT = get("minecraft:container_loot");
   
   DataComponent() {
     throw new AssertionError();

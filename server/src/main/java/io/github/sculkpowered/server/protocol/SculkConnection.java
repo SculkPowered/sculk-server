@@ -19,6 +19,7 @@ import io.github.sculkpowered.server.connection.Connection;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.Material;
 import io.github.sculkpowered.server.container.item.data.DataComponent;
+import io.github.sculkpowered.server.container.item.data.Rarity;
 import io.github.sculkpowered.server.entity.player.GameProfile;
 import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.entity.player.PlayerInfoEntry;
@@ -187,7 +188,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
               List.of(properties));
         } catch (Exception e) {
           this.send(
-              new LoginDisconnect(Component.text("Connect through your proxy!", NamedTextColor.RED)));
+              new LoginDisconnect(
+                  Component.text("Connect through your proxy!", NamedTextColor.RED)));
           return;
         }
       } else {
@@ -264,8 +266,11 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
           this.player.inventory().item(3, ItemStack
               .itemStack(Material.ACACIA_LEAVES, 3, Map.of(
-                  DataComponent.CUSTOM_NAME, Optional.of(Component.text("blalalal", NamedTextColor.GREEN)),
-                  DataComponent.DAMAGE, Optional.of(130)
+                  DataComponent.CUSTOM_NAME,
+                  Optional.of(Component.text("blalalal", NamedTextColor.GREEN)),
+                  DataComponent.DAMAGE, Optional.of(130),
+                  DataComponent.LORE, Optional.of(List.of(Component.text("A"), Component.text("B"))),
+                  DataComponent.RARITY, Optional.of(Rarity.EPIC)
               )));
         }, this.executor()).exceptionally(throwable -> {
           LOGGER.error("Exception during login of player {}", this.player.name(), throwable);

@@ -192,6 +192,30 @@ public final class Buffer {
     return this.writeString(MODERN_SERIALIZER.serialize(component));
   }
 
+  public @NotNull BinaryTag readBinaryTag() {
+    try (final var inputStream = new ByteBufInputStream(this.buf)) {
+      final var type = inputStream.readByte();
+      return switch (type) {
+        case 0 -> BinaryTagTypes.END.read(inputStream);
+        case 1 -> BinaryTagTypes.BYTE.read(inputStream);
+        case 2 -> BinaryTagTypes.SHORT.read(inputStream);
+        case 3 -> BinaryTagTypes.INT.read(inputStream);
+        case 4 -> BinaryTagTypes.LONG.read(inputStream);
+        case 5 -> BinaryTagTypes.FLOAT.read(inputStream);
+        case 6 -> BinaryTagTypes.DOUBLE.read(inputStream);
+        case 7 -> BinaryTagTypes.BYTE_ARRAY.read(inputStream);
+        case 8 -> BinaryTagTypes.STRING.read(inputStream);
+        case 9 -> BinaryTagTypes.LIST.read(inputStream);
+        case 10 -> BinaryTagTypes.COMPOUND.read(inputStream);
+        case 11 -> BinaryTagTypes.INT_ARRAY.read(inputStream);
+        case 12 -> BinaryTagTypes.LONG_ARRAY.read(inputStream);
+        default -> throw new IllegalStateException("Unexpected value: " + type);
+      };
+    } catch (IOException e) {
+      throw new DecoderException("Unable to decode binary tag: " + e.getMessage());
+    }
+  }
+
   public @NotNull CompoundBinaryTag readCompoundTag() {
     try (final var inputStream = new ByteBufInputStream(this.buf)) {
       final var type = inputStream.readByte();
