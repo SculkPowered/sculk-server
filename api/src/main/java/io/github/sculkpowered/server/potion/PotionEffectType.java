@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * An enum of all supported potion effects.
  */
 @SuppressWarnings("unused")
-public enum PotionEffect implements Registry.Entry {
+public enum PotionEffectType implements Registry.Entry {
 
   // START
   WATER("water"),
@@ -63,7 +63,7 @@ public enum PotionEffect implements Registry.Entry {
 
   private final Key key;
 
-  PotionEffect(final String key) {
+  PotionEffectType(final String key) {
     this.key = Key.key(Key.MINECRAFT_NAMESPACE, key);
   }
 

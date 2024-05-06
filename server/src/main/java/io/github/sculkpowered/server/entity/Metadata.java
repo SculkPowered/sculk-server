@@ -2,6 +2,7 @@ package io.github.sculkpowered.server.entity;
 
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.protocol.Buffer;
+import io.github.sculkpowered.server.protocol.Buffer.Writer;
 import io.github.sculkpowered.server.world.Position;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -220,16 +221,10 @@ public final class Metadata {
     this.changes = new Int2ObjectOpenHashMap<>();
   }
 
-  public record Entry<T>(int type, T t, Applier<T> applier) {
+  public record Entry<T>(int type, T t, Writer<T> writer) {
 
     public void write(final Buffer buffer) {
-      this.applier.apply(buffer, this.t);
+      this.writer.write(buffer, this.t);
     }
-  }
-
-  @FunctionalInterface
-  private interface Applier<T> {
-
-    void apply(final Buffer buffer, final T t);
   }
 }

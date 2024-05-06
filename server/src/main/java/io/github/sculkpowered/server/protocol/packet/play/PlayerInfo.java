@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public final class PlayerInfo implements Packet {
 
@@ -32,7 +31,7 @@ public final class PlayerInfo implements Packet {
     for (final var entry : entries) {
       buf.writeUniqueId(entry.profile().uniqueId());
       for (final var action : this.actions) {
-        action.writer.accept(buf, entry);
+        action.writer.write(buf, entry);
       }
     }
   }
@@ -73,9 +72,9 @@ public final class PlayerInfo implements Packet {
       }
     });
 
-    private final BiConsumer<Buffer, PlayerInfoEntry> writer;
+    private final Buffer.Writer<PlayerInfoEntry> writer;
 
-    Action(final BiConsumer<Buffer, PlayerInfoEntry> writer) {
+    Action(final Buffer.Writer<PlayerInfoEntry> writer) {
       this.writer = writer;
     }
   }

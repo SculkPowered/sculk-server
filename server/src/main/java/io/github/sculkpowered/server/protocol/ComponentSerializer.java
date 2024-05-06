@@ -167,7 +167,7 @@ public final class ComponentSerializer {
         for (final var key : compound.keySet()) {
           jsonObject.add(key.isEmpty() ? "text" : key, deserialize0(
               Objects.requireNonNull(compound.get(key))));
-        };
+        }
         return jsonObject;
       case 11://BinaryTagTypes.INT_ARRAY:
         final var intArray = ((IntArrayBinaryTag) tag).value();

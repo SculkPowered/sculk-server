@@ -4,7 +4,7 @@ import io.github.sculkpowered.server.container.item.Material;
 import io.github.sculkpowered.server.container.item.data.DataComponentType;
 import io.github.sculkpowered.server.damage.DamageType;
 import io.github.sculkpowered.server.enchantment.Enchantment;
-import io.github.sculkpowered.server.potion.PotionEffect;
+import io.github.sculkpowered.server.potion.PotionEffectType;
 import io.github.sculkpowered.server.world.biome.Biome;
 import io.github.sculkpowered.server.world.block.BlockState;
 import io.github.sculkpowered.server.world.dimension.Dimension;
@@ -18,7 +18,7 @@ public final class Registries {
   private static Registry<BlockState> BLOCKS;
   private static Registry<Material> MATERIALS;
   private static Registry<Enchantment> ENCHANTMENTS;
-  private static Registry<PotionEffect> POTION_EFFECTS;
+  private static Registry<PotionEffectType> POTION_EFFECTS;
   private static Registry<DataComponentType<?>> DATA_COMPONENT_TYPES;
 
   Registries() {
@@ -45,11 +45,11 @@ public final class Registries {
     return MATERIALS;
   }
 
-  public Registry<Enchantment> enchantments() {
+  public static Registry<Enchantment> enchantments() {
     return ENCHANTMENTS;
   }
 
-  public Registry<PotionEffect> potionEffects() {
+  public static Registry<PotionEffectType> potionEffects() {
     return POTION_EFFECTS;
   }
 
@@ -65,7 +65,7 @@ public final class Registries {
       final Registry<BlockState> blocks,
       final Registry<Material> materials,
       final Registry<Enchantment> enchantments,
-      final Registry<PotionEffect> potionEffects,
+      final Registry<PotionEffectType> potionEffects,
       final Registry<DataComponentType<?>> dataComponentTypes
   ) {
     DIMENSIONS = dimensions;

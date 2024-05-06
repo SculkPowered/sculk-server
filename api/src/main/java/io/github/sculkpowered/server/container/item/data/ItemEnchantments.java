@@ -1,5 +1,8 @@
 package io.github.sculkpowered.server.container.item.data;
 
-public class ItemEnchantments {
+import io.github.sculkpowered.server.enchantment.Enchantment;
+import java.util.Map;
+
+public record ItemEnchantments(Map<Enchantment, Integer> enchantments, boolean showInTooltip) {
 
 }

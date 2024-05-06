@@ -28,9 +28,9 @@ public final class DataComponent {
   public static final DataComponentType<Integer> REPAIR_COST = get("minecraft:repair_cost");
   public static final DataComponentType<Void> CREATIVE_SLOT_LOCK = get("minecraft:creative_slot_lock");
   public static final DataComponentType<Boolean> ENCHANTMENT_GLINT_OVERRIDE = get("minecraft:enchantment_glint_override");
-  public static final DataComponentType<Object> INTANGIBLE_PROJECTILE = get("minecraft:intangible_projectile");
+  public static final DataComponentType<Void> INTANGIBLE_PROJECTILE = get("minecraft:intangible_projectile");
   public static final DataComponentType<Object> FOOD = get("minecraft:food");
-  public static final DataComponentType<Object> FIRE_RESISTANT = get("minecraft:fire_resistant");
+  public static final DataComponentType<Void> FIRE_RESISTANT = get("minecraft:fire_resistant");
   public static final DataComponentType<Object> TOOL = get("minecraft:tool");
   public static final DataComponentType<ItemEnchantments> STORED_ENCHANTMENTS = get("minecraft:stored_enchantments");
   public static final DataComponentType<Object> DYED_COLOR = get("minecraft:dyed_color");

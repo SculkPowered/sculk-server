@@ -328,6 +328,7 @@ public final class Buffer {
       for (var i = 0; i < removedComponents; i++) {
         map.put(Registries.dataComponentTypes().get(this.readVarInt()), Optional.empty());
       }
+      System.out.println(map);
       return map;
     }
   }
@@ -377,5 +378,11 @@ public final class Buffer {
 
   public static GsonComponentSerializer getGsonSerializer(final int version) {
     return version >= 735 ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
+  }
+
+  @FunctionalInterface
+  public interface Writer<T> {
+
+    void write(@NotNull Buffer buf, @NotNull T value);
   }
 }

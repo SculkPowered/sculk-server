@@ -31,6 +31,14 @@ public abstract class SculkDataComponentType<T> implements DataComponentType<T> 
     return CompoundBinaryTag.empty();
   }
 
+  @Override
+  public String toString() {
+    return "SculkDataComponentType{" +
+        "key=" + this.key +
+        ", id=" + this.id +
+        '}';
+  }
+
   public abstract void write(final Buffer buf, final T value);
 
   public abstract T read(final Buffer buf);

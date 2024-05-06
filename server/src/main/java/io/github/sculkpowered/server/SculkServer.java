@@ -32,7 +32,7 @@ import io.github.sculkpowered.server.event.lifecycle.ServerShutdownEvent;
 import io.github.sculkpowered.server.json.GameProfileDeserializer;
 import io.github.sculkpowered.server.json.GameProfilePropertyDeserializer;
 import io.github.sculkpowered.server.plugin.SculkPluginHandler;
-import io.github.sculkpowered.server.potion.PotionEffect;
+import io.github.sculkpowered.server.potion.PotionEffectType;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.NettyServer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
@@ -93,6 +93,19 @@ public final class SculkServer implements Server {
       .create();
   public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
+  static {
+    Registries.set(
+        new SimpleRegistry<>("minecraft:dimension_type", Dimension.OVERWORLD),
+        new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS),
+        DamageTypeRegistry.get(),
+        BlockRegistry.get(),
+        new EnumRegistry<>("minecraft:item", Material.AIR),
+        new EnumRegistry<>("minecraft:enchantment", Enchantment.AQUA_AFFINITY),
+        new EnumRegistry<>("minecraft:potion", PotionEffectType.AWKWARD),
+        DataComponentTypeRegistry.get()
+    );
+  }
+
   private boolean running = true;
 
   private SculkConfiguration configuration;
@@ -135,16 +148,6 @@ public final class SculkServer implements Server {
         Epoll.isAvailable() ? "epoll" : "nio", Natives.compress.getLoadedVariant(),
         Natives.cipher.getLoadedVariant());
 
-    Registries.set(
-        new SimpleRegistry<>("minecraft:dimension_type", Dimension.OVERWORLD),
-        new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS),
-        DamageTypeRegistry.get(),
-        BlockRegistry.get(),
-        new EnumRegistry<>("minecraft:item", Material.AIR),
-        new EnumRegistry<>("minecraft:enchantment", Enchantment.AQUA_AFFINITY),
-        new EnumRegistry<>("minecraft:potion", PotionEffect.AWKWARD),
-        DataComponentTypeRegistry.get()
-    );
     this.pluginHandler = new SculkPluginHandler(this);
     this.eventHandler = new SculkEventHandler();
     this.commandHandler = (SculkCommandHandler) new SculkCommandHandler(this) // register defaults
