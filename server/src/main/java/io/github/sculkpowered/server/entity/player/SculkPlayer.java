@@ -630,7 +630,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       for (var i = 0; i < this.container.items().size(); i++) {
         items.set(i, this.container.items().get(i));
       }
-      this.send(new ContainerContent((byte) 1, this.container.state(), items));
+      this.send(new ContainerContent((byte) 1, this.container.state(), items, ItemStack.empty()));
     }
   }
 
