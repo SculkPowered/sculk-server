@@ -3,20 +3,16 @@ package io.github.sculkpowered.server;
 import io.github.sculkpowered.server.command.CommandHandler;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.container.Container;
-import io.github.sculkpowered.server.damage.DamageType;
 import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.event.EventHandler;
 import io.github.sculkpowered.server.plugin.PluginHandler;
-import io.github.sculkpowered.server.registry.Registry;
 import io.github.sculkpowered.server.scheduler.Scheduler;
 import io.github.sculkpowered.server.scoreboard.DisplaySlot;
 import io.github.sculkpowered.server.scoreboard.NumberFormat;
 import io.github.sculkpowered.server.scoreboard.Scoreboard;
 import io.github.sculkpowered.server.team.TeamHandler;
 import io.github.sculkpowered.server.world.World;
-import io.github.sculkpowered.server.world.biome.Biome;
-import io.github.sculkpowered.server.world.dimension.Dimension;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -30,30 +26,6 @@ public interface Server extends ForwardingAudience {
 
   Consumer<Player> DEFAULT_WORLD_UNLOAD = player ->
       player.disconnect(Component.text("The world was unloaded!", NamedTextColor.RED));
-
-  /**
-   * Gets the registry of the dimensions
-   *
-   * @return the dimension registry instance
-   * @since 1.0.0
-   */
-  @NotNull Registry<Dimension> dimensionRegistry();
-
-  /**
-   * Gets the registry of the biomes
-   *
-   * @return the biome registry instance
-   * @since 1.0.0
-   */
-  @NotNull Registry<Biome> biomeRegistry();
-
-  /**
-   * Gets the registry of the damage types
-   *
-   * @return the damage type registry instance
-   * @since 1.0.0
-   */
-  @NotNull Registry<DamageType> damageTypeRegistry();
 
   /**
    * Gets the {@link PluginHandler} instance

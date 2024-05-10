@@ -1,5 +1,6 @@
 package io.github.sculkpowered.server.world.block;
 
+import io.github.sculkpowered.server.registry.Registries;
 import java.util.HashMap;
 import java.util.Map;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
@@ -440,6 +441,7 @@ public final class Block {
   public static final BlockState GRINDSTONE = get("minecraft:grindstone");
   public static final BlockState HANGING_ROOTS = get("minecraft:hanging_roots");
   public static final BlockState HAY_BLOCK = get("minecraft:hay_block");
+  public static final BlockState HEAVY_CORE = get("minecraft:heavy_core");
   public static final BlockState HEAVY_WEIGHTED_PRESSURE_PLATE = get("minecraft:heavy_weighted_pressure_plate");
   public static final BlockState HONEY_BLOCK = get("minecraft:honey_block");
   public static final BlockState HONEYCOMB_BLOCK = get("minecraft:honeycomb_block");
@@ -962,6 +964,7 @@ public final class Block {
   public static final BlockState TURTLE_EGG = get("minecraft:turtle_egg");
   public static final BlockState TWISTING_VINES = get("minecraft:twisting_vines");
   public static final BlockState TWISTING_VINES_PLANT = get("minecraft:twisting_vines_plant");
+  public static final BlockState VAULT = get("minecraft:vault");
   public static final BlockState VERDANT_FROGLIGHT = get("minecraft:verdant_froglight");
   public static final BlockState VINE = get("minecraft:vine");
   public static final BlockState VOID_AIR = get("minecraft:void_air");
@@ -1083,7 +1086,7 @@ public final class Block {
    * @return the block of the name
    */
   public static BlockState get(final @NotNull String name) {
-    return Blocks.registry().get(name);
+    return Registries.blocks().get(name);
   }
 
   /**
@@ -1093,7 +1096,7 @@ public final class Block {
    * @return the block of the id
    */
   public static BlockState get(final int id) {
-    return Blocks.registry().get(id);
+    return Registries.blocks().get(id);
   }
 
   public interface Entity<B extends BlockState> extends BlockState {
@@ -1103,26 +1106,6 @@ public final class Block {
     @NotNull CompoundBinaryTag nbt();
 
     @NotNull B nbt(@NotNull CompoundBinaryTag nbt);
-  }
-
-  /**
-   * The face a block can have.
-   */
-  public static final class Face extends PropertyValue<Face> {
-
-    private static final Map<String, Face> INDEX = new HashMap<>(3);
-
-    public static final Face FLOOR = new Face("floor");
-    public static final Face WALL = new Face("wall");
-    public static final Face CEILING = new Face("ceiling");
-
-    private Face(String value) {
-      super(value, INDEX);
-    }
-
-    public static Face get(@NotNull String value) {
-      return INDEX.get(value);
-    }
   }
 
   /**
@@ -1152,67 +1135,6 @@ public final class Block {
 
     public static Facing get(int value) {
       return INDEX_BY_ID.get(value);
-    }
-  }
-
-  /**
-   * The half a block can be.
-   */
-  public static final class Half extends PropertyValue<Half> {
-
-    private static final Map<String, Half> INDEX = new HashMap<>(4);
-
-    public static final Facing BOTTOM = new Facing("bottom");
-    public static final Facing TOP = new Facing("top");
-    public static final Facing LEFT = new Facing("left");
-    public static final Facing RIGHT = new Facing("right");
-
-    private Half(String value) {
-      super(value, INDEX);
-    }
-
-    public static Half get(@NotNull String value) {
-      return INDEX.get(value);
-    }
-  }
-
-  /**
-   * The type of the slab.
-   */
-  public static final class SlabType extends PropertyValue<SlabType> {
-
-    private static final Map<String, SlabType> INDEX = new HashMap<>(3);
-
-    public static final Facing TOP = new Facing("top");
-    public static final Facing BOTTOM = new Facing("bottom");
-    public static final Facing DOUBLE = new Facing("double");
-
-    private SlabType(String value) {
-      super(value, INDEX);
-    }
-
-    public static SlabType get(@NotNull String value) {
-      return INDEX.get(value);
-    }
-  }
-
-  /**
-   * The type of the chest.
-   */
-  public static final class ChestType extends PropertyValue<ChestType> {
-
-    private static final Map<String, ChestType> INDEX = new HashMap<>(3);
-
-    public static final Facing SINGLE = new Facing("single");
-    public static final Facing LEFT = new Facing("left");
-    public static final Facing RIGHT = new Facing("right");
-
-    private ChestType(String value) {
-      super(value, INDEX);
-    }
-
-    public static ChestType get(@NotNull String value) {
-      return INDEX.get(value);
     }
   }
 

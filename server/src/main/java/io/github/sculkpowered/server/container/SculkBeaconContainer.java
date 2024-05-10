@@ -1,7 +1,7 @@
 package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.potion.PotionEffect;
+import io.github.sculkpowered.server.potion.PotionType;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Range;
 public final class SculkBeaconContainer extends SculkContainer implements BeaconContainer {
 
   private int powerLevel;
-  private PotionEffect firstPotionEffect;
-  private PotionEffect secondPotionEffect;
+  private PotionType firstPotionType;
+  private PotionType secondPotionType;
 
   public SculkBeaconContainer(final Component title) {
     super(Type.BEACON, title);
@@ -28,31 +28,31 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
   }
 
   @Override
-  public void firstPotionEffect(@NotNull PotionEffect potionEffect) {
-    this.sendProperty(1, potionEffect.ordinal());
-    this.firstPotionEffect = potionEffect;
+  public void firstPotionEffect(@NotNull PotionType potionType) {
+    this.sendProperty(1, potionType.ordinal());
+    this.firstPotionType = potionType;
   }
 
   @Override
-  public @NotNull PotionEffect firstPotionEffect() {
-    return this.firstPotionEffect;
+  public @NotNull PotionType firstPotionEffect() {
+    return this.firstPotionType;
   }
 
   @Override
-  public void secondPotionEffect(@NotNull PotionEffect potionEffect) {
-    this.sendProperty(2, potionEffect.ordinal());
-    this.secondPotionEffect = potionEffect;
+  public void secondPotionEffect(@NotNull PotionType potionType) {
+    this.sendProperty(2, potionType.ordinal());
+    this.secondPotionType = potionType;
   }
 
   @Override
-  public @NotNull PotionEffect secondPotionEffect() {
-    return this.secondPotionEffect;
+  public @NotNull PotionType secondPotionEffect() {
+    return this.secondPotionType;
   }
 
   @Override
   public void sendProperties(SculkPlayer player) {
     player.send(this.property(0, this.powerLevel));
-    player.send(this.property(1, this.firstPotionEffect.ordinal()));
-    player.send(this.property(2, this.secondPotionEffect.ordinal()));
+    player.send(this.property(1, this.firstPotionType.ordinal()));
+    player.send(this.property(2, this.secondPotionType.ordinal()));
   }
 }

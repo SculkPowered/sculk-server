@@ -1,5 +1,6 @@
 package io.github.sculkpowered.server.entity.player;
 
+import io.github.sculkpowered.server.attribute.Attribute;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.connection.Connection;
 import io.github.sculkpowered.server.container.Container;
@@ -17,13 +18,18 @@ import org.jetbrains.annotations.Nullable;
 public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Connection,
     BossBarViewer {
 
+  Attribute BLOCK_BREAKING_SPEED = new Attribute("player.block_break_speed", 5, 1F, 1024F);
+  Attribute BLOCK_INTERACTION_RANGE = new Attribute("player.block_interaction_range", 6, 4.5F, 64F);
+  Attribute ENTITY_INTERACTION_RANGE = new Attribute("generic.entity_interaction_range", 7, 3F, 64F);
+
   /**
    * Gets the name of the player.
    *
    * @return the player's name
    * @since 1.0.0
    */
-  @NotNull String name();
+  @NotNull
+  String name();
 
   /**
    * Gets the profile of the player.
@@ -31,7 +37,8 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's profile
    * @since 1.0.0
    */
-  @NotNull GameProfile profile();
+  @NotNull
+  GameProfile profile();
 
   /**
    * Gets the settings of the player.
@@ -39,7 +46,8 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's settings
    * @since 1.0.0
    */
-  @NotNull PlayerSettings settings();
+  @NotNull
+  PlayerSettings settings();
 
   /**
    * Gets the game mode of the player.
@@ -47,7 +55,8 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's game mode
    * @since 1.0.0
    */
-  @NotNull GameMode gameMode();
+  @NotNull
+  GameMode gameMode();
 
   /**
    * Sets the game mode of a player.
@@ -63,7 +72,8 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's game mode
    * @since 1.0.0
    */
-  @Nullable Component displayName();
+  @Nullable
+  Component displayName();
 
   /**
    * Sets the display name of a player.
@@ -87,7 +97,8 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the player's inventory
    * @since 1.0.0
    */
-  @NotNull Inventory inventory();
+  @NotNull
+  Inventory inventory();
 
   /**
    * Gets the opened container.
@@ -95,7 +106,8 @@ public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Co
    * @return the opened container or {@code null} if nothing is opened
    * @since 1.0.0
    */
-  @Nullable Container openedContainer();
+  @Nullable
+  Container openedContainer();
 
   /**
    * Opens the specified container.

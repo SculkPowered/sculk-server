@@ -1,5 +1,10 @@
 package io.github.sculkpowered.server.code.generator;
 
+import static io.github.sculkpowered.server.code.generator.Constants.API_PACKAGE;
+import static io.github.sculkpowered.server.code.generator.Constants.GSON;
+import static io.github.sculkpowered.server.code.generator.Constants.SERVER_PACKAGE;
+import static io.github.sculkpowered.server.code.generator.Constants.STRING_JSON_MAP;
+
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,21 +44,24 @@ final class CodeGenerator extends Generator {
       new BlockGenerator(reader);
     }
     try (final var reader = Files.newBufferedReader(reports.resolve("registries.json"))) {
-      final var json = Constants.GSON.fromJson(reader, JsonObject.class);
+      final var json = GSON.fromJson(reader, JsonObject.class);
 
       this.generateRegistry(json.get("minecraft:item").getAsJsonObject(),
-          Constants.API_PACKAGE.resolve("container").resolve("item").resolve("Material.java"));
+          API_PACKAGE.resolve("container").resolve("item").resolve("Material.java"));
 
       this.generateRegistry(json.get("minecraft:enchantment").getAsJsonObject(),
-          Constants.API_PACKAGE.resolve("enchantment").resolve("Enchantment.java"));
+          API_PACKAGE.resolve("enchantment").resolve("Enchantment.java"));
 
       this.generateRegistry(json.get("minecraft:potion").getAsJsonObject(),
-          Constants.API_PACKAGE.resolve("potion").resolve("PotionEffect.java"));
+          API_PACKAGE.resolve("potion").resolve("PotionType.java"));
+
+      this.generateRegistry(json.get("minecraft:mob_effect").getAsJsonObject(),
+          API_PACKAGE.resolve("potion").resolve("MobEffectType.java"));
 
       // Entities
-      final var entityPath = Constants.API_PACKAGE.resolve("entity");
-      final Map<String, JsonObject> map = Constants.GSON.fromJson(json.get("minecraft:entity_type")
-          .getAsJsonObject().get("entries"), Constants.STRING_JSON_MAP);
+      final var entityPath = API_PACKAGE.resolve("entity");
+      final Map<String, JsonObject> map = GSON.fromJson(json.get("minecraft:entity_type")
+          .getAsJsonObject().get("entries"), STRING_JSON_MAP);
       final var entityToClass = new ArrayList<String>();
       for (final var entry : map.entrySet()) {
         final var key = entry.getKey();
@@ -71,8 +79,8 @@ final class CodeGenerator extends Generator {
 
         entityToClass.add("map.put(" + name + ".class, Sculk" + name + "::new);");
       }
-      this.generateRegistry(map, Constants.API_PACKAGE.resolve("entity").resolve("EntityType.java"));
-      this.append(Constants.SERVER_PACKAGE.resolve("entity").resolve("EntityClassToSupplierMap.java"),
+      this.generateRegistry(map, API_PACKAGE.resolve("entity").resolve("EntityType.java"));
+      this.append(SERVER_PACKAGE.resolve("entity").resolve("EntityClassToSupplierMap.java"),
           entityToClass);
     }
 
@@ -87,7 +95,7 @@ final class CodeGenerator extends Generator {
         final var name = path.getFileName().toString().split("\\.")[0];
         final var upperCaseName = name.toUpperCase(Locale.ENGLISH);
         try (final var reader = Files.newBufferedReader(path)) {
-          final var damageData = Constants.GSON.fromJson(reader, JsonObject.class);
+          final var damageData = GSON.fromJson(reader, JsonObject.class);
           final var stringBuilder = new StringBuilder(
               "public static final DamageType " + upperCaseName +
                   " = builder(Key.key(MINECRAFT_NAMESPACE, \"" + name + "\"))");
@@ -119,22 +127,24 @@ final class CodeGenerator extends Generator {
           throw new RuntimeException(e);
         }
       });
-      this.append(Constants.API_PACKAGE.resolve("damage").resolve("DamageType.java"), list);
-      this.append(Constants.SERVER_PACKAGE.resolve("damage").resolve("DamageTypeRegistry.java"), registry);
+      this.append(API_PACKAGE.resolve("damage").resolve("DamageType.java"), list);
+      this.append(SERVER_PACKAGE.resolve("damage").resolve("DamageTypeRegistry.java"), registry);
     }
   }
 
   private void generateRegistry(final JsonObject object, final Path path) throws IOException {
-    final Map<String, JsonObject> map = Constants.GSON.fromJson(object.get("entries"), Constants.STRING_JSON_MAP);
+    final Map<String, JsonObject> map = GSON.fromJson(object.get("entries"), STRING_JSON_MAP);
     this.generateRegistry(map, path);
   }
 
   private void generateRegistry(final Map<String, JsonObject> map, final Path path)
       throws IOException {
     final var list = new ArrayList<Entry>(map.size());
-    map.forEach((key, json) ->
-        list.add(new Entry(key.split(":")[1].toUpperCase(Locale.ENGLISH) + "(\"" + key + "\"),",
-            json.get("protocol_id").getAsInt())));
+    map.forEach((key, json) -> {
+      final var keyValue = key.split(":")[1];
+      list.add(new Entry(keyValue.toUpperCase(Locale.ENGLISH) + "(\"" + keyValue + "\"),",
+          json.get("protocol_id").getAsInt()));
+    });
     list.sort(Comparator.comparingInt(entry -> entry.id));
     this.append(path, list.stream().map(Entry::name).toList());
   }

@@ -23,4 +23,13 @@ public final class OpenScreen implements Packet {
         .writeVarInt(this.windowType)
         .writeComponent(this.title);
   }
+
+  @Override
+  public String toString() {
+    return "OpenScreen{" +
+        "windowId=" + this.windowId +
+        ", windowType=" + this.windowType +
+        ", title=" + this.title +
+        '}';
+  }
 }

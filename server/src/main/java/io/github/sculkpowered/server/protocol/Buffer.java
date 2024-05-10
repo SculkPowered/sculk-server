@@ -4,7 +4,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.Material;
+import io.github.sculkpowered.server.container.item.data.DataComponentType;
+import io.github.sculkpowered.server.container.item.data.DataComponents;
+import io.github.sculkpowered.server.container.item.data.SculkDataComponentType;
+import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.scoreboard.NumberFormat;
 import io.github.sculkpowered.server.util.Utf8;
 import io.github.sculkpowered.server.world.Position;
@@ -15,6 +20,11 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagType;
@@ -187,18 +197,27 @@ public final class Buffer {
     return this.writeString(MODERN_SERIALIZER.serialize(component));
   }
 
-  public @NotNull CompoundBinaryTag readCompoundTag() {
+  public @NotNull BinaryTag readBinaryTag() {
     try (final var inputStream = new ByteBufInputStream(this.buf)) {
       final var type = inputStream.readByte();
-      if (type == BinaryTagTypes.COMPOUND.id()) {
-        return BinaryTagTypes.COMPOUND.read(inputStream);
-      } else if (type == BinaryTagTypes.END.id()) {
-        return CompoundBinaryTag.empty();
-      } else {
-        throw new AssertionError();
-      }
+      return switch (type) {
+        case 0 -> BinaryTagTypes.END.read(inputStream);
+        case 1 -> BinaryTagTypes.BYTE.read(inputStream);
+        case 2 -> BinaryTagTypes.SHORT.read(inputStream);
+        case 3 -> BinaryTagTypes.INT.read(inputStream);
+        case 4 -> BinaryTagTypes.LONG.read(inputStream);
+        case 5 -> BinaryTagTypes.FLOAT.read(inputStream);
+        case 6 -> BinaryTagTypes.DOUBLE.read(inputStream);
+        case 7 -> BinaryTagTypes.BYTE_ARRAY.read(inputStream);
+        case 8 -> BinaryTagTypes.STRING.read(inputStream);
+        case 9 -> BinaryTagTypes.LIST.read(inputStream);
+        case 10 -> BinaryTagTypes.COMPOUND.read(inputStream);
+        case 11 -> BinaryTagTypes.INT_ARRAY.read(inputStream);
+        case 12 -> BinaryTagTypes.LONG_ARRAY.read(inputStream);
+        default -> throw new IllegalStateException("Unexpected value: " + type);
+      };
     } catch (IOException e) {
-      throw new DecoderException("Unable to decode compound tag: " + e.getMessage());
+      throw new DecoderException("Unable to decode binary tag: " + e.getMessage());
     }
   }
 
@@ -224,22 +243,21 @@ public final class Buffer {
   }
 
   public @NotNull ItemStack readItem() {
-    if (!this.readBoolean()) {
+    final var amount = this.readVarInt();
+    if (amount == 0) {
       return ItemStack.empty();
     }
-    return ItemStack.itemStack(Material.get(this.readVarInt()), this.readByte(),
-        this.readCompoundTag());
+    return ItemStack.itemStack(Material.get(this.readVarInt()), amount, this.readDataComponents());
   }
 
-  public @NotNull Buffer writeItem(final @NotNull ItemStack slot) {
-    if (!slot.isEmpty()) {
+  public @NotNull Buffer writeItem(final @NotNull ItemStack item) {
+    if (!item.isEmpty()) {
       this
-          .writeBoolean(true)
-          .writeVarInt(slot.material().ordinal())
-          .writeByte((byte) slot.amount())
-          .writeBinaryTag(slot.meta().asNbt());
+          .writeVarInt(item.amount())
+          .writeVarInt(item.material().id())
+          .writeDataComponents(item.components().components());
     } else {
-      this.buf.writeBoolean(false);
+      this.writeVarInt(0);
     }
     return this;
   }
@@ -282,6 +300,85 @@ public final class Buffer {
 
   public <T extends Enum<T>> T readEnum(final Class<T> enumClass) {
     return enumClass.getEnumConstants()[this.readVarInt()];
+  }
+
+  private @NotNull DataComponents readDataComponents() {
+    final var components = this.readVarInt();
+    final var removedComponents = this.readVarInt();
+    if (components == 0 && removedComponents == 0) {
+      return DataComponents.empty();
+    } else {
+      final var map = new HashMap<DataComponentType<?>, Optional<?>>(
+          components + removedComponents);
+      for (var i = 0; i < components; i++) {
+        final var type = (SculkDataComponentType<?>) Registries.dataComponentTypes()
+            .get(this.readVarInt());
+        map.put(type, Optional.of(type.read(this)));
+      }
+
+      for (var i = 0; i < removedComponents; i++) {
+        map.put(Registries.dataComponentTypes().get(this.readVarInt()), Optional.empty());
+      }
+      System.out.println(map);
+      return DataComponents.from(map);
+    }
+  }
+
+  public @NotNull Buffer writeDataComponents(
+      final @NotNull Map<DataComponentType<?>, Optional<?>> map) {
+    if (map.isEmpty()) {
+      return this
+          .writeVarInt(0)
+          .writeVarInt(0);
+    }
+    var present = 0;
+    var empty = 0;
+    final var entries = new HashSet<>(map.entrySet());
+    var iterator = entries.iterator();
+    while (iterator.hasNext()) {
+      final var entry = iterator.next();
+      if (((SculkDataComponentType<?>) entry.getKey()).writable()) {
+        if (entry.getValue().isPresent()) {
+          present++;
+        } else {
+          empty++;
+        }
+      } else {
+        iterator.remove();
+      }
+    }
+    this
+        .writeVarInt(present)
+        .writeVarInt(empty);
+    iterator = entries.iterator();
+    while (iterator.hasNext()) {
+      final var entry = iterator.next();
+      if (entry.getValue().isPresent()) {
+        @SuppressWarnings("unchecked") final var type = (SculkDataComponentType<Object>) entry.getKey();
+        if (type.writable()) {
+          this.writeVarInt(type.id());
+          type.write(this, entry.getValue().get());
+        }
+        iterator.remove();
+      }
+    }
+    for (final var entry : entries) {
+      this.writeVarInt(entry.getKey().id());
+    }
+    return this;
+  }
+
+  public @NotNull Buffer writeProfileProperties(final @NotNull List<Property> properties) {
+    this.writeVarInt(properties.size());
+    for (final var property : properties) {
+      this
+          .writeString(property.key())
+          .writeString(property.value());
+      if (this.writeOptional(property)) {
+        this.writeString(property.signature());
+      }
+    }
+    return this;
   }
 
   public @NotNull Buffer writeNumberFormat(final NumberFormat numberFormat) {
@@ -328,5 +425,17 @@ public final class Buffer {
 
   public static GsonComponentSerializer getGsonSerializer(final int version) {
     return version >= 735 ? MODERN_SERIALIZER : PRE_1_16_SERIALIZER;
+  }
+
+  @FunctionalInterface
+  public interface Writer<T> {
+
+    void write(@NotNull Buffer buf, @NotNull T value);
+  }
+
+  @FunctionalInterface
+  public interface Reader<T> {
+
+    T read(@NotNull Buffer buf);
   }
 }

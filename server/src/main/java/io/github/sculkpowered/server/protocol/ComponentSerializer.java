@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.LazilyParsedNumber;
 import java.util.ArrayList;
+import java.util.Objects;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagType;
 import net.kyori.adventure.nbt.BinaryTagTypes;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  * Serialisation based on <a
  * href="https://github.com/PaperMC/Velocity/blob/dev/3.0.0/proxy/src/main/java/com/velocitypowered/proxy/protocol/packet/chat/ComponentHolder.java#L113">...</a>
  */
-final class ComponentSerializer {
+public final class ComponentSerializer {
 
   public static @NotNull BinaryTag serializeToNbt(final Component component) {
     return serializeToNbt(GsonComponentSerializer.gson().serializeToTree(component));
@@ -124,5 +125,66 @@ final class ComponentSerializer {
       return ListBinaryTag.listBinaryTag(listType, tagItems);
     }
     return EndBinaryTag.endBinaryTag();
+  }
+
+  public static Component deserialize(final @NotNull BinaryTag tag) {
+    return GsonComponentSerializer.gson().deserializeFromTree(deserialize0(tag));
+  }
+
+  private static JsonElement deserialize0(final @NotNull BinaryTag tag) {
+    switch (tag.type().id()) {
+      case 1://BinaryTagTypes.BYTE:
+        return new JsonPrimitive(((ByteBinaryTag) tag).value());
+      case 2://BinaryTagTypes.SHORT:
+        return new JsonPrimitive(((ShortBinaryTag) tag).value());
+      case 3://BinaryTagTypes.INT:
+        return new JsonPrimitive(((IntBinaryTag) tag).value());
+      case 4://BinaryTagTypes.LONG:
+        return new JsonPrimitive(((LongBinaryTag) tag).value());
+      case 5://BinaryTagTypes.FLOAT:
+        return new JsonPrimitive(((FloatBinaryTag) tag).value());
+      case 6://BinaryTagTypes.DOUBLE:
+        return new JsonPrimitive(((DoubleBinaryTag) tag).value());
+      case 7://BinaryTagTypes.BYTE_ARRAY:
+        final var byteArray = ((ByteArrayBinaryTag) tag).value();
+        final var jsonByteArray = new JsonArray(byteArray.length);
+        for (var b : byteArray) {
+          jsonByteArray.add(new JsonPrimitive(b));
+        }
+        return jsonByteArray;
+      case 8://BinaryTagTypes.STRING:
+        return new JsonPrimitive(((StringBinaryTag) tag).value());
+      case 9://BinaryTagTypes.LIST:
+        final var items = (ListBinaryTag) tag;
+        final var jsonList = new JsonArray(items.size());
+        for (final var subTag : items) {
+          jsonList.add(deserialize0(subTag));
+        }
+        return jsonList;
+      case 10://BinaryTagTypes.COMPOUND:
+        final var compound = (CompoundBinaryTag) tag;
+        final var jsonObject = new JsonObject();
+        for (final var key : compound.keySet()) {
+          jsonObject.add(key.isEmpty() ? "text" : key, deserialize0(
+              Objects.requireNonNull(compound.get(key))));
+        }
+        return jsonObject;
+      case 11://BinaryTagTypes.INT_ARRAY:
+        final var intArray = ((IntArrayBinaryTag) tag).value();
+        final var jsonIntArray = new JsonArray(intArray.length);
+        for (int i : intArray) {
+          jsonIntArray.add(new JsonPrimitive(i));
+        }
+        return jsonIntArray;
+      case 12://BinaryTagTypes.LONG_ARRAY:
+        final var longArray = ((LongArrayBinaryTag) tag).value();
+        final var jsonLongArray = new JsonArray(longArray.length);
+        for (var l : longArray) {
+          jsonLongArray.add(new JsonPrimitive(l));
+        }
+        return jsonLongArray;
+      default:
+        throw new IllegalArgumentException("Unknown tag: " + tag);
+    }
   }
 }

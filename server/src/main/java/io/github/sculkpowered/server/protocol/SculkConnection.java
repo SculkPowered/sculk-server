@@ -53,6 +53,7 @@ import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosit
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTime;
 import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
+import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.MojangUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.netty.channel.Channel;
@@ -181,7 +182,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
               List.of(properties));
         } catch (Exception e) {
           this.send(
-              new LoginDisconnect(Component.text("Connect through your proxy!", NamedTextColor.RED)));
+              new LoginDisconnect(
+                  Component.text("Connect through your proxy!", NamedTextColor.RED)));
           return;
         }
       } else {
@@ -204,11 +206,9 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   public void configuration() {
     this.send(SculkConnection.BRAND_PACKET);
-    this.send(new RegistryData(
-        this.server.biomeRegistry(),
-        this.server.dimensionRegistry(),
-        this.server.damageTypeRegistry())
-    );
+    this.send(new RegistryData(Registries.biomes()));
+    this.send(new RegistryData(Registries.dimensions()));
+    this.send(new RegistryData(Registries.damageTypes()));
     this.send(FinishConfiguration.INSTANCE);
   }
 
@@ -235,7 +235,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           this.server.addPlayer(this.player);
 
           this.send(new Login(this.player.id(), (byte) this.player.gameMode().ordinal(),
-              world.dimension().name()));
+              world.dimension()));
 
           this.sendCommands();
           this.send(new GameEvent(13, -1));

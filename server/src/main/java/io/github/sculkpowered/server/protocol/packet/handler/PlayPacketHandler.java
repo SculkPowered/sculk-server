@@ -456,7 +456,7 @@ public final class PlayPacketHandler extends PacketHandler {
           if (currentBlock != Block.AIR) {
             return; // block at position, don't set
           }
-          var block = Block.get(slot.material().key());
+          var block = Block.get(slot.material().key().asString());
           if (block.hasProperty("facing")) { // let's set the correct facing
             final var rotation =
                 (int) Math.floor(this.player.position().yaw() / 90.0D + 0.5D) & 3;

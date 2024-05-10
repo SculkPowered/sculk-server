@@ -50,14 +50,15 @@ public abstract class SculkContainer extends AbstractContainer implements Contai
   public boolean addViewer(@NotNull Player player) {
     final var sculkPlayer = (SculkPlayer) player;
     sculkPlayer.send(new OpenScreen(1, this.type().ordinal(), this.title));
-    sculkPlayer.send(new ContainerContent((byte) 1, this.incrementState(), this.items()));
+    sculkPlayer.send(new ContainerContent((byte) 1, this.incrementState(),
+        this.items(), ItemStack.empty()));
     this.sendProperties(sculkPlayer);
     return this.viewers.add(sculkPlayer);
   }
 
   @Override
   public boolean removeViewer(@NotNull Player player) {
-    return this.viewers.remove(player);
+    return this.viewers.remove((SculkPlayer) player);
   }
 
   public Packet property(final int key, final int value) {

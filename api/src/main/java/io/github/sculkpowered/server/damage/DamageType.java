@@ -44,6 +44,7 @@ public final class DamageType implements Entry {
   public static final DamageType PLAYER_ATTACK = builder(Key.key(MINECRAFT_NAMESPACE, "player_attack")).exhaustion(0.1).messageId("player").scaling("when_caused_by_living_non_player").build();
   public static final DamageType PLAYER_EXPLOSION = builder(Key.key(MINECRAFT_NAMESPACE, "player_explosion")).exhaustion(0.1).messageId("explosion.player").scaling("always").build();
   public static final DamageType SONIC_BOOM = builder(Key.key(MINECRAFT_NAMESPACE, "sonic_boom")).exhaustion(0.0).messageId("sonic_boom").scaling("always").build();
+  public static final DamageType SPIT = builder(Key.key(MINECRAFT_NAMESPACE, "spit")).exhaustion(0.1).messageId("mob").scaling("when_caused_by_living_non_player").build();
   public static final DamageType STALAGMITE = builder(Key.key(MINECRAFT_NAMESPACE, "stalagmite")).exhaustion(0.0).messageId("stalagmite").scaling("when_caused_by_living_non_player").build();
   public static final DamageType STARVE = builder(Key.key(MINECRAFT_NAMESPACE, "starve")).exhaustion(0.0).messageId("starve").scaling("when_caused_by_living_non_player").build();
   public static final DamageType STING = builder(Key.key(MINECRAFT_NAMESPACE, "sting")).exhaustion(0.1).messageId("sting").scaling("when_caused_by_living_non_player").build();
@@ -55,14 +56,15 @@ public final class DamageType implements Entry {
   public static final DamageType WITHER = builder(Key.key(MINECRAFT_NAMESPACE, "wither")).exhaustion(0.0).messageId("wither").scaling("when_caused_by_living_non_player").build();
   public static final DamageType WITHER_SKULL = builder(Key.key(MINECRAFT_NAMESPACE, "wither_skull")).exhaustion(0.1).messageId("witherSkull").scaling("when_caused_by_living_non_player").build();
   // END
-
   private static int CURRENT_ID = 0;
 
   private final Key key;
-  private final CompoundBinaryTag nbt;
 
-  public DamageType(final Key key, final CompoundBinaryTag nbt) {
+  private final int id;
+  private final CompoundBinaryTag nbt;
+  public DamageType(final Key key, final int id, final CompoundBinaryTag nbt) {
     this.key = key;
+    this.id = id;
     this.nbt = nbt;
   }
 
@@ -73,7 +75,7 @@ public final class DamageType implements Entry {
 
   @Override
   public int id() {
-    return this.nbt.getInt("id");
+    return this.id;
   }
 
   @Override
@@ -127,11 +129,7 @@ public final class DamageType implements Entry {
     }
 
     public @NotNull DamageType build() {
-      return new DamageType(this.key, CompoundBinaryTag.builder()
-          .putString("name", this.key.asString())
-          .putInt("id", this.id)
-          .put("element", this.builder.build())
-          .build());
+      return new DamageType(this.key, this.id, this.builder.build());
     }
   }
 }
