@@ -85,23 +85,25 @@ public final class SculkEventHandler implements EventHandler {
 
   @Override
   public <E> CompletableFuture<E> call(E event) {
-    if (!this.registrations.containsKey(event.getClass())) {
+    final var registrations = this.registrations.get(event.getClass());
+    if (registrations == null) {
       return CompletableFuture.completedFuture(event);
     }
     final var future = new CompletableFuture<E>();
-    this.call(event, future);
+    this.call(event, registrations, future);
     return future;
   }
 
   @Override
   public <E> void justCall(E event) {
-    if (this.registrations.containsKey(event.getClass())) {
-      this.call(event, null);
+    final var registrations = this.registrations.get(event.getClass());
+    if (registrations != null) {
+      this.call(event, registrations, null);
     }
   }
 
-  private <E> void call(E event, CompletableFuture<E> future) {
-    for (final var registration : this.registrations.get(event.getClass())) {
+  private <E> void call(E event, Registration[] registrations, CompletableFuture<E> future) {
+    for (final var registration : registrations) {
       if (registration.async) {
         registration.plugin.executorService().execute(() -> registration.consumer.accept(event));
       } else {
