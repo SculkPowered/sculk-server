@@ -1,5 +1,7 @@
 package io.github.sculkpowered.server.world.chunk.loader;
 
+import static io.github.sculkpowered.server.util.CoordinateUtil.regionCoordinate;
+
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.CoordinateUtil;
@@ -45,9 +47,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
 
   @Override
   public @NotNull SculkChunk loadChunk(final SculkWorld world, final int x, final int z) {
-    final var fileName =
-        "r." + CoordinateUtil.regionCoordinate(x) + '.' + CoordinateUtil.regionCoordinate(z)
-            + ".mca";
+    final var fileName = "r." + regionCoordinate(x) + '.' + regionCoordinate(z) + ".mca";
     try {
       SculkChunk chunk;
       if (!this.regionCache.containsKey(fileName)) {

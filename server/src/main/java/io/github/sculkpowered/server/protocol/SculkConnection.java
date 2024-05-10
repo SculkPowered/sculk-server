@@ -9,6 +9,7 @@ import static io.github.sculkpowered.server.util.Constants.FRAME_ENCODER;
 import static io.github.sculkpowered.server.util.Constants.MINECRAFT_DECODER;
 import static io.github.sculkpowered.server.util.Constants.MINECRAFT_ENCODER;
 import static io.github.sculkpowered.server.util.CoordinateUtil.chunkCoordinate;
+import static io.github.sculkpowered.server.util.CoordinateUtil.forChunksInRange;
 
 import com.mojang.brigadier.tree.RootCommandNode;
 import com.velocitypowered.natives.util.Natives;
@@ -67,7 +68,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
-import java.util.function.BiConsumer;
 import javax.crypto.spec.SecretKeySpec;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
@@ -131,7 +131,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       if (world != null) {
         this.server.addTask(() -> {
           world.chunkAt(position).entities().remove(this.player);
-          this.forChunksInRange(
+          forChunksInRange(
               chunkCoordinate(position.x()), chunkCoordinate(position.z()),
               this.player.settings().viewDistance(), (x, z) -> {
                 final var chunk = world.chunk(x, z);
@@ -349,15 +349,6 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   public void close() {
     this.channel.close();
-  }
-
-  public void forChunksInRange(final int chunkX, final int chunkZ, final int range,
-      final BiConsumer<Integer, Integer> chunk) {
-    for (var x = -range; x <= range; x++) {
-      for (var z = -range; z <= range; z++) {
-        chunk.accept(chunkX + x, chunkZ + z);
-      }
-    }
   }
 
   @Override
