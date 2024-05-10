@@ -39,7 +39,7 @@ public final class Biome implements Registry.Entry {
   }
 
   public @NotNull Builder toBuilder(final Key newKey) {
-    return new Builder(newKey, CompoundBinaryTag.builder().put(this.nbt.getCompound("element")));
+    return new Builder(newKey, CompoundBinaryTag.builder().put(this.nbt));
   }
 
   @Override

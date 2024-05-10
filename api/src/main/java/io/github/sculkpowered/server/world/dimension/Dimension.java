@@ -58,7 +58,7 @@ public final class Dimension implements Registry.Entry {
   }
 
   public @NotNull Builder toBuilder(final @NotNull Key newKey) {
-    return new Builder(newKey, CompoundBinaryTag.builder().put(this.nbt.getCompound("element")));
+    return new Builder(newKey, CompoundBinaryTag.builder().put(this.nbt));
   }
 
   @Override
