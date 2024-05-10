@@ -22,30 +22,6 @@ public final class DataComponents {
     return this.components;
   }
 
-  public static @NotNull DataComponents empty() {
-    return EMPTY;
-  }
-
-  public static @NotNull DataComponents from(
-      final @NotNull Map<DataComponentType<?>, Optional<?>> components
-  ) {
-    return new DataComponents(Map.copyOf(components));
-  }
-
-  public static @NotNull DataComponents from(final @NotNull CompoundBinaryTag compoundTag) {
-    final var map = new HashMap<DataComponentType<?>, Optional<?>>();
-    for (final var entry : compoundTag) {
-      if (entry.getKey().charAt(0) == REMOVE_CHAR) {
-        map.put(Registries.dataComponentTypes()
-            .get(entry.getKey().substring(1)), Optional.empty());
-        continue;
-      }
-      final var type = Registries.dataComponentTypes().get(entry.getKey());
-      map.put(type, Optional.of(type.binaryToValue(entry.getValue())));
-    }
-    return new DataComponents(map);
-  }
-
   @SuppressWarnings("unchecked")
   public @NotNull CompoundBinaryTag asNBT() {
     final var builder = CompoundBinaryTag.builder();
@@ -76,5 +52,65 @@ public final class DataComponents {
     return "DataComponents{" +
         "components=" + this.components +
         '}';
+  }
+
+  public @NotNull DataComponents.Builder toBuilder() {
+    return new Builder(new HashMap<>(this.components));
+  }
+
+  public static @NotNull DataComponents empty() {
+    return EMPTY;
+  }
+
+  public static @NotNull DataComponents from(
+      final @NotNull Map<DataComponentType<?>, Optional<?>> components
+  ) {
+    return new DataComponents(Map.copyOf(components));
+  }
+
+  public static @NotNull DataComponents from(final @NotNull CompoundBinaryTag compoundTag) {
+    final var map = new HashMap<DataComponentType<?>, Optional<?>>();
+    for (final var entry : compoundTag) {
+      if (entry.getKey().charAt(0) == REMOVE_CHAR) {
+        map.put(Registries.dataComponentTypes()
+            .get(entry.getKey().substring(1)), Optional.empty());
+        continue;
+      }
+      final var type = Registries.dataComponentTypes().get(entry.getKey());
+      map.put(type, Optional.of(type.binaryToValue(entry.getValue())));
+    }
+    return new DataComponents(map);
+  }
+
+  public static @NotNull DataComponents.Builder builder() {
+    return new Builder(new HashMap<>());
+  }
+
+  public static final class Builder {
+
+    private final Map<DataComponentType<?>, Optional<?>> components;
+
+    private Builder(final Map<DataComponentType<?>, Optional<?>> components) {
+      this.components = components;
+    }
+
+    public <T> @NotNull Builder set(final @NotNull DataComponentType<T> type, final @NotNull T t) {
+      this.components.put(type, Optional.of(t));
+      return this;
+    }
+
+    public @NotNull Builder remove(final @NotNull DataComponentType<?> type) {
+      this.components.put(type, Optional.empty());
+      return this;
+    }
+
+    public @NotNull Builder reset(final @NotNull DataComponentType<?> type) {
+      this.components.remove(type);
+      return this;
+    }
+
+    public @NotNull DataComponents build() {
+      return DataComponents.from(this.components);
+    }
   }
 }

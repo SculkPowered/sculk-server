@@ -12,26 +12,30 @@ public final class GenericAttribute {
       new Attribute("generic.attack_knockback", 3, 0F, 5F);
   public static final Attribute ATTACK_SPEED =
       new Attribute("generic.attack_speed", 4, 4F, 1024F);
-  public static final Attribute BLOCK_INTERACTION_RANGE =
-      new Attribute("generic.block_interaction_range", 5, 4.5F, 64F);
-  public static final Attribute ENTITY_INTERACTION_RANGE =
-      new Attribute("generic.entity_interaction_range", 6, 3F, 64F);
+  public static final Attribute FALL_DAMAGE_MULTIPLIER =
+      new Attribute("generic.fall_damage_multiplier", 8, 1F, 100F);
   public static final Attribute FLYING_SPEED =
-      new Attribute("generic.flying_speed", 7, 0.4F, 1024F);
+      new Attribute("generic.flying_speed", 9, 0.4F, 1024F);
   public static final Attribute FOLLOW_RANGE =
-      new Attribute("generic.follow_range", 8, 32F, 2048F);
+      new Attribute("generic.follow_range", 10, 32F, 2048F);
+  public static final Attribute GRAVITY =
+      new Attribute("generic.gravity", 11, 0.08F, 1F);
+  public static final Attribute JUMP_STRENGTH =
+      new Attribute("generic.jump_strength", 12, 0.42F, 32F);
   public static final Attribute KNOCKBACK_RESISTANCE =
-      new Attribute("generic.knockback_resistance", 10, 0F, 1F);
+      new Attribute("generic.knockback_resistance", 13, 0F, 1F);
   public static final Attribute LUCK =
-      new Attribute("generic.luck", 11, 0F, 1024F);
+      new Attribute("generic.luck", 14, 0F, 1024F);
   public static final Attribute MAX_ABSORPTION =
-      new Attribute("generic.max_health", 12, 0F, 2048F);
+      new Attribute("generic.max_health", 15, 0F, 2048F);
   public static final Attribute MAX_HEALTH =
-      new Attribute("generic.max_health", 13, 20F, 1024F);
+      new Attribute("generic.max_health", 16, 20F, 1024F);
   public static final Attribute MOVEMENT_SPEED =
-      new Attribute("generic.movement_speed", 14, 0.7F, 1024F);
+      new Attribute("generic.movement_speed", 17, 0.7F, 1024F);
+  public static final Attribute SAFE_FALL_DISTANCE =
+      new Attribute("generic.safe_fall_distance", 18, 3F, 1024F);
   public static final Attribute SCALE =
-      new Attribute("generic.scale", 15, 1F, 16F);
+      new Attribute("generic.scale", 15, 19, 16F);
   public static final Attribute STEP_HEIGHT =
-      new Attribute("generic.step_height", 17, 0.6F, 10F);
+      new Attribute("generic.step_height", 21, 0.6F, 10F);
 }
