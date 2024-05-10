@@ -44,14 +44,10 @@ public final class SculkChunk implements Chunk {
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ) {
     this(world, chunkX, chunkZ, newSections(world.dimension()),
         CompoundBinaryTag.empty()); // TODO: calculate heightmaps
-    System.out.println(chunkX + " - " + chunkZ);
   }
 
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ,
       final Section[] sections, final CompoundBinaryTag heightmaps) {
-    if (sections.length == 0) {
-      System.out.println("0: " + chunkX + " - " + chunkZ);
-    }
     this.dimension = world.dimension();
     this.x = chunkX;
     this.z = chunkZ;

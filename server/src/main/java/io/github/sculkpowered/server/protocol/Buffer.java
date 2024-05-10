@@ -5,6 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.Material;
 import io.github.sculkpowered.server.container.item.data.DataComponentType;
+import io.github.sculkpowered.server.container.item.data.DataComponents;
 import io.github.sculkpowered.server.container.item.data.SculkDataComponentType;
 import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
@@ -299,11 +300,11 @@ public final class Buffer {
     return enumClass.getEnumConstants()[this.readVarInt()];
   }
 
-  private @NotNull Map<DataComponentType<?>, Optional<?>> readDataComponents() {
+  private @NotNull DataComponents readDataComponents() {
     final var components = this.readVarInt();
     final var removedComponents = this.readVarInt();
     if (components == 0 && removedComponents == 0) {
-      return Map.of();
+      return DataComponents.empty();
     } else {
       final var map = new HashMap<DataComponentType<?>, Optional<?>>(
           components + removedComponents);
@@ -317,7 +318,7 @@ public final class Buffer {
         map.put(Registries.dataComponentTypes().get(this.readVarInt()), Optional.empty());
       }
       System.out.println(map);
-      return map;
+      return DataComponents.from(map);
     }
   }
 

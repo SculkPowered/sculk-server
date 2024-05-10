@@ -16,10 +16,6 @@ import io.github.sculkpowered.server.MinecraftConfig;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.connection.Connection;
-import io.github.sculkpowered.server.container.item.ItemStack;
-import io.github.sculkpowered.server.container.item.Material;
-import io.github.sculkpowered.server.container.item.data.DataComponent;
-import io.github.sculkpowered.server.container.item.data.Rarity;
 import io.github.sculkpowered.server.entity.player.GameProfile;
 import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.entity.player.PlayerInfoEntry;
@@ -68,8 +64,6 @@ import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
@@ -263,17 +257,6 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           }
 
           this.server.eventHandler().justCall(new PlayerJoinEvent(this.player));
-
-          this.player.inventory().item(3, ItemStack
-              .itemStack(Material.ACACIA_LEAVES, 3, Map.of(
-                  DataComponent.CUSTOM_NAME,
-                  Optional.of(Component.text("blalalal", NamedTextColor.GREEN)),
-                  DataComponent.DAMAGE, Optional.of(130),
-                  DataComponent.LORE, Optional.of(List.of(Component.text("A"), Component.text("B"))),
-                  DataComponent.RARITY, Optional.of(Rarity.EPIC)
-              )));
-          this.player.inventory().item(4, ItemStack.itemStack(Material.PLAYER_HEAD,
-              2, Map.of(DataComponent.PROFILE, Optional.of(this.player.profile()))));
         }, this.executor()).exceptionally(throwable -> {
           LOGGER.error("Exception during login of player {}", this.player.name(), throwable);
           return null;

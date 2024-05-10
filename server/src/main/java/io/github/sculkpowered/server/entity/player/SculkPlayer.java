@@ -9,8 +9,8 @@ import io.github.sculkpowered.server.adventure.BossBarProvider;
 import io.github.sculkpowered.server.adventure.BossBarProvider.Impl;
 import io.github.sculkpowered.server.attribute.SculkAttributeValue;
 import io.github.sculkpowered.server.container.Container;
-import io.github.sculkpowered.server.container.SculkInventory;
 import io.github.sculkpowered.server.container.SculkContainer;
+import io.github.sculkpowered.server.container.SculkInventory;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.AbstractLivingEntity;
 import io.github.sculkpowered.server.entity.Entity;
@@ -18,11 +18,11 @@ import io.github.sculkpowered.server.entity.EntityType;
 import io.github.sculkpowered.server.event.connection.PluginMessageEvent;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
-import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
+import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
+import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
@@ -37,6 +37,7 @@ import io.github.sculkpowered.server.protocol.packet.play.SystemChatMessage;
 import io.github.sculkpowered.server.protocol.packet.play.TabListHeaderFooter;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
+import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
 import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
 import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
 import io.github.sculkpowered.server.protocol.packet.play.sound.SoundEffect;
@@ -173,7 +174,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.container = (SculkContainer) container;
     this.container.addViewer(this);
     this.send(new OpenScreen(1, container.type().ordinal(), container.title()));
-    this.inventory.resend();
+    this.send(new ContainerContent((byte) 1, 1,
+        ((SculkContainer) container).items, ItemStack.empty()));
     this.container.sendProperties(this);
   }
 
@@ -330,7 +332,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public <T> void sendTitlePart(@NotNull TitlePart<T> part, @NotNull T value) {
     if (part == TitlePart.TITLE) {
-      this.send(new io.github.sculkpowered.server.protocol.packet.play.title.Title((Component) value));
+      this.send(
+          new io.github.sculkpowered.server.protocol.packet.play.title.Title((Component) value));
     } else if (part == TitlePart.SUBTITLE) {
       this.send(new Subtitle((Component) value));
     } else if (part == TitlePart.TIMES) {
@@ -354,8 +357,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void showBossBar(@NotNull BossBar bar) {
-    @SuppressWarnings("UnstableApiUsage")
-    final var impl = BossBarImplementation.get(bar, Impl.class);
+    @SuppressWarnings("UnstableApiUsage") final var impl = BossBarImplementation.get(bar,
+        Impl.class);
     if (impl.players().add(this)) {
       this.send(add(impl.uniqueId(), bar.name(), bar.progress(), bar.color().ordinal(),
           bar.overlay().ordinal(), BossBarProvider.flags(bar)));

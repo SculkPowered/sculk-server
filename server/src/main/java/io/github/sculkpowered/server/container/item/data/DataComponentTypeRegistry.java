@@ -15,6 +15,7 @@ import io.github.sculkpowered.server.registry.SimpleRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagTypes;
@@ -232,7 +233,8 @@ public final class DataComponentTypeRegistry {
 
           @Override
           public Rarity deserialize(BinaryTag binaryTag) {
-            return Rarity.valueOf(((StringBinaryTag) binaryTag).value());
+            return Rarity.valueOf(
+                ((StringBinaryTag) binaryTag).value().toUpperCase(Locale.ENGLISH));
           }
         }));
     registry.register(new SculkDataComponentType<>("enchantments", id++,
@@ -477,13 +479,13 @@ public final class DataComponentTypeRegistry {
           buf.writeProfileProperties(value.properties());
         },
         buf -> {
-          UUID uniqueId = null;
-          if (buf.readBoolean()) {
-            uniqueId = buf.readUniqueId();
-          }
           String name = null;
           if (buf.readBoolean()) {
             name = buf.readString();
+          }
+          UUID uniqueId = null;
+          if (buf.readBoolean()) {
+            uniqueId = buf.readUniqueId();
           }
           final var size = buf.readVarInt();
           final var properties = new ArrayList<GameProfile.Property>(size);
