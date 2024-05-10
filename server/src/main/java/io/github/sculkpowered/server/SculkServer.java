@@ -381,8 +381,8 @@ public final class SculkServer implements Server {
   }
 
   @Override
-  public @NotNull Scoreboard createScoreboard(String name, Component displayName,
-      NumberFormat numberFormat, DisplaySlot displaySlot) {
+  public @NotNull Scoreboard createScoreboard(@NotNull String name, @NotNull Component displayName,
+      @Nullable NumberFormat numberFormat, @NotNull DisplaySlot displaySlot) {
     return new SculkScoreboard(name, displayName, numberFormat, displaySlot);
   }
 

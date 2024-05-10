@@ -174,8 +174,18 @@ public interface Server extends ForwardingAudience {
    */
   @NotNull MinecraftConfig config();
 
-  @NotNull Scoreboard createScoreboard(String name, Component displayName,
-      NumberFormat numberFormat, DisplaySlot displaySlot);
+  /**
+   * Creates a new scoreboard/objective with the specified attributes.
+   *
+   * @param name the name of the objective
+   * @param displayName the display name of the objective
+   * @param numberFormat the number format or null for the default one
+   * @param displaySlot the display slot of the objective
+   * @return the newly created scoreboard
+   * @since 1.0.0
+   */
+  @NotNull Scoreboard createScoreboard(@NotNull String name, @NotNull Component displayName,
+      @Nullable NumberFormat numberFormat, @NotNull DisplaySlot displaySlot);
 
   /**
    * Shutdowns the server.

@@ -51,6 +51,7 @@ public final class SculkScoreboard implements Scoreboard {
   @Override
   public void displayName(@Nullable Component displayName) {
     this.displayName = displayName;
+    this.update();
   }
 
   @Override
@@ -61,6 +62,7 @@ public final class SculkScoreboard implements Scoreboard {
   @Override
   public void numberFormat(@Nullable NumberFormat numberFormat) {
     this.numberFormat = numberFormat;
+    this.update();
   }
 
   @Override
@@ -71,6 +73,7 @@ public final class SculkScoreboard implements Scoreboard {
   @Override
   public void displaySlot(@NotNull DisplaySlot displaySlot) {
     this.displaySlot = displaySlot;
+    this.sendViewers(new DisplayObjective((byte) this.displaySlot.ordinal(), this.name));
   }
 
   @Override
@@ -114,6 +117,10 @@ public final class SculkScoreboard implements Scoreboard {
       return true;
     }
     return false;
+  }
+
+  private void update() {
+    this.sendViewers(UpdateObjectives.update(this.name, this.displayName, (byte) 0, this.numberFormat));
   }
 
   void sendViewers(final Packet packet) {
