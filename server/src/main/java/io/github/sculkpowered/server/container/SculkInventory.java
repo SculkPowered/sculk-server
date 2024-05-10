@@ -130,7 +130,8 @@ public final class SculkInventory extends AbstractContainer implements Inventory
 
   @Override
   public void resend() {
-    this.player.send(new ContainerContent((byte) 0, this.state(), this.items()));
+    this.player.send(new ContainerContent((byte) 0, this.state(),
+        this.items(), ItemStack.empty()));
   }
 
   @Override

@@ -19,7 +19,7 @@ public final class UpdateAttributes implements Packet {
     buf
         .writeVarInt(this.entityId)
         .writeVarInt(1)
-        .writeString(this.value.attribute().key())
+        .writeVarInt(this.value.attribute().id())
         .writeDouble(this.value.baseValue());
     final var modifiers = this.value.modifiers();
     buf.writeVarInt(modifiers.size());

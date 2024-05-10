@@ -172,9 +172,13 @@ public interface Entity extends Viewable, Sound.Emitter {
     DYING,
     CROAKING,
     USING_TONGUE,
+    SITTING,
     ROARING,
     SNIFFING,
-    EMERGIND,
-    DIGGING
+    EMERGING,
+    DIGGING,
+    SLIDING,
+    SHOOTING,
+    INHALING
   }
 }

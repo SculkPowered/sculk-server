@@ -17,14 +17,6 @@ public interface Registry<E extends Registry.Entry> {
   @NotNull String type();
 
   /**
-   * Registers a new entry into the registry.
-   *
-   * @param entry the entry to register
-   * @since 1.0.0
-   */
-  void register(@NotNull E entry);
-
-  /**
    * Gets an entry by its key.
    *
    * @param key the key of the entry
@@ -86,6 +78,17 @@ public interface Registry<E extends Registry.Entry> {
    * @since 1.0.0
    */
   @NotNull CompoundBinaryTag asNBT();
+
+  interface Mutable<E extends Entry> extends Registry<E> {
+
+    /**
+     * Registers a new entry into the registry.
+     *
+     * @param entry the entry to register
+     * @since 1.0.0
+     */
+    void register(@NotNull E entry);
+  }
 
   interface Entry extends Keyed {
 

@@ -1,13 +1,6 @@
 package io.github.sculkpowered.server.container.item;
 
-import io.github.sculkpowered.server.attribute.Attribute;
-import io.github.sculkpowered.server.attribute.AttributeModifier;
-import io.github.sculkpowered.server.enchantment.Enchantment;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import org.jetbrains.annotations.ApiStatus;
+import io.github.sculkpowered.server.container.item.data.DataComponents;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,16 +15,16 @@ public final class ItemStack {
 
   private final Material material;
   private final int amount;
-  private final ItemMeta meta;
+  private final DataComponents components;
 
   private ItemStack(
       final @NotNull Material material,
       final int amount,
-      final @NotNull ItemMeta meta
+      final @NotNull DataComponents components
   ) {
     this.material = material;
     this.amount = amount;
-    this.meta = meta;
+    this.components = components;
   }
 
   /**
@@ -61,21 +54,21 @@ public final class ItemStack {
    * @since 1.0.0
    */
   public @NotNull ItemStack amount(final int amount) {
-    return new ItemStack(this.material, amount, this.meta);
+    return new ItemStack(this.material, amount, this.components);
   }
 
-  public @NotNull ItemStack withMeta(final ItemMeta itemMeta) {
-    return new ItemStack(this.material, this.amount, itemMeta);
+  public @NotNull ItemStack withComponents(final DataComponents components) {
+    return new ItemStack(this.material, this.amount, components);
   }
 
   /**
-   * Gets the metadata of the item.
+   * Gets the data components of the item.
    *
-   * @return the metadata of the item
+   * @return the data components of the item
    * @since 1.0.0
    */
-  public @NotNull ItemMeta meta() {
-    return this.meta;
+  public @NotNull DataComponents components() {
+    return this.components;
   }
 
   /**
@@ -85,7 +78,7 @@ public final class ItemStack {
    * @since 1.0.0
    */
   public boolean isEmpty() {
-    return this.material == Material.AIR;
+    return this.material == Material.AIR || this.amount == 0;
   }
 
   @Override
@@ -101,26 +94,22 @@ public final class ItemStack {
   }
 
   public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount) {
-    return new ItemStack(material, amount,
-        new ItemMeta(CompoundBinaryTag.empty(), Map.of(), Map.of()));
+    return itemStack(material, amount, DataComponents.empty());
   }
 
-  @ApiStatus.Internal
-  public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount,
-      final CompoundBinaryTag nbt) {
-    final var attributeModifiers = new HashMap<Attribute, List<AttributeModifier>>();
-    for (final var tag : nbt.getList("AttributeModifiers")) {
-      final var compound = (CompoundBinaryTag) tag;
-      // TODO complete attribute modifiers
-    }
-    final var enchantments = new HashMap<Enchantment, Short>();
-    for (final var tag : nbt.getList("Enchantments")) {
-      final var compound = (CompoundBinaryTag) tag;
-      // TODO: better registry for enchantments
-      enchantments.put(Enchantment.valueOf(compound.getString("id").split(":")[1]),
-          compound.getShort("lvl"));
-    }
-    return new ItemStack(material, amount, new ItemMeta(nbt, attributeModifiers, enchantments));
+  public static @NotNull ItemStack itemStack(
+      final @NotNull Material material,
+      final @NotNull DataComponents components
+  ) {
+    return itemStack(material, 1, components);
+  }
+
+  public static @NotNull ItemStack itemStack(
+      final @NotNull Material material,
+      final int amount,
+      final @NotNull DataComponents components
+      ) {
+    return new ItemStack(material, amount, components);
   }
 
   public static @NotNull ItemStack empty() {

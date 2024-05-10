@@ -38,7 +38,7 @@ public final class LoginPacketHandler extends PacketHandler {
       final var publicKey = this.server.getKeyPair().getPublic().getEncoded();
       this.verifyToken = new byte[4];
       ThreadLocalRandom.current().nextBytes(this.verifyToken);
-      this.connection.send(new EncryptionRequest("", publicKey, this.verifyToken));
+      this.connection.send(new EncryptionRequest("", publicKey, this.verifyToken, true));
     } else {
       this.connection.initPlayer(null);
     }

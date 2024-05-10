@@ -5,7 +5,7 @@ import io.github.sculkpowered.server.registry.SimpleRegistry;
 
 public final class DamageTypeRegistry {
 
-  public static Registry<DamageType> get() {
+  public static Registry.Mutable<DamageType> get() {
     final var registry = new SimpleRegistry<>("minecraft:damage_type", DamageType.OUT_OF_WORLD);
     // START
     registry.register(DamageType.ARROW);
@@ -42,6 +42,7 @@ public final class DamageTypeRegistry {
     registry.register(DamageType.PLAYER_ATTACK);
     registry.register(DamageType.PLAYER_EXPLOSION);
     registry.register(DamageType.SONIC_BOOM);
+    registry.register(DamageType.SPIT);
     registry.register(DamageType.STALAGMITE);
     registry.register(DamageType.STARVE);
     registry.register(DamageType.STING);

@@ -1,6 +1,7 @@
 package io.github.sculkpowered.server.world.block;
 
 import io.github.sculkpowered.server.registry.SimpleRegistry;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,17 +11,14 @@ import java.util.Objects;
 import net.kyori.adventure.key.Key;
 import org.intellij.lang.annotations.Subst;
 
-public final class BlockRegistry extends SimpleRegistry<BlockState> {
+public final class BlockRegistry {
 
-  private BlockRegistry() {
-    super("minecraft:block");
-  }
-
-  public static void addBlocks() {
+  public static SimpleRegistry<BlockState> get() {
+    final var byId = new Int2ObjectOpenHashMap<BlockState>();
+    final var byKey = new HashMap<String, BlockState>();
     try (final var reader = new BufferedReader(
         new InputStreamReader(Objects.requireNonNull(BlockParent.class.getClassLoader()
             .getResourceAsStream("registries/blocks"))))) {
-      final var registry = new BlockRegistry();
       String line;
       while ((line = reader.readLine()) != null) {
         @Subst("") final var split = line.split(",");
@@ -33,7 +31,7 @@ public final class BlockRegistry extends SimpleRegistry<BlockState> {
             Float.parseFloat(split[1]));
         if (capacity == 1) {
           states[0] = new SculkBlockState(block, id, Map.of());
-          registry.byId.put(id, states[0]);
+          byId.put(id, states[0]);
         } else {
           for (var i = 0; i < capacity; i++) {
             final var map = new HashMap<String, String>(capacity);
@@ -44,15 +42,14 @@ public final class BlockRegistry extends SimpleRegistry<BlockState> {
             @SuppressWarnings("unchecked") final var state = new SculkBlockState(block, id,
                 Map.ofEntries(map.entrySet().toArray(new Map.Entry[0])));
             states[i] = state;
-            registry.byId.put(id, state);
+            byId.put(id, state);
             id++;
           }
         }
         block.setStates(states);
-        registry.byKey.put(block.key().asString(), states[defId]);
+        byKey.put(block.key().asString(), states[defId]);
       }
-      registry.def = registry.get("minecraft:air");
-      Blocks.set(registry);
+      return new SimpleRegistry<>("minecraft:block", byKey, byId, byKey.get("minecraft:air"));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

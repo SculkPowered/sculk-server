@@ -2,14 +2,15 @@ package io.github.sculkpowered.server.protocol.packet.play;
 
 import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
+import io.github.sculkpowered.server.world.dimension.Dimension;
 
 public final class Login implements Packet {
 
   private final int entityId;
   private final byte gameMode;
-  private final String dimensionType;
+  private final Dimension dimensionType;
 
-  public Login(final int entityId, final byte gameMode, final String dimensionType) {
+  public Login(final int entityId, final byte gameMode, final Dimension dimensionType) {
     this.entityId = entityId;
     this.gameMode = gameMode;
     this.dimensionType = dimensionType;
@@ -28,7 +29,7 @@ public final class Login implements Packet {
         .writeBoolean(false) // Reduced Debug Info
         .writeBoolean(false) // Enable respawn screen
         .writeBoolean(false) // Limited crafting
-        .writeString(this.dimensionType) // Dimension Type
+        .writeVarInt(this.dimensionType.id()) // Dimension Type
         .writeString("minecraft:overworld") // Dimension Name
         .writeLong(0) // Hashed Seed
         .writeByte(this.gameMode) // GameMode
@@ -36,7 +37,8 @@ public final class Login implements Packet {
         .writeBoolean(false) // Debug
         .writeBoolean(true) // Flat
         .writeBoolean(false) // Death Location
-        .writeVarInt(0); // Portal Cooldown
+        .writeVarInt(0) // Portal Cooldown
+        .writeBoolean(false); // Secure Chat
   }
 
   @Override

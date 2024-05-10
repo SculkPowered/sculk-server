@@ -2,6 +2,7 @@ package io.github.sculkpowered.server.entity;
 
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.protocol.Buffer;
+import io.github.sculkpowered.server.protocol.Buffer.Writer;
 import io.github.sculkpowered.server.world.Position;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -30,16 +31,19 @@ public final class Metadata {
   private static final int OPT_BLOCK_TYPE = 15;
   private static final int NBT_TYPE = 16;
   private static final int PARTICLE_TYPE = 17;
-  private static final int VILLAGER_DATA_TYPE = 18;
-  private static final int OPT_VAR_INT_TYPE = 19;
-  private static final int POSE_TYPE = 20;
-  private static final int CAT_VARIANT_TYPE = 21;
-  private static final int FROG_VARIANT_TYPE = 22;
-  private static final int OPT_GLOBAL_POS_TYPE = 23;
-  private static final int PAINTING_VARIANT_TYPE = 24;
-  private static final int SNIFFER_STATE_TYPE = 25;
-  private static final int VECTOR3_TYPE = 26;
-  private static final int QUATERNION_TYPE = 27;
+  private static final int PARTICLES_TYPE = 18;
+  private static final int VILLAGER_DATA_TYPE = 19;
+  private static final int OPT_VAR_INT_TYPE = 20;
+  private static final int POSE_TYPE = 21;
+  private static final int CAT_VARIANT_TYPE = 22;
+  private static final int WOLF_VARIANT_TYPE = 23;
+  private static final int FROG_VARIANT_TYPE = 24;
+  private static final int OPT_GLOBAL_POS_TYPE = 25;
+  private static final int PAINTING_VARIANT_TYPE = 26;
+  private static final int SNIFFER_STATE_TYPE = 27;
+  private static final int ARMADILLO_STATE_TYPE = 28;
+  private static final int VECTOR3_TYPE = 29;
+  private static final int QUATERNION_TYPE = 30;
 
   private final Int2ObjectMap<Entry<?>> entries = new Int2ObjectOpenHashMap<>();
   private Int2ObjectMap<Entry<?>> changes = new Int2ObjectOpenHashMap<>();
@@ -217,16 +221,10 @@ public final class Metadata {
     this.changes = new Int2ObjectOpenHashMap<>();
   }
 
-  public record Entry<T>(int type, T t, Applier<T> applier) {
+  public record Entry<T>(int type, T t, Writer<T> writer) {
 
     public void write(final Buffer buffer) {
-      this.applier.apply(buffer, this.t);
+      this.writer.write(buffer, this.t);
     }
-  }
-
-  @FunctionalInterface
-  private interface Applier<T> {
-
-    void apply(final Buffer buffer, final T t);
   }
 }

@@ -193,8 +193,7 @@ public final class SlimeFormat {
 
   // SAVING
 
-  public static void save(final SculkServer server, final SculkWorld world,
-      final DataOutputStream outputStream) {
+  public static void save(final SculkWorld world, final DataOutputStream outputStream) {
     try (final var dataOutput = outputStream) {
       dataOutput.writeShort(HEADER);
       dataOutput.writeByte(VERSION_10);
@@ -202,7 +201,7 @@ public final class SlimeFormat {
 
       final var chunks = world.chunks().values();
 
-      writeChunks(server, chunks, dataOutput);
+      writeChunks(chunks, dataOutput);
 
       final var tiles = ListBinaryTag.builder();
       final var entities = ListBinaryTag.builder();
@@ -248,7 +247,7 @@ public final class SlimeFormat {
     }
   }
 
-  private static void writeChunks(final SculkServer server, final Collection<SculkChunk> chunks,
+  private static void writeChunks(final Collection<SculkChunk> chunks,
       final DataOutputStream dataOutput) throws IOException {
     try (final var byteStream = new ByteArrayOutputStream();
         final var outputSteam = new DataOutputStream(byteStream)) {
@@ -276,7 +275,7 @@ public final class SlimeFormat {
           }
 
           writeCompound(outputSteam, AnvilLoader.blockStatesToNbt(section.blocks()));
-          writeCompound(outputSteam, AnvilLoader.biomesToNbt(server, section.biomes()));
+          writeCompound(outputSteam, AnvilLoader.biomesToNbt(section.biomes()));
         }
       }
       writeCompressed(dataOutput, byteStream.toByteArray());
