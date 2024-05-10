@@ -4,7 +4,8 @@ import io.github.sculkpowered.server.container.item.Material;
 import io.github.sculkpowered.server.container.item.data.DataComponentType;
 import io.github.sculkpowered.server.damage.DamageType;
 import io.github.sculkpowered.server.enchantment.Enchantment;
-import io.github.sculkpowered.server.potion.PotionEffectType;
+import io.github.sculkpowered.server.potion.MobEffectType;
+import io.github.sculkpowered.server.potion.PotionType;
 import io.github.sculkpowered.server.world.biome.Biome;
 import io.github.sculkpowered.server.world.block.BlockState;
 import io.github.sculkpowered.server.world.dimension.Dimension;
@@ -18,7 +19,8 @@ public final class Registries {
   private static Registry<BlockState> BLOCKS;
   private static Registry<Material> MATERIALS;
   private static Registry<Enchantment> ENCHANTMENTS;
-  private static Registry<PotionEffectType> POTION_EFFECTS;
+  private static Registry<PotionType> POTIONS;
+  private static Registry<MobEffectType> MOB_EFFECTS;
   private static Registry<DataComponentType<?>> DATA_COMPONENT_TYPES;
 
   Registries() {
@@ -49,8 +51,12 @@ public final class Registries {
     return ENCHANTMENTS;
   }
 
-  public static Registry<PotionEffectType> potionEffects() {
-    return POTION_EFFECTS;
+  public static Registry<PotionType> potions() {
+    return POTIONS;
+  }
+
+  public static Registry<MobEffectType> mobEffects() {
+    return MOB_EFFECTS;
   }
 
   public static Registry<DataComponentType<?>> dataComponentTypes() {
@@ -65,7 +71,8 @@ public final class Registries {
       final Registry<BlockState> blocks,
       final Registry<Material> materials,
       final Registry<Enchantment> enchantments,
-      final Registry<PotionEffectType> potionEffects,
+      final Registry<PotionType> potions,
+      final Registry<MobEffectType> mobEffects,
       final Registry<DataComponentType<?>> dataComponentTypes
   ) {
     DIMENSIONS = dimensions;
@@ -74,7 +81,8 @@ public final class Registries {
     BLOCKS = blocks;
     MATERIALS = materials;
     ENCHANTMENTS = enchantments;
-    POTION_EFFECTS = potionEffects;
+    POTIONS = potions;
+    MOB_EFFECTS = mobEffects;
     DATA_COMPONENT_TYPES = dataComponentTypes;
   }
 }

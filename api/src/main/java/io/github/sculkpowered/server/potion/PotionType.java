@@ -3,13 +3,14 @@ package io.github.sculkpowered.server.potion;
 import io.github.sculkpowered.server.registry.Registry;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An enum of all supported potion effects.
+ * An enum of all supported potion types.
  */
 @SuppressWarnings("unused")
-public enum PotionEffectType implements Registry.Entry {
+public enum PotionType implements Registry.Entry {
 
   // START
   WATER("water"),
@@ -63,7 +64,7 @@ public enum PotionEffectType implements Registry.Entry {
 
   private final Key key;
 
-  PotionEffectType(final String key) {
+  PotionType(final @Subst("value") String key) {
     this.key = Key.key(Key.MINECRAFT_NAMESPACE, key);
   }
 

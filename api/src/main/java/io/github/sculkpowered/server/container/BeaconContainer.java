@@ -1,6 +1,6 @@
 package io.github.sculkpowered.server.container;
 
-import io.github.sculkpowered.server.potion.PotionEffectType;
+import io.github.sculkpowered.server.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -28,10 +28,10 @@ public interface BeaconContainer extends Container {
   /**
    * Sets the first potion effect of the beacon.
    *
-   * @param potionEffectType the first potion effect
+   * @param potionType the first potion effect
    * @since 1.0.0
    */
-  void firstPotionEffect(@NotNull PotionEffectType potionEffectType);
+  void firstPotionEffect(@NotNull PotionType potionType);
 
   /**
    * Gets the first potion effect of the beacon.
@@ -40,15 +40,15 @@ public interface BeaconContainer extends Container {
    * @since 1.0.0
    */
   @NotNull
-  PotionEffectType firstPotionEffect();
+  PotionType firstPotionEffect();
 
   /**
    * Sets the second potion effect of the beacon.
    *
-   * @param potionEffectType the second potion effect
+   * @param potionType the second potion effect
    * @since 1.0.0
    */
-  void secondPotionEffect(@NotNull PotionEffectType potionEffectType);
+  void secondPotionEffect(@NotNull PotionType potionType);
 
   /**
    * Gets the second potion effect of the beacon.
@@ -57,5 +57,5 @@ public interface BeaconContainer extends Container {
    * @since 1.0.0
    */
   @NotNull
-  PotionEffectType secondPotionEffect();
+  PotionType secondPotionEffect();
 }

@@ -32,7 +32,8 @@ import io.github.sculkpowered.server.event.lifecycle.ServerShutdownEvent;
 import io.github.sculkpowered.server.json.GameProfileDeserializer;
 import io.github.sculkpowered.server.json.GameProfilePropertyDeserializer;
 import io.github.sculkpowered.server.plugin.SculkPluginHandler;
-import io.github.sculkpowered.server.potion.PotionEffectType;
+import io.github.sculkpowered.server.potion.MobEffectType;
+import io.github.sculkpowered.server.potion.PotionType;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.NettyServer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
@@ -101,7 +102,8 @@ public final class SculkServer implements Server {
         BlockRegistry.get(),
         new EnumRegistry<>("minecraft:item", Material.AIR),
         new EnumRegistry<>("minecraft:enchantment", Enchantment.AQUA_AFFINITY),
-        new EnumRegistry<>("minecraft:potion", PotionEffectType.AWKWARD),
+        new EnumRegistry<>("minecraft:potion", PotionType.AWKWARD),
+        new EnumRegistry<>("minecraft:mob_effect", MobEffectType.SPEED),
         DataComponentTypeRegistry.get()
     );
   }

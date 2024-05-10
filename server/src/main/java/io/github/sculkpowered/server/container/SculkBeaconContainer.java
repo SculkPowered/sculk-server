@@ -1,7 +1,7 @@
 package io.github.sculkpowered.server.container;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.potion.PotionEffectType;
+import io.github.sculkpowered.server.potion.PotionType;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Range;
 public final class SculkBeaconContainer extends SculkContainer implements BeaconContainer {
 
   private int powerLevel;
-  private PotionEffectType firstPotionEffectType;
-  private PotionEffectType secondPotionEffectType;
+  private PotionType firstPotionType;
+  private PotionType secondPotionType;
 
   public SculkBeaconContainer(final Component title) {
     super(Type.BEACON, title);
@@ -28,31 +28,31 @@ public final class SculkBeaconContainer extends SculkContainer implements Beacon
   }
 
   @Override
-  public void firstPotionEffect(@NotNull PotionEffectType potionEffectType) {
-    this.sendProperty(1, potionEffectType.ordinal());
-    this.firstPotionEffectType = potionEffectType;
+  public void firstPotionEffect(@NotNull PotionType potionType) {
+    this.sendProperty(1, potionType.ordinal());
+    this.firstPotionType = potionType;
   }
 
   @Override
-  public @NotNull PotionEffectType firstPotionEffect() {
-    return this.firstPotionEffectType;
+  public @NotNull PotionType firstPotionEffect() {
+    return this.firstPotionType;
   }
 
   @Override
-  public void secondPotionEffect(@NotNull PotionEffectType potionEffectType) {
-    this.sendProperty(2, potionEffectType.ordinal());
-    this.secondPotionEffectType = potionEffectType;
+  public void secondPotionEffect(@NotNull PotionType potionType) {
+    this.sendProperty(2, potionType.ordinal());
+    this.secondPotionType = potionType;
   }
 
   @Override
-  public @NotNull PotionEffectType secondPotionEffect() {
-    return this.secondPotionEffectType;
+  public @NotNull PotionType secondPotionEffect() {
+    return this.secondPotionType;
   }
 
   @Override
   public void sendProperties(SculkPlayer player) {
     player.send(this.property(0, this.powerLevel));
-    player.send(this.property(1, this.firstPotionEffectType.ordinal()));
-    player.send(this.property(2, this.secondPotionEffectType.ordinal()));
+    player.send(this.property(1, this.firstPotionType.ordinal()));
+    player.send(this.property(2, this.secondPotionType.ordinal()));
   }
 }

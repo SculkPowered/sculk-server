@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
  * Represents a profile of a player.
  */
 public record GameProfile(
-    @NotNull UUID uniqueId,
-    @NotNull String name,
+    UUID uniqueId,
+    String name,
     @NotNull List<Property> properties
 ) {
 

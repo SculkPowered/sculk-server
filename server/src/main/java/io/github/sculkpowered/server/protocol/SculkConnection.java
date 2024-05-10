@@ -272,6 +272,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
                   DataComponent.LORE, Optional.of(List.of(Component.text("A"), Component.text("B"))),
                   DataComponent.RARITY, Optional.of(Rarity.EPIC)
               )));
+          this.player.inventory().item(4, ItemStack.itemStack(Material.PLAYER_HEAD,
+              2, Map.of(DataComponent.PROFILE, Optional.of(this.player.profile()))));
         }, this.executor()).exceptionally(throwable -> {
           LOGGER.error("Exception during login of player {}", this.player.name(), throwable);
           return null;

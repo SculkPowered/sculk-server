@@ -6,6 +6,7 @@ import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.Material;
 import io.github.sculkpowered.server.container.item.data.DataComponentType;
 import io.github.sculkpowered.server.container.item.data.SculkDataComponentType;
+import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.protocol.packet.PacketUtils;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.Utf8;
@@ -18,13 +19,14 @@ import io.netty.handler.codec.EncoderException;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagType;
 import net.kyori.adventure.nbt.BinaryTagTypes;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -216,21 +218,6 @@ public final class Buffer {
     }
   }
 
-  public @NotNull CompoundBinaryTag readCompoundTag() {
-    try (final var inputStream = new ByteBufInputStream(this.buf)) {
-      final var type = inputStream.readByte();
-      if (type == BinaryTagTypes.COMPOUND.id()) {
-        return BinaryTagTypes.COMPOUND.read(inputStream);
-      } else if (type == BinaryTagTypes.END.id()) {
-        return CompoundBinaryTag.empty();
-      } else {
-        throw new AssertionError();
-      }
-    } catch (IOException e) {
-      throw new DecoderException("Unable to decode compound tag: " + e.getMessage());
-    }
-  }
-
   @SuppressWarnings("unchecked")
   public <T extends BinaryTag> @NotNull Buffer writeBinaryTag(final T binaryTag) {
     try (final var outputStream = new ByteBufOutputStream(this.buf)) {
@@ -321,7 +308,8 @@ public final class Buffer {
       final var map = new HashMap<DataComponentType<?>, Optional<?>>(
           components + removedComponents);
       for (var i = 0; i < components; i++) {
-        final var type = (SculkDataComponentType<?>) Registries.dataComponentTypes().get(this.readVarInt());
+        final var type = (SculkDataComponentType<?>) Registries.dataComponentTypes()
+            .get(this.readVarInt());
         map.put(type, Optional.of(type.read(this)));
       }
 
@@ -342,27 +330,49 @@ public final class Buffer {
     }
     var present = 0;
     var empty = 0;
-    // TODO: optimize iterations here
-    for (final var entry : map.entrySet()) {
-      if (entry.getValue().isPresent()) {
-        present++;
+    final var entries = new HashSet<>(map.entrySet());
+    var iterator = entries.iterator();
+    while (iterator.hasNext()) {
+      final var entry = iterator.next();
+      if (((SculkDataComponentType<?>) entry.getKey()).writable()) {
+        if (entry.getValue().isPresent()) {
+          present++;
+        } else {
+          empty++;
+        }
       } else {
-        empty++;
+        iterator.remove();
       }
     }
     this
         .writeVarInt(present)
         .writeVarInt(empty);
-    for (final var entry : map.entrySet()) {
+    iterator = entries.iterator();
+    while (iterator.hasNext()) {
+      final var entry = iterator.next();
       if (entry.getValue().isPresent()) {
-        @SuppressWarnings("unchecked") final var key = (SculkDataComponentType<Object>) entry.getKey();
-        this.writeVarInt(key.id());
-        key.write(this, entry.getValue().get());
+        @SuppressWarnings("unchecked") final var type = (SculkDataComponentType<Object>) entry.getKey();
+        if (type.writable()) {
+          this.writeVarInt(type.id());
+          type.write(this, entry.getValue().get());
+        }
+        iterator.remove();
       }
     }
-    for (final var entry : map.entrySet()) {
-      if (entry.getValue().isEmpty()) {
-        this.writeVarInt(entry.getKey().id());
+    for (final var entry : entries) {
+      this.writeVarInt(entry.getKey().id());
+    }
+    return this;
+  }
+
+  public @NotNull Buffer writeProfileProperties(final @NotNull List<Property> properties) {
+    this.writeVarInt(properties.size());
+    for (final var property : properties) {
+      this
+          .writeString(property.key())
+          .writeString(property.value());
+      if (this.writeOptional(property)) {
+        this.writeString(property.signature());
       }
     }
     return this;
@@ -384,5 +394,11 @@ public final class Buffer {
   public interface Writer<T> {
 
     void write(@NotNull Buffer buf, @NotNull T value);
+  }
+
+  @FunctionalInterface
+  public interface Reader<T> {
+
+    T read(@NotNull Buffer buf);
   }
 }

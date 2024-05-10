@@ -6,5 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 public interface DataComponentType<T> extends Registry.Entry {
 
-  @NotNull BinaryTag valueToBinary(@NotNull T value);
+  boolean serializable();
+
+  BinaryTag valueToBinary(@NotNull T value);
+
+  T binaryToValue(@NotNull BinaryTag binaryTag);
 }

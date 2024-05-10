@@ -53,7 +53,10 @@ final class CodeGenerator extends Generator {
           API_PACKAGE.resolve("enchantment").resolve("Enchantment.java"));
 
       this.generateRegistry(json.get("minecraft:potion").getAsJsonObject(),
-          API_PACKAGE.resolve("potion").resolve("PotionEffect.java"));
+          API_PACKAGE.resolve("potion").resolve("PotionType.java"));
+
+      this.generateRegistry(json.get("minecraft:mob_effect").getAsJsonObject(),
+          API_PACKAGE.resolve("potion").resolve("MobEffectType.java"));
 
       // Entities
       final var entityPath = API_PACKAGE.resolve("entity");

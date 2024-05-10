@@ -51,16 +51,7 @@ public final class PlayerInfo implements Packet {
       final var profile = entry.profile();
       buf
           .writeString(profile.name())
-          .writeVarInt(profile.properties().size());
-      for (final var property : profile.properties()) {
-        buf.writeString(property.key()).writeString(property.value());
-        if (property.signature() != null) {
-          buf.writeBoolean(true);
-          buf.writeString(property.signature());
-        } else {
-          buf.writeBoolean(false);
-        }
-      }
+          .writeProfileProperties(profile.properties());
     }),
     INITIALIZE_CHAT((buf, entry) -> buf.writeBoolean(false)),
     UPDATE_GAME_MODE((buf, entry) -> buf.writeVarInt(entry.gameMode().ordinal())),
