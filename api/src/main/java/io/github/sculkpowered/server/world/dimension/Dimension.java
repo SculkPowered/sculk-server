@@ -47,8 +47,8 @@ public final class Dimension implements Registry.Entry {
     this.key = key;
     this.id = id;
     this.nbt = nbt;
-    final var dimensionHeight = this.nbt.getCompound("element").getInt("height");
-    final var minY = this.nbt.getCompound("element").getInt("min_y");
+    final var dimensionHeight = this.nbt.getInt("height");
+    final var minY = this.nbt.getInt("min_y");
     this.minimumSections = minY / Chunk.CHUNK_SECTION_SIZE;
     this.maximumSections = (minY + dimensionHeight) / Chunk.CHUNK_SECTION_SIZE;
   }
