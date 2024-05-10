@@ -8,6 +8,9 @@ import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.event.EventHandler;
 import io.github.sculkpowered.server.plugin.PluginHandler;
 import io.github.sculkpowered.server.scheduler.Scheduler;
+import io.github.sculkpowered.server.scoreboard.DisplaySlot;
+import io.github.sculkpowered.server.scoreboard.NumberFormat;
+import io.github.sculkpowered.server.scoreboard.Scoreboard;
 import io.github.sculkpowered.server.team.TeamHandler;
 import io.github.sculkpowered.server.world.World;
 import java.util.Collection;
@@ -170,6 +173,19 @@ public interface Server extends ForwardingAudience {
    * @since 1.0.0
    */
   @NotNull MinecraftConfig config();
+
+  /**
+   * Creates a new scoreboard/objective with the specified attributes.
+   *
+   * @param name the name of the objective
+   * @param displayName the display name of the objective
+   * @param numberFormat the number format or null for the default one
+   * @param displaySlot the display slot of the objective
+   * @return the newly created scoreboard
+   * @since 1.0.0
+   */
+  @NotNull Scoreboard createScoreboard(@NotNull String name, @NotNull Component displayName,
+      @Nullable NumberFormat numberFormat, @NotNull DisplaySlot displaySlot);
 
   /**
    * Shutdowns the server.

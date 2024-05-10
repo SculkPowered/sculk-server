@@ -43,6 +43,10 @@ import io.github.sculkpowered.server.registry.EnumRegistry;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.registry.SimpleRegistry;
 import io.github.sculkpowered.server.scheduler.SculkScheduler;
+import io.github.sculkpowered.server.scoreboard.DisplaySlot;
+import io.github.sculkpowered.server.scoreboard.NumberFormat;
+import io.github.sculkpowered.server.scoreboard.Scoreboard;
+import io.github.sculkpowered.server.scoreboard.SculkScoreboard;
 import io.github.sculkpowered.server.team.SculkTeamHandler;
 import io.github.sculkpowered.server.terminal.SimpleTerminal;
 import io.github.sculkpowered.server.world.SculkWorld;
@@ -374,6 +378,12 @@ public final class SculkServer implements Server {
   @Override
   public @NotNull SculkConfiguration config() {
     return this.configuration;
+  }
+
+  @Override
+  public @NotNull Scoreboard createScoreboard(@NotNull String name, @NotNull Component displayName,
+      @Nullable NumberFormat numberFormat, @NotNull DisplaySlot displaySlot) {
+    return new SculkScoreboard(name, displayName, numberFormat, displaySlot);
   }
 
   @Override
