@@ -6,7 +6,7 @@ import com.velocitypowered.natives.util.Natives;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.command.SculkCommandHandler;
 import io.github.sculkpowered.server.command.defaults.InfoCommand;
-import io.github.sculkpowered.server.command.defaults.ShutdownCommand;
+import io.github.sculkpowered.server.command.defaults.StopCommand;
 import io.github.sculkpowered.server.container.Container;
 import io.github.sculkpowered.server.container.GenericContainer;
 import io.github.sculkpowered.server.container.SculkAnvilContainer;
@@ -153,7 +153,7 @@ public final class SculkServer implements Server {
     this.pluginHandler = new SculkPluginHandler(this);
     this.eventHandler = new SculkEventHandler();
     this.commandHandler = (SculkCommandHandler) new SculkCommandHandler(this) // register defaults
-        .register(ShutdownCommand.get(this))
+        .register(StopCommand.get(this))
         .register(InfoCommand.get());
     this.teamHandler = new SculkTeamHandler(this);
     this.scheduler = new SculkScheduler();
