@@ -319,7 +319,6 @@ public final class Buffer {
       for (var i = 0; i < removedComponents; i++) {
         map.put(Registries.dataComponentTypes().get(this.readVarInt()), Optional.empty());
       }
-      System.out.println(map);
       return DataComponents.from(map);
     }
   }

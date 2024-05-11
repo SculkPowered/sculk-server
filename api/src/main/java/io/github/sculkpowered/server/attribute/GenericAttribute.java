@@ -35,7 +35,7 @@ public final class GenericAttribute {
   public static final Attribute SAFE_FALL_DISTANCE =
       new Attribute("generic.safe_fall_distance", 18, 3F, 1024F);
   public static final Attribute SCALE =
-      new Attribute("generic.scale", 15, 19, 16F);
+      new Attribute("generic.scale", 19, 1, 16F);
   public static final Attribute STEP_HEIGHT =
       new Attribute("generic.step_height", 21, 0.6F, 10F);
 }

@@ -4,7 +4,6 @@ import static io.github.sculkpowered.server.util.CoordinateUtil.regionCoordinate
 
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.registry.Registries;
-import io.github.sculkpowered.server.util.CoordinateUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.WorldLoader;
 import io.github.sculkpowered.server.world.block.Block;
