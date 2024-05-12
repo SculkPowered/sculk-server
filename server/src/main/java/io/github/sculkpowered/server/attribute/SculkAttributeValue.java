@@ -61,6 +61,17 @@ public final class SculkAttributeValue implements AttributeValue {
     return this.calculatedValue;
   }
 
+  @Override
+  public String toString() {
+    return "SculkAttributeValue{" +
+        "attribute=" + this.attribute +
+        ", modifiers=" + this.modifiers +
+        ", consumer=" + this.consumer +
+        ", baseValue=" + this.baseValue +
+        ", calculatedValue=" + this.calculatedValue +
+        '}';
+  }
+
   public Collection<AttributeModifier> modifiers() {
     return this.modifiers.values();
   }

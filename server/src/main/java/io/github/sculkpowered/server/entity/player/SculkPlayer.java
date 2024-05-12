@@ -56,6 +56,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.bossbar.BossBar;
@@ -502,7 +503,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   protected void attributeChange(SculkAttributeValue value) {
-    this.sendViewersAndSelf(new UpdateAttributes(this.id, value));
+    this.sendViewersAndSelf(new UpdateAttributes(this.id, List.of(value)));
   }
 
   public void init(final GameMode gameMode, final Position position, final SculkWorld world,

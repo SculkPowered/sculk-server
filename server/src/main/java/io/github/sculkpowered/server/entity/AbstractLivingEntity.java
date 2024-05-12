@@ -4,15 +4,18 @@ import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.attribute.Attribute;
 import io.github.sculkpowered.server.attribute.AttributeValue;
 import io.github.sculkpowered.server.attribute.SculkAttributeValue;
+import io.github.sculkpowered.server.entity.player.Player;
+import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
-  
-  private final Map<Attribute, AttributeValue> attributes = new HashMap<>();
+
+  private final Map<Attribute, SculkAttributeValue> attributes = new HashMap<>();
 
   @Override
   public @NotNull AttributeValue attribute(@NotNull Attribute attribute) {
@@ -25,6 +28,18 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
 
   public AbstractLivingEntity(final SculkServer server, final UUID uuid) {
     super(server, uuid);
+  }
+
+  @Override
+  public boolean addViewer(@NotNull Player player) {
+    final var added = super.addViewer(player);
+    if (added) {
+      if (!this.attributes.isEmpty()) {
+        final var sculkPlayer = (SculkPlayer) player;
+        sculkPlayer.send(new UpdateAttributes(this.id, this.attributes.values()));
+      }
+    }
+    return added;
   }
 
   @Override
@@ -78,6 +93,6 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
   }
 
   protected void attributeChange(SculkAttributeValue value) {
-    this.sendViewers(new UpdateAttributes(this.id, value));
+    this.sendViewers(new UpdateAttributes(this.id, List.of(value)));
   }
 }
