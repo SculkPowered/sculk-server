@@ -17,6 +17,7 @@ import io.github.sculkpowered.server.container.SculkFurnaceContainer;
 import io.github.sculkpowered.server.container.SculkLoomContainer;
 import io.github.sculkpowered.server.container.SculkStonecutterContainer;
 import io.github.sculkpowered.server.container.item.Material;
+import io.github.sculkpowered.server.container.item.data.DataComponentTypeRegistry;
 import io.github.sculkpowered.server.damage.DamageTypeRegistry;
 import io.github.sculkpowered.server.enchantment.Enchantment;
 import io.github.sculkpowered.server.entity.AbstractEntity;
@@ -38,7 +39,6 @@ import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.NettyServer;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
-import io.github.sculkpowered.server.container.item.data.DataComponentTypeRegistry;
 import io.github.sculkpowered.server.registry.EnumRegistry;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.registry.SimpleRegistry;
@@ -75,7 +75,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.nbt.BinaryTagIO;
@@ -112,7 +115,7 @@ public final class SculkServer implements Server {
     );
   }
 
-  private boolean running = true;
+  private final AtomicBoolean running = new AtomicBoolean(true);
 
   private SculkConfiguration configuration;
   private KeyPair keyPair;
@@ -186,46 +189,75 @@ public final class SculkServer implements Server {
   }
 
   public void shutdown(final boolean runtime) {
-    LOGGER.info("Shutting down...");
-    this.running = false;
-
-    this.nettyServer.close();
-
-    final var component = Component.text("Shutting down...", NamedTextColor.RED);
-    for (final var player : this.players.values()) {
-      player.disconnect(component);
+    if (!this.running.compareAndSet(true, false)) {
+      return;
     }
 
-    for (final var world : this.worlds.values()) {
-      world.setAlive(false);
-    }
-
-    this.eventHandler.call(new ServerShutdownEvent()).join();
-
-    final var plugins = this.pluginHandler.plugins();
-    final var iterator = plugins.iterator();
-    while (iterator.hasNext()) {
-      final var plugin = iterator.next();
-      if (plugin.hasExecutorService()) {
-        plugin.executorService().shutdown();
-      } else {
-        iterator.remove();
-      }
-    }
-    for (final var plugin : plugins) {
+    final Runnable runnable = () -> {
+      LOGGER.info("Shutting down...");
+      var timedOut = false;
       try {
-        //noinspection ResultOfMethodCallIgnored
-        plugin.executorService().awaitTermination(10, TimeUnit.SECONDS);
+        this.nettyServer.close();
+
+        final var component = Component.text("Shutting down...", NamedTextColor.RED);
+        final var players = this.players.values();
+        for (final var player : players) {
+          player.disconnect(component);
+        }
+        for (final var player : players) {
+          try {
+            player.disconnectFuture().get(10, TimeUnit.SECONDS);
+          } catch (TimeoutException e) {
+            timedOut = true;
+          } catch (ExecutionException e) {
+            timedOut = true;
+            LOGGER.error("Exception while player disconnection", e);
+          }
+        }
+
+        for (final var world : this.worlds.values()) {
+          world.setAlive(false);
+        }
+
+        this.eventHandler.call(new ServerShutdownEvent()).join();
+        if (!this.scheduler.shutdown()) {
+          timedOut = true;
+        }
+
+        final var plugins = this.pluginHandler.plugins();
+        final var iterator = plugins.iterator();
+        while (iterator.hasNext()) {
+          final var plugin = iterator.next();
+          if (plugin.hasExecutorService()) {
+            plugin.executorService().shutdown();
+          } else {
+            iterator.remove();
+          }
+        }
+        for (final var plugin : plugins) {
+          //noinspection ResultOfMethodCallIgnored
+          plugin.executorService().awaitTermination(10, TimeUnit.SECONDS);
+        }
       } catch (InterruptedException e) {
-        LOGGER.info("Something took over 10 seconds to shutdown!");
+        timedOut = true;
+        LOGGER.error("Something interrupted", e);
         Thread.currentThread().interrupt();
       }
-    }
+      if (timedOut) {
+        LOGGER.error("Something took over 10 seconds to shutdown.");
+      }
 
-    LogManager.shutdown(false);
+      LogManager.shutdown(false);
+
+      if (runtime) {
+        System.exit(0);
+      }
+    };
 
     if (runtime) {
-      Runtime.getRuntime().exit(0);
+      new Thread(runnable, "Sculk Shutdown Process").start();
+    } else {
+      runnable.run();
     }
   }
 
@@ -250,7 +282,7 @@ public final class SculkServer implements Server {
   }
 
   public boolean isRunning() {
-    return this.running;
+    return this.running.get();
   }
 
   @Override
@@ -356,8 +388,9 @@ public final class SculkServer implements Server {
   public @NotNull Container createContainer(Container.@NotNull Type type,
       @NotNull Component title) {
     return switch (type) {
-      case GENERIC_9x1, GENERIC_9x2, GENERIC_9x3, GENERIC_9x6, GENERIC_9x5, GENERIC_9x4, GENERIC_3x3,
-          CRAFTING, GRINDSTONE, HOPPER, LECTERN, MERCHANT, SHULKER_BOX, SMITHING, CARTOGRAPHY ->
+      case GENERIC_9x1, GENERIC_9x2, GENERIC_9x3, GENERIC_9x6, GENERIC_9x5, GENERIC_9x4,
+           GENERIC_3x3,
+           CRAFTING, GRINDSTONE, HOPPER, LECTERN, MERCHANT, SHULKER_BOX, SMITHING, CARTOGRAPHY ->
           new GenericContainer(type, title);
       case ANVIL -> new SculkAnvilContainer(title);
       case BEACON -> new SculkBeaconContainer(title);

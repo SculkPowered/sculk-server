@@ -25,6 +25,11 @@ public final class SculkScheduler implements Scheduler {
     return new Task(plugin, runnable);
   }
 
+  public boolean shutdown() throws InterruptedException {
+    this.executorService.shutdown();
+    return this.executorService.awaitTermination(10, TimeUnit.SECONDS);
+  }
+
   private final class Task implements Scheduler.Task, Runnable {
 
     private final Plugin plugin;

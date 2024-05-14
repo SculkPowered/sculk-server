@@ -17,6 +17,7 @@ import io.github.sculkpowered.server.entity.AbstractLivingEntity;
 import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.EntityType;
 import io.github.sculkpowered.server.event.connection.PluginMessageEvent;
+import io.github.sculkpowered.server.event.player.PlayerDisconnectEvent;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.Packet;
 import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
@@ -29,6 +30,7 @@ import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
 import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
+import io.github.sculkpowered.server.protocol.packet.play.PlayerInfoRemove;
 import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
 import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
 import io.github.sculkpowered.server.protocol.packet.play.RemoveResourcePack;
@@ -59,6 +61,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBarImplementation;
 import net.kyori.adventure.identity.Identity;
@@ -88,6 +91,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private final GameProfile profile;
   private final ClientInformationWrapper settings = new ClientInformationWrapper();
   private final SculkInventory inventory = new SculkInventory(this);
+  private final CompletableFuture<Void> disconnectFuture = new CompletableFuture<>();
   private SculkContainer container;
   private long lastSendKeepAlive;
   private boolean keepAlivePending;
@@ -154,7 +158,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void disconnect(@NotNull Component component) {
-    this.send(new Disconnect(component));
+    this.connection.sendAndClose(new Disconnect(component));
   }
 
   @Override
@@ -600,6 +604,35 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     for (final var bossBar : this.bossBars) {
       BossBarImplementation.get(bossBar, Impl.class).players().remove(this);
     }
+    final var world = this.world();
+    final var position = this.position();
+    if (world != null) {
+      this.server.addTask(() -> {
+        world.chunkAt(position).entities().remove(this);
+        forChunksInRange(
+            chunkCoordinate(position.x()), chunkCoordinate(position.z()),
+            this.settings.viewDistance(), (x, z) -> {
+              final var chunk = world.chunk(x, z);
+              chunk.viewers().remove(this);
+              for (final var entity : chunk.entities()) {
+                entity.removeViewer(this);
+              }
+            });
+      });
+    }
+    this.sendViewers(new RemoveEntities(this.id()));
+    this.server.sendAll(new PlayerInfoRemove(List.of(this)));
+    if (this.container != null) {
+      this.container.removeViewer(this);
+    }
+    this.server.eventHandler().call(new PlayerDisconnectEvent(this))
+        .whenComplete((event, throwable) -> {
+          if (throwable != null) {
+            this.disconnectFuture.completeExceptionally(throwable);
+          } else {
+            this.disconnectFuture.complete(null);
+          }
+        });
   }
 
   public void sendViewersAndSelf(final Packet packet) {
@@ -617,6 +650,10 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void receivedTeleportConfirmation(boolean received) {
     this.receivedTeleportConfirmation = received;
+  }
+
+  public CompletableFuture<Void> disconnectFuture() {
+    return this.disconnectFuture;
   }
 
   public void resendContainer() {

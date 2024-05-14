@@ -8,8 +8,6 @@ import static io.github.sculkpowered.server.util.Constants.FRAME_DECODER;
 import static io.github.sculkpowered.server.util.Constants.FRAME_ENCODER;
 import static io.github.sculkpowered.server.util.Constants.MINECRAFT_DECODER;
 import static io.github.sculkpowered.server.util.Constants.MINECRAFT_ENCODER;
-import static io.github.sculkpowered.server.util.CoordinateUtil.chunkCoordinate;
-import static io.github.sculkpowered.server.util.CoordinateUtil.forChunksInRange;
 
 import com.mojang.brigadier.tree.RootCommandNode;
 import com.velocitypowered.natives.util.Natives;
@@ -21,7 +19,6 @@ import io.github.sculkpowered.server.entity.player.GameProfile;
 import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.entity.player.PlayerInfoEntry;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.event.player.PlayerDisconnectEvent;
 import io.github.sculkpowered.server.event.player.PlayerInitialEvent;
 import io.github.sculkpowered.server.event.player.PlayerJoinEvent;
 import io.github.sculkpowered.server.protocol.netty.codec.CipherDecoder;
@@ -45,9 +42,7 @@ import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
 import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.Login;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerInfo;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerInfoRemove;
 import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
-import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
 import io.github.sculkpowered.server.protocol.packet.play.SpawnPosition;
 import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
@@ -125,35 +120,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     if (this.player != null) {
       this.server.removePlayer(this.player);
       this.player.onDisconnect();
-
-      final var world = this.player.world();
-      final var position = this.player.position();
-      if (world != null) {
-        this.server.addTask(() -> {
-          world.chunkAt(position).entities().remove(this.player);
-          forChunksInRange(
-              chunkCoordinate(position.x()), chunkCoordinate(position.z()),
-              this.player.settings().viewDistance(), (x, z) -> {
-                final var chunk = world.chunk(x, z);
-                chunk.viewers().remove(this.player);
-                for (final var entity : chunk.entities()) {
-                  entity.removeViewer(this.player);
-                }
-              });
-        });
-      }
-      this.player.sendViewers(new RemoveEntities(this.player.id()));
-      this.server.sendAll(new PlayerInfoRemove(List.of(this.player)));
-      if (this.player.openedContainer() != null) {
-        this.player.openedContainer().removeViewer(this.player);
-      }
-
-      for (final var bossBar : this.player.activeBossBars()) {
-        this.player.hideBossBar(bossBar);
-      }
-
       LOGGER.info("{} has disconnected.", this.username);
-      this.server.eventHandler().call(new PlayerDisconnectEvent(this.player));
     }
     ctx.close();
   }
