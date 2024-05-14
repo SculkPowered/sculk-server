@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class DataComponents {
 
@@ -58,6 +59,11 @@ public final class DataComponents {
     return new Builder(new HashMap<>(this.components));
   }
 
+  @SuppressWarnings("unchecked")
+  public <T> @Nullable Optional<T> get(final @NotNull DataComponentType<T> type) {
+    return (Optional<T>) this.components.get(type);
+  }
+
   public static @NotNull DataComponents empty() {
     return EMPTY;
   }
@@ -99,7 +105,11 @@ public final class DataComponents {
       return this;
     }
 
-    public @NotNull Builder remove(final @NotNull DataComponentType<?> type) {
+    public @NotNull Builder enable(final @NotNull DataComponentType<Unit> type) {
+      return this.set(type, Unit.INSTANCE);
+    }
+
+    public @NotNull Builder unset(final @NotNull DataComponentType<?> type) {
       this.components.put(type, Optional.empty());
       return this;
     }
@@ -107,6 +117,11 @@ public final class DataComponents {
     public @NotNull Builder reset(final @NotNull DataComponentType<?> type) {
       this.components.remove(type);
       return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> @Nullable Optional<T> get(final @NotNull DataComponentType<T> type) {
+      return (Optional<T>) this.components.get(type);
     }
 
     public @NotNull DataComponents build() {

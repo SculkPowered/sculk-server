@@ -124,19 +124,19 @@ public final class DataComponentTypeRegistry {
       }
     };
 
-    // Void
-    final Writer<Void> voidWriter = (buf, value) -> {
+    // Unit
+    final Writer<Unit> voidWriter = (buf, value) -> {
     };
-    final Reader<Void> voidReader = buf -> null;
-    final var voidSerializer = new BinarySerializer<Void>() {
+    final Reader<Unit> voidReader = buf -> Unit.INSTANCE;
+    final var voidSerializer = new BinarySerializer<Unit>() {
       @Override
-      public BinaryTag serialize(Void unused) {
+      public BinaryTag serialize(Unit unused) {
         return CompoundBinaryTag.empty();
       }
 
       @Override
-      public Void deserialize(BinaryTag binaryTag) {
-        return null;
+      public Unit deserialize(BinaryTag binaryTag) {
+        return Unit.INSTANCE;
       }
     };
 
