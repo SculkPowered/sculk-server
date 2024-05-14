@@ -231,6 +231,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(KeepAlive keepAlive) {
+    this.player.setPing((int) (System.currentTimeMillis() - keepAlive.timeMillis()));
     this.player.setKeepAlivePending(false);
     return true;
   }

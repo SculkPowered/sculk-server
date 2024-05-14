@@ -30,6 +30,7 @@ import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
 import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
+import io.github.sculkpowered.server.protocol.packet.play.PlayerInfo;
 import io.github.sculkpowered.server.protocol.packet.play.PlayerInfoRemove;
 import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
 import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
@@ -93,6 +94,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private final SculkInventory inventory = new SculkInventory(this);
   private final CompletableFuture<Void> disconnectFuture = new CompletableFuture<>();
   private SculkContainer container;
+  private int ping;
   private long lastSendKeepAlive;
   private boolean keepAlivePending;
   private GameMode gameMode = GameMode.SURVIVAL;
@@ -135,7 +137,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public int ping() {
-    return 1;
+    return this.ping;
   }
 
   @Override
@@ -638,6 +640,11 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   public void sendViewersAndSelf(final Packet packet) {
     this.send(packet);
     this.sendViewers(packet);
+  }
+
+  public void setPing(final int ping) {
+    this.ping = ping;
+    this.sendViewersAndSelf(PlayerInfo.update(this, PlayerInfo.Action.UPDATE_LATENCY));
   }
 
   public void setKeepAlivePending(boolean pending) {

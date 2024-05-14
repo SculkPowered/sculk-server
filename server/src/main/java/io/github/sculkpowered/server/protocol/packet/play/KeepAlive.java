@@ -48,4 +48,8 @@ public final class KeepAlive implements Packet {
         "timeMillis=" + this.timeMillis +
         '}';
   }
+
+  public long timeMillis() {
+    return this.timeMillis;
+  }
 }
