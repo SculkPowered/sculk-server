@@ -7,5 +7,6 @@ import io.github.sculkpowered.server.attribute.Attribute;
  */
 public interface Zombie extends Mob, Ageable {
 
-  Attribute SPAWN_REINFORCEMENTS = new Attribute("zombie.spawn_reinforcements", 20, 0F, 1F);
+  Attribute SPAWN_REINFORCEMENTS =
+      new Attribute("zombie.spawn_reinforcements", 20, 0F, 0F, 1F);
 }

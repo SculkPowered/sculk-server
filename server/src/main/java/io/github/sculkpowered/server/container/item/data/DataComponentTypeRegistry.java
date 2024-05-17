@@ -1,5 +1,9 @@
 package io.github.sculkpowered.server.container.item.data;
 
+import io.github.sculkpowered.server.attribute.AttributeModifier;
+import io.github.sculkpowered.server.attribute.AttributeOperation;
+import io.github.sculkpowered.server.attribute.AttributeSlot;
+import io.github.sculkpowered.server.container.item.data.ItemAttributes.Entry;
 import io.github.sculkpowered.server.enchantment.Enchantment;
 import io.github.sculkpowered.server.entity.player.GameProfile;
 import io.github.sculkpowered.server.potion.CustomPotionEffect;
@@ -21,6 +25,7 @@ import net.kyori.adventure.nbt.BinaryTag;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.ByteBinaryTag;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.IntArrayBinaryTag;
 import net.kyori.adventure.nbt.IntBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.StringBinaryTag;
@@ -32,6 +37,8 @@ import org.jetbrains.annotations.NotNull;
 public final class DataComponentTypeRegistry {
 
   public static Registry<DataComponentType<?>> get() {
+    final String tooltipKey = "show_in_tooltip";
+
     // CompoundBinaryTag
     final Writer<CompoundBinaryTag> compoundBinaryTagWriter = Buffer::writeBinaryTag;
     final Reader<CompoundBinaryTag> compoundBinaryTagReader = buf ->
@@ -106,7 +113,7 @@ public final class DataComponentTypeRegistry {
         }
         return CompoundBinaryTag.builder()
             .put("levels", builder.build())
-            .putBoolean("show_in_tooltip", value.showInTooltip())
+            .putBoolean(tooltipKey, value.showInTooltip())
             .build();
       }
 
@@ -120,7 +127,7 @@ public final class DataComponentTypeRegistry {
               ((IntBinaryTag) enchantment).intValue());
         }
         return new ItemEnchantments(enchantments, compound
-            .getBoolean("show_in_tooltip", true));
+            .getBoolean(tooltipKey, true));
       }
     };
 
@@ -173,14 +180,18 @@ public final class DataComponentTypeRegistry {
           @Override
           public BinaryTag serialize(Unbreakable unbreakable) {
             return CompoundBinaryTag.builder()
-                .putBoolean("show_in_tooltip", unbreakable.showInTooltip())
+                .putBoolean(tooltipKey, unbreakable.showInTooltip())
                 .build();
           }
 
           @Override
           public Unbreakable deserialize(BinaryTag binaryTag) {
-            return Unbreakable.showInTooltip(((CompoundBinaryTag) binaryTag)
-                .getBoolean("show_in_tooltip"));
+            if (binaryTag instanceof CompoundBinaryTag compound) {
+              return Unbreakable.showInTooltip(compound.getBoolean(tooltipKey));
+            } else if (binaryTag instanceof ByteBinaryTag byteBinaryTag) {
+              return Unbreakable.showInTooltip(byteBinaryTag == ByteBinaryTag.ONE);
+            }
+            return null;
           }
         }));
     registry.register(new SculkDataComponentType<>("custom_name", id++,
@@ -245,21 +256,78 @@ public final class DataComponentTypeRegistry {
         blockPredicatesWriter, blockPredicatesReader, blockPredicatesSerializer));
     registry.register(new SculkDataComponentType<>("attribute_modifiers", id++,
         (buf, value) -> {
+          buf.writeVarInt(value.attributes().size());
+          for (final var attribute : value.attributes()) {
+            buf
+                .writeVarInt(attribute.attribute().id())
+                .writeUniqueId(attribute.modifier().uniqueId())
+                .writeString(attribute.modifier().name())
+                .writeDouble(attribute.modifier().amount())
+                .writeVarInt(attribute.modifier().operation().ordinal());
+
+            buf.writeVarInt(attribute.slot().ordinal());
+          }
+          buf.writeBoolean(value.showInTooltip());
         },
         buf -> {
-
-          return new ItemAttributes(List.of(), buf.readBoolean());
+          final var size = buf.readVarInt();
+          final var attributes = new ArrayList<Entry>(size);
+          attributes.add(
+              new Entry(Registries.attributes().get(buf.readVarInt()),
+                  new AttributeModifier(
+                      buf.readUniqueId(),
+                      buf.readString(),
+                      buf.readDouble(),
+                      buf.readEnum(AttributeOperation.class)),
+                  buf.readEnum(AttributeSlot.class))
+          );
+          return new ItemAttributes(List.copyOf(attributes), buf.readBoolean());
         },
         new BinarySerializer<>() {
-
           @Override
-          public BinaryTag serialize(ItemAttributes itemAttributes) {
-            return null;
+          public BinaryTag serialize(ItemAttributes attributes) {
+            final var list = ListBinaryTag.builder(BinaryTagTypes.COMPOUND);
+            for (final var entry : attributes.attributes()) {
+              list.add(CompoundBinaryTag.builder()
+                  .putString("type", entry.attribute().name())
+                  .putIntArray("uuid", uuidToIntArray(entry.modifier().uniqueId()))
+                  .putString("name", entry.modifier().name())
+                  .putDouble("amount", entry.modifier().amount())
+                  .putString("operation", entry.modifier().operation()
+                      .name().toLowerCase(Locale.ENGLISH))
+                  .putString("slot", entry.slot().name().toLowerCase(Locale.ENGLISH))
+                  .build());
+            }
+            return CompoundBinaryTag.builder()
+                .put("modifiers", list.build())
+                .putBoolean(tooltipKey, attributes.showInTooltip())
+                .build();
           }
 
           @Override
           public ItemAttributes deserialize(BinaryTag binaryTag) {
-            return null;
+            var showInTooltip = true;
+            ListBinaryTag modifiers = ListBinaryTag.empty();
+            if (binaryTag instanceof CompoundBinaryTag compound) {
+              showInTooltip = compound.getBoolean(tooltipKey, true);
+              modifiers = compound.getList("modifiers");
+            } else if (binaryTag instanceof ListBinaryTag listBinaryTag) {
+              modifiers = listBinaryTag;
+            }
+            final var attributes = new ArrayList<ItemAttributes.Entry>(modifiers.size());
+            for (final var tag : modifiers) {
+              final var modifier = (CompoundBinaryTag) tag;
+              attributes.add(new ItemAttributes.Entry(
+                  Registries.attributes().get(modifier.getString("type")),
+                  new AttributeModifier(
+                      intArrayToUuid(modifier.getIntArray("uuid")),
+                      modifier.getString("name"),
+                      modifier.getDouble("amount"),
+                      AttributeOperation.valueOf(modifier.getString("operation")
+                          .toUpperCase(Locale.ENGLISH))),
+                  AttributeSlot.valueOf(modifier.getString("slot").toUpperCase(Locale.ENGLISH))));
+            }
+            return new ItemAttributes(List.copyOf(attributes), showInTooltip);
           }
         }));
     registry.register(new SculkDataComponentType<>("custom_model_data", id++,
@@ -324,13 +392,13 @@ public final class DataComponentTypeRegistry {
         (buf, value) -> buf
             .writeInt(asRGB(value.color()))
             .writeBoolean(value.showInTooltip()),
-        buf -> new DyedColor(TextColor.color(buf.readVarInt()), buf.readBoolean()),
+        buf -> new DyedColor(TextColor.color(buf.readInt()), buf.readBoolean()),
         new BinarySerializer<>() {
           @Override
           public BinaryTag serialize(DyedColor color) {
             return CompoundBinaryTag.builder()
                 .putInt("color", asRGB(color.color()))
-                .putBoolean("show_in_tooltip", color.showInTooltip())
+                .putBoolean(tooltipKey, color.showInTooltip())
                 .build();
           }
 
@@ -338,7 +406,7 @@ public final class DataComponentTypeRegistry {
           public DyedColor deserialize(BinaryTag binaryTag) {
             if (binaryTag instanceof CompoundBinaryTag compound) {
               return new DyedColor(TextColor.color(compound.getInt("color")),
-                  compound.getBoolean("show_in_tooltip"));
+                  compound.getBoolean(tooltipKey));
             } else {
               return new DyedColor(TextColor.color(((IntBinaryTag) binaryTag).value()), true);
             }
@@ -507,7 +575,7 @@ public final class DataComponentTypeRegistry {
           builder.putString("name", profile.name());
         }
         if (profile.uniqueId() != null) {
-          //builder.put("uuid", profile.uniqueId());
+          builder.putIntArray("uuid", uuidToIntArray(profile.uniqueId()));
         }
         if (!profile.properties().isEmpty()) {
           final var list = ListBinaryTag.builder(BinaryTagTypes.COMPOUND);
@@ -529,10 +597,23 @@ public final class DataComponentTypeRegistry {
       public GameProfile deserialize(BinaryTag binaryTag) {
         final var compound = (CompoundBinaryTag) binaryTag;
         UUID uniqueId = null;
-
+        if (compound.get("uuid") instanceof IntArrayBinaryTag uuidTag) {
+          uniqueId = intArrayToUuid(uuidTag.value());
+        }
         String name = null;
-
-        return new GameProfile(uniqueId, name, null);
+        if (compound.get("name") instanceof StringBinaryTag nameTag) {
+          name = nameTag.value();
+        }
+        final var propertiesTag = compound.getList("properties");
+        final List<GameProfile.Property> properties = new ArrayList<>(propertiesTag.size());
+        for (final var tag : propertiesTag) {
+          final var property = (CompoundBinaryTag) tag;
+          properties.add(new GameProfile.Property(
+              property.getString("name"), property.getString("value"),
+              property.get("signature")
+                  instanceof StringBinaryTag signatureTag ? signatureTag.value() : null));
+        }
+        return new GameProfile(uniqueId, name, List.copyOf(properties));
       }
     }));
     registry.register(new SculkDataComponentType<>("note_block_sound", id++,
@@ -587,5 +668,23 @@ public final class DataComponentTypeRegistry {
     var rgb = rgbLike.red();
     rgb = (rgb << 8) + rgbLike.green();
     return (rgb << 8) + rgbLike.blue();
+  }
+
+  private static int[] uuidToIntArray(final UUID uniqueId) {
+    final var mostBits = uniqueId.getMostSignificantBits();
+    final var leastBits = uniqueId.getLeastSignificantBits();
+    return new int[]{
+        (int) (mostBits >> 32),
+        (int) mostBits,
+        (int) (leastBits >> 32),
+        (int) leastBits
+    };
+  }
+
+  private static UUID intArrayToUuid(final int[] ints) {
+    return new UUID(
+        (long) ints[0] << 32 | ints[1] & 0xFFFFFFFFL,
+        (long) ints[2] << 32 | ints[3] & 0xFFFFFFFFL
+    );
   }
 }

@@ -7,11 +7,11 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public record ItemAttributes(
-    @NotNull List<Modifier> attributes,
+    @NotNull List<Entry> attributes,
     boolean showInTooltip
 ) {
 
-  public record Modifier(
+  public record Entry(
       @NotNull Attribute attribute,
       @NotNull AttributeModifier modifier,
       @NotNull AttributeSlot slot

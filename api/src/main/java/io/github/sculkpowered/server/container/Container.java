@@ -31,9 +31,10 @@ public interface Container {
    *
    * @param index the index of the item
    * @param item  the item to set
+   * @return the item previously at the index
    * @since 1.0.0
    */
-  void item(int index, @NotNull ItemStack item);
+  @NotNull ItemStack item(int index, @NotNull ItemStack item);
 
   /**
    * Gets an item by its index.

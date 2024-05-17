@@ -23,8 +23,9 @@ public final class ItemList extends AbstractList<ItemStack> {
 
   @Override
   public ItemStack set(int index, ItemStack item) {
+    final var previous = this.items[index];
     this.items[index] = item;
-    return null;
+    return previous;
   }
 
   @Override

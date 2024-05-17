@@ -3,6 +3,7 @@ package io.github.sculkpowered.server;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.velocitypowered.natives.util.Natives;
+import io.github.sculkpowered.server.attribute.AttributeRegistry;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.command.SculkCommandHandler;
 import io.github.sculkpowered.server.command.defaults.InfoCommand;
@@ -102,6 +103,7 @@ public final class SculkServer implements Server {
   public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
   static {
+    // I do not like this, at some point registries would need a rework
     Registries.set(
         new SimpleRegistry<>("minecraft:dimension_type", Dimension.OVERWORLD),
         new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS),
@@ -111,7 +113,8 @@ public final class SculkServer implements Server {
         new EnumRegistry<>("minecraft:enchantment", Enchantment.AQUA_AFFINITY),
         new EnumRegistry<>("minecraft:potion", PotionType.AWKWARD),
         new EnumRegistry<>("minecraft:mob_effect", MobEffectType.SPEED),
-        DataComponentTypeRegistry.get()
+        DataComponentTypeRegistry.get(),
+        AttributeRegistry.get()
     );
   }
 

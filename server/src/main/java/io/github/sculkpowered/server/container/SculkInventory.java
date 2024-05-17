@@ -1,11 +1,15 @@
 package io.github.sculkpowered.server.container;
 
+import io.github.sculkpowered.server.container.equipment.EquipmentSlot;
 import io.github.sculkpowered.server.container.item.ItemStack;
+import io.github.sculkpowered.server.container.item.data.DataComponent;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
 import io.github.sculkpowered.server.protocol.packet.play.container.ContainerSlot;
-import io.github.sculkpowered.server.util.OneInt2ObjectMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +23,7 @@ public final class SculkInventory extends AbstractContainer implements Inventory
   }
 
   @Override
-  public void item(int index, @NotNull ItemStack itemStack) {
+  public @NotNull ItemStack item(int index, @NotNull ItemStack itemStack) {
     if (index < 9) {
       index += 36;
     } else if (index > 39) {
@@ -27,33 +31,29 @@ public final class SculkInventory extends AbstractContainer implements Inventory
     } else if (index > 35) {
       index = 8 - (index - 36);
     }
-    this.item0(index, itemStack, true);
+    return this.item0(index, itemStack, true);
   }
 
-  public void item0(int index, @NotNull ItemStack itemStack, boolean slotPacket) {
-    super.item(index, itemStack);
+  public ItemStack item0(final int index, final @NotNull ItemStack itemStack,
+      final boolean slotPacket) {
     if (index == 5) {
-      this.player.sendViewersAndSelf(
-          new Equipment(this.player.id(), OneInt2ObjectMap.of(5, itemStack)));
+      return this.set(EquipmentSlot.HEAD, itemStack);
     } else if (index == 6) {
-      this.player.sendViewersAndSelf(
-          new Equipment(this.player.id(), OneInt2ObjectMap.of(4, itemStack)));
+      return this.set(EquipmentSlot.CHEST, itemStack);
     } else if (index == 7) {
-      this.player.sendViewersAndSelf(
-          new Equipment(this.player.id(), OneInt2ObjectMap.of(3, itemStack)));
+      return this.set(EquipmentSlot.LEGS, itemStack);
     } else if (index == 8) {
-      this.player.sendViewersAndSelf(
-          new Equipment(this.player.id(), OneInt2ObjectMap.of(2, itemStack)));
+      return this.set(EquipmentSlot.FEET, itemStack);
     } else if (index == 45) {
-      this.player.sendViewersAndSelf(
-          new Equipment(this.player.id(), OneInt2ObjectMap.of(1, itemStack)));
+      return this.set(EquipmentSlot.OFF_HAND, itemStack);
     } else if ((index - 36) == this.player.heldItemSlot()) {
-      this.player.sendViewersAndSelf(
-          new Equipment(this.player.id(), OneInt2ObjectMap.of(0, itemStack)));
+      return this.set(EquipmentSlot.MAIN_HAND, itemStack);
     }
     if (slotPacket) {
-      this.player.send(new ContainerSlot((byte) 0, this.incrementState(), (short) index, itemStack));
+      this.player.send(
+          new ContainerSlot((byte) 0, this.incrementState(), (short) index, itemStack));
     }
+    return super.item(index, itemStack);
   }
 
   @Override
@@ -69,73 +69,88 @@ public final class SculkInventory extends AbstractContainer implements Inventory
   }
 
   @Override
-  public @NotNull ItemStack itemInMainHand() {
-    return this.item(this.player.heldItemSlot());
+  public @NotNull ItemStack get(@NotNull EquipmentSlot slot) {
+    return switch (slot) {
+      case MAIN_HAND -> super.item(36 + this.player.heldItemSlot());
+      case OFF_HAND -> super.item(45);
+      case FEET -> super.item(8);
+      case LEGS -> super.item(7);
+      case CHEST -> super.item(6);
+      case HEAD -> super.item(5);
+      case BODY -> throw new IllegalArgumentException();
+    };
   }
 
   @Override
-  public void itemInMainHand(@NotNull ItemStack item) {
-    this.item(this.player.heldItemSlot(), item);
+  public @NotNull ItemStack set(@NotNull EquipmentSlot slot, @NotNull ItemStack equipment) {
+    this.player.sendViewersAndSelf(new Equipment(this.player.id(), Map.of(slot, equipment)));
+    var index = switch (slot) {
+      case MAIN_HAND -> 36 + this.player.heldItemSlot();
+      case OFF_HAND -> 45;
+      case FEET -> 8;
+      case LEGS -> 7;
+      case CHEST -> 6;
+      case HEAD -> 5;
+      case BODY -> throw new IllegalArgumentException();
+    };
+    // remove previous attributes
+    final var previous = super.item(index, equipment);
+    var attributes = Objects.requireNonNull(previous
+        .get(DataComponent.ATTRIBUTE_MODIFIERS)).attributes();
+    for (final var attribute : attributes) {
+      if (attribute.slot().is(slot)) {
+        this.player.attribute(attribute.attribute()).removeModifier(attribute.modifier());
+      }
+    }
+    // add new attributes
+    attributes = Objects.requireNonNull(equipment
+        .get(DataComponent.ATTRIBUTE_MODIFIERS)).attributes();
+    for (final var attribute : attributes) {
+      if (attribute.slot().is(slot)) {
+        this.player.attribute(attribute.attribute()).addModifier(attribute.modifier());
+      }
+    }
+    return previous;
   }
 
   @Override
-  public @NotNull ItemStack itemInOffHand() {
-    return super.item(45);
-  }
-
-  @Override
-  public void itemInOffHand(@NotNull ItemStack item) {
-    this.item0(45, item, false);
-  }
-
-  @Override
-  public void helmet(@NotNull ItemStack helmet) {
-    this.item0(5, helmet, false);
-  }
-
-  @Override
-  public @NotNull ItemStack helmet() {
-    return super.item(5);
-  }
-
-  @Override
-  public void chestplate(@NotNull ItemStack chestplate) {
-    this.item0(6, chestplate, false);
-  }
-
-  @Override
-  public @NotNull ItemStack chestplate() {
-    return super.item(6);
-  }
-
-  @Override
-  public void leggings(@NotNull ItemStack leggings) {
-    this.item0(7, leggings, false);
-  }
-
-  @Override
-  public @NotNull ItemStack leggings() {
-    return super.item(7);
-  }
-
-  @Override
-  public void boots(@NotNull ItemStack boots) {
-    this.item0(8, boots, false);
-  }
-
-  @Override
-  public @NotNull ItemStack boots() {
-    return super.item(8);
+  public Map<EquipmentSlot, ItemStack> asMap() {
+    final var equipment = new HashMap<EquipmentSlot, ItemStack>();
+    if (!this.itemInMainHand().isEmpty()) {
+      equipment.put(EquipmentSlot.MAIN_HAND, this.itemInMainHand());
+    }
+    if (!this.itemInOffHand().isEmpty()) {
+      equipment.put(EquipmentSlot.OFF_HAND, this.itemInOffHand());
+    }
+    if (!this.boots().isEmpty()) {
+      equipment.put(EquipmentSlot.FEET, this.boots());
+    }
+    if (!this.leggings().isEmpty()) {
+      equipment.put(EquipmentSlot.LEGS, this.leggings());
+    }
+    if (!this.chestplate().isEmpty()) {
+      equipment.put(EquipmentSlot.CHEST, this.chestplate());
+    }
+    if (!this.helmet().isEmpty()) {
+      equipment.put(EquipmentSlot.HEAD, this.helmet());
+    }
+    return equipment;
   }
 
   @Override
   public void resend() {
-    this.player.send(new ContainerContent((byte) 0, this.state(),
-        this.items(), ItemStack.empty()));
+    this.player.send(new ContainerContent((byte) 0, this.state(), this.items(), ItemStack.empty()));
   }
 
   @Override
   public @NotNull Component title() {
     return Component.empty();
+  }
+
+  @Override
+  public String toString() {
+    return "SculkInventory{" +
+        "player=" + this.player +
+        '}';
   }
 }

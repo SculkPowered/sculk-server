@@ -9,6 +9,7 @@ import static io.github.sculkpowered.server.world.block.Block.Facing.WEST;
 
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.sculkpowered.server.SculkServer;
+import io.github.sculkpowered.server.container.equipment.EquipmentSlot;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.Entity;
 import io.github.sculkpowered.server.entity.player.GameMode;
@@ -29,7 +30,6 @@ import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
 import io.github.sculkpowered.server.protocol.packet.play.ConfirmTeleportation;
 import io.github.sculkpowered.server.protocol.packet.play.CreativeModeSlot;
 import io.github.sculkpowered.server.protocol.packet.play.EntityAnimation;
-import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
 import io.github.sculkpowered.server.protocol.packet.play.Interact;
 import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
@@ -52,7 +52,6 @@ import io.github.sculkpowered.server.protocol.packet.play.position.PlayerOnGroun
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPosition;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
 import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
-import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.block.Block;
 import io.github.sculkpowered.server.world.block.BlockState;
@@ -352,7 +351,7 @@ public final class PlayPacketHandler extends PacketHandler {
         final var itemInMainHand = inventory.itemInMainHand();
         final var itemInOffHand = inventory.itemInOffHand();
         inventory.item(this.player.heldItemSlot(), itemInOffHand);
-        inventory.itemInOffHand(itemInMainHand);
+        inventory.set(EquipmentSlot.OFF_HAND, itemInMainHand);
       }
     }
     return true;
@@ -385,9 +384,7 @@ public final class PlayPacketHandler extends PacketHandler {
 
   @Override
   public boolean handle(HeldItem heldItem) {
-    this.player.heldItem = heldItem.slot();
-    this.player.sendViewers(new Equipment(this.player.id(),
-        OneInt2ObjectMap.of(0, this.player.inventory().item(heldItem.slot()))));
+    this.player.heldItemSlot0(heldItem.slot());
     return true;
   }
 
@@ -446,9 +443,9 @@ public final class PlayPacketHandler extends PacketHandler {
           if (this.player.openedContainer() != null) {
             this.player.send(new BlockAcknowledge(useItemOn.sequence()));
             if (useItemOn.hand() == 0) {
-              inventory.itemInMainHand(slot);
+              inventory.set(EquipmentSlot.MAIN_HAND, slot);
             } else {
-              inventory.itemInOffHand(slot);
+              inventory.set(EquipmentSlot.MAIN_HAND, slot);
             }
             return;
           }

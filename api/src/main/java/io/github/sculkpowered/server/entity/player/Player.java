@@ -18,9 +18,12 @@ import org.jetbrains.annotations.Nullable;
 public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Connection,
     BossBarViewer {
 
-  Attribute BLOCK_BREAKING_SPEED = new Attribute("player.block_break_speed", 5, 1F, 1024F);
-  Attribute BLOCK_INTERACTION_RANGE = new Attribute("player.block_interaction_range", 6, 4.5F, 64F);
-  Attribute ENTITY_INTERACTION_RANGE = new Attribute("generic.entity_interaction_range", 7, 3F, 64F);
+  Attribute BLOCK_BREAKING_SPEED =
+      new Attribute("player.block_break_speed", 5, 1F, 0F, 1024F);
+  Attribute BLOCK_INTERACTION_RANGE =
+      new Attribute("player.block_interaction_range", 6, 4.5F, 0F, 64F);
+  Attribute ENTITY_INTERACTION_RANGE =
+      new Attribute("generic.entity_interaction_range", 7, 3F, 0F, 64F);
 
   /**
    * Gets the name of the player.

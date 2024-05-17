@@ -4,8 +4,11 @@ import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.attribute.Attribute;
 import io.github.sculkpowered.server.attribute.AttributeValue;
 import io.github.sculkpowered.server.attribute.SculkAttributeValue;
+import io.github.sculkpowered.server.container.equipment.EntityEquipment;
+import io.github.sculkpowered.server.container.equipment.SculkEquipment;
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
+import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractLivingEntity extends AbstractEntity implements LivingEntity {
 
   private final Map<Attribute, SculkAttributeValue> attributes = new HashMap<>();
+  protected EntityEquipment equipment;
 
   @Override
   public @NotNull AttributeValue attribute(@NotNull Attribute attribute) {
@@ -24,6 +28,7 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
 
   public AbstractLivingEntity(final SculkServer server) {
     super(server);
+    this.equipment = new SculkEquipment(this);
   }
 
   public AbstractLivingEntity(final SculkServer server, final UUID uuid) {
@@ -34,9 +39,13 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
   public boolean addViewer(@NotNull Player player) {
     final var added = super.addViewer(player);
     if (added) {
+      final var sculkPlayer = (SculkPlayer) player;
       if (!this.attributes.isEmpty()) {
-        final var sculkPlayer = (SculkPlayer) player;
         sculkPlayer.send(new UpdateAttributes(this.id, this.attributes.values()));
+      }
+      final var equipment = this.equipment.asMap();
+      if (!equipment.isEmpty()) {
+        sculkPlayer.send(new Equipment(this.id, equipment));
       }
     }
     return added;
@@ -90,6 +99,11 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
   @Override
   public void numberOfBeeStingers(int beeStingers) {
     this.metadata.setVarInt(13, beeStingers);
+  }
+
+  @Override
+  public @NotNull EntityEquipment equipment() {
+    return this.equipment;
   }
 
   protected void attributeChange(SculkAttributeValue value) {

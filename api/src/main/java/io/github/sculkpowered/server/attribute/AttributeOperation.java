@@ -2,8 +2,7 @@ package io.github.sculkpowered.server.attribute;
 
 public enum AttributeOperation {
 
-  ADD,
+  ADD_VALUE,
   MULTIPLY_BASE,
   MULTIPLY
-
 }

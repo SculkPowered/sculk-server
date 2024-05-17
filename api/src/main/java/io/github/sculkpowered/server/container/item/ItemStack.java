@@ -1,6 +1,8 @@
 package io.github.sculkpowered.server.container.item;
 
+import io.github.sculkpowered.server.container.item.data.DataComponentType;
 import io.github.sculkpowered.server.container.item.data.DataComponents;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -79,6 +81,16 @@ public final class ItemStack {
    */
   public boolean isEmpty() {
     return this.material == Material.AIR || this.amount == 0;
+  }
+
+  public <T> T get(final @NotNull DataComponentType<T> type) {
+    final var value = this.components.get(type);
+    if (value == null) {
+      return Objects.requireNonNull(this.material.components().get(type)).get();
+    } else if (value.isPresent()) {
+      return value.get();
+    }
+    return null;
   }
 
   @Override

@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 public record AttributeModifier(
     @NotNull UUID uniqueId,
-    @NotNull AttributeOperation operation,
-    String slot,
-    double amount
+    @NotNull String name,
+    double amount,
+    @NotNull AttributeOperation operation
 ) {
 }

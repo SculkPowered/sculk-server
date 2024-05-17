@@ -12,6 +12,7 @@ import io.github.sculkpowered.server.attribute.SculkAttributeValue;
 import io.github.sculkpowered.server.container.Container;
 import io.github.sculkpowered.server.container.SculkContainer;
 import io.github.sculkpowered.server.container.SculkInventory;
+import io.github.sculkpowered.server.container.equipment.EquipmentSlot;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.AbstractLivingEntity;
 import io.github.sculkpowered.server.entity.Entity;
@@ -25,7 +26,6 @@ import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
 import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
 import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
 import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
-import io.github.sculkpowered.server.protocol.packet.play.Equipment;
 import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
 import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
 import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
@@ -49,13 +49,11 @@ import io.github.sculkpowered.server.protocol.packet.play.title.ClearTitles;
 import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
 import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
 import io.github.sculkpowered.server.util.ItemList;
-import io.github.sculkpowered.server.util.OneInt2ObjectMap;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.Vector;
 import io.github.sculkpowered.server.world.World;
 import io.github.sculkpowered.server.world.chunk.SculkChunk;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -91,7 +89,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private final SculkConnection connection;
   private final GameProfile profile;
   private final ClientInformationWrapper settings = new ClientInformationWrapper();
-  private final SculkInventory inventory = new SculkInventory(this);
   private final CompletableFuture<Void> disconnectFuture = new CompletableFuture<>();
   private SculkContainer container;
   private int ping;
@@ -100,7 +97,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   private GameMode gameMode = GameMode.SURVIVAL;
   private PermissionChecker permissionChecker;
   private Component displayName;
-  public int heldItem;
+  private int heldItemSlot;
   public boolean flying;
   private boolean allowedFlight;
   private float flyingSpeed = 0.05F;
@@ -114,6 +111,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     super(server, profile.uniqueId());
     this.connection = connection;
     this.profile = profile;
+    this.equipment = new SculkInventory(this);
   }
 
   public @NotNull String name() {
@@ -165,7 +163,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public @NotNull SculkInventory inventory() {
-    return this.inventory;
+    return (SculkInventory) this.equipment;
   }
 
   @Override
@@ -185,15 +183,18 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public int heldItemSlot() {
-    return this.heldItem;
+    return this.heldItemSlot;
   }
 
   @Override
   public void heldItemSlot(int slot) {
-    this.heldItem = slot;
     this.send(new HeldItem((byte) slot));
-    this.sendViewers(new Equipment(this.id(),
-        OneInt2ObjectMap.of(0, this.inventory.item(this.heldItem))));
+    this.heldItemSlot0(slot);
+  }
+
+  public void heldItemSlot0(int slot) {
+    this.heldItemSlot = slot;
+    this.equipment.set(EquipmentSlot.MAIN_HAND, this.inventory().item(this.heldItemSlot));
   }
 
   @Override
@@ -432,42 +433,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   }
 
   @Override
-  public boolean addViewer(@NotNull Player player) {
-    if (player != this) {
-      final var added = super.addViewer(player);
-      if (added) {
-        final var sculkPlayer = (SculkPlayer) player;
-        final var inventory = this.inventory();
-        final var equipment = new Int2ObjectOpenHashMap<ItemStack>();
-        if (!inventory.itemInMainHand().isEmpty()) {
-          equipment.put(0, inventory.itemInMainHand());
-        }
-        if (!inventory.itemInOffHand().isEmpty()) {
-          equipment.put(1, inventory.itemInOffHand());
-        }
-        if (!inventory.boots().isEmpty()) {
-          equipment.put(2, inventory.boots());
-        }
-        if (!inventory.leggings().isEmpty()) {
-          equipment.put(3, inventory.leggings());
-        }
-        if (!inventory.chestplate().isEmpty()) {
-          equipment.put(4, inventory.chestplate());
-        }
-        if (!inventory.helmet().isEmpty()) {
-          equipment.put(5, inventory.helmet());
-        }
-        if (!equipment.isEmpty()) {
-          sculkPlayer.send(new Equipment(this.id, equipment));
-        }
-      }
-      return added;
-    } else {
-      return false;
-    }
-  }
-
-  @Override
   public void tick() {
     super.tick();
     final var time = System.currentTimeMillis();
@@ -665,12 +630,12 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public void resendContainer() {
     if (this.container == null) {
-      this.inventory.resend();
+      this.inventory().resend();
     } else {
       // item list with container size and the 36 "chest inventory"
       final var items = new ItemList(this.container.type().size() + 36);
       for (var i = 8; i < 44; i++) {
-        items.set(i - 9 + this.container.type().size(), inventory.items().get(i));
+        items.set(i - 9 + this.container.type().size(), this.inventory().items().get(i));
       }
       for (var i = 0; i < this.container.items().size(); i++) {
         items.set(i, this.container.items().get(i));

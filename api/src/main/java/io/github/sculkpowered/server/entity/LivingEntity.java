@@ -2,6 +2,7 @@ package io.github.sculkpowered.server.entity;
 
 import io.github.sculkpowered.server.attribute.Attribute;
 import io.github.sculkpowered.server.attribute.AttributeValue;
+import io.github.sculkpowered.server.container.equipment.EntityEquipment;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -97,4 +98,10 @@ public interface LivingEntity extends Entity {
    * @since 1.0.0
    */
   @NotNull AttributeValue attribute(@NotNull Attribute attribute);
+
+  /**
+   * Gets the equipment from the entity.
+   * @return the equipment
+   */
+  @NotNull EntityEquipment equipment();
 }

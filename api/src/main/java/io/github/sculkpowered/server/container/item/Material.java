@@ -1,7 +1,14 @@
 package io.github.sculkpowered.server.container.item;
 
+import io.github.sculkpowered.server.container.item.data.DataComponent;
+import io.github.sculkpowered.server.container.item.data.DataComponents;
+import io.github.sculkpowered.server.container.item.data.ItemAttributes;
+import io.github.sculkpowered.server.container.item.data.ItemEnchantments;
+import io.github.sculkpowered.server.container.item.data.Rarity;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.registry.Registry;
+import java.util.List;
+import java.util.Map;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.intellij.lang.annotations.Subst;
@@ -1360,6 +1367,17 @@ public enum Material implements Registry.Entry {
   @Override
   public int id() {
     return this.ordinal();
+  }
+
+  public @NotNull DataComponents components() {
+    return DataComponents.builder()
+        .set(DataComponent.MAX_STACK_SIZE, 64)
+        .set(DataComponent.LORE, List.of())
+        .set(DataComponent.ENCHANTMENTS, new ItemEnchantments(Map.of(), true))
+        .set(DataComponent.REPAIR_COST, 0)
+        .set(DataComponent.ATTRIBUTE_MODIFIERS, new ItemAttributes(List.of(), true))
+        .set(DataComponent.RARITY, Rarity.COMMON)
+        .build();
   }
 
   @Override

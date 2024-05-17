@@ -17,8 +17,9 @@ public final class SculkAttributeValue implements AttributeValue {
   private double baseValue;
   private double calculatedValue;
 
-  public SculkAttributeValue(final Attribute attribute,
-      final Consumer<SculkAttributeValue> consumer) {
+  public SculkAttributeValue(
+      final Attribute attribute, final Consumer<SculkAttributeValue> consumer
+  ) {
     this.attribute = attribute;
     this.modifiers = new HashMap<>();
     this.consumer = consumer;
@@ -33,7 +34,7 @@ public final class SculkAttributeValue implements AttributeValue {
   @Override
   public void baseValue(final double value) {
     this.baseValue = value;
-    this.consumer.accept(this);
+    this.calculateValue();
   }
 
   @Override
@@ -43,10 +44,8 @@ public final class SculkAttributeValue implements AttributeValue {
 
   @Override
   public void addModifier(@NotNull AttributeModifier modifier) {
-    this.modifiers.computeIfAbsent(modifier.uniqueId(), uuid -> {
-      this.calculateValue();
-      return modifier;
-    });
+    this.modifiers.put(modifier.uniqueId(), modifier);
+    this.calculateValue();
   }
 
   @Override
@@ -66,7 +65,6 @@ public final class SculkAttributeValue implements AttributeValue {
     return "SculkAttributeValue{" +
         "attribute=" + this.attribute +
         ", modifiers=" + this.modifiers +
-        ", consumer=" + this.consumer +
         ", baseValue=" + this.baseValue +
         ", calculatedValue=" + this.calculatedValue +
         '}';
@@ -77,15 +75,17 @@ public final class SculkAttributeValue implements AttributeValue {
   }
 
   private void calculateValue() {
-    this.calculatedValue = this.baseValue;
+    var value = this.baseValue;
     final var modifiers = new ArrayList<>(this.modifiers.values());
     modifiers.sort(Comparator.comparing(AttributeModifier::operation));
     for (final var modifier : modifiers) {
       switch (modifier.operation()) {
-        case ADD -> this.calculatedValue += modifier.amount();
-        case MULTIPLY_BASE -> this.calculatedValue += this.baseValue * modifier.amount();
-        case MULTIPLY -> this.calculatedValue *= 1.0f + modifier.amount();
+        case ADD_VALUE -> value += modifier.amount();
+        case MULTIPLY_BASE -> value += this.baseValue * modifier.amount();
+        case MULTIPLY -> value *= 1.0F + modifier.amount();
       }
     }
+    this.calculatedValue = Math.clamp(value, this.attribute.min(), this.attribute.max());
+    this.consumer.accept(this);
   }
 }

@@ -32,13 +32,13 @@ public abstract class SculkContainer extends AbstractContainer implements Contai
   }
 
   @Override
-  public void item(int index, @NotNull ItemStack itemStack) {
+  public @NotNull ItemStack item(int index, @NotNull ItemStack itemStack) {
     final var containerSlotPacket = new ContainerSlot(
         (byte) 1, this.incrementState(), (short) index, itemStack);
     for (final var viewer : this.viewers) {
       viewer.send(containerSlotPacket);
     }
-    super.item(index, itemStack);
+    return super.item(index, itemStack);
   }
 
   @Override

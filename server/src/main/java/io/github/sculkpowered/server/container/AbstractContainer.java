@@ -21,8 +21,8 @@ public abstract class AbstractContainer implements Container {
   }
 
   @Override
-  public void item(int index, @NotNull ItemStack itemStack) {
-    this.items.set(index, itemStack);
+  public @NotNull ItemStack item(int index, @NotNull ItemStack itemStack) {
+    return this.items.set(index, itemStack);
   }
 
   @Override
