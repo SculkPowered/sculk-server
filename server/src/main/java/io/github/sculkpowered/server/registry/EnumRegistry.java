@@ -34,7 +34,7 @@ public final class EnumRegistry<T extends Registry.Entry> implements Registry<T>
   }
 
   @Override
-  public @NotNull T get(final int id) {
+  public T get(final int id) {
     return this.entries.get(id);
   }
 

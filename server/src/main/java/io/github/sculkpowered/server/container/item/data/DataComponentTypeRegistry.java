@@ -272,15 +272,17 @@ public final class DataComponentTypeRegistry {
         buf -> {
           final var size = buf.readVarInt();
           final var attributes = new ArrayList<Entry>(size);
-          attributes.add(
-              new Entry(Registries.attributes().get(buf.readVarInt()),
-                  new AttributeModifier(
-                      buf.readUniqueId(),
-                      buf.readString(),
-                      buf.readDouble(),
-                      buf.readEnum(AttributeOperation.class)),
-                  buf.readEnum(AttributeSlot.class))
-          );
+          for (var i = 0; i < size; i++) {
+            attributes.add(
+                new Entry(Registries.attributes().get(buf.readVarInt()),
+                    new AttributeModifier(
+                        buf.readUniqueId(),
+                        buf.readString(),
+                        buf.readDouble(),
+                        buf.readEnum(AttributeOperation.class)),
+                    buf.readEnum(AttributeSlot.class))
+            );
+          }
           return new ItemAttributes(List.copyOf(attributes), buf.readBoolean());
         },
         new BinarySerializer<>() {

@@ -55,7 +55,7 @@ public interface Registry<E extends Registry.Entry> {
    * @return the entry or a default value
    * @since 1.0.0
    */
-  @NotNull E get(int id);
+  E get(int id);
 
   /**
    * Gets a collection of all entries.

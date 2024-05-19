@@ -50,7 +50,7 @@ public class SimpleRegistry<E extends Registry.Entry> implements Registry.Mutabl
   }
 
   @Override
-  public @NotNull E get(int id) {
+  public E get(int id) {
     return this.byId.get(id);
   }
 

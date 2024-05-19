@@ -74,10 +74,18 @@ public final class SculkDataComponentType<T> implements DataComponentType<T> {
   }
 
   public void write(final Buffer buf, final T value) {
-    this.writer.write(buf, value);
+    if (this.writer != null) {
+      this.writer.write(buf, value);
+    } else {
+      throw new NullPointerException("Data component " + this.key + " does not have a writer");
+    }
   }
 
   public T read(final Buffer buf) {
-    return this.reader.read(buf);
+    if (this.reader != null) {
+      return this.reader.read(buf);
+    } else {
+      throw new NullPointerException("Data component " + this.key + " does not have a reader");
+    }
   }
 }

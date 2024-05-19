@@ -311,8 +311,11 @@ public final class Buffer {
       final var map = new HashMap<DataComponentType<?>, Optional<?>>(
           components + removedComponents);
       for (var i = 0; i < components; i++) {
-        final var type = (SculkDataComponentType<?>) Registries.dataComponentTypes()
-            .get(this.readVarInt());
+        final var typeId = this.readVarInt();
+        final var type = (SculkDataComponentType<?>) Registries.dataComponentTypes().get(typeId);
+        if (type == null) {
+          throw new DecoderException("Unknown data component type: " + typeId);
+        }
         map.put(type, Optional.of(type.read(this)));
       }
 
