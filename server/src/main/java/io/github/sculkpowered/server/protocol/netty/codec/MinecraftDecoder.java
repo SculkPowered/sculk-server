@@ -2,7 +2,7 @@ package io.github.sculkpowered.server.protocol.netty.codec;
 
 import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.State;
-import io.github.sculkpowered.server.protocol.packet.PacketUtils;
+import io.github.sculkpowered.server.protocol.packet.VarInt;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -26,7 +26,7 @@ public final class MinecraftDecoder extends ChannelInboundHandlerAdapter {
       }
 
       final var offset = buf.readerIndex();
-      final var id = PacketUtils.readVarInt(buf);
+      final var id = VarInt.read(buf);
       final var packet = this.registry.createPacket(id);
       if (packet == null) {
         buf.readerIndex(offset);

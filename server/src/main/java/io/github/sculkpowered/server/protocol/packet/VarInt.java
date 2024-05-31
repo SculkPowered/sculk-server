@@ -2,18 +2,18 @@ package io.github.sculkpowered.server.protocol.packet;
 
 import io.netty.buffer.ByteBuf;
 
-public final class PacketUtils {
+public final class VarInt {
 
   private static final byte[] VARINT_EXACT_BYTE_LENGTHS =
       {5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1,
           1, 1};
 
-  public static int varIntLength(final int value) {
+  public static int length(final int value) {
     return VARINT_EXACT_BYTE_LENGTHS[Integer.numberOfLeadingZeros(value)];
   }
 
   // https://steinborn.me/posts/performance/how-fast-can-you-write-a-varint/
-  public static void writeVarInt(final ByteBuf buf, int value) {
+  public static void write(final ByteBuf buf, int value) {
     if ((value & (0xFFFFFFFF << 7)) == 0) {
       buf.writeByte((byte) value);
     } else if ((value & (0xFFFFFFFF << 14)) == 0) {
@@ -31,7 +31,7 @@ public final class PacketUtils {
     }
   }
 
-  public static int readVarInt(final ByteBuf buf) {
+  public static int read(final ByteBuf buf) {
     var value = 0;
     var position = 0;
 

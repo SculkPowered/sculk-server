@@ -8,7 +8,7 @@ import io.github.sculkpowered.server.container.item.data.DataComponentType;
 import io.github.sculkpowered.server.container.item.data.DataComponents;
 import io.github.sculkpowered.server.container.item.data.SculkDataComponentType;
 import io.github.sculkpowered.server.entity.player.GameProfile.Property;
-import io.github.sculkpowered.server.protocol.packet.PacketUtils;
+import io.github.sculkpowered.server.protocol.packet.VarInt;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.scoreboard.NumberFormat;
 import io.github.sculkpowered.server.util.Utf8;
@@ -103,11 +103,11 @@ public final class Buffer {
   }
 
   public int readVarInt() {
-    return PacketUtils.readVarInt(this.buf);
+    return VarInt.read(this.buf);
   }
 
   public @NotNull Buffer writeVarInt(final int value) {
-    PacketUtils.writeVarInt(this.buf, value);
+    VarInt.write(this.buf, value);
     return this;
   }
 

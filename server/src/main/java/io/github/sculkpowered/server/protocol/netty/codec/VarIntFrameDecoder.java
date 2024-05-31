@@ -1,6 +1,6 @@
 package io.github.sculkpowered.server.protocol.netty.codec;
 
-import io.github.sculkpowered.server.protocol.packet.PacketUtils;
+import io.github.sculkpowered.server.protocol.packet.VarInt;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -16,7 +16,7 @@ public final class VarIntFrameDecoder extends ByteToMessageDecoder {
     }
 
     final var readerIndex = buf.readerIndex();
-    final var length = PacketUtils.readVarInt(buf);
+    final var length = VarInt.read(buf);
 
     if (readerIndex == buf.readerIndex()) {
       buf.readerIndex(readerIndex);

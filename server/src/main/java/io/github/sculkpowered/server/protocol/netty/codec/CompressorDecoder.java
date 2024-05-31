@@ -2,7 +2,7 @@ package io.github.sculkpowered.server.protocol.netty.codec;
 
 import com.velocitypowered.natives.compression.VelocityCompressor;
 import com.velocitypowered.natives.util.MoreByteBufUtils;
-import io.github.sculkpowered.server.protocol.packet.PacketUtils;
+import io.github.sculkpowered.server.protocol.packet.VarInt;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
@@ -18,7 +18,7 @@ public final class CompressorDecoder extends MessageToMessageDecoder<ByteBuf> {
 
   @Override
   protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) throws Exception {
-    final int size = PacketUtils.readVarInt(buf);
+    final int size = VarInt.read(buf);
     if (size == 0) {
       out.add(buf.retain());
       return;
