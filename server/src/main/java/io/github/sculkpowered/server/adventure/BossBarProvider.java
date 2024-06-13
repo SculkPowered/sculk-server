@@ -1,7 +1,7 @@
 package io.github.sculkpowered.server.adventure;
 
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.protocol.packet.Packet;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -39,7 +39,7 @@ public final class BossBarProvider implements BossBarImplementation.Provider {
       return this.viewers;
     }
 
-    public void send(final Packet packet) {
+    public void send(final ClientboundPacket packet) {
       for (final var viewer : this.viewers) {
         viewer.send(packet);
       }

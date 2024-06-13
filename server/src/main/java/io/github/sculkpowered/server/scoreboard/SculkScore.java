@@ -1,6 +1,6 @@
 package io.github.sculkpowered.server.scoreboard;
 
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateScore;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetScorePacket;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +50,7 @@ public final class SculkScore implements Score {
     this.score = score;
     this.displayName = displayName;
     this.numberFormat = numberFormat;
-    this.scoreboard.sendViewers(new UpdateScore(
+    this.scoreboard.sendViewers(new SetScorePacket(
         this.name, this.scoreboard.name(), this.score, this.displayName, this.numberFormat));
   }
 }

@@ -23,35 +23,34 @@ import io.github.sculkpowered.server.event.player.PlayerClickContainerEvent;
 import io.github.sculkpowered.server.event.player.PlayerUseItemEvent;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.PacketHandler;
-import io.github.sculkpowered.server.protocol.packet.play.AwardStatistics;
-import io.github.sculkpowered.server.protocol.packet.play.ChatMessage;
-import io.github.sculkpowered.server.protocol.packet.play.ClientCommand;
-import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
-import io.github.sculkpowered.server.protocol.packet.play.ConfirmTeleportation;
-import io.github.sculkpowered.server.protocol.packet.play.CreativeModeSlot;
-import io.github.sculkpowered.server.protocol.packet.play.EntityAnimation;
-import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
-import io.github.sculkpowered.server.protocol.packet.play.Interact;
-import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerAction;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerCommand;
-import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
-import io.github.sculkpowered.server.protocol.packet.play.SwingArm;
-import io.github.sculkpowered.server.protocol.packet.play.TeleportToEntity;
-import io.github.sculkpowered.server.protocol.packet.play.UseItem;
-import io.github.sculkpowered.server.protocol.packet.play.UseItemOn;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
-import io.github.sculkpowered.server.protocol.packet.play.command.ChatCommand;
-import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsRequest;
-import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsResponse;
-import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainer;
-import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainerButton;
-import io.github.sculkpowered.server.protocol.packet.play.container.CloseContainer;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerOnGround;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPosition;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
+import io.github.sculkpowered.server.protocol.packet.clientbound.AwardStatsPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.AcceptTeleportationPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.SetCreativeModeSlotPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.AnimatePacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CarriedItemPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.InteractPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerAbilitiesPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.PlayerActionPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.PlayerCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.SwingPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.TeleportToEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.UseItemPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.UseItemOnPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockChangedAckPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.CommandSuggestionsPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ContainerClickPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ContainerButtonClickPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.ContainerClosePacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerStatusOnlyPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosRotPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerRotPacket;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.block.Block;
 import io.github.sculkpowered.server.world.block.BlockState;
@@ -77,19 +76,19 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(ConfirmTeleportation confirmTeleportation) {
+  public boolean handle(AcceptTeleportationPacket confirmTeleportation) {
     this.player.receivedTeleportConfirmation(true);
     return true;
   }
 
   @Override
-  public boolean handle(ChatCommand chatCommand) {
+  public boolean handle(ChatCommandPacket chatCommand) {
     this.server.commandHandler().execute(this.player, chatCommand.command());
     return true;
   }
 
   @Override
-  public boolean handle(ChatMessage chatMessage) {
+  public boolean handle(ChatPacket chatMessage) {
     this.server.eventHandler().call(new PlayerChatEvent(this.player, chatMessage.message()))
         .exceptionally(throwable -> {
           LOGGER.error("Exception while handling PlayerChatEvent for " + this.player.name(),
@@ -100,26 +99,26 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(ClientCommand clientCommand) {
+  public boolean handle(ClientCommandPacket clientCommand) {
     if (clientCommand.actionId() == 1) {
-      this.connection.send(new AwardStatistics());
+      this.connection.send(new AwardStatsPacket());
     }
     return true;
   }
 
   @Override
-  public boolean handle(ClientInformation clientInformation) {
+  public boolean handle(ClientInformationPacket clientInformation) {
     this.player.handleClientInformation(clientInformation);
     return true;
   }
 
   @Override
-  public boolean handle(CommandSuggestionsRequest request) {
+  public boolean handle(CommandSuggestionsPacket request) {
     final var command = request.text();
     final var start = command.lastIndexOf(CommandDispatcher.ARGUMENT_SEPARATOR_CHAR) + 1;
     this.server.commandHandler().suggestions(this.player, command.substring(1))
         .thenAcceptAsync(suggestions -> this.player.send(
-                new CommandSuggestionsResponse(request.transactionId(),
+                new io.github.sculkpowered.server.protocol.packet.clientbound.CommandSuggestionsPacket(request.transactionId(),
                     start, command.length() - start, suggestions.getList())),
             this.connection.executor())
         .exceptionally(throwable -> {
@@ -130,10 +129,10 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(ClickContainerButton clickContainerButton) {
+  public boolean handle(ContainerButtonClickPacket clickContainerButton) {
     final var container = this.player.openedContainer();
     if (container == null) { // there should be a container
-      this.player.send(new CloseContainer(1));
+      this.player.send(new ContainerClosePacket(1));
       return true;
     }
     this.server.eventHandler()
@@ -149,7 +148,7 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(ClickContainer clickContainer) {
+  public boolean handle(ContainerClickPacket clickContainer) {
     final var inventory = this.player.inventory();
     var container = (this.player.openedContainer() != null
         ? this.player.openedContainer() : inventory);
@@ -202,7 +201,7 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(CloseContainer closeContainer) {
+  public boolean handle(ContainerClosePacket closeContainer) {
     if (this.player.openedContainer() != null) {
       this.player.openedContainer().removeViewer(this.player);
       this.player.setContainer(null);
@@ -211,13 +210,13 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(PluginMessage pluginMessage) {
-    this.player.handlePluginMessage(pluginMessage);
+  public boolean handle(CustomPayloadPacket customPayload) {
+    this.player.handlePluginMessage(customPayload);
     return true;
   }
 
   @Override
-  public boolean handle(Interact interact) {
+  public boolean handle(InteractPacket interact) {
     final var entity = this.server.entity(interact.entityId());
     if (entity == null || entity.world() != this.player.world()) { // impossible
       return true;
@@ -229,14 +228,14 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(KeepAlive keepAlive) {
+  public boolean handle(KeepAlivePacket keepAlive) {
     this.player.setPing((int) (System.currentTimeMillis() - keepAlive.timeMillis()));
     this.player.setKeepAlivePending(false);
     return true;
   }
 
   @Override
-  public boolean handle(PlayerPosition playerPosition) {
+  public boolean handle(MovePlayerPosPacket playerPosition) {
     if (!this.player.receivedTeleportConfirmation()) {
       return true;
     }
@@ -256,7 +255,7 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(PlayerPositionAndRotation playerPositionAndRotation) {
+  public boolean handle(MovePlayerPosRotPacket playerPositionAndRotation) {
     if (!this.player.receivedTeleportConfirmation()) {
       return true;
     }
@@ -279,7 +278,7 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(PlayerRotation playerRotation) {
+  public boolean handle(MovePlayerRotPacket playerRotation) {
     if (!this.player.receivedTeleportConfirmation()) {
       return true;
     }
@@ -298,26 +297,26 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(PlayerOnGround playerOnGround) {
+  public boolean handle(MovePlayerStatusOnlyPacket playerOnGround) {
     this.player.onGround = playerOnGround.onGround();
     return true;
   }
 
   @Override
-  public boolean handle(PlayerAbilities playerAbilities) {
+  public boolean handle(PlayerAbilitiesPacket playerAbilities) {
     this.player.flying = playerAbilities.flags() == 2;
     return true;
   }
 
   @Override
-  public boolean handle(PlayerAction playerAction) {
+  public boolean handle(PlayerActionPacket playerAction) {
     switch (playerAction.status()) {
       case 0 -> { // started digging
         final var block = this.player.world().block(playerAction.position());
         if (this.player.instantBreak() || block.destroyTime() == 0.0F) {
           this.callBlockBreak(block, playerAction);
         } else {
-          this.player.send(new BlockAcknowledge(playerAction.sequence()));
+          this.player.send(new BlockChangedAckPacket(playerAction.sequence()));
         }
       }
       case 1 -> { // cancelled digging
@@ -357,14 +356,14 @@ public final class PlayPacketHandler extends PacketHandler {
     return true;
   }
 
-  private void callBlockBreak(final BlockState block, final PlayerAction playerAction) {
+  private void callBlockBreak(final BlockState block, final PlayerActionPacket playerAction) {
     this.server.eventHandler()
         .call(new BlockBreakEvent(this.player, playerAction.position(), block))
         .thenAcceptAsync(event -> {
           if (event.result().allowed()) {
             this.player.world().block(event.position(), Block.AIR);
           } else {
-            this.player.send(new BlockAcknowledge(playerAction.sequence()));
+            this.player.send(new BlockChangedAckPacket(playerAction.sequence()));
           }
         }, this.connection.executor())
         .exceptionally(throwable -> {
@@ -374,7 +373,7 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(PlayerCommand playerCommand) {
+  public boolean handle(PlayerCommandPacket playerCommand) {
     switch (playerCommand.action()) {
       case START_SNEAKING -> this.player.pose(Entity.Pose.SNEAKING);
       case STOP_SNEAKING -> this.player.pose(Entity.Pose.STANDING);
@@ -383,13 +382,13 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(HeldItem heldItem) {
+  public boolean handle(CarriedItemPacket heldItem) {
     this.player.heldItemSlot0(heldItem.slot());
     return true;
   }
 
   @Override
-  public boolean handle(CreativeModeSlot creativeModeSlot) {
+  public boolean handle(SetCreativeModeSlotPacket creativeModeSlot) {
     if (this.player.gameMode() != GameMode.CREATIVE) {
       LOGGER.info(this.player.name() + " tried to set a slot, but is not in creative mode.");
       return false;
@@ -403,14 +402,14 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(SwingArm swingArm) {
+  public boolean handle(SwingPacket swingArm) {
     this.player.sendViewers(
-        new EntityAnimation(this.player.id(), (byte) (swingArm.hand() == 1 ? 3 : 0)));
+        new AnimatePacket(this.player.id(), (byte) (swingArm.hand() == 1 ? 3 : 0)));
     return true;
   }
 
   @Override
-  public boolean handle(TeleportToEntity teleportToEntity) {
+  public boolean handle(TeleportToEntityPacket teleportToEntity) {
     if (this.player.gameMode() == GameMode.SPECTATOR) {
       final var target = this.server.player(teleportToEntity.target());
       if (target != null) {
@@ -430,7 +429,7 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(UseItemOn useItemOn) {
+  public boolean handle(UseItemOnPacket useItemOn) {
     final var inventory = this.player.inventory();
     final var slot = (useItemOn.hand() == 0 ? inventory.itemInMainHand()
         : inventory.itemInOffHand());
@@ -441,7 +440,7 @@ public final class PlayPacketHandler extends PacketHandler {
           }
           var position = this.calculatePosition(useItemOn.position(), useItemOn.face());
           if (this.player.openedContainer() != null) {
-            this.player.send(new BlockAcknowledge(useItemOn.sequence()));
+            this.player.send(new BlockChangedAckPacket(useItemOn.sequence()));
             if (useItemOn.hand() == 0) {
               inventory.set(EquipmentSlot.MAIN_HAND, slot);
             } else {
@@ -471,7 +470,7 @@ public final class PlayPacketHandler extends PacketHandler {
                 if (placeEvent.result().allowed()) {
                   this.player.world().block(placeEvent.position(), placeEvent.block());
                 } else {
-                  this.player.send(new BlockAcknowledge(useItemOn.sequence()));
+                  this.player.send(new BlockChangedAckPacket(useItemOn.sequence()));
                 }
               }, this.connection.executor()).exceptionally(throwable -> {
                 LOGGER.error("Exception while handling block place for " + this.player.name(),
@@ -483,7 +482,7 @@ public final class PlayPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(UseItem useItem) {
+  public boolean handle(UseItemPacket useItem) {
     final var inventory = this.player.inventory();
     this.server.eventHandler().call(new PlayerUseItemEvent(this.player,
         (useItem.hand() == 0 ? inventory.itemInMainHand() : inventory.itemInOffHand())));
