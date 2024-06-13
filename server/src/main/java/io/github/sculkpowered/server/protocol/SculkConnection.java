@@ -15,7 +15,6 @@ import io.github.sculkpowered.server.MinecraftConfig;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.command.CommandSource;
 import io.github.sculkpowered.server.connection.Connection;
-import io.github.sculkpowered.server.entity.player.GameProfile;
 import io.github.sculkpowered.server.entity.player.GameProfile.Property;
 import io.github.sculkpowered.server.entity.player.PlayerInfoEntry;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
@@ -27,27 +26,28 @@ import io.github.sculkpowered.server.protocol.netty.codec.CompressorDecoder;
 import io.github.sculkpowered.server.protocol.netty.codec.CompressorEncoder;
 import io.github.sculkpowered.server.protocol.netty.codec.MinecraftDecoder;
 import io.github.sculkpowered.server.protocol.netty.codec.MinecraftEncoder;
-import io.github.sculkpowered.server.protocol.packet.Packet;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
 import io.github.sculkpowered.server.protocol.packet.PacketHandler;
-import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
-import io.github.sculkpowered.server.protocol.packet.config.RegistryData;
+import io.github.sculkpowered.server.protocol.packet.ServerboundPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RegistryDataPacket;
 import io.github.sculkpowered.server.protocol.packet.handler.ConfigPacketHandler;
 import io.github.sculkpowered.server.protocol.packet.handler.HandshakePacketHandler;
 import io.github.sculkpowered.server.protocol.packet.handler.LoginPacketHandler;
 import io.github.sculkpowered.server.protocol.packet.handler.PlayPacketHandler;
 import io.github.sculkpowered.server.protocol.packet.handler.StatusPacketHandler;
-import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
-import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
-import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
-import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
-import io.github.sculkpowered.server.protocol.packet.play.Login;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerInfo;
-import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
-import io.github.sculkpowered.server.protocol.packet.play.SpawnPosition;
-import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateTime;
-import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
+import io.github.sculkpowered.server.protocol.packet.clientbound.GameProfilePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerInfoUpdatePacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetDefaultSpawnPositionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerPositionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetPlayerTeamPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetTimePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.CommandsPacket;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.util.MojangUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
@@ -76,10 +76,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   private static final Logger LOGGER = LogManager.getLogger(SculkConnection.class);
 
-  private static final PluginMessage BRAND_PACKET =
-      new PluginMessage("minecraft:brand", new byte[]{5, 115, 99, 117, 108, 107});
+  private static final CustomPayloadPacket BRAND_PACKET =
+      new CustomPayloadPacket("minecraft:brand", new byte[]{5, 115, 99, 117, 108, 107});
 
-  public static CompressionPacket COMPRESSION_PACKET;
+  public static LoginCompressionPacket COMPRESSION_PACKET;
 
   private final SculkServer server;
   private final Channel channel;
@@ -103,7 +103,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
         return;
       }
 
-      if (message instanceof Packet packet) {
+      if (message instanceof ServerboundPacket packet) {
         if (!packet.handle(this.packetHandler)) {
           if (this.state == State.HANDSHAKE) {
             ctx.close();
@@ -138,14 +138,14 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     }
   }
 
-  public void initPlayer(GameProfile profile) {
+  public void initPlayer(io.github.sculkpowered.server.entity.player.GameProfile profile) {
     if (profile == null) {
       if (this.server.config().mode() == MinecraftConfig.Mode.BUNGEECORD) {
         final var arguments = this.serverAddress.split("\00");
         this.serverAddress = arguments[0];
         try {
           final var properties = SculkServer.GSON.fromJson(arguments[3], Property[].class);
-          profile = new GameProfile(MojangUtil.fromMojang(arguments[2]), this.username,
+          profile = new io.github.sculkpowered.server.entity.player.GameProfile(MojangUtil.fromMojang(arguments[2]), this.username,
               List.of(properties));
         } catch (Exception e) {
           this.send(
@@ -154,7 +154,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           return;
         }
       } else {
-        profile = new GameProfile(
+        profile = new io.github.sculkpowered.server.entity.player.GameProfile(
             UUID.nameUUIDFromBytes(
                 ("OfflinePlayer:" + this.username).getBytes(StandardCharsets.UTF_8)),
             this.username,
@@ -167,16 +167,16 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       this.addCompressionHandler();
     }
 
-    this.send(new LoginSuccess(profile));
+    this.send(new GameProfilePacket(profile));
     this.player = new SculkPlayer(this.server, this, profile);
   }
 
   public void configuration() {
     this.send(SculkConnection.BRAND_PACKET);
-    this.send(new RegistryData(Registries.biomes()));
-    this.send(new RegistryData(Registries.dimensions()));
-    this.send(new RegistryData(Registries.damageTypes()));
-    this.send(FinishConfiguration.INSTANCE);
+    this.send(new RegistryDataPacket(Registries.biomes()));
+    this.send(new RegistryDataPacket(Registries.dimensions()));
+    this.send(new RegistryDataPacket(Registries.damageTypes()));
+    this.send(FinishConfigurationPacket.INSTANCE);
   }
 
   public void play() {
@@ -201,18 +201,18 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           this.player.init(event.gameMode(), position, world, event.permissionChecker());
           this.server.addPlayer(this.player);
 
-          this.send(new Login(this.player.id(), (byte) this.player.gameMode().ordinal(),
+          this.send(new LoginPacket(this.player.id(), (byte) this.player.gameMode().ordinal(),
               world.dimension()));
 
           this.sendCommands();
-          this.send(new GameEvent(13, -1));
+          this.send(new GameEventPacket(13, -1));
           this.player.calculateChunks(position, position, false, false);
-          this.send(new SpawnPosition(position));
-          this.send(new SynchronizePlayerPosition(position));
-          this.send(new UpdateTime(0, -6000));
+          this.send(new SetDefaultSpawnPositionPacket(position));
+          this.send(new PlayerPositionPacket(position));
+          this.send(new SetTimePacket(0, -6000));
 
-          this.send(PlayerInfo.add((List<? extends PlayerInfoEntry>) this.server.onlinePlayers()));
-          final var playerInfo = PlayerInfo.add(List.of(this.player));
+          this.send(PlayerInfoUpdatePacket.add((List<? extends PlayerInfoEntry>) this.server.onlinePlayers()));
+          final var playerInfo = PlayerInfoUpdatePacket.add(List.of(this.player));
           for (final var other : this.server.onlinePlayers()) {
             if (other != this.player) {
               ((SculkPlayer) other).send(playerInfo);
@@ -220,7 +220,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           }
 
           for (final var team : this.server.teamHandler().teams()) {
-            this.send(new UpdateTeams(team, (byte) 0, team.entries().toArray(new String[]{})));
+            this.send(new SetPlayerTeamPacket(team, (byte) 0, team.entries().toArray(new String[]{})));
           }
 
           this.server.eventHandler().justCall(new PlayerJoinEvent(this.player));
@@ -237,10 +237,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
         rootNode.addChild(child);
       }
     }
-    this.send(new Commands(rootNode));
+    this.send(new CommandsPacket(rootNode));
   }
 
-  public void send(final Packet packet) {
+  public void send(final ClientboundPacket packet) {
     if (this.state == State.PLAY) {
       this.channel.write(packet);
     } else {
@@ -248,7 +248,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     }
   }
 
-  public void sendAndClose(final Packet packet) {
+  public void sendAndClose(final ClientboundPacket packet) {
     this.channel.writeAndFlush(packet).addListener(ChannelFutureListener.CLOSE);
   }
 

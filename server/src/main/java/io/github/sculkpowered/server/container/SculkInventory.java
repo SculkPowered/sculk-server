@@ -4,9 +4,9 @@ import io.github.sculkpowered.server.container.equipment.EquipmentSlot;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.container.item.data.DataComponent;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.protocol.packet.play.Equipment;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerSlot;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetEquipmentPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetContentPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetSlotPacket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +51,7 @@ public final class SculkInventory extends AbstractContainer implements Inventory
     }
     if (slotPacket) {
       this.player.send(
-          new ContainerSlot((byte) 0, this.incrementState(), (short) index, itemStack));
+          new ContainerSetSlotPacket((byte) 0, this.incrementState(), (short) index, itemStack));
     }
     return super.item(index, itemStack);
   }
@@ -83,7 +83,8 @@ public final class SculkInventory extends AbstractContainer implements Inventory
 
   @Override
   public @NotNull ItemStack set(@NotNull EquipmentSlot slot, @NotNull ItemStack equipment) {
-    this.player.sendViewersAndSelf(new Equipment(this.player.id(), Map.of(slot, equipment)));
+    // TODO: fix scroll bug
+    this.player.sendViewersAndSelf(new SetEquipmentPacket(this.player.id(), Map.of(slot, equipment)));
     var index = switch (slot) {
       case MAIN_HAND -> 36 + this.player.heldItemSlot();
       case OFF_HAND -> 45;
@@ -139,7 +140,7 @@ public final class SculkInventory extends AbstractContainer implements Inventory
 
   @Override
   public void resend() {
-    this.player.send(new ContainerContent((byte) 0, this.state(), this.items(), ItemStack.empty()));
+    this.player.send(new ContainerSetContentPacket((byte) 0, this.state(), this.items(), ItemStack.empty()));
   }
 
   @Override

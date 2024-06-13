@@ -3,10 +3,10 @@ package io.github.sculkpowered.server.protocol.packet.handler;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.PacketHandler;
-import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
-import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
-import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
-import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
+import io.github.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
 
 public final class ConfigPacketHandler extends PacketHandler {
 
@@ -19,25 +19,25 @@ public final class ConfigPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(ClientInformation clientInformation) {
+  public boolean handle(ClientInformationPacket clientInformation) {
     this.player.handleClientInformation(clientInformation);
     return true;
   }
 
   @Override
-  public boolean handle(PluginMessage pluginMessage) {
-    this.player.handlePluginMessage(pluginMessage);
+  public boolean handle(CustomPayloadPacket customPayload) {
+    this.player.handlePluginMessage(customPayload);
     return true;
   }
 
   @Override
-  public boolean handle(FinishConfiguration finishConfiguration) {
+  public boolean handle(FinishConfigurationPacket finishConfiguration) {
     this.connection.play();
     return true;
   }
 
   @Override
-  public boolean handle(KeepAlive keepAlive) {
+  public boolean handle(KeepAlivePacket keepAlive) {
     return true;
   }
 }

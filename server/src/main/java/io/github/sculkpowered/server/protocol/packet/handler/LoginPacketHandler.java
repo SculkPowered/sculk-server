@@ -5,12 +5,11 @@ import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.State;
 import io.github.sculkpowered.server.protocol.packet.PacketHandler;
-import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
-import io.github.sculkpowered.server.protocol.packet.login.EncryptionRequest;
-import io.github.sculkpowered.server.protocol.packet.login.EncryptionResponse;
-import io.github.sculkpowered.server.protocol.packet.login.LoginAcknowledged;
-import io.github.sculkpowered.server.protocol.packet.login.LoginPluginResponse;
-import io.github.sculkpowered.server.protocol.packet.login.LoginStart;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
+import io.github.sculkpowered.server.protocol.packet.clientbound.HelloPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.KeyPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.LoginAcknowledgedPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.CustomQueryAnswerPacket;
 import io.github.sculkpowered.server.util.EncryptionUtil;
 import io.github.sculkpowered.server.util.MojangUtil;
 import java.security.MessageDigest;
@@ -31,14 +30,14 @@ public final class LoginPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(LoginStart loginStart) {
-    this.connection.setUsername(loginStart.username());
+  public boolean handle(io.github.sculkpowered.server.protocol.packet.serverbound.HelloPacket hello) {
+    this.connection.setUsername(hello.username());
 
     if (this.server.config().mode() == MinecraftConfig.Mode.ONLINE) {
       final var publicKey = this.server.getKeyPair().getPublic().getEncoded();
       this.verifyToken = new byte[4];
       ThreadLocalRandom.current().nextBytes(this.verifyToken);
-      this.connection.send(new EncryptionRequest("", publicKey, this.verifyToken, true));
+      this.connection.send(new HelloPacket("", publicKey, this.verifyToken, true));
     } else {
       this.connection.initPlayer(null);
     }
@@ -46,10 +45,10 @@ public final class LoginPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(EncryptionResponse encryptionResponse) {
+  public boolean handle(KeyPacket key) {
     try {
       final var decryptedVerifyToken = EncryptionUtil.decryptRsa(this.server.getKeyPair(),
-          encryptionResponse.verifyToken());
+          key.verifyToken());
       if (!MessageDigest.isEqual(decryptedVerifyToken, this.verifyToken)) {
         this.connection.send(
             new LoginDisconnect(Component.text("Verify token does not match!", NamedTextColor.RED)));
@@ -57,7 +56,7 @@ public final class LoginPacketHandler extends PacketHandler {
       }
 
       final var decryptedSecret = EncryptionUtil.decryptRsa(this.server.getKeyPair(),
-          encryptionResponse.sharedSecret());
+          key.sharedSecret());
       final var gameProfile = MojangUtil.hasJoined(this.connection.username(),
           EncryptionUtil.generateServerId(this.server.getKeyPair(), decryptedSecret));
 
@@ -70,12 +69,12 @@ public final class LoginPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(LoginPluginResponse pluginResponse) {
+  public boolean handle(CustomQueryAnswerPacket pluginResponse) {
     return true;
   }
 
   @Override
-  public boolean handle(LoginAcknowledged loginAcknowledged) {
+  public boolean handle(LoginAcknowledgedPacket loginAcknowledged) {
     this.connection.setState(State.CONFIG);
     this.connection.configuration();
     return true;
