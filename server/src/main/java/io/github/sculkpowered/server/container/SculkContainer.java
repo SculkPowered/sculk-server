@@ -4,11 +4,11 @@ import io.github.sculkpowered.server.Viewable;
 import io.github.sculkpowered.server.container.item.ItemStack;
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerProperty;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerSlot;
-import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetContentPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetDataPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetSlotPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.OpenScreenPacket;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +33,7 @@ public abstract class SculkContainer extends AbstractContainer implements Contai
 
   @Override
   public @NotNull ItemStack item(int index, @NotNull ItemStack itemStack) {
-    final var containerSlotPacket = new ContainerSlot(
+    final var containerSlotPacket = new ContainerSetSlotPacket(
         (byte) 1, this.incrementState(), (short) index, itemStack);
     for (final var viewer : this.viewers) {
       viewer.send(containerSlotPacket);
@@ -49,8 +49,8 @@ public abstract class SculkContainer extends AbstractContainer implements Contai
   @Override
   public boolean addViewer(@NotNull Player player) {
     final var sculkPlayer = (SculkPlayer) player;
-    sculkPlayer.send(new OpenScreen(1, this.type().ordinal(), this.title));
-    sculkPlayer.send(new ContainerContent((byte) 1, this.incrementState(),
+    sculkPlayer.send(new OpenScreenPacket(1, this.type().ordinal(), this.title));
+    sculkPlayer.send(new ContainerSetContentPacket((byte) 1, this.incrementState(),
         this.items(), ItemStack.empty()));
     this.sendProperties(sculkPlayer);
     return this.viewers.add(sculkPlayer);
@@ -61,8 +61,8 @@ public abstract class SculkContainer extends AbstractContainer implements Contai
     return this.viewers.remove((SculkPlayer) player);
   }
 
-  public Packet property(final int key, final int value) {
-    return new ContainerProperty(1, (short) key, (short) value);
+  public ClientboundPacket property(final int key, final int value) {
+    return new ContainerSetDataPacket(1, (short) key, (short) value);
   }
 
   public abstract void sendProperties(SculkPlayer player);

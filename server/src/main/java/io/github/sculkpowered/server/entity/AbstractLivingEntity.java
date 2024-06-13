@@ -8,8 +8,8 @@ import io.github.sculkpowered.server.container.equipment.EntityEquipment;
 import io.github.sculkpowered.server.container.equipment.SculkEquipment;
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.protocol.packet.play.Equipment;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetEquipmentPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.UpdateAttributesPacket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +41,11 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
     if (added) {
       final var sculkPlayer = (SculkPlayer) player;
       if (!this.attributes.isEmpty()) {
-        sculkPlayer.send(new UpdateAttributes(this.id, this.attributes.values()));
+        sculkPlayer.send(new UpdateAttributesPacket(this.id, this.attributes.values()));
       }
       final var equipment = this.equipment.asMap();
       if (!equipment.isEmpty()) {
-        sculkPlayer.send(new Equipment(this.id, equipment));
+        sculkPlayer.send(new SetEquipmentPacket(this.id, equipment));
       }
     }
     return added;
@@ -107,6 +107,6 @@ public abstract class AbstractLivingEntity extends AbstractEntity implements Liv
   }
 
   protected void attributeChange(SculkAttributeValue value) {
-    this.sendViewers(new UpdateAttributes(this.id, List.of(value)));
+    this.sendViewers(new UpdateAttributesPacket(this.id, List.of(value)));
   }
 }

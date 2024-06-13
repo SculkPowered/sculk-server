@@ -7,9 +7,9 @@ import static io.github.sculkpowered.server.util.CoordinateUtil.relativeCoordina
 import io.github.sculkpowered.server.entity.AbstractEntity;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
 import io.github.sculkpowered.server.protocol.Buffer;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockEntityData;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockUpdate;
-import io.github.sculkpowered.server.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockEntityDataPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockUpdatePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LevelChunkWithLightPacket;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.biome.Biome;
 import io.github.sculkpowered.server.world.block.Block;
@@ -39,7 +39,7 @@ public final class SculkChunk implements Chunk {
   private final Set<AbstractEntity> entities = new HashSet<>();
   private final Int2ObjectMap<Block.Entity<?>> blockEntities = new Int2ObjectOpenHashMap<>();
 
-  private SoftReference<ChunkDataAndUpdateLight> packet;
+  private SoftReference<LevelChunkWithLightPacket> packet;
 
   public SculkChunk(final SculkWorld world, final int chunkX, final int chunkZ) {
     this(world, chunkX, chunkZ, newSections(world.dimension()),
@@ -78,9 +78,9 @@ public final class SculkChunk implements Chunk {
       this.blockEntities.remove(blockIndex);
     }
     if (!this.viewers.isEmpty()) {
-      final var packet = new BlockUpdate(x, y, z, id);
+      final var packet = new BlockUpdatePacket(x, y, z, id);
       if (block instanceof Block.Entity<?> entity) {
-        final var entityData = new BlockEntityData(x, y, z, entity.getEntityId(), entity.nbt());
+        final var entityData = new BlockEntityDataPacket(x, y, z, entity.getEntityId(), entity.nbt());
         for (final var viewer : this.viewers) {
           viewer.send(packet);
           viewer.send(entityData);
@@ -138,7 +138,7 @@ public final class SculkChunk implements Chunk {
           emptyBlockMask.set(index);
         }
       }
-      this.packet = new SoftReference<>(new ChunkDataAndUpdateLight(
+      this.packet = new SoftReference<>(new LevelChunkWithLightPacket(
           this.x,
           this.z,
           this.heightmaps,

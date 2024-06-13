@@ -6,9 +6,9 @@ import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.Protocol;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.packet.PacketHandler;
-import io.github.sculkpowered.server.protocol.packet.status.StatusPing;
-import io.github.sculkpowered.server.protocol.packet.status.StatusRequest;
-import io.github.sculkpowered.server.protocol.packet.status.StatusResponse;
+import io.github.sculkpowered.server.protocol.packet.shared.StatusPingPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.StatusRequest;
+import io.github.sculkpowered.server.protocol.packet.clientbound.StatusResponsePacket;
 import net.kyori.adventure.text.Component;
 
 public final class StatusPacketHandler extends PacketHandler {
@@ -36,7 +36,7 @@ public final class StatusPacketHandler extends PacketHandler {
             if (response.description() == null) {
               response.description(Component.empty());
             }
-            this.connection.send(new StatusResponse('{' +
+            this.connection.send(new StatusResponsePacket('{' +
                 "\"version\":{" +
                 "\"name\":\"" + response.name() + "\"," + "\"protocol\":" + response.protocol()
                 + "}," +
@@ -54,7 +54,7 @@ public final class StatusPacketHandler extends PacketHandler {
   }
 
   @Override
-  public boolean handle(StatusPing statusPing) {
+  public boolean handle(StatusPingPacket statusPing) {
     this.connection.sendAndClose(statusPing);
     return true;
   }

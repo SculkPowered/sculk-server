@@ -1,7 +1,6 @@
 package io.github.sculkpowered.server.adventure;
 
-import static io.github.sculkpowered.server.protocol.packet.play.BossBar.update;
-
+import io.github.sculkpowered.server.protocol.packet.clientbound.BossEventPacket;
 import java.util.Set;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBarImplementation;
@@ -16,7 +15,7 @@ final class BossBarListener implements BossBar.Listener {
       @NotNull Component newName) {
     final var impl = BossBarImplementation.get(bar, BossBarProvider.Impl.class);
     if (!impl.players().isEmpty()) {
-      impl.send(update(impl.uniqueId(), newName));
+      impl.send(BossEventPacket.update(impl.uniqueId(), newName));
     }
   }
 
@@ -24,7 +23,7 @@ final class BossBarListener implements BossBar.Listener {
   public void bossBarProgressChanged(@NotNull BossBar bar, float oldProgress, float newProgress) {
     final var impl = BossBarImplementation.get(bar, BossBarProvider.Impl.class);
     if (!impl.players().isEmpty()) {
-      impl.send(update(impl.uniqueId(), newProgress));
+      impl.send(BossEventPacket.update(impl.uniqueId(), newProgress));
     }
   }
 
@@ -33,7 +32,7 @@ final class BossBarListener implements BossBar.Listener {
       BossBar.@NotNull Color newColor) {
     final var impl = BossBarImplementation.get(bar, BossBarProvider.Impl.class);
     if (!impl.players().isEmpty()) {
-      impl.send(update(impl.uniqueId(), newColor.ordinal(), bar.overlay().ordinal()));
+      impl.send(BossEventPacket.update(impl.uniqueId(), newColor.ordinal(), bar.overlay().ordinal()));
     }
   }
 
@@ -42,7 +41,7 @@ final class BossBarListener implements BossBar.Listener {
       BossBar.@NotNull Overlay newOverlay) {
     final var impl = BossBarImplementation.get(bar, BossBarProvider.Impl.class);
     if (!impl.players().isEmpty()) {
-      impl.send(update(impl.uniqueId(), bar.color().ordinal(), newOverlay.ordinal()));
+      impl.send(BossEventPacket.update(impl.uniqueId(), bar.color().ordinal(), newOverlay.ordinal()));
     }
   }
 
@@ -51,7 +50,7 @@ final class BossBarListener implements BossBar.Listener {
       @NotNull Set<BossBar.Flag> flagsRemoved) {
     final var impl = BossBarImplementation.get(bar, BossBarProvider.Impl.class);
     if (!impl.players().isEmpty()) {
-      impl.send(update(impl.uniqueId(), BossBarProvider.flags(bar)));
+      impl.send(BossEventPacket.update(impl.uniqueId(), BossBarProvider.flags(bar)));
     }
   }
 }

@@ -1,7 +1,5 @@
 package io.github.sculkpowered.server.entity.player;
 
-import static io.github.sculkpowered.server.protocol.packet.play.BossBar.add;
-import static io.github.sculkpowered.server.protocol.packet.play.BossBar.remove;
 import static io.github.sculkpowered.server.util.CoordinateUtil.chunkCoordinate;
 import static io.github.sculkpowered.server.util.CoordinateUtil.forChunksInRange;
 
@@ -20,34 +18,36 @@ import io.github.sculkpowered.server.entity.EntityType;
 import io.github.sculkpowered.server.event.connection.PluginMessageEvent;
 import io.github.sculkpowered.server.event.player.PlayerDisconnectEvent;
 import io.github.sculkpowered.server.protocol.SculkConnection;
-import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
-import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
-import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
-import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
-import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
-import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
-import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
-import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerInfo;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerInfoRemove;
-import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
-import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
-import io.github.sculkpowered.server.protocol.packet.play.RemoveResourcePack;
-import io.github.sculkpowered.server.protocol.packet.play.Respawn;
-import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
-import io.github.sculkpowered.server.protocol.packet.play.SystemChatMessage;
-import io.github.sculkpowered.server.protocol.packet.play.TabListHeaderFooter;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
-import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
-import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
-import io.github.sculkpowered.server.protocol.packet.play.sound.SoundEffect;
-import io.github.sculkpowered.server.protocol.packet.play.sound.StopSound;
-import io.github.sculkpowered.server.protocol.packet.play.title.ClearTitles;
-import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
-import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BossEventPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ClearTitlesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetActionBarTextPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ResourcePackPushPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.CustomChatCompletionsPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.DisconnectPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetTitleTextPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CarriedItemPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerAbilitiesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerInfoUpdatePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerInfoRemovePacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RemoveEntitiesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ResourcePackPopPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RespawnPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerPositionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SystemChatPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.TabListPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.UpdateAttributesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetChunkCacheCenterPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetContentPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SoundEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SoundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.StopSoundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetSubtitleTextPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetTitlesAnimationPacket;
 import io.github.sculkpowered.server.util.ItemList;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.SculkWorld;
@@ -152,13 +152,13 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   public void gameMode(@NotNull GameMode gameMode) {
     if (gameMode != this.gameMode) {
       this.gameMode = gameMode;
-      this.send(new GameEvent(3, gameMode.ordinal()));
+      this.send(new GameEventPacket(3, gameMode.ordinal()));
     }
   }
 
   @Override
   public void disconnect(@NotNull Component component) {
-    this.connection.sendAndClose(new Disconnect(component));
+    this.connection.sendAndClose(new DisconnectPacket(component));
   }
 
   @Override
@@ -188,7 +188,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void heldItemSlot(int slot) {
-    this.send(new HeldItem((byte) slot));
+    this.send(new CarriedItemPacket((byte) slot));
     this.heldItemSlot0(slot);
   }
 
@@ -257,7 +257,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void sendPluginMessage(@NotNull String channel, byte @NotNull [] bytes) {
-    this.send(new PluginMessage(channel, bytes));
+    this.send(new CustomPayloadPacket(channel, bytes));
   }
 
   @Override
@@ -267,17 +267,17 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void addChatSuggestions(@NotNull String... suggestions) {
-    this.send(new ChatSuggestions(0, suggestions));
+    this.send(new CustomChatCompletionsPacket(0, suggestions));
   }
 
   @Override
   public void removeChatSuggestions(@NotNull String... suggestions) {
-    this.send(new ChatSuggestions(1, suggestions));
+    this.send(new CustomChatCompletionsPacket(1, suggestions));
   }
 
   @Override
   public void setChatSuggestions(@NotNull String... suggestions) {
-    this.send(new ChatSuggestions(2, suggestions));
+    this.send(new CustomChatCompletionsPacket(2, suggestions));
   }
 
   @Override
@@ -291,7 +291,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
             chunkCoordinate(oldPosition.x()), chunkCoordinate(oldPosition.z()),
             this.settings.viewDistance(),
             (x, z) -> oldWorld.chunk(x, z).viewers().remove(this));
-        this.sendViewers(new RemoveEntities(this.id));
+        this.sendViewers(new RemoveEntitiesPacket(this.id));
         this.viewers.clear();
         oldWorld.chunkAt(oldPosition).entities().remove(this);
         this.world.chunkAt(this.position).entities().add(this);
@@ -299,10 +299,10 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       this.position = world.spawnPosition();
       this.gameMode = world.defaultGameMode();
       this.send(
-          new Respawn(world.dimension(), world.name(), 0, this.gameMode, (byte) 3));
+          new RespawnPacket(world.dimension(), world.name(), 0, this.gameMode, (byte) 3));
       this.calculateChunks(this.position, this.position, false, false);
       this.inventory().resend();
-      this.send(new GameEvent(13, -1));
+      this.send(new GameEventPacket(13, -1));
     }
   }
 
@@ -315,36 +315,36 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public void teleport(@NotNull Position position) {
     super.teleport(position);
-    this.send(new SynchronizePlayerPosition(this.position));
+    this.send(new PlayerPositionPacket(this.position));
     this.receivedTeleportConfirmation = false;
   }
 
   @Override
   public void sendMessage(@NotNull Component message) {
-    this.send(new SystemChatMessage(message, false));
+    this.send(new SystemChatPacket(message, false));
   }
 
   @Override
   public void sendActionBar(@NotNull Component message) {
-    this.send(new ActionBar(message));
+    this.send(new SetActionBarTextPacket(message));
   }
 
   @Override
   public void sendPlayerListHeaderAndFooter(@NotNull Component header, @NotNull Component footer) {
-    this.send(new TabListHeaderFooter(header, footer));
+    this.send(new TabListPacket(header, footer));
   }
 
   @Override
   public <T> void sendTitlePart(@NotNull TitlePart<T> part, @NotNull T value) {
     if (part == TitlePart.TITLE) {
       this.send(
-          new io.github.sculkpowered.server.protocol.packet.play.title.Title((Component) value));
+          new SetTitleTextPacket((Component) value));
     } else if (part == TitlePart.SUBTITLE) {
-      this.send(new Subtitle((Component) value));
+      this.send(new SetSubtitleTextPacket((Component) value));
     } else if (part == TitlePart.TIMES) {
       final var times = (Title.Times) value;
 
-      this.send(new TitleAnimationTimes((int) (times.fadeIn().toMillis() / 50),
+      this.send(new SetTitlesAnimationPacket((int) (times.fadeIn().toMillis() / 50),
           (int) (times.stay().toMillis() / 50),
           (int) (times.fadeOut().toMillis() / 50)));
     }
@@ -352,12 +352,12 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   public void clearTitle() {
-    this.send(new ClearTitles(false));
+    this.send(new ClearTitlesPacket(false));
   }
 
   @Override
   public void resetTitle() {
-    this.send(new ClearTitles(true));
+    this.send(new ClearTitlesPacket(true));
   }
 
   @Override
@@ -365,7 +365,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     @SuppressWarnings("UnstableApiUsage") final var impl = BossBarImplementation
         .get(bar, Impl.class);
     if (impl.players().add(this)) {
-      this.send(add(impl.uniqueId(), bar.name(), bar.progress(), bar.color().ordinal(),
+      this.send(BossEventPacket.add(impl.uniqueId(), bar.name(), bar.progress(), bar.color().ordinal(),
           bar.overlay().ordinal(), BossBarProvider.flags(bar)));
     }
   }
@@ -374,51 +374,51 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   public void hideBossBar(@NotNull BossBar bar) {
     final var impl = BossBarImplementation.get(bar, Impl.class);
     if (impl.players().remove(this)) {
-      this.send(remove(impl.uniqueId()));
+      this.send(BossEventPacket.remove(impl.uniqueId()));
     }
   }
 
   @Override
   public void playSound(@NotNull Sound sound) {
-    this.send(new EntitySoundEffect(sound, this.id));
+    this.send(new SoundEntityPacket(sound, this.id));
   }
 
   @Override
   public void playSound(@NotNull Sound sound, double x, double y, double z) {
-    this.send(new SoundEffect(sound, (int) (x * 8), (int) (y * 8), (int) (z * 8)));
+    this.send(new SoundPacket(sound, (int) (x * 8), (int) (y * 8), (int) (z * 8)));
   }
 
   @Override
   public void playSound(@NotNull Sound sound, @NotNull Sound.Emitter emitter) {
     if (emitter instanceof Entity entity) {
-      this.send(new EntitySoundEffect(sound, entity.id()));
+      this.send(new SoundEntityPacket(sound, entity.id()));
     }
   }
 
   @Override
   public void stopSound(@NotNull SoundStop stop) {
-    this.send(new StopSound(stop));
+    this.send(new StopSoundPacket(stop));
   }
 
   @Override
   public void sendResourcePacks(@NotNull ResourcePackRequest request) {
     for (final var pack : request.packs()) {
-      this.send(new AddResourcePack(pack.id(), pack.uri().toString(),
+      this.send(new ResourcePackPushPacket(pack.id(), pack.uri().toString(),
           pack.hash(), request.required(), request.prompt()));
     }
   }
 
   @Override
   public void removeResourcePacks(@NotNull UUID id, @NotNull UUID @NotNull ... others) {
-    this.send(new RemoveResourcePack(id));
+    this.send(new ResourcePackPopPacket(id));
     for (final var other : others) {
-      this.send(new RemoveResourcePack(other));
+      this.send(new ResourcePackPopPacket(other));
     }
   }
 
   @Override
   public void clearResourcePacks() {
-    this.send(new RemoveResourcePack(null));
+    this.send(new ResourcePackPopPacket(null));
   }
 
   @NotNull
@@ -446,7 +446,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       if (elapsedTime > 15000) { // send all 15 seconds
         this.keepAlivePending = true;
         this.lastSendKeepAlive = time;
-        this.send(new KeepAlive(time));
+        this.send(new KeepAlivePacket(time));
       }
     }
     this.connection.flush();
@@ -474,7 +474,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   @Override
   protected void attributeChange(SculkAttributeValue value) {
-    this.sendViewersAndSelf(new UpdateAttributes(this.id, List.of(value)));
+    this.sendViewersAndSelf(new UpdateAttributesPacket(this.id, List.of(value)));
   }
 
   public void init(final GameMode gameMode, final Position position, final SculkWorld world,
@@ -508,7 +508,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         return;
       }
     }
-    this.send(new CenterChunk(chunkX, chunkZ));
+    this.send(new SetChunkCacheCenterPacket(chunkX, chunkZ));
     this.server.addTask(() -> {
       final var chunks = new ArrayList<SculkChunk>((range * 2 + 1) * (range * 2 + 1));
       forChunksInRange(chunkX, chunkZ, range, (x, z) -> {
@@ -542,7 +542,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     });
   }
 
-  public void handleClientInformation(final ClientInformation clientInformation) {
+  public void handleClientInformation(final ClientInformationPacket clientInformation) {
     final var settings = this.settings;
     final var old = settings.clientInformation();
     if (settings.isDefault() || old.skinParts() != clientInformation.skinParts()) {
@@ -558,12 +558,12 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     this.settings.setClientInformation(clientInformation);
   }
 
-  public void handlePluginMessage(final PluginMessage pluginMessage) {
+  public void handlePluginMessage(final CustomPayloadPacket customPayload) {
     this.server.eventHandler().call(
-        new PluginMessageEvent(this, pluginMessage.identifier(), pluginMessage.data()));
+        new PluginMessageEvent(this, customPayload.identifier(), customPayload.data()));
   }
 
-  public void send(final Packet packet) {
+  public void send(final ClientboundPacket packet) {
     this.connection.send(packet);
   }
 
@@ -587,8 +587,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
             });
       });
     }
-    this.sendViewers(new RemoveEntities(this.id()));
-    this.server.sendAll(new PlayerInfoRemove(List.of(this)));
+    this.sendViewers(new RemoveEntitiesPacket(this.id()));
+    this.server.sendAll(new PlayerInfoRemovePacket(List.of(this)));
     if (this.container != null) {
       this.container.removeViewer(this);
     }
@@ -602,14 +602,14 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
         });
   }
 
-  public void sendViewersAndSelf(final Packet packet) {
+  public void sendViewersAndSelf(final ClientboundPacket packet) {
     this.send(packet);
     this.sendViewers(packet);
   }
 
   public void setPing(final int ping) {
     this.ping = ping;
-    this.sendViewersAndSelf(PlayerInfo.update(this, PlayerInfo.Action.UPDATE_LATENCY));
+    this.sendViewersAndSelf(PlayerInfoUpdatePacket.update(this, PlayerInfoUpdatePacket.Action.UPDATE_LATENCY));
   }
 
   public void setKeepAlivePending(boolean pending) {
@@ -640,7 +640,7 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
       for (var i = 0; i < this.container.items().size(); i++) {
         items.set(i, this.container.items().get(i));
       }
-      this.send(new ContainerContent((byte) 1, this.container.state(), items, ItemStack.empty()));
+      this.send(new ContainerSetContentPacket((byte) 1, this.container.state(), items, ItemStack.empty()));
     }
   }
 
@@ -655,6 +655,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
     if (this.instantBreak) {
       flags |= 0x08;
     }
-    this.send(new PlayerAbilities(flags, this.flyingSpeed, this.viewModifier));
+    this.send(new PlayerAbilitiesPacket(flags, this.flyingSpeed, this.viewModifier));
   }
 }

@@ -1,114 +1,114 @@
 package io.github.sculkpowered.server.protocol;
 
-import io.github.sculkpowered.server.entity.TeleportEntity;
-import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.config.FeatureFlags;
-import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
-import io.github.sculkpowered.server.protocol.packet.config.RegistryData;
-import io.github.sculkpowered.server.protocol.packet.handshake.Handshake;
-import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
-import io.github.sculkpowered.server.protocol.packet.login.EncryptionRequest;
-import io.github.sculkpowered.server.protocol.packet.login.EncryptionResponse;
-import io.github.sculkpowered.server.protocol.packet.login.LoginAcknowledged;
-import io.github.sculkpowered.server.protocol.packet.login.LoginDisconnect;
-import io.github.sculkpowered.server.protocol.packet.login.LoginPluginRequest;
-import io.github.sculkpowered.server.protocol.packet.login.LoginPluginResponse;
-import io.github.sculkpowered.server.protocol.packet.login.LoginStart;
-import io.github.sculkpowered.server.protocol.packet.login.LoginSuccess;
-import io.github.sculkpowered.server.protocol.packet.play.ActionBar;
-import io.github.sculkpowered.server.protocol.packet.play.AddResourcePack;
-import io.github.sculkpowered.server.protocol.packet.play.AwardStatistics;
-import io.github.sculkpowered.server.protocol.packet.play.BossBar;
-import io.github.sculkpowered.server.protocol.packet.play.ChatSuggestions;
-import io.github.sculkpowered.server.protocol.packet.play.ChangeDifficulty;
-import io.github.sculkpowered.server.protocol.packet.play.ChatMessage;
-import io.github.sculkpowered.server.protocol.packet.play.ClientCommand;
-import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
-import io.github.sculkpowered.server.protocol.packet.play.ConfirmTeleportation;
-import io.github.sculkpowered.server.protocol.packet.play.Cooldown;
-import io.github.sculkpowered.server.protocol.packet.play.CreativeModeSlot;
-import io.github.sculkpowered.server.protocol.packet.play.Disconnect;
-import io.github.sculkpowered.server.protocol.packet.play.EditBook;
-import io.github.sculkpowered.server.protocol.packet.play.EntityAnimation;
-import io.github.sculkpowered.server.protocol.packet.play.EntityEvent;
-import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
-import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
-import io.github.sculkpowered.server.protocol.packet.play.Equipment;
-import io.github.sculkpowered.server.protocol.packet.play.Experience;
-import io.github.sculkpowered.server.protocol.packet.play.GameEvent;
-import io.github.sculkpowered.server.protocol.packet.play.Health;
-import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
-import io.github.sculkpowered.server.protocol.packet.play.Interact;
-import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
-import io.github.sculkpowered.server.protocol.packet.play.Login;
-import io.github.sculkpowered.server.protocol.packet.play.PickupItem;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerAction;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerCommand;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerInfo;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerInfoRemove;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerSession;
-import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
-import io.github.sculkpowered.server.protocol.packet.play.RecipeBookSettings;
-import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
-import io.github.sculkpowered.server.protocol.packet.play.RemoveResourcePack;
-import io.github.sculkpowered.server.protocol.packet.play.RenderDistance;
-import io.github.sculkpowered.server.protocol.packet.play.Respawn;
-import io.github.sculkpowered.server.protocol.packet.play.SimulationDistance;
-import io.github.sculkpowered.server.protocol.packet.play.SpawnEntity;
-import io.github.sculkpowered.server.protocol.packet.play.SpawnExperienceOrb;
-import io.github.sculkpowered.server.protocol.packet.play.SpawnPosition;
-import io.github.sculkpowered.server.protocol.packet.play.SwingArm;
-import io.github.sculkpowered.server.protocol.packet.play.SynchronizePlayerPosition;
-import io.github.sculkpowered.server.protocol.packet.play.SystemChatMessage;
-import io.github.sculkpowered.server.protocol.packet.play.TabListHeaderFooter;
-import io.github.sculkpowered.server.protocol.packet.play.TeleportToEntity;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateAttributes;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateRecipes;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateTags;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateTime;
-import io.github.sculkpowered.server.protocol.packet.play.UseItem;
-import io.github.sculkpowered.server.protocol.packet.play.UseItemOn;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockAcknowledge;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockAction;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockEntityData;
-import io.github.sculkpowered.server.protocol.packet.play.block.BlockUpdate;
-import io.github.sculkpowered.server.protocol.packet.play.chunk.CenterChunk;
-import io.github.sculkpowered.server.protocol.packet.play.chunk.ChunkDataAndUpdateLight;
-import io.github.sculkpowered.server.protocol.packet.play.command.ChatCommand;
-import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsRequest;
-import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsResponse;
-import io.github.sculkpowered.server.protocol.packet.play.command.Commands;
-import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainer;
-import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainerButton;
-import io.github.sculkpowered.server.protocol.packet.play.container.CloseContainer;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerContent;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerProperty;
-import io.github.sculkpowered.server.protocol.packet.play.container.ContainerSlot;
-import io.github.sculkpowered.server.protocol.packet.play.container.OpenScreen;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityPosition;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityPositionAndRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.HeadRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerOnGround;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPosition;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.DisplayObjective;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.ResetScore;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateObjectives;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateScore;
-import io.github.sculkpowered.server.protocol.packet.play.sound.EntitySoundEffect;
-import io.github.sculkpowered.server.protocol.packet.play.sound.SoundEffect;
-import io.github.sculkpowered.server.protocol.packet.play.sound.StopSound;
-import io.github.sculkpowered.server.protocol.packet.play.title.ClearTitles;
-import io.github.sculkpowered.server.protocol.packet.play.title.Subtitle;
-import io.github.sculkpowered.server.protocol.packet.play.title.Title;
-import io.github.sculkpowered.server.protocol.packet.play.title.TitleAnimationTimes;
-import io.github.sculkpowered.server.protocol.packet.status.StatusPing;
-import io.github.sculkpowered.server.protocol.packet.status.StatusRequest;
-import io.github.sculkpowered.server.protocol.packet.status.StatusResponse;
+import io.github.sculkpowered.server.entity.TeleportEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
+import io.github.sculkpowered.server.protocol.packet.ServerboundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BossEventPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ChangeDifficultyPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ClearTitlesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.UpdateEnabledFeaturesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockDestructionPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RegistryDataPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.Intention;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.HelloPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.KeyPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.LoginAcknowledgedPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
+import io.github.sculkpowered.server.protocol.packet.clientbound.CustomQueryPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.CustomQueryAnswerPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.GameProfilePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetActionBarTextPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ResourcePackPushPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.AwardStatsPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.CustomChatCompletionsPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.AcceptTeleportationPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.CooldownPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.SetCreativeModeSlotPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.DisconnectPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.EditBookPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.AnimatePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.EntityEventPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetEntityDataPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetEntityMotionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetEquipmentPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetExperiencePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetHealthPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CarriedItemPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.InteractPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.TakeItemEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerAbilitiesPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.PlayerActionPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.PlayerCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerInfoUpdatePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerInfoRemovePacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatSessionUpdatePacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.RecipeBookChangeSettingsPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RemoveEntitiesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ResourcePackPopPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetChunkCacheRadiusPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RespawnPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetSimulationDistancePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.AddEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.AddExperienceOrbPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetDefaultSpawnPositionPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.SwingPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerPositionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SystemChatPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.TabListPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.TeleportToEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.UpdateAttributesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.UpdateRecipesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.UpdateTagsPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetPlayerTeamPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetTimePacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.UseItemPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.UseItemOnPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockChangedAckPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockEventPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockEntityDataPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.BlockUpdatePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetChunkCacheCenterPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LevelChunkWithLightPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.CommandSuggestionsPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.CommandsPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ContainerClickPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ContainerButtonClickPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.ContainerClosePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetContentPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetDataPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ContainerSetSlotPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.OpenScreenPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosRotPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.MoveEntityRot;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RotateHeadPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerStatusOnlyPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosRotPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerRotPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetDisplayObjectivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ResetScorePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetObjectivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetScorePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SoundEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SoundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.StopSoundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetSubtitleTextPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetTitleTextPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetTitlesAnimationPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.StatusPingPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.StatusRequest;
+import io.github.sculkpowered.server.protocol.packet.clientbound.StatusResponsePacket;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
@@ -121,252 +121,257 @@ public enum State {
   HANDSHAKE {
     {
       this.serverBound
-          .register(Handshake::new);
+          .register(Intention::new);
     }
   },
   STATUS {
     {
       this.serverBound
           .register(() -> StatusRequest.INSTANCE)
-          .register(StatusPing::new);
+          .register(StatusPingPacket::new);
 
       this.clientBound
-          .register(StatusResponse.class)
-          .register(StatusPing.class);
+          .register(StatusResponsePacket.class)
+          .register(StatusPingPacket.class);
     }
   },
   LOGIN {
     {
       this.serverBound
-          .register(LoginStart::new)
-          .register(EncryptionResponse::new)
-          .register(LoginPluginResponse::new)
-          .register(() -> LoginAcknowledged.INSTANCE)
+          .register(io.github.sculkpowered.server.protocol.packet.serverbound.HelloPacket::new)
+          .register(KeyPacket::new)
+          .register(CustomQueryAnswerPacket::new)
+          .register(() -> LoginAcknowledgedPacket.INSTANCE)
           .skip(); // Cookie Response
 
       this.clientBound
           .register(LoginDisconnect.class)
-          .register(EncryptionRequest.class)
-          .register(LoginSuccess.class)
-          .register(CompressionPacket.class)
-          .register(LoginPluginRequest.class)
+          .register(HelloPacket.class)
+          .register(GameProfilePacket.class)
+          .register(LoginCompressionPacket.class)
+          .register(CustomQueryPacket.class)
           .skip(); // Cookie Request
     }
   },
   CONFIG {
     {
       this.serverBound
-          .register(ClientInformation.SUPPLIER)
+          .register(ClientInformationPacket.SUPPLIER)
           .skip() // Cookie Response
-          .register(PluginMessage.SUPPLIER)
-          .register(() -> FinishConfiguration.INSTANCE)
-          .register(KeepAlive.SUPPLIER)
+          .register(CustomPayloadPacket.SUPPLIER)
+          .register(() -> FinishConfigurationPacket.INSTANCE)
+          .register(KeepAlivePacket.SUPPLIER)
           .skip() // Pong
-          .skip() // Resource Pack Response
-          .skip(); // Known Packs
+          .skip() // Resource Pack
+          .skip(); // Select Known Packs
 
       this.clientBound
           .skip() // Cookie Request
-          .register(PluginMessage.class)
-          .register(Disconnect.class)
-          .register(FinishConfiguration.class)
-          .register(KeepAlive.class)
+          .register(CustomPayloadPacket.class)
+          .skip() // Custom Report Details
+          .register(DisconnectPacket.class)
+          .register(FinishConfigurationPacket.class)
+          .register(KeepAlivePacket.class)
           .skip() // Ping
           .skip() // Reset Chat
-          .register(RegistryData.class)
-          .register(RemoveResourcePack.class)
-          .register(AddResourcePack.class)
+          .register(RegistryDataPacket.class)
+          .register(ResourcePackPopPacket.class)
+          .register(ResourcePackPushPacket.class)
           .skip() // Store Cookie
           .skip() // Transfer
-          .register(FeatureFlags.class)
-          .register(UpdateTags.class)
-          .skip(); // Known Packs
+          .register(UpdateEnabledFeaturesPacket.class)
+          .register(UpdateTagsPacket.class)
+          .skip() // Select Known Packs
+          .skip() // Custom Report Details
+          .skip(); // Server Links
     }
   },
   PLAY {
     {
       this.serverBound
-          .register(ConfirmTeleportation::new)
-          .skip() // Query Block Entity Tag
+          .register(AcceptTeleportationPacket::new)
+          .skip() // Block Entity Tag Query
           .skip() // Change Difficulty - only Single-player
-          .skip() // Message Acknowledgment
-          .register(ChatCommand::new)
-          .skip() // Signed Chat Command
-          .register(ChatMessage::new)
-          .register(PlayerSession::new) // Player Session
+          .skip() // Chat Ack
+          .register(ChatCommandPacket::new)
+          .skip() // Chat Command Signed
+          .register(ChatPacket::new)
+          .register(ChatSessionUpdatePacket::new)
           .skip() // Chunk Batch Received
-          .register(ClientCommand::new)
-          .register(ClientInformation.SUPPLIER)
-          .register(CommandSuggestionsRequest::new)
+          .register(ClientCommandPacket::new)
+          .register(ClientInformationPacket.SUPPLIER)
+          .register(CommandSuggestionsPacket::new)
           .skip() // Configuration Acknowledged
-          .register(ClickContainerButton::new)
-          .register(ClickContainer::new)
-          .register(CloseContainer::new)
-          .skip() // Change Container Slot State
+          .register(ContainerButtonClickPacket::new)
+          .register(ContainerClickPacket::new)
+          .register(ContainerClosePacket::new)
+          .skip() // Container Slot State Changed
           .skip() // Cookie Response
-          .register(PluginMessage.SUPPLIER)
+          .register(CustomPayloadPacket.SUPPLIER)
           .skip() // Debug Sample Subscription
-          .register(EditBook::new)
-          .skip() // Query Entity Tag
-          .register(Interact::new)
+          .register(EditBookPacket::new)
+          .skip() // Entity Tag Query
+          .register(InteractPacket::new)
           .skip() // Jigsaw Generate
-          .register(KeepAlive.SUPPLIER)
-          .skip() // Lock Difficult
-          .register(PlayerPosition::new)
-          .register(PlayerPositionAndRotation::new)
-          .register(PlayerRotation::new)
-          .register(PlayerOnGround::new)
+          .register(KeepAlivePacket.SUPPLIER)
+          .skip() // Lock Difficulty
+          .register(MovePlayerPosPacket::new)
+          .register(MovePlayerPosRotPacket::new)
+          .register(MovePlayerRotPacket::new)
+          .register(MovePlayerStatusOnlyPacket::new)
           .skip() // Move Vehicle
           .skip() // Paddle Boat
           .skip() // Pick Item
           .skip() // Ping Request
           .skip() // Place Recipe
-          .register(PlayerAbilities::new)
-          .register(PlayerAction::new)
-          .register(PlayerCommand::new)
+          .skip() // Player Abilities
+          .register(PlayerActionPacket::new)
+          .register(PlayerCommandPacket::new)
           .skip() // Player Input
           .skip() // Pong
-          .register(RecipeBookSettings::new)
-          .skip() // Seen Recipe
+          .register(RecipeBookChangeSettingsPacket::new)
+          .skip() // Recipe Book Seen Recipe
           .skip() // Rename Item
           .skip() // Resource Pack
-          .skip() // Advancements
+          .skip() // Seen Advancements
           .skip() // Select Trade
-          .skip() // Beacon Effect
-          .register(HeldItem::new)
-          .skip() // Program Command Block
-          .skip() // Program Command Block Minecart
-          .register(CreativeModeSlot::new)
-          .skip() // Program Jigsaw Block
-          .skip() // Program Structure Block
-          .skip() // Update Sign
-          .register(SwingArm::new)
-          .register(TeleportToEntity::new)
-          .register(UseItemOn::new)
-          .register(UseItem::new);
+          .skip() // Set Beacon
+          .register(CarriedItemPacket::new)
+          .skip() // Set Command Block
+          .skip() // Set Command Minecart
+          .register(SetCreativeModeSlotPacket::new)
+          .skip() // Set Jigsaw Block
+          .skip() // Set Structure Block
+          .skip() // Sign Update
+          .register(SwingPacket::new)
+          .register(TeleportToEntityPacket::new)
+          .register(UseItemOnPacket::new)
+          .register(UseItemPacket::new);
 
       this.clientBound
           .skip() // Bundle Delimiter
-          .register(SpawnEntity.class)
-          .register(SpawnExperienceOrb.class)
-          .register(EntityAnimation.class)
-          .register(AwardStatistics.class)
-          .register(BlockAcknowledge.class)
-          .skip() // Block Destroy Stage
-          .register(BlockEntityData.class)
-          .register(BlockAction.class)
-          .register(BlockUpdate.class)
-          .register(BossBar.class)
-          .register(ChangeDifficulty.class)
+          .register(AddEntityPacket.class)
+          .register(AddExperienceOrbPacket.class)
+          .register(AnimatePacket.class)
+          .register(AwardStatsPacket.class)
+          .register(BlockChangedAckPacket.class)
+          .register(BlockDestructionPacket.class)
+          .register(BlockEntityDataPacket.class)
+          .register(BlockEventPacket.class)
+          .register(BlockUpdatePacket.class)
+          .register(BossEventPacket.class)
+          .register(ChangeDifficultyPacket.class)
           .skip() // Chunk Batch Finished
           .skip() // Chunk Batch Start
           .skip() // Chunk Biomes
-          .register(ClearTitles.class)
-          .register(CommandSuggestionsResponse.class)
-          .register(Commands.class)
-          .register(CloseContainer.class)
-          .register(ContainerContent.class)
-          .register(ContainerProperty.class)
-          .register(ContainerSlot.class)
+          .register(ClearTitlesPacket.class)
+          .register(
+              io.github.sculkpowered.server.protocol.packet.clientbound.CommandSuggestionsPacket.class)
+          .register(CommandsPacket.class)
+          .register(ContainerClosePacket.class)
+          .register(ContainerSetContentPacket.class)
+          .register(ContainerSetDataPacket.class)
+          .register(ContainerSetSlotPacket.class)
           .skip() // Cookie Request
-          .register(Cooldown.class)
-          .register(ChatSuggestions.class)
-          .register(PluginMessage.class)
+          .register(CooldownPacket.class)
+          .register(CustomChatCompletionsPacket.class)
+          .register(CustomPayloadPacket.class)
           .skip() // Damage Event
           .skip() // Debug Sample
-          .skip() // Delete Message
-          .register(Disconnect.class)
-          .skip() // Disguised Chat Message
-          .register(EntityEvent.class)
-          .skip() // Explosion
-          .skip() // Unload Chunk
-          .register(GameEvent.class)
-          .skip() // Open Horse Screen
+          .skip() // Delete Chat
+          .register(DisconnectPacket.class)
+          .skip() // Disguised Chat
+          .register(EntityEventPacket.class)
+          .skip() // Explode
+          .skip() // Forget Level Chunk
+          .register(GameEventPacket.class)
+          .skip() // Horse Screen Open
           .skip() // Hurt Animation
-          .skip() // Initialize World Border
-          .register(KeepAlive.class)
-          .register(ChunkDataAndUpdateLight.class)
-          .skip() // World Event
-          .skip() // Particle
-          .skip() // Update Light
-          .register(Login.class)
-          .skip() // Map Data
+          .skip() // Initialize Border
+          .register(KeepAlivePacket.class)
+          .register(LevelChunkWithLightPacket.class)
+          .skip() // Level Event
+          .skip() // Level Particles
+          .skip() // Light Update
+          .register(LoginPacket.class)
+          .skip() // Map Item Data
           .skip() // Merchant Offers
-          .register(EntityPosition.class)
-          .register(EntityPositionAndRotation.class)
-          .register(EntityRotation.class)
+          .register(MoveEntityPosPacket.class)
+          .register(MoveEntityPosRotPacket.class)
+          .register(MoveEntityRot.class)
           .skip() // Move Vehicle
           .skip() // Open Book
-          .register(OpenScreen.class)
+          .register(OpenScreenPacket.class)
           .skip() // Open Sign Editor
           .skip() // Ping
-          .skip() // Ping Response
+          .skip() // Pong Response
           .skip() // Place Ghost Recipe
-          .register(PlayerAbilities.class)
-          .skip() // Player Chat Message
-          .skip() // End Combat - was once used for Twitch
-          .skip() // Enter Combat - was once used for Twitch
-          .skip() // Combat Death
-          .register(PlayerInfoRemove.class)
-          .register(PlayerInfo.class)
-          .skip() // Look At
-          .register(SynchronizePlayerPosition.class)
-          .skip() // Update Recipe Book
-          .register(RemoveEntities.class)
-          .skip() // Remove Entity Effect
-          .register(ResetScore.class)
-          .register(RemoveResourcePack.class)
-          .register(AddResourcePack.class)
-          .register(Respawn.class)
-          .register(HeadRotation.class)
-          .skip() // Update Section Blocks
+          .register(PlayerAbilitiesPacket.class)
+          .skip() // Player Chat
+          .skip() // Player Combat End - was once used for Twitch
+          .skip() // Player Combat Enter - was once used for Twitch
+          .skip() // Player Combat Kill
+          .register(PlayerInfoRemovePacket.class)
+          .register(PlayerInfoUpdatePacket.class)
+          .skip() // Player Look At
+          .register(PlayerPositionPacket.class)
+          .skip() // Recipe
+          .register(RemoveEntitiesPacket.class)
+          .skip() // Remove Mob Effect
+          .register(ResetScorePacket.class)
+          .register(ResourcePackPopPacket.class)
+          .register(ResourcePackPushPacket.class)
+          .register(RespawnPacket.class)
+          .register(RotateHeadPacket.class)
+          .skip() // Section Blocks Update
           .skip() // Select Advancements Tab
           .skip() // Server Data
-          .register(ActionBar.class)
-          .skip() // Border Center
-          .skip() // Border Lerp Size
-          .skip() // Border Size
-          .skip() // Border Warning Delay
-          .skip() // Border Warning Distance
+          .skip() // Server Links
+          .register(SetActionBarTextPacket.class)
+          .skip() // Set Border Center
+          .skip() // Set Border Lerp Size
+          .skip() // Set Border Size
+          .skip() // Set Border Warning Delay
+          .skip() // Set Border Warning Distance
           .skip() // Set Camera
-          .register(HeldItem.class)
-          .register(CenterChunk.class)
-          .register(RenderDistance.class)
-          .register(SpawnPosition.class)
-          .register(DisplayObjective.class)
-          .register(EntityMetadata.class)
-          .skip() // Link Entities
-          .register(EntityVelocity.class)
-          .register(Equipment.class)
-          .register(Experience.class)
-          .register(Health.class)
-          .register(UpdateObjectives.class)
+          .register(CarriedItemPacket.class)
+          .register(SetChunkCacheCenterPacket.class)
+          .register(SetChunkCacheRadiusPacket.class)
+          .register(SetDefaultSpawnPositionPacket.class)
+          .register(SetDisplayObjectivePacket.class)
+          .register(SetEntityDataPacket.class)
+          .skip() // Set Entity Link
+          .register(SetEntityMotionPacket.class)
+          .register(SetEquipmentPacket.class)
+          .register(SetExperiencePacket.class)
+          .register(SetHealthPacket.class)
+          .register(SetObjectivePacket.class)
           .skip() // Set Passengers
-          .register(UpdateTeams.class)
-          .register(UpdateScore.class)
-          .register(SimulationDistance.class)
-          .register(Subtitle.class)
-          .register(UpdateTime.class)
-          .register(Title.class)
-          .register(TitleAnimationTimes.class)
-          .register(EntitySoundEffect.class)
-          .register(SoundEffect.class)
+          .register(SetPlayerTeamPacket.class)
+          .register(SetScorePacket.class)
+          .register(SetSimulationDistancePacket.class)
+          .register(SetSubtitleTextPacket.class)
+          .register(SetTimePacket.class)
+          .register(SetTitleTextPacket.class)
+          .register(SetTitlesAnimationPacket.class)
+          .register(SoundEntityPacket.class)
+          .register(SoundPacket.class)
           .skip() // Start Configuration
-          .register(StopSound.class)
+          .register(StopSoundPacket.class)
           .skip() // Store Cookie
-          .register(SystemChatMessage.class)
-          .register(TabListHeaderFooter.class)
-          .skip() // Tag Query Response
-          .register(PickupItem.class)
-          .register(TeleportEntity.class)
+          .register(SystemChatPacket.class)
+          .register(TabListPacket.class)
+          .skip() // Tag Query
+          .register(TakeItemEntityPacket.class)
+          .register(TeleportEntityPacket.class)
           .skip() // Ticking State
-          .skip() // Step Tick
+          .skip() // Ticking Step
           .skip() // Transfer
           .skip() // Update Advancements
-          .register(UpdateAttributes.class)
-          .skip() // Entity Effects
-          .register(UpdateRecipes.class)
-          .register(UpdateTags.class);
+          .register(UpdateAttributesPacket.class)
+          .skip() // Update Mob Effect
+          .register(UpdateRecipesPacket.class) // TODO
+          .register(UpdateTagsPacket.class); // TODO
     }
   };
 
@@ -375,7 +380,7 @@ public enum State {
 
   public static class ClientboundRegistry {
 
-    protected final Object2IntMap<Class<? extends Packet>> packetClassToId =
+    protected final Object2IntMap<Class<? extends ClientboundPacket>> packetClassToId =
         new Object2IntOpenHashMap<>(16, 0.5f);
     protected int id;
 
@@ -383,7 +388,7 @@ public enum State {
       this.packetClassToId.defaultReturnValue(-1);
     }
 
-    protected <P extends Packet> ClientboundRegistry register(final Class<P> clazz) {
+    protected <P extends ClientboundPacket> ClientboundRegistry register(final Class<P> clazz) {
       final var id = this.id;
       this.packetClassToId.put(clazz, id);
       this.id++;
@@ -395,7 +400,7 @@ public enum State {
       return this;
     }
 
-    public int packetId(final Packet packet) {
+    public int packetId(final ClientboundPacket packet) {
       final var id = this.packetClassToId.getInt(packet.getClass());
       if (id == Integer.MIN_VALUE) {
         throw new EncoderException("Couldn't find an id for " + packet.getClass());
@@ -406,11 +411,11 @@ public enum State {
 
   public static class ServerboundRegistry {
 
-    protected final IntObjectMap<Supplier<? extends Packet>> packetIdToSupplier =
+    protected final IntObjectMap<Supplier<? extends ServerboundPacket>> packetIdToSupplier =
         new IntObjectHashMap<>(16, 0.5f);
     protected int id;
 
-    protected <P extends Packet> ServerboundRegistry register(final Supplier<P> packetSupplier) {
+    protected <P extends ServerboundPacket> ServerboundRegistry register(final Supplier<P> packetSupplier) {
       final var id = this.id;
       if (packetSupplier != null) {
         this.packetIdToSupplier.put(id, packetSupplier);
@@ -424,7 +429,7 @@ public enum State {
       return this;
     }
 
-    public Packet createPacket(final int id) {
+    public ServerboundPacket createPacket(final int id) {
       final var supplier = this.packetIdToSupplier.get(id);
       if (supplier != null) {
         return supplier.get();
