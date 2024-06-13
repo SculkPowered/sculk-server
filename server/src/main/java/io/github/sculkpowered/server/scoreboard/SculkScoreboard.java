@@ -2,11 +2,11 @@ package io.github.sculkpowered.server.scoreboard;
 
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.DisplayObjective;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.ResetScore;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateObjectives;
-import io.github.sculkpowered.server.protocol.packet.play.scoreboard.UpdateScore;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetDisplayObjectivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.ResetScorePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetObjectivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetScorePacket;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +73,7 @@ public final class SculkScoreboard implements Scoreboard {
   @Override
   public void displaySlot(@NotNull DisplaySlot displaySlot) {
     this.displaySlot = displaySlot;
-    this.sendViewers(new DisplayObjective((byte) this.displaySlot.ordinal(), this.name));
+    this.sendViewers(new SetDisplayObjectivePacket((byte) this.displaySlot.ordinal(), this.name));
   }
 
   @Override
@@ -84,7 +84,7 @@ public final class SculkScoreboard implements Scoreboard {
   @Override
   public void resetScore(@NotNull String name) {
     if (this.scores.remove(name) != null) {
-      this.sendViewers(new ResetScore(name, this.name));
+      this.sendViewers(new ResetScorePacket(name, this.name));
     }
   }
 
@@ -97,11 +97,11 @@ public final class SculkScoreboard implements Scoreboard {
   public boolean addViewer(@NotNull Player player) {
     final var sculkPlayer = (SculkPlayer) player;
     if (this.viewers.add(sculkPlayer)) {
-      sculkPlayer.send(UpdateObjectives
+      sculkPlayer.send(SetObjectivePacket
           .create(this.name, this.displayName, (byte) 0, this.numberFormat));
-      sculkPlayer.send(new DisplayObjective((byte) this.displaySlot.ordinal(), this.name));
+      sculkPlayer.send(new SetDisplayObjectivePacket((byte) this.displaySlot.ordinal(), this.name));
       for (final var score : this.scores.values()) {
-        sculkPlayer.send(new UpdateScore(
+        sculkPlayer.send(new SetScorePacket(
             score.name(), this.name, score.score(), score.displayName(), score.numberFormat()));
       }
       return true;
@@ -113,17 +113,17 @@ public final class SculkScoreboard implements Scoreboard {
   public boolean removeViewer(@NotNull Player player) {
     final var sculkPlayer = (SculkPlayer) player;
     if (this.viewers.remove(sculkPlayer)) {
-      sculkPlayer.send(UpdateObjectives.remove(this.name));
+      sculkPlayer.send(SetObjectivePacket.remove(this.name));
       return true;
     }
     return false;
   }
 
   private void update() {
-    this.sendViewers(UpdateObjectives.update(this.name, this.displayName, (byte) 0, this.numberFormat));
+    this.sendViewers(SetObjectivePacket.update(this.name, this.displayName, (byte) 0, this.numberFormat));
   }
 
-  void sendViewers(final Packet packet) {
+  void sendViewers(final ClientboundPacket packet) {
     for (final var viewer : this.viewers) {
       viewer.send(packet);
     }

@@ -1,7 +1,7 @@
 package io.github.sculkpowered.server.team;
 
 import io.github.sculkpowered.server.SculkServer;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetPlayerTeamPacket;
 import java.util.Collections;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -88,25 +88,25 @@ public final class SculkTeam implements Team {
 
   @Override
   public void addEntry(@NotNull String entry) {
-    this.server.sendAll(new UpdateTeams(this, (byte) 3, new String[]{entry}));
+    this.server.sendAll(new SetPlayerTeamPacket(this, (byte) 3, new String[]{entry}));
     this.entries.add(entry);
   }
 
   @Override
   public void addEntries(@NotNull String... entries) {
-    this.server.sendAll(new UpdateTeams(this, (byte) 3, entries));
+    this.server.sendAll(new SetPlayerTeamPacket(this, (byte) 3, entries));
     Collections.addAll(this.entries, entries);
   }
 
   @Override
   public void removeEntry(@NotNull String entry) {
-    this.server.sendAll(new UpdateTeams(this, (byte) 4, new String[]{entry}));
+    this.server.sendAll(new SetPlayerTeamPacket(this, (byte) 4, new String[]{entry}));
     this.entries.remove(entry);
   }
 
   @Override
   public void removeEntries(@NotNull String... entries) {
-    this.server.sendAll(new UpdateTeams(this, (byte) 4, entries));
+    this.server.sendAll(new SetPlayerTeamPacket(this, (byte) 4, entries));
     for (final var entry : entries) {
       this.entries.remove(entry);
     }
@@ -117,6 +117,6 @@ public final class SculkTeam implements Team {
   }
 
   private void updateTeam() {
-    this.server.sendAll(new UpdateTeams(this, (byte) 2, null));
+    this.server.sendAll(new SetPlayerTeamPacket(this, (byte) 2, null));
   }
 }

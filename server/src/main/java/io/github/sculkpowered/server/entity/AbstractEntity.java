@@ -3,14 +3,14 @@ package io.github.sculkpowered.server.entity;
 import io.github.sculkpowered.server.SculkServer;
 import io.github.sculkpowered.server.entity.player.Player;
 import io.github.sculkpowered.server.entity.player.SculkPlayer;
-import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.play.EntityMetadata;
-import io.github.sculkpowered.server.protocol.packet.play.EntityVelocity;
-import io.github.sculkpowered.server.protocol.packet.play.RemoveEntities;
-import io.github.sculkpowered.server.protocol.packet.play.SpawnEntity;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityPositionAndRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.EntityRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.HeadRotation;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetEntityDataPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetEntityMotionPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RemoveEntitiesPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.AddEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosRotPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.MoveEntityRot;
+import io.github.sculkpowered.server.protocol.packet.clientbound.RotateHeadPacket;
 import io.github.sculkpowered.server.world.Position;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.github.sculkpowered.server.world.Vector;
@@ -70,7 +70,7 @@ public abstract class AbstractEntity implements Entity {
       final var sculkWorld = (SculkWorld) world;
       final var oldWorld = this.world;
       this.server.addTask(() -> {
-        this.sendViewers(new RemoveEntities(this.id));
+        this.sendViewers(new RemoveEntitiesPacket(this.id));
         this.viewers.clear();
         oldWorld.chunkAt(this.position).entities().remove(this);
         sculkWorld.chunkAt(this.position).entities().add(this);
@@ -210,10 +210,10 @@ public abstract class AbstractEntity implements Entity {
     final var added = this.viewers.add(sculkPlayer);
     if (added) {
       sculkPlayer.send(
-          new SpawnEntity(this.id, this.uniqueId, this.type().ordinal(),
+          new AddEntityPacket(this.id, this.uniqueId, this.type().ordinal(),
               this.position, this.velocity));
       if (!this.metadata.entries().isEmpty()) {
-        sculkPlayer.send(new EntityMetadata(this.id, this.metadata.entries()));
+        sculkPlayer.send(new SetEntityDataPacket(this.id, this.metadata.entries()));
       }
     }
     return added;
@@ -224,14 +224,14 @@ public abstract class AbstractEntity implements Entity {
     final var sculkPlayer = (SculkPlayer) player;
     final var removed = this.viewers.remove(sculkPlayer);
     if (removed) {
-      sculkPlayer.send(new RemoveEntities(this.id));
+      sculkPlayer.send(new RemoveEntitiesPacket(this.id));
     }
     return removed;
   }
 
   public void tick() {
     if (!this.metadata.changes().isEmpty()) {
-      final var entityMetadata = new EntityMetadata(this.id, this.metadata.changes());
+      final var entityMetadata = new SetEntityDataPacket(this.id, this.metadata.changes());
       this.metadata.reset();
       this.sendViewers(entityMetadata);
       if (this instanceof SculkPlayer player) {
@@ -254,7 +254,7 @@ public abstract class AbstractEntity implements Entity {
     this.position = position;
 
     if (distanceX > 8 || distanceY > 8 || distanceZ > 8) {
-      this.sendViewers(new TeleportEntity(this.id, position, this.onGround));
+      this.sendViewers(new TeleportEntityPacket(this.id, position, this.onGround));
       return;
     }
     final var positionChange = (distanceX + distanceY + distanceZ) > 0;
@@ -267,42 +267,42 @@ public abstract class AbstractEntity implements Entity {
       }
       if (viewChange) {
         this.sendViewers(
-            new EntityPositionAndRotation(this.id,
+            new MoveEntityPosRotPacket(this.id,
                 this.delta(position.x(), previous.x()), this.delta(position.y(), previous.y()),
                 this.delta(position.z(), previous.z()),
                 position.yaw(), position.pitch(), this.onGround),
-            new HeadRotation(this.id, position.yaw())
+            new RotateHeadPacket(this.id, position.yaw())
         );
       } else {
         this.sendViewers(
-            new EntityPositionAndRotation(this.id, this.delta(position.x(), previous.x()),
+            new MoveEntityPosRotPacket(this.id, this.delta(position.x(), previous.x()),
                 this.delta(position.y(), previous.y()), this.delta(position.z(), previous.z()),
                 position.yaw(), position.pitch(), this.onGround));
       }
     } else if (viewChange) {
       this.sendViewers(
-          new EntityRotation(this.id, position.yaw(), position.pitch(), this.onGround),
-          new HeadRotation(this.id, position.yaw())
+          new MoveEntityRot(this.id, position.yaw(), position.pitch(), this.onGround),
+          new RotateHeadPacket(this.id, position.yaw())
       );
     }
   }
 
-  public void sendViewers(final Packet packet) {
+  public void sendViewers(final ClientboundPacket packet) {
     for (final var player : this.viewers) {
       player.send(packet);
     }
   }
 
-  public void sendViewers(final Packet packet1, final Packet packet2) {
+  public void sendViewers(final ClientboundPacket packet1, final ClientboundPacket packet2) {
     for (final var player : this.viewers) {
       player.send(packet1);
       player.send(packet2);
     }
   }
 
-  protected EntityVelocity velocityPacket(final Vector vector) {
+  protected SetEntityMotionPacket velocityPacket(final Vector vector) {
     vector.multiply(400D);
-    return new EntityVelocity(this.id,
+    return new SetEntityMotionPacket(this.id,
         (short) Math.min(Math.max(vector.x(), Short.MIN_VALUE), Short.MAX_VALUE),
         (short) Math.min(Math.max(vector.y(), Short.MIN_VALUE), Short.MAX_VALUE),
         (short) Math.min(Math.max(vector.z(), Short.MIN_VALUE), Short.MAX_VALUE)

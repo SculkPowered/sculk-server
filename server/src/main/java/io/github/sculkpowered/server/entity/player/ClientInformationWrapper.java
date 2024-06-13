@@ -1,23 +1,23 @@
 package io.github.sculkpowered.server.entity.player;
 
-import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
 import java.util.Locale;
 import org.jetbrains.annotations.NotNull;
 
 public final class ClientInformationWrapper implements PlayerSettings {
 
-  private static final ClientInformation DEFAULT =
-      new ClientInformation("en_US", (byte) 10, ChatMode.ENABLED, true,
+  private static final ClientInformationPacket DEFAULT =
+      new ClientInformationPacket("en_US", (byte) 10, ChatMode.ENABLED, true,
           127, Hand.RIGHT, true, false);
 
-  private ClientInformation clientInformation = DEFAULT;
+  private ClientInformationPacket clientInformation = DEFAULT;
   private Locale locale;
 
-  public @NotNull ClientInformation clientInformation() {
+  public @NotNull ClientInformationPacket clientInformation() {
     return this.clientInformation;
   }
 
-  public void setClientInformation(final ClientInformation clientInformation) {
+  public void setClientInformation(final ClientInformationPacket clientInformation) {
     this.clientInformation = clientInformation;
     this.locale = null;
   }

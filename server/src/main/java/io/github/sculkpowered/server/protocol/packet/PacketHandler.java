@@ -1,46 +1,46 @@
 package io.github.sculkpowered.server.protocol.packet;
 
-import io.github.sculkpowered.server.protocol.packet.config.FinishConfiguration;
-import io.github.sculkpowered.server.protocol.packet.handshake.Handshake;
-import io.github.sculkpowered.server.protocol.packet.login.EncryptionResponse;
-import io.github.sculkpowered.server.protocol.packet.login.LoginAcknowledged;
-import io.github.sculkpowered.server.protocol.packet.login.LoginPluginResponse;
-import io.github.sculkpowered.server.protocol.packet.login.LoginStart;
-import io.github.sculkpowered.server.protocol.packet.play.ChatMessage;
-import io.github.sculkpowered.server.protocol.packet.play.ClientCommand;
-import io.github.sculkpowered.server.protocol.packet.play.ClientInformation;
-import io.github.sculkpowered.server.protocol.packet.play.ConfirmTeleportation;
-import io.github.sculkpowered.server.protocol.packet.play.CreativeModeSlot;
-import io.github.sculkpowered.server.protocol.packet.play.EditBook;
-import io.github.sculkpowered.server.protocol.packet.play.HeldItem;
-import io.github.sculkpowered.server.protocol.packet.play.Interact;
-import io.github.sculkpowered.server.protocol.packet.play.KeepAlive;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerAbilities;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerAction;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerCommand;
-import io.github.sculkpowered.server.protocol.packet.play.PlayerSession;
-import io.github.sculkpowered.server.protocol.packet.play.PluginMessage;
-import io.github.sculkpowered.server.protocol.packet.play.RecipeBookSettings;
-import io.github.sculkpowered.server.protocol.packet.play.SwingArm;
-import io.github.sculkpowered.server.protocol.packet.play.TeleportToEntity;
-import io.github.sculkpowered.server.protocol.packet.play.UseItem;
-import io.github.sculkpowered.server.protocol.packet.play.UseItemOn;
-import io.github.sculkpowered.server.protocol.packet.play.command.ChatCommand;
-import io.github.sculkpowered.server.protocol.packet.play.command.CommandSuggestionsRequest;
-import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainer;
-import io.github.sculkpowered.server.protocol.packet.play.container.ClickContainerButton;
-import io.github.sculkpowered.server.protocol.packet.play.container.CloseContainer;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerOnGround;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPosition;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerPositionAndRotation;
-import io.github.sculkpowered.server.protocol.packet.play.position.PlayerRotation;
-import io.github.sculkpowered.server.protocol.packet.status.StatusPing;
-import io.github.sculkpowered.server.protocol.packet.status.StatusRequest;
+import io.github.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.Intention;
+import io.github.sculkpowered.server.protocol.packet.serverbound.KeyPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.LoginAcknowledgedPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.CustomQueryAnswerPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.HelloPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.AcceptTeleportationPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.SetCreativeModeSlotPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.EditBookPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CarriedItemPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.InteractPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.PlayerAbilitiesPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.PlayerActionPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.PlayerCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatSessionUpdatePacket;
+import io.github.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.RecipeBookChangeSettingsPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.SwingPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.TeleportToEntityPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.UseItemPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.UseItemOnPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ChatCommandPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.CommandSuggestionsPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ContainerClickPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.ContainerButtonClickPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.ContainerClosePacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerStatusOnlyPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosRotPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.MovePlayerRotPacket;
+import io.github.sculkpowered.server.protocol.packet.shared.StatusPingPacket;
+import io.github.sculkpowered.server.protocol.packet.serverbound.StatusRequest;
 
 public abstract class PacketHandler {
 
   // Handshake
-  public boolean handle(final Handshake handshake) {
+  public boolean handle(final Intention intention) {
     return false;
   }
 
@@ -49,142 +49,142 @@ public abstract class PacketHandler {
     return false;
   }
 
-  public boolean handle(final StatusPing statusPing) {
+  public boolean handle(final StatusPingPacket statusPing) {
     return false;
   }
 
   // Login
-  public boolean handle(final LoginStart loginStart) {
+  public boolean handle(final HelloPacket hello) {
     return false;
   }
 
-  public boolean handle(final EncryptionResponse encryptionResponse) {
+  public boolean handle(final KeyPacket key) {
     return false;
   }
 
-  public boolean handle(final LoginPluginResponse pluginResponse) {
+  public boolean handle(final CustomQueryAnswerPacket pluginResponse) {
     return false;
   }
 
-  public boolean handle(final LoginAcknowledged loginAcknowledged) {
+  public boolean handle(final LoginAcknowledgedPacket loginAcknowledged) {
     return false;
   }
 
   // Config
-  public boolean handle(final FinishConfiguration finishConfiguration) {
+  public boolean handle(final FinishConfigurationPacket finishConfiguration) {
     return false;
   }
 
   // Play
-  public boolean handle(final ConfirmTeleportation confirmTeleportation) {
+  public boolean handle(final AcceptTeleportationPacket confirmTeleportation) {
     return false;
   }
 
-  public boolean handle(final ChatCommand chatCommand) {
+  public boolean handle(final ChatCommandPacket chatCommand) {
     return false;
   }
 
-  public boolean handle(final ChatMessage chatMessage) {
+  public boolean handle(final ChatPacket chatMessage) {
     return false;
   }
 
-  public boolean handle(final PlayerSession playerSession) {
+  public boolean handle(final ChatSessionUpdatePacket playerSession) {
     return false;
   }
 
-  public boolean handle(final ClientCommand clientCommand) {
+  public boolean handle(final ClientCommandPacket clientCommand) {
     return false;
   }
 
-  public boolean handle(final ClientInformation clientInformation) {
+  public boolean handle(final ClientInformationPacket clientInformation) {
     return false;
   }
 
-  public boolean handle(final CommandSuggestionsRequest commandSuggestionsRequest) {
+  public boolean handle(final CommandSuggestionsPacket commandSuggestionsRequest) {
     return false;
   }
 
-  public boolean handle(final ClickContainerButton clickContainerButton) {
+  public boolean handle(final ContainerButtonClickPacket clickContainerButton) {
     return false;
   }
 
-  public boolean handle(final ClickContainer clickContainer) {
+  public boolean handle(final ContainerClickPacket clickContainer) {
     return false;
   }
 
-  public boolean handle(final CloseContainer closeContainer) {
+  public boolean handle(final ContainerClosePacket closeContainer) {
     return false;
   }
 
-  public boolean handle(final PluginMessage pluginMessage) {
+  public boolean handle(final CustomPayloadPacket customPayload) {
     return false;
   }
 
-  public boolean handle(final EditBook editBook) {
+  public boolean handle(final EditBookPacket editBook) {
     return false;
   }
 
-  public boolean handle(final Interact interact) {
+  public boolean handle(final InteractPacket interact) {
     return false;
   }
 
-  public boolean handle(final KeepAlive keepAlive) {
+  public boolean handle(final KeepAlivePacket keepAlive) {
     return false;
   }
 
-  public boolean handle(final PlayerPosition playerPosition) {
+  public boolean handle(final MovePlayerPosPacket playerPosition) {
     return false;
   }
 
-  public boolean handle(final PlayerPositionAndRotation playerPositionAndRotation) {
+  public boolean handle(final MovePlayerPosRotPacket playerPositionAndRotation) {
     return false;
   }
 
-  public boolean handle(final PlayerRotation playerRotation) {
+  public boolean handle(final MovePlayerRotPacket playerRotation) {
     return false;
   }
 
-  public boolean handle(final PlayerOnGround playerOnGround) {
+  public boolean handle(final MovePlayerStatusOnlyPacket playerOnGround) {
     return false;
   }
 
-  public boolean handle(final PlayerAbilities playerAbilities) {
+  public boolean handle(final PlayerAbilitiesPacket playerAbilities) {
     return false;
   }
 
-  public boolean handle(final PlayerAction playerAction) {
+  public boolean handle(final PlayerActionPacket playerAction) {
     return false;
   }
 
-  public boolean handle(final PlayerCommand playerCommand) {
+  public boolean handle(final PlayerCommandPacket playerCommand) {
     return false;
   }
 
-  public boolean handle(final RecipeBookSettings recipeBookSettings) {
+  public boolean handle(final RecipeBookChangeSettingsPacket recipeBookSettings) {
     return false;
   }
 
-  public boolean handle(final HeldItem heldItem) {
+  public boolean handle(final CarriedItemPacket heldItem) {
     return false;
   }
 
-  public boolean handle(final CreativeModeSlot creativeModeSlot) {
+  public boolean handle(final SetCreativeModeSlotPacket creativeModeSlot) {
     return false;
   }
 
-  public boolean handle(final SwingArm swingArm) {
+  public boolean handle(final SwingPacket swingArm) {
     return false;
   }
 
-  public boolean handle(final TeleportToEntity teleportToEntity) {
+  public boolean handle(final TeleportToEntityPacket teleportToEntity) {
     return false;
   }
 
-  public boolean handle(final UseItemOn useItemOn) {
+  public boolean handle(final UseItemOnPacket useItemOn) {
     return false;
   }
 
-  public boolean handle(final UseItem useItem) {
+  public boolean handle(final UseItemPacket useItem) {
     return false;
   }
 }

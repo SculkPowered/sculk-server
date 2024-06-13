@@ -38,8 +38,8 @@ import io.github.sculkpowered.server.potion.MobEffectType;
 import io.github.sculkpowered.server.potion.PotionType;
 import io.github.sculkpowered.server.protocol.SculkConnection;
 import io.github.sculkpowered.server.protocol.netty.NettyServer;
-import io.github.sculkpowered.server.protocol.packet.Packet;
-import io.github.sculkpowered.server.protocol.packet.login.CompressionPacket;
+import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
+import io.github.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
 import io.github.sculkpowered.server.registry.EnumRegistry;
 import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.registry.SimpleRegistry;
@@ -183,7 +183,7 @@ public final class SculkServer implements Server {
         new Thread(() -> this.shutdown(false), "Sculk Shutdown Thread"));
 
     if (this.configuration.compressionThreshold() != -1) {
-      SculkConnection.COMPRESSION_PACKET = new CompressionPacket(
+      SculkConnection.COMPRESSION_PACKET = new LoginCompressionPacket(
           this.configuration.compressionThreshold());
     }
 
@@ -444,7 +444,7 @@ public final class SculkServer implements Server {
     return this.keyPair;
   }
 
-  public void sendAll(final Packet packet) {
+  public void sendAll(final ClientboundPacket packet) {
     for (final var player : this.players.values()) {
       player.send(packet);
     }

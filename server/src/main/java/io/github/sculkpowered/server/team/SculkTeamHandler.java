@@ -1,7 +1,7 @@
 package io.github.sculkpowered.server.team;
 
 import io.github.sculkpowered.server.SculkServer;
-import io.github.sculkpowered.server.protocol.packet.play.UpdateTeams;
+import io.github.sculkpowered.server.protocol.packet.clientbound.SetPlayerTeamPacket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,7 +29,7 @@ public final class SculkTeamHandler implements TeamHandler {
     }
     final var team = new SculkTeam(this.server, builder.name(), entries, builder.displayName(),
         builder.color(), builder.prefix(), builder.suffix());
-    this.server.sendAll(new UpdateTeams(team, (byte) 0, builder.entries()));
+    this.server.sendAll(new SetPlayerTeamPacket(team, (byte) 0, builder.entries()));
     this.teams.put(team.name(), team);
     return team;
   }
@@ -41,7 +41,7 @@ public final class SculkTeamHandler implements TeamHandler {
 
   @Override
   public void unregister(@NotNull Team team) {
-    this.server.sendAll(new UpdateTeams(team, (byte) 1, null));
+    this.server.sendAll(new SetPlayerTeamPacket(team, (byte) 1, null));
     this.teams.remove(team.name());
   }
 
