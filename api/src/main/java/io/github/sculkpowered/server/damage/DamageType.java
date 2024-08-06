@@ -13,6 +13,7 @@ public final class DamageType implements Entry {
   public static final DamageType ARROW = builder(Key.key(MINECRAFT_NAMESPACE, "arrow")).exhaustion(0.1).messageId("arrow").scaling("when_caused_by_living_non_player").build();
   public static final DamageType BAD_RESPAWN_POINT = builder(Key.key(MINECRAFT_NAMESPACE, "bad_respawn_point")).exhaustion(0.1).messageId("badRespawnPoint").scaling("always").deathMessageType("intentional_game_design").build();
   public static final DamageType CACTUS = builder(Key.key(MINECRAFT_NAMESPACE, "cactus")).exhaustion(0.1).messageId("cactus").scaling("when_caused_by_living_non_player").build();
+  public static final DamageType CAMPFIRE = builder(Key.key(MINECRAFT_NAMESPACE, "campfire")).exhaustion(0.1).effects("burning").messageId("inFire").scaling("when_caused_by_living_non_player").build();
   public static final DamageType CRAMMING = builder(Key.key(MINECRAFT_NAMESPACE, "cramming")).exhaustion(0.0).messageId("cramming").scaling("when_caused_by_living_non_player").build();
   public static final DamageType DRAGON_BREATH = builder(Key.key(MINECRAFT_NAMESPACE, "dragon_breath")).exhaustion(0.0).messageId("dragonBreath").scaling("when_caused_by_living_non_player").build();
   public static final DamageType DROWN = builder(Key.key(MINECRAFT_NAMESPACE, "drown")).exhaustion(0.0).effects("drowning").messageId("drown").scaling("when_caused_by_living_non_player").build();
@@ -53,6 +54,7 @@ public final class DamageType implements Entry {
   public static final DamageType THROWN = builder(Key.key(MINECRAFT_NAMESPACE, "thrown")).exhaustion(0.1).messageId("thrown").scaling("when_caused_by_living_non_player").build();
   public static final DamageType TRIDENT = builder(Key.key(MINECRAFT_NAMESPACE, "trident")).exhaustion(0.1).messageId("trident").scaling("when_caused_by_living_non_player").build();
   public static final DamageType UNATTRIBUTED_FIREBALL = builder(Key.key(MINECRAFT_NAMESPACE, "unattributed_fireball")).exhaustion(0.1).effects("burning").messageId("onFire").scaling("when_caused_by_living_non_player").build();
+  public static final DamageType WIND_CHARGE = builder(Key.key(MINECRAFT_NAMESPACE, "wind_charge")).exhaustion(0.1).messageId("mob").scaling("when_caused_by_living_non_player").build();
   public static final DamageType WITHER = builder(Key.key(MINECRAFT_NAMESPACE, "wither")).exhaustion(0.0).messageId("wither").scaling("when_caused_by_living_non_player").build();
   public static final DamageType WITHER_SKULL = builder(Key.key(MINECRAFT_NAMESPACE, "wither_skull")).exhaustion(0.1).messageId("witherSkull").scaling("when_caused_by_living_non_player").build();
   // END
