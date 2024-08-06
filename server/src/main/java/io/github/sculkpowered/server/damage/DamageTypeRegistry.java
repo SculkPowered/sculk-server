@@ -11,6 +11,7 @@ public final class DamageTypeRegistry {
     registry.register(DamageType.ARROW);
     registry.register(DamageType.BAD_RESPAWN_POINT);
     registry.register(DamageType.CACTUS);
+    registry.register(DamageType.CAMPFIRE);
     registry.register(DamageType.CRAMMING);
     registry.register(DamageType.DRAGON_BREATH);
     registry.register(DamageType.DROWN);
@@ -51,6 +52,7 @@ public final class DamageTypeRegistry {
     registry.register(DamageType.THROWN);
     registry.register(DamageType.TRIDENT);
     registry.register(DamageType.UNATTRIBUTED_FIREBALL);
+    registry.register(DamageType.WIND_CHARGE);
     registry.register(DamageType.WITHER);
     registry.register(DamageType.WITHER_SKULL);
     // END

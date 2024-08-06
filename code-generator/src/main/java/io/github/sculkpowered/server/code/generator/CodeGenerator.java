@@ -49,9 +49,6 @@ final class CodeGenerator extends Generator {
       this.generateRegistry(json.get("minecraft:item").getAsJsonObject(),
           API_PACKAGE.resolve("container").resolve("item").resolve("Material.java"));
 
-      this.generateRegistry(json.get("minecraft:enchantment").getAsJsonObject(),
-          API_PACKAGE.resolve("enchantment").resolve("Enchantment.java"));
-
       this.generateRegistry(json.get("minecraft:potion").getAsJsonObject(),
           API_PACKAGE.resolve("potion").resolve("PotionType.java"));
 
