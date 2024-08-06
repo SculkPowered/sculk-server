@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public enum Enchantment implements Registry.Entry {
 
   // START,
+  NULL("null")
   // END
   ;
 
