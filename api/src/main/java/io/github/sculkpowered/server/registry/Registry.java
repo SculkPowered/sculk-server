@@ -71,14 +71,6 @@ public interface Registry<E extends Registry.Entry> {
    */
   @NotNull E defaultValue();
 
-  /**
-   * Gets the registry as a {@link CompoundBinaryTag}.
-   *
-   * @return the registry as a {@link CompoundBinaryTag}
-   * @since 1.0.0
-   */
-  @NotNull CompoundBinaryTag asNBT();
-
   interface Mutable<E extends Entry> extends Registry<E> {
 
     /**

@@ -168,7 +168,6 @@ public enum State {
       this.clientBound
           .skip() // Cookie Request
           .register(CustomPayloadPacket.class)
-          .skip() // Custom Report Details
           .register(DisconnectPacket.class)
           .register(FinishConfigurationPacket.class)
           .register(KeepAlivePacket.class)
