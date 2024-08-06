@@ -33,4 +33,9 @@ public final class FinishConfigurationPacket implements ServerboundPacket, Clien
   public int maxLength() {
     return 0;
   }
+
+  @Override
+  public String toString() {
+    return "FinishConfigurationPacket{}";
+  }
 }

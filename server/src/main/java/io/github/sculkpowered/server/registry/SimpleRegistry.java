@@ -5,8 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
 import org.jetbrains.annotations.NotNull;
 
 public class SimpleRegistry<E extends Registry.Entry> implements Registry.Mutable<E> {
@@ -62,17 +60,5 @@ public class SimpleRegistry<E extends Registry.Entry> implements Registry.Mutabl
   @Override
   public @NotNull E defaultValue() {
     return this.def;
-  }
-
-  @Override
-  public @NotNull CompoundBinaryTag asNBT() {
-    final var list = ListBinaryTag.builder();
-    for (final var value : this.entries()) {
-      list.add(value.asNBT());
-    }
-    return CompoundBinaryTag.builder()
-        .putString("type", this.type)
-        .put("value", list.build())
-        .build();
   }
 }

@@ -3,6 +3,7 @@ package io.github.sculkpowered.server.protocol.packet.clientbound;
 import io.github.sculkpowered.server.protocol.Buffer;
 import io.github.sculkpowered.server.protocol.packet.ClientboundPacket;
 import io.github.sculkpowered.server.registry.Registry;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 
 public final class RegistryDataPacket implements ClientboundPacket {
 
@@ -19,10 +20,22 @@ public final class RegistryDataPacket implements ClientboundPacket {
         .writeString(this.registry.type())
         .writeVarInt(entries.size());
     for (final var entry : entries) {
-      buf
-          .writeString(entry.name())
-          .writeBoolean(true)
-          .writeBinaryTag(entry.asNBT());
+      buf.writeString(entry.key().asString());
+      final var nbt = entry.asNBT();
+      if (!nbt.equals(CompoundBinaryTag.empty())) {
+        buf
+            .writeBoolean(true)
+            .writeBinaryTag(nbt);
+      } else {
+        buf.writeBoolean(false);
+      }
     }
+  }
+
+  @Override
+  public String toString() {
+    return "RegistryDataPacket{" +
+        "registry=" + this.registry.type() +
+        '}';
   }
 }
