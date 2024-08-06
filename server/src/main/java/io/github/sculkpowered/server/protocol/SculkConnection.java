@@ -49,6 +49,7 @@ import io.github.sculkpowered.server.protocol.packet.clientbound.SetPlayerTeamPa
 import io.github.sculkpowered.server.protocol.packet.clientbound.SetTimePacket;
 import io.github.sculkpowered.server.protocol.packet.clientbound.CommandsPacket;
 import io.github.sculkpowered.server.registry.Registries;
+import io.github.sculkpowered.server.registry.Registry;
 import io.github.sculkpowered.server.util.MojangUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
 import io.netty.channel.Channel;
@@ -59,11 +60,14 @@ import io.netty.util.ReferenceCountUtil;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 import javax.crypto.spec.SecretKeySpec;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -176,6 +180,98 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     this.send(new RegistryDataPacket(Registries.biomes()));
     this.send(new RegistryDataPacket(Registries.dimensions()));
     this.send(new RegistryDataPacket(Registries.damageTypes()));
+    this.send(new RegistryDataPacket(Registries.enchantments()));
+    this.send(new RegistryDataPacket(new Registry<>() {
+      @Override
+      public @NotNull String type() {
+        return "wolf_variant";
+      }
+
+      @Override
+      public Entry get(@NotNull String key, Entry def) {
+        return null;
+      }
+
+      @Override
+      public Entry get(int id) {
+        return null;
+      }
+
+      @Override
+      public @NotNull Collection<Entry> entries() {
+        return List.of(new Entry() {
+          @Override
+          public int id() {
+            return 0;
+          }
+
+          @Override
+          public @NotNull CompoundBinaryTag asNBT() {
+            return CompoundBinaryTag.builder()
+                .putString("angry_texture", "minecraft:entity/wolf/wolf_ashen_angry")
+                .putString("biomes", "minecraft:plains")
+                .putString("tame_texture", "minecraft:entity/wolf/wolf_ashen_tame")
+                .putString("wild_texture", "minecraft:entity/wolf/wolf_ashen")
+                .build();
+          }
+
+          @Override
+          public @NotNull Key key() {
+            return Key.key(Key.MINECRAFT_NAMESPACE, "ashen");
+          }
+        });
+      }
+
+      @Override
+      public @NotNull Entry defaultValue() {
+        return null;
+      }
+    }));
+    this.send(new RegistryDataPacket(new Registry<>() {
+      @Override
+      public @NotNull String type() {
+        return "painting_variant";
+      }
+
+      @Override
+      public Entry get(@NotNull String key, Entry def) {
+        return null;
+      }
+
+      @Override
+      public Entry get(int id) {
+        return null;
+      }
+
+      @Override
+      public @NotNull Collection<Entry> entries() {
+        return List.of(new Entry() {
+          @Override
+          public int id() {
+            return 0;
+          }
+
+          @Override
+          public @NotNull CompoundBinaryTag asNBT() {
+            return CompoundBinaryTag.builder()
+                .putString("asset_id", "minecraft:alban")
+                .putInt("height", 1)
+                .putInt("width", 1)
+                .build();
+          }
+
+          @Override
+          public @NotNull Key key() {
+            return Key.key(Key.MINECRAFT_NAMESPACE, "alban");
+          }
+        });
+      }
+
+      @Override
+      public @NotNull Entry defaultValue() {
+        return null;
+      }
+    }));
     this.send(FinishConfigurationPacket.INSTANCE);
   }
 

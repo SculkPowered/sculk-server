@@ -47,9 +47,4 @@ public final class EnumRegistry<T extends Registry.Entry> implements Registry<T>
   public @NotNull T defaultValue() {
     return this.defaultValue;
   }
-
-  @Override
-  public @NotNull CompoundBinaryTag asNBT() {
-    return CompoundBinaryTag.empty();
-  }
 }
