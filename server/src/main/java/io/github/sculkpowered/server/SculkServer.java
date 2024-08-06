@@ -110,7 +110,7 @@ public final class SculkServer implements Server {
         DamageTypeRegistry.get(),
         BlockRegistry.get(),
         new EnumRegistry<>("minecraft:item", Material.AIR),
-        new EnumRegistry<>("minecraft:enchantment", Enchantment.AQUA_AFFINITY),
+        new EnumRegistry<>("minecraft:enchantment", Enchantment.NULL),
         new EnumRegistry<>("minecraft:potion", PotionType.AWKWARD),
         new EnumRegistry<>("minecraft:mob_effect", MobEffectType.SPEED),
         DataComponentTypeRegistry.get(),
