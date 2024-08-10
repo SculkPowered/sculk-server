@@ -29,7 +29,7 @@ log4j-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", 
 jline = { group = "org.jline", name = "jline-reader", version.ref = "jline" }
 jansi = { group = "org.jline", name = "jansi", version.ref = "jline" }
 
-slf4j = "org.slf4j:slf4j-api:2.0.14"
+slf4j = "org.slf4j:slf4j-api:2.0.16"
 fastutil = "it.unimi.dsi:fastutil-core:8.5.14"
 gson = "com.google.code.gson:gson:2.11.0"
 guava = "com.google.guava:guava:33.2.1-jre"
