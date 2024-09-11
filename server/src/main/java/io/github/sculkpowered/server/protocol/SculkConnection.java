@@ -280,10 +280,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   }
 
   public void play() {
-    final var world = (SculkWorld) this.server.createWorld(World.builder().name("aaaa").loader(WorldLoader.anvil(Path.of("world"))));
     this.setState(State.PLAY);
     this.server.eventHandler().call(new PlayerInitialEvent(this.player))
         .thenAcceptAsync(event -> {
+          final var world = (SculkWorld) event.world();
           var position = event.position();
           if (world == null || !world.isAlive()) {
             this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));
