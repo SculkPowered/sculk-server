@@ -30,7 +30,7 @@ jobs:
           chmod +x gradlew;
           ./gradlew check shadowJar;
       - name: Publish
-        if: ${{ github.event_name == 'push' }}
+        if: false
         run: |
           ./gradlew publish
         env:
