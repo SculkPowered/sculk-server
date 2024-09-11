@@ -52,6 +52,8 @@ import io.github.sculkpowered.server.registry.Registries;
 import io.github.sculkpowered.server.registry.Registry;
 import io.github.sculkpowered.server.util.MojangUtil;
 import io.github.sculkpowered.server.world.SculkWorld;
+import io.github.sculkpowered.server.world.World;
+import io.github.sculkpowered.server.world.WorldLoader;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -59,6 +61,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.util.Collection;
 import java.util.List;
@@ -181,6 +184,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     this.send(new RegistryDataPacket(Registries.dimensions()));
     this.send(new RegistryDataPacket(Registries.damageTypes()));
     this.send(new RegistryDataPacket(Registries.enchantments()));
+    // TODO: this would be a part of the registry rewrite
     this.send(new RegistryDataPacket(new Registry<>() {
       @Override
       public @NotNull String type() {
@@ -276,10 +280,10 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   }
 
   public void play() {
+    final var world = (SculkWorld) this.server.createWorld(World.builder().name("aaaa").loader(WorldLoader.anvil(Path.of("world"))));
     this.setState(State.PLAY);
     this.server.eventHandler().call(new PlayerInitialEvent(this.player))
         .thenAcceptAsync(event -> {
-          final var world = (SculkWorld) event.world();
           var position = event.position();
           if (world == null || !world.isAlive()) {
             this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));
