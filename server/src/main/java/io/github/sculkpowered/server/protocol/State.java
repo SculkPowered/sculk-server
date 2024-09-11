@@ -325,7 +325,6 @@ public enum State {
           .skip() // Section Blocks Update
           .skip() // Select Advancements Tab
           .skip() // Server Data
-          .skip() // Server Links
           .register(SetActionBarTextPacket.class)
           .skip() // Set Border Center
           .skip() // Set Border Lerp Size
@@ -370,7 +369,10 @@ public enum State {
           .register(UpdateAttributesPacket.class)
           .skip() // Update Mob Effect
           .register(UpdateRecipesPacket.class) // TODO
-          .register(UpdateTagsPacket.class); // TODO
+          .register(UpdateTagsPacket.class) // TODO
+          .skip() // Projectile Power
+          .skip() // Custom Report Details
+          .skip(); // Server Links
     }
   };
 
