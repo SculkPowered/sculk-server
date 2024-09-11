@@ -6,7 +6,7 @@ plugins {
 defaultTasks("build", "test", "shadowJar")
 
 allprojects {
-    group = "io.github.sculkpowered.server"
+    group = "eu.sculkpowered.server"
     version = "1.0.0-SNAPSHOT"
 
     repositories {

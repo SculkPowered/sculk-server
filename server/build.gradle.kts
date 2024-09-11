@@ -37,7 +37,7 @@ repositories {
 tasks {
     jar {
         manifest {
-            attributes["Main-Class"] = "io.github.sculkpowered.server.Main"
+            attributes["Main-Class"] = "eu.sculkpowered.server.Main"
             attributes["Multi-Release"] = true
             attributes["Implementation-Title"] = "Sculk-Server"
             attributes["Implementation-Vendor"] = "SculkPowered Contributors"

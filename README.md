@@ -23,8 +23,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.github.sculkpowered.server:api:1.0.0-SNAPSHOT")
-    annotationProcessor("io.github.sculkpowered.server:api:1.0.0-SNAPSHOT")
+    compileOnly("eu.sculkpowered.server:api:1.0.0-SNAPSHOT")
+    annotationProcessor("eu.sculkpowered.server:api:1.0.0-SNAPSHOT")
 }
 ```
 ##### Example Plugins
