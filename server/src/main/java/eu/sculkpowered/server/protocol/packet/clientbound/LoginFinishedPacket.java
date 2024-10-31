@@ -4,11 +4,11 @@ import eu.sculkpowered.server.entity.player.GameProfile;
 import eu.sculkpowered.server.protocol.Buffer;
 import eu.sculkpowered.server.protocol.packet.ClientboundPacket;
 
-public final class GameProfilePacket implements ClientboundPacket {
+public final class LoginFinishedPacket implements ClientboundPacket {
 
   private final GameProfile profile;
 
-  public GameProfilePacket(final GameProfile profile) {
+  public LoginFinishedPacket(final GameProfile profile) {
     this.profile = profile;
   }
 
@@ -17,13 +17,12 @@ public final class GameProfilePacket implements ClientboundPacket {
     buf
         .writeUniqueId(this.profile.uniqueId())
         .writeString(this.profile.name())
-        .writeProfileProperties(this.profile.properties())
-        .writeBoolean(true);
+        .writeProfileProperties(this.profile.properties());
   }
 
   @Override
   public String toString() {
-    return "GameProfilePacket{" +
+    return "LoginFinishedPacket{" +
         "profile=" + this.profile +
         '}';
   }

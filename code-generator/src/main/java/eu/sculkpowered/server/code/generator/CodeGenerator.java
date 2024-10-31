@@ -26,11 +26,11 @@ final class CodeGenerator extends Generator {
     } finally {
       try (final var stream = Files.walk(tmp).sorted(Comparator.reverseOrder())) {
         stream.forEach(path -> {
-          try {
+          /*try {
             Files.delete(path);
           } catch (IOException e) {
             throw new RuntimeException(e);
-          }
+          }*/
         });
       }
     }

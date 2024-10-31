@@ -25,10 +25,10 @@ import eu.sculkpowered.server.protocol.packet.clientbound.CustomQueryPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.DisconnectPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.EntityEventPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.GameProfilePacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LevelChunkWithLightPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginFinishedPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LoginPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosRotPacket;
@@ -135,7 +135,7 @@ public enum State {
       clientBound()
           .register(LoginDisconnect.class)
           .register(eu.sculkpowered.server.protocol.packet.clientbound.HelloPacket.class)
-          .register(GameProfilePacket.class)
+          .register(LoginFinishedPacket.class)
           .register(LoginCompressionPacket.class)
           .register(CustomQueryPacket.class)
           .skip(), // Cookie Request
