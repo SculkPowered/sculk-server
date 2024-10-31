@@ -11,11 +11,11 @@ import static eu.sculkpowered.server.util.Constants.MINECRAFT_ENCODER;
 
 import com.mojang.brigadier.tree.RootCommandNode;
 import com.velocitypowered.natives.util.Natives;
-import eu.sculkpowered.server.entity.player.GameProfile;
 import eu.sculkpowered.server.MinecraftConfig;
 import eu.sculkpowered.server.SculkServer;
 import eu.sculkpowered.server.command.CommandSource;
 import eu.sculkpowered.server.connection.Connection;
+import eu.sculkpowered.server.entity.player.GameProfile;
 import eu.sculkpowered.server.entity.player.GameProfile.Property;
 import eu.sculkpowered.server.entity.player.PlayerInfoEntry;
 import eu.sculkpowered.server.entity.player.SculkPlayer;
@@ -30,29 +30,32 @@ import eu.sculkpowered.server.protocol.netty.codec.MinecraftEncoder;
 import eu.sculkpowered.server.protocol.packet.ClientboundPacket;
 import eu.sculkpowered.server.protocol.packet.PacketHandler;
 import eu.sculkpowered.server.protocol.packet.ServerboundPacket;
-import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.CommandsPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.GameProfilePacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.PlayerInfoUpdatePacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.PlayerPositionPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.RegistryDataPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.SetDefaultSpawnPositionPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.SetPlayerTeamPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.SetTimePacket;
 import eu.sculkpowered.server.protocol.packet.handler.ConfigPacketHandler;
 import eu.sculkpowered.server.protocol.packet.handler.HandshakePacketHandler;
 import eu.sculkpowered.server.protocol.packet.handler.LoginPacketHandler;
 import eu.sculkpowered.server.protocol.packet.handler.PlayPacketHandler;
 import eu.sculkpowered.server.protocol.packet.handler.StatusPacketHandler;
-import eu.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
-import eu.sculkpowered.server.protocol.packet.clientbound.GameProfilePacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.LoginPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.PlayerInfoUpdatePacket;
 import eu.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.SetDefaultSpawnPositionPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.PlayerPositionPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.SetPlayerTeamPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.SetTimePacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.CommandsPacket;
+import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
+import eu.sculkpowered.server.protocol.packet.shared.SelectKnownPacks;
 import eu.sculkpowered.server.registry.Registries;
-import eu.sculkpowered.server.registry.Registry;
 import eu.sculkpowered.server.util.MojangUtil;
+import eu.sculkpowered.server.world.Position;
 import eu.sculkpowered.server.world.SculkWorld;
+import eu.sculkpowered.server.world.World;
+import eu.sculkpowered.server.world.WorldLoader;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -60,15 +63,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.GeneralSecurityException;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 import javax.crypto.spec.SecretKeySpec;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -83,6 +85,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
 
   private static final CustomPayloadPacket BRAND_PACKET =
       new CustomPayloadPacket("minecraft:brand", new byte[]{5, 115, 99, 117, 108, 107});
+  private static final List<SelectKnownPacks.Pack> STANDARD_PACKS = List.of(
+      new SelectKnownPacks.Pack(Key.key(Key.MINECRAFT_NAMESPACE, "core"), Protocol.VERSION_NAME));
 
   public static LoginCompressionPacket COMPRESSION_PACKET;
 
@@ -94,11 +98,16 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   private String serverAddress;
   private String username;
   private SculkPlayer player;
+  private World world;
 
   public SculkConnection(final SculkServer server, final Channel channel) {
     this.server = server;
     this.channel = channel;
     this.setState(State.HANDSHAKE);
+    this.world = this.server.createWorld(World.builder()
+        .name("test")
+        .loader(WorldLoader.anvil(Path.of("world")))
+        .spawnPosition(Position.position(1, 50, 1)));
   }
 
   @Override
@@ -177,13 +186,14 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
   }
 
   public void configuration() {
-    this.send(SculkConnection.BRAND_PACKET);
+    this.send(BRAND_PACKET);
+    this.send(new SelectKnownPacks(STANDARD_PACKS));
     this.send(new RegistryDataPacket(Registries.biomes()));
     this.send(new RegistryDataPacket(Registries.dimensions()));
     this.send(new RegistryDataPacket(Registries.damageTypes()));
     this.send(new RegistryDataPacket(Registries.enchantments()));
     // TODO: this would be a part of the registry rewrite
-    this.send(new RegistryDataPacket(new Registry<>() {
+    /*this.send(new RegistryDataPacket(new Registry<>() {
       @Override
       public @NotNull String type() {
         return "wolf_variant";
@@ -273,7 +283,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       public @NotNull Entry defaultValue() {
         return null;
       }
-    }));
+    }));*/
     this.send(FinishConfigurationPacket.INSTANCE);
   }
 
@@ -281,7 +291,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     this.setState(State.PLAY);
     this.server.eventHandler().call(new PlayerInitialEvent(this.player))
         .thenAcceptAsync(event -> {
-          final var world = (SculkWorld) event.world();
+          final var world = (SculkWorld) this.world;
           var position = event.position();
           if (world == null || !world.isAlive()) {
             this.player.disconnect(Component.text("No world found.", NamedTextColor.RED));
@@ -309,7 +319,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           this.send(new PlayerPositionPacket(position));
           this.send(new SetTimePacket(0, -6000));
 
-          this.send(PlayerInfoUpdatePacket.add((List<? extends PlayerInfoEntry>) this.server.onlinePlayers()));
+          this.send(PlayerInfoUpdatePacket.add(
+              (List<? extends PlayerInfoEntry>) this.server.onlinePlayers()));
           final var playerInfo = PlayerInfoUpdatePacket.add(List.of(this.player));
           for (final var other : this.server.onlinePlayers()) {
             if (other != this.player) {
@@ -318,7 +329,8 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
           }
 
           for (final var team : this.server.teamHandler().teams()) {
-            this.send(new SetPlayerTeamPacket(team, (byte) 0, team.entries().toArray(new String[]{})));
+            this.send(
+                new SetPlayerTeamPacket(team, (byte) 0, team.entries().toArray(new String[]{})));
           }
 
           this.server.eventHandler().justCall(new PlayerJoinEvent(this.player));

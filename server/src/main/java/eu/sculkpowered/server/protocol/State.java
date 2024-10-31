@@ -108,6 +108,7 @@ import eu.sculkpowered.server.protocol.packet.shared.ContainerClosePacket;
 import eu.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
 import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
 import eu.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
+import eu.sculkpowered.server.protocol.packet.shared.SelectKnownPacks;
 import eu.sculkpowered.server.protocol.packet.shared.StatusPingPacket;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.collection.IntObjectHashMap;
@@ -161,7 +162,7 @@ public enum State {
           .skip() // Transfer
           .register(UpdateEnabledFeaturesPacket.class)
           .register(UpdateTagsPacket.class)
-          .skip() // Select Known Packs
+          .register(SelectKnownPacks.class)
           .skip() // Custom Report Details
           .skip(), // Server Links,
       serverBound()
@@ -172,7 +173,7 @@ public enum State {
           .register(KeepAlivePacket.SUPPLIER)
           .skip() // Pong
           .skip() // Resource Pack
-          .skip() // Select Known Packs
+          .register(SelectKnownPacks::new)
   ),
   PLAY(
       clientBound()

@@ -1,41 +1,42 @@
 package eu.sculkpowered.server.protocol.packet;
 
-import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.Intention;
-import eu.sculkpowered.server.protocol.packet.serverbound.KeyPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.LoginAcknowledgedPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.CustomQueryAnswerPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.HelloPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.PlayerAbilitiesPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.AcceptTeleportationPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.ChatCommandPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.ChatPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.ChatSessionUpdatePacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.ClientCommandPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.AcceptTeleportationPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.SetCreativeModeSlotPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.EditBookPacket;
-import eu.sculkpowered.server.protocol.packet.shared.CarriedItemPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.InteractPacket;
-import eu.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.PlayerAbilitiesPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.PlayerActionPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.PlayerCommandPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.ChatSessionUpdatePacket;
-import eu.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.RecipeBookChangeSettingsPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.SwingPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.TeleportToEntityPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.UseItemPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.UseItemOnPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.ChatCommandPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.CommandSuggestionsPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.ContainerClickPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.ContainerButtonClickPacket;
-import eu.sculkpowered.server.protocol.packet.shared.ContainerClosePacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.MovePlayerStatusOnlyPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.ContainerClickPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.CustomQueryAnswerPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.EditBookPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.HelloPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.Intention;
+import eu.sculkpowered.server.protocol.packet.serverbound.InteractPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.KeyPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.LoginAcknowledgedPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.MovePlayerPosRotPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.MovePlayerRotPacket;
-import eu.sculkpowered.server.protocol.packet.shared.StatusPingPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.MovePlayerStatusOnlyPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.PlayerActionPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.PlayerCommandPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.RecipeBookChangeSettingsPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.SetCreativeModeSlotPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.StatusRequest;
+import eu.sculkpowered.server.protocol.packet.serverbound.SwingPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.TeleportToEntityPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.UseItemOnPacket;
+import eu.sculkpowered.server.protocol.packet.serverbound.UseItemPacket;
+import eu.sculkpowered.server.protocol.packet.shared.CarriedItemPacket;
+import eu.sculkpowered.server.protocol.packet.shared.ContainerClosePacket;
+import eu.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
+import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
+import eu.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
+import eu.sculkpowered.server.protocol.packet.shared.SelectKnownPacks;
+import eu.sculkpowered.server.protocol.packet.shared.StatusPingPacket;
 
 public abstract class PacketHandler {
 
@@ -72,6 +73,10 @@ public abstract class PacketHandler {
 
   // Config
   public boolean handle(final FinishConfigurationPacket finishConfiguration) {
+    return false;
+  }
+
+  public boolean handle(final SelectKnownPacks selectKnownPacks) {
     return false;
   }
 

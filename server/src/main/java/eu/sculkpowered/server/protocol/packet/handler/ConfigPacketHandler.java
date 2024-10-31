@@ -7,6 +7,7 @@ import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.ClientInformationPacket;
 import eu.sculkpowered.server.protocol.packet.shared.KeepAlivePacket;
 import eu.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
+import eu.sculkpowered.server.protocol.packet.shared.SelectKnownPacks;
 
 public final class ConfigPacketHandler extends PacketHandler {
 
@@ -33,6 +34,12 @@ public final class ConfigPacketHandler extends PacketHandler {
   @Override
   public boolean handle(FinishConfigurationPacket finishConfiguration) {
     this.connection.play();
+    return true;
+  }
+
+  @Override
+  public boolean handle(SelectKnownPacks selectKnownPacks) {
+    System.out.println(selectKnownPacks.knownPacks());
     return true;
   }
 
