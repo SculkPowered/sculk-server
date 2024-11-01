@@ -23,7 +23,9 @@ import eu.sculkpowered.server.damage.DamageTypeRegistry;
 import eu.sculkpowered.server.enchantment.Enchantment;
 import eu.sculkpowered.server.entity.AbstractEntity;
 import eu.sculkpowered.server.entity.Entity;
-import eu.sculkpowered.server.entity.EntityClassToSupplierMap;
+import eu.sculkpowered.server.entity.EntityType;
+import eu.sculkpowered.server.entity.EntityTypeRegistry;
+import eu.sculkpowered.server.entity.meta.EntityMeta;
 import eu.sculkpowered.server.entity.player.GameProfile;
 import eu.sculkpowered.server.entity.player.GameProfile.Property;
 import eu.sculkpowered.server.entity.player.Player;
@@ -114,7 +116,8 @@ public final class SculkServer implements Server {
         new EnumRegistry<>("minecraft:potion", PotionType.AWKWARD),
         new EnumRegistry<>("minecraft:mob_effect", MobEffectType.SPEED),
         DataComponentTypeRegistry.get(),
-        AttributeRegistry.get()
+        AttributeRegistry.get(),
+        EntityTypeRegistry.get()
     );
   }
 
@@ -134,7 +137,6 @@ public final class SculkServer implements Server {
   private final SculkScheduler scheduler;
   private final Worker worker;
   private final NettyServer nettyServer;
-  private final EntityClassToSupplierMap entitySupplier = EntityClassToSupplierMap.get();
 
   SculkServer() {
     final var startTime = System.currentTimeMillis();
@@ -372,18 +374,17 @@ public final class SculkServer implements Server {
     this.worlds.remove(world.name());
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public <T extends Entity> T createEntity(@NotNull Class<T> clazz) {
-    final var supplier = this.entitySupplier.get(clazz);
-    if (supplier == null) {
-      throw new NullPointerException("No supplier for class" + clazz + " found!");
-    }
-    return (T) supplier.apply(this);
+  public <E extends Entity<? extends EntityMeta>> E createEntity(@NotNull EntityType<E> type) {
+    final var entity = type.create();
+    final var abstractEntity = (AbstractEntity<?>) entity;
+    abstractEntity.server = this;
+    this.addEntity(abstractEntity);
+    return entity;
   }
 
   @Override
-  public @Nullable AbstractEntity entity(int id) {
+  public @Nullable AbstractEntity<?> entity(int id) {
     return this.entities.get(id);
   }
 

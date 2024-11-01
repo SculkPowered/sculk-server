@@ -7,8 +7,8 @@ import static eu.sculkpowered.server.util.CoordinateUtil.chunkPositionZFromBlock
 
 import com.github.luben.zstd.Zstd;
 import eu.sculkpowered.server.SculkServer;
-import eu.sculkpowered.server.entity.Entity;
 import eu.sculkpowered.server.entity.player.Player;
+import eu.sculkpowered.server.registry.Registries;
 import eu.sculkpowered.server.world.chunk.SculkChunk;
 import eu.sculkpowered.server.world.chunk.loader.AnvilLoader;
 import eu.sculkpowered.server.world.section.Section;
@@ -144,25 +144,20 @@ public final class SlimeFormat {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private static void loadEntities(SculkServer server, SculkWorld world,
       CompoundBinaryTag entities) {
     for (final var entityTag : entities.getList("entities")) {
       final var entityCompound = (CompoundBinaryTag) entityTag;
       final var id = entityCompound.getString("id");
-      try {
-        final var clazz = (Class<? extends Entity>) Class.forName(
-            "io.github.sculkpowered.server.entity." + keyToName(id));
-        final var entity = server.createEntity(clazz);
-        final var pos = entityCompound.getList("Pos");
-        final var rotation = entityCompound.getList("Rotation");
+      final var entityType = Registries.entityTypes().get(id);
+      final var entity = server.createEntity(entityType);
+      final var pos = entityCompound.getList("Pos");
+      final var rotation = entityCompound.getList("Rotation");
 
-        world.spawnEntity(entity,
-            Position.position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
-                rotation.getFloat(0), rotation.getFloat(1)));
-      } catch (ClassNotFoundException e) {
-        LOGGER.error("Couldn't find entity {}", id, e);
-      }
+      assert entity != null;
+      world.spawnEntity(entity,
+          Position.position(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2),
+              rotation.getFloat(0), rotation.getFloat(1)));
     }
   }
 
@@ -223,7 +218,7 @@ public final class SlimeFormat {
 
           final var position = entity.position();
           entities.add(CompoundBinaryTag.builder()
-              .putString("id", entity.type().key())
+              .putString("id", entity.type().name())
               .put("Pos", ListBinaryTag.builder()
                   .add(DoubleBinaryTag.doubleBinaryTag(position.x()))
                   .add(DoubleBinaryTag.doubleBinaryTag(position.y()))
@@ -307,13 +302,5 @@ public final class SlimeFormat {
       BinaryTagIO.writer().write(compound, (DataOutput) dataOutput);
       writeCompressed(outputStream, byteStream.toByteArray());
     }
-  }
-
-  private static String keyToName(final String key) {
-    final var stringBuilder = new StringBuilder();
-    for (final var s : key.substring(key.indexOf(":") + 1).split("_")) {
-      stringBuilder.append(Character.toUpperCase(s.charAt(0))).append(s.substring(1));
-    }
-    return stringBuilder.toString();
   }
 }

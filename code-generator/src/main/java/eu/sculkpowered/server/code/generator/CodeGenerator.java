@@ -11,8 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 final class CodeGenerator extends Generator {
 
@@ -65,19 +67,20 @@ final class CodeGenerator extends Generator {
         if (key.equals("minecraft:marker") || key.equals("minecraft:player")) {
           continue;
         }
-        final var name = this.keyToName(key);
-        final var entityTypePath = entityPath.resolve(name + ".java");
-        if (Files.notExists(entityTypePath)) {
+        //final var name = this.keyToName(key);
+        //final var entityTypePath = entityPath.resolve(name + ".java");
+        /*if (Files.notExists(entityTypePath)) {
           new ClassCreator(entityTypePath, "io.github.sculkpowered.server.entity", name)
               .type(ClassCreator.Type.PROTECTED)
               .addition("extends Entity")
               .create();
-        }
+        }*/
 
-        entityToClass.add("map.put(" + name + ".class, Sculk" + name + "::new);");
+        final var id = entry.getValue().get("protocol_id").getAsInt();
+        entityToClass.add("registry.register(new EntityType<>(\"" + key + "\", " + id + ", creator));");
       }
-      this.generateRegistry(map, API_PACKAGE.resolve("entity").resolve("EntityType.java"));
-      this.append(SERVER_PACKAGE.resolve("entity").resolve("EntityClassToSupplierMap.java"),
+      //this.generateRegistry(map, entityPath.resolve("EntityType.java"));
+      this.append(SERVER_PACKAGE.resolve("entity").resolve("EntityTypeRegistry.java"),
           entityToClass);
     }
 
@@ -129,6 +132,17 @@ final class CodeGenerator extends Generator {
     }
   }
 
+  private List<Entry> toEntries(final Map<String, JsonObject> map) {
+    final var list = new ArrayList<Entry>(map.size());
+    for (final var entry : map.entrySet()) {
+      final var keyValue = entry.getKey().split(":")[1];
+      list.add(new Entry(keyValue.toUpperCase(Locale.ENGLISH) + "(\"" + keyValue + "\"),",
+          entry.getValue().get("protocol_id").getAsInt()));
+    }
+    list.sort(Comparator.comparingInt(entry -> entry.id));
+    return list;
+  }
+
   private void generateRegistry(final JsonObject object, final Path path) throws IOException {
     final Map<String, JsonObject> map = GSON.fromJson(object.get("entries"), STRING_JSON_MAP);
     this.generateRegistry(map, path);
@@ -136,14 +150,7 @@ final class CodeGenerator extends Generator {
 
   private void generateRegistry(final Map<String, JsonObject> map, final Path path)
       throws IOException {
-    final var list = new ArrayList<Entry>(map.size());
-    map.forEach((key, json) -> {
-      final var keyValue = key.split(":")[1];
-      list.add(new Entry(keyValue.toUpperCase(Locale.ENGLISH) + "(\"" + keyValue + "\"),",
-          json.get("protocol_id").getAsInt()));
-    });
-    list.sort(Comparator.comparingInt(entry -> entry.id));
-    this.append(path, list.stream().map(Entry::name).toList());
+    this.append(path, this.toEntries(map).stream().map(Entry::name).toList());
   }
 
   private record Entry(String name, int id) {}

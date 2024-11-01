@@ -1,6 +1,6 @@
 package eu.sculkpowered.server.protocol;
 
-import eu.sculkpowered.server.entity.TeleportEntityPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.TeleportEntityPacket;
 import eu.sculkpowered.server.protocol.packet.ClientboundPacket;
 import eu.sculkpowered.server.protocol.packet.ServerboundPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.AddEntityPacket;

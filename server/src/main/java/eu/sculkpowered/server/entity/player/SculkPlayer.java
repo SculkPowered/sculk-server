@@ -14,7 +14,7 @@ import eu.sculkpowered.server.container.equipment.EquipmentSlot;
 import eu.sculkpowered.server.container.item.ItemStack;
 import eu.sculkpowered.server.entity.AbstractLivingEntity;
 import eu.sculkpowered.server.entity.Entity;
-import eu.sculkpowered.server.entity.EntityType;
+import eu.sculkpowered.server.entity.EntityTypes;
 import eu.sculkpowered.server.event.connection.PluginMessageEvent;
 import eu.sculkpowered.server.event.player.PlayerDisconnectEvent;
 import eu.sculkpowered.server.protocol.SculkConnection;
@@ -108,7 +108,8 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
 
   public SculkPlayer(final SculkServer server, final SculkConnection connection,
       final GameProfile profile) {
-    super(server, profile.uniqueId());
+    super(EntityTypes.PLAYER, profile.uniqueId());
+    this.server = server;
     this.connection = connection;
     this.profile = profile;
     this.equipment = new SculkInventory(this);
@@ -425,11 +426,6 @@ public final class SculkPlayer extends AbstractLivingEntity implements Player {
   @Override
   public Pointers pointers() {
     return this.pointers;
-  }
-
-  @Override
-  public @NotNull EntityType type() {
-    return EntityType.PLAYER;
   }
 
   @Override

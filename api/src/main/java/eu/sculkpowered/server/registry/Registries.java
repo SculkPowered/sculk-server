@@ -5,6 +5,8 @@ import eu.sculkpowered.server.container.item.Material;
 import eu.sculkpowered.server.container.item.data.DataComponentType;
 import eu.sculkpowered.server.damage.DamageType;
 import eu.sculkpowered.server.enchantment.Enchantment;
+import eu.sculkpowered.server.entity.Entity;
+import eu.sculkpowered.server.entity.EntityType;
 import eu.sculkpowered.server.potion.MobEffectType;
 import eu.sculkpowered.server.potion.PotionType;
 import eu.sculkpowered.server.world.biome.Biome;
@@ -24,6 +26,7 @@ public final class Registries {
   private static Registry<MobEffectType> MOB_EFFECTS;
   private static Registry<DataComponentType<?>> DATA_COMPONENT_TYPES;
   private static Registry<Attribute> ATTRIBUTES;
+  private static Registry<EntityType<Entity<?>>> ENTITY_TYPES;
 
   Registries() {
     throw new AssertionError();
@@ -69,6 +72,10 @@ public final class Registries {
     return ATTRIBUTES;
   }
 
+  public static Registry<EntityType<Entity<?>>> entityTypes() {
+    return ENTITY_TYPES;
+  }
+
   @ApiStatus.Internal
   public static void set(
       final Registry.Mutable<Dimension> dimensions,
@@ -80,7 +87,8 @@ public final class Registries {
       final Registry<PotionType> potions,
       final Registry<MobEffectType> mobEffects,
       final Registry<DataComponentType<?>> dataComponentTypes,
-      final Registry<Attribute> attributes
+      final Registry<Attribute> attributes,
+      final Registry<EntityType<Entity<?>>> entityTypes
   ) {
     DIMENSIONS = dimensions;
     BIOMES = biomes;
@@ -92,5 +100,6 @@ public final class Registries {
     MOB_EFFECTS = mobEffects;
     DATA_COMPONENT_TYPES = dataComponentTypes;
     ATTRIBUTES = attributes;
+    ENTITY_TYPES = entityTypes;
   }
 }

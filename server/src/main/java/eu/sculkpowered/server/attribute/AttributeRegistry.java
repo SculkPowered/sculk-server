@@ -1,6 +1,5 @@
 package eu.sculkpowered.server.attribute;
 
-import eu.sculkpowered.server.entity.Zombie;
 import eu.sculkpowered.server.entity.player.Player;
 import eu.sculkpowered.server.registry.Registry;
 import eu.sculkpowered.server.registry.SimpleRegistry;
@@ -35,7 +34,7 @@ public final class AttributeRegistry {
     registry.register(GenericAttribute.SAFE_FALL_DISTANCE);
     registry.register(GenericAttribute.SCALE);
     registry.register(Player.SNEAKING_SPEED);
-    registry.register(Zombie.SPAWN_REINFORCEMENTS);
+    //registry.register(Zombie.SPAWN_REINFORCEMENTS); // TODO: readd
     registry.register(GenericAttribute.STEP_HEIGHT);
     registry.register(GenericAttribute.SUBMERGED_MINING_SPEED);
     registry.register(GenericAttribute.SWEEPING_DAMAGE_RATIO);

@@ -4,6 +4,8 @@ import eu.sculkpowered.server.command.CommandHandler;
 import eu.sculkpowered.server.command.CommandSource;
 import eu.sculkpowered.server.container.Container;
 import eu.sculkpowered.server.entity.Entity;
+import eu.sculkpowered.server.entity.EntityType;
+import eu.sculkpowered.server.entity.meta.EntityMeta;
 import eu.sculkpowered.server.entity.player.Player;
 import eu.sculkpowered.server.event.EventHandler;
 import eu.sculkpowered.server.plugin.PluginHandler;
@@ -132,12 +134,12 @@ public interface Server extends ForwardingAudience {
   /**
    * Creates an entity by its class.
    *
-   * @param clazz the class of the entity
-   * @param <T>   the entity type
+   * @param type the type of the entity
+   * @param <E>   the entity type
    * @return a new instance of the specified entity type
    * @since 1.0.0
    */
-  <T extends Entity> T createEntity(@NotNull Class<T> clazz);
+  <E extends Entity<? extends EntityMeta>> E createEntity(@NotNull EntityType<E> type);
 
   /**
    * Gets an entity by its id.
@@ -146,7 +148,7 @@ public interface Server extends ForwardingAudience {
    * @return the entity or null
    * @since 1.0.0
    */
-  @Nullable Entity entity(int id);
+  @Nullable Entity<? extends EntityMeta> entity(int id);
 
   /**
    * Creates a container by its type.

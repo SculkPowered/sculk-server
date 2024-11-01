@@ -1,6 +1,7 @@
 package eu.sculkpowered.server.entity;
 
 import eu.sculkpowered.server.SculkServer;
+import eu.sculkpowered.server.entity.meta.EntityMeta;
 import eu.sculkpowered.server.entity.player.Player;
 import eu.sculkpowered.server.entity.player.SculkPlayer;
 import eu.sculkpowered.server.protocol.packet.ClientboundPacket;
@@ -11,6 +12,7 @@ import eu.sculkpowered.server.protocol.packet.clientbound.AddEntityPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosRotPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.MoveEntityRot;
 import eu.sculkpowered.server.protocol.packet.clientbound.RotateHeadPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.TeleportEntityPacket;
 import eu.sculkpowered.server.world.Position;
 import eu.sculkpowered.server.world.SculkWorld;
 import eu.sculkpowered.server.world.Vector;
@@ -25,12 +27,13 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractEntity implements Entity {
+public class AbstractEntity<M extends EntityMeta> implements Entity<M> {
 
   private static final AtomicInteger CURRENT_ID = new AtomicInteger(0);
 
-  protected final SculkServer server;
   protected final UUID uniqueId;
+  protected final EntityType<Entity<M>> type;
+  public SculkServer server;
   protected final int id = CURRENT_ID.getAndIncrement();
   protected final Metadata metadata = new Metadata();
   protected final Set<SculkPlayer> viewers = new HashSet<>();
@@ -39,14 +42,13 @@ public abstract class AbstractEntity implements Entity {
   public boolean onGround;
   protected Vector velocity = Vector.zero();
 
-  public AbstractEntity(final SculkServer server) {
-    this(server, UUID.randomUUID());
+  public AbstractEntity(final EntityType<Entity<M>> type) {
+    this(type, UUID.randomUUID());
   }
 
-  public AbstractEntity(final SculkServer server, final UUID uniqueId) {
-    this.server = server;
+  public AbstractEntity(final EntityType<Entity<M>> type, final UUID uniqueId) {
     this.uniqueId = uniqueId;
-    this.server.addEntity(this);
+    this.type = type;
   }
 
   @Override
@@ -57,6 +59,11 @@ public abstract class AbstractEntity implements Entity {
   @Override
   public int id() {
     return this.id;
+  }
+
+  @Override
+  public @NotNull EntityType<Entity<M>> type() {
+    return this.type;
   }
 
   @Override
@@ -210,7 +217,7 @@ public abstract class AbstractEntity implements Entity {
     final var added = this.viewers.add(sculkPlayer);
     if (added) {
       sculkPlayer.send(
-          new AddEntityPacket(this.id, this.uniqueId, this.type().ordinal(),
+          new AddEntityPacket(this.id, this.uniqueId, this.type().id(),
               this.position, this.velocity));
       if (!this.metadata.entries().isEmpty()) {
         sculkPlayer.send(new SetEntityDataPacket(this.id, this.metadata.entries()));

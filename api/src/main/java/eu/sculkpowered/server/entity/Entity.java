@@ -1,6 +1,7 @@
 package eu.sculkpowered.server.entity;
 
 import eu.sculkpowered.server.Viewable;
+import eu.sculkpowered.server.entity.meta.EntityMeta;
 import eu.sculkpowered.server.world.Position;
 import eu.sculkpowered.server.world.Vector;
 import eu.sculkpowered.server.world.World;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Represents an entity.
  */
-public interface Entity extends Viewable, Sound.Emitter {
+public interface Entity<M extends EntityMeta> extends Viewable, Sound.Emitter {
 
   /**
    * @since 1.0.0
@@ -30,7 +31,7 @@ public interface Entity extends Viewable, Sound.Emitter {
   /**
    * @since 1.0.0
    */
-  @NotNull EntityType type();
+  @NotNull EntityType<Entity<M>> type();
 
   /**
    * @since 1.0.0
