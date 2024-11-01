@@ -1,6 +1,6 @@
 package eu.sculkpowered.server.attribute;
 
-public final class GenericAttribute {
+public final class Attributes {
 
   public static final Attribute ARMOR =
       new Attribute("generic.armor", 0, 0F, 0F, 30F);
@@ -12,10 +12,16 @@ public final class GenericAttribute {
       new Attribute("generic.attack_knockback", 3, 0F, 0F, 5F);
   public static final Attribute ATTACK_SPEED =
       new Attribute("generic.attack_speed", 4, 4F, 0F, 1024F);
+  public static final Attribute BLOCK_BREAK_SPEED =
+      new Attribute("player.block_break_speed", 5, 1F, 0F, 1024F);
+  public static final Attribute BLOCK_INTERACTION_RANGE =
+      new Attribute("player.block_interaction_range", 6, 4.5F, 0F, 64F);
   public static final Attribute BURNING_TIME =
       new Attribute("generic.burning_time", 7, 0F, 0F, 1024F);
   public static final Attribute EXPLOSION_KNOCKBACK_RESISTANCE =
       new Attribute("generic.explosion_knockback_resistance", 8, 0F, 0F, 1F);
+  public static final Attribute ENTITY_INTERACTION_RANGE =
+      new Attribute("player.entity_interaction_range", 9, 3F, 0F, 64F);
   public static final Attribute FALL_DAMAGE_MULTIPLIER =
       new Attribute("generic.fall_damage_multiplier", 10, 1F, 0F, 100F);
   public static final Attribute FLYING_SPEED =
@@ -34,6 +40,8 @@ public final class GenericAttribute {
       new Attribute("generic.max_health", 17, 0F, 0F, 2048F);
   public static final Attribute MAX_HEALTH =
       new Attribute("generic.max_health", 18, 20F, 1F, 1024F);
+  public static final Attribute MINING_EFFICIENCY =
+      new Attribute("player.mining_efficiency", 19, 0F, 0F, 1024F);
   public static final Attribute MOVEMENT_EFFICIENCY =
       new Attribute("generic.movement_efficiency", 20, 0F, 0F, 1F);
   public static final Attribute MOVEMENT_SPEED =
@@ -44,6 +52,10 @@ public final class GenericAttribute {
       new Attribute("generic.safe_fall_distance", 23, 3F, -1024F, 1024F);
   public static final Attribute SCALE =
       new Attribute("generic.scale", 24, 1F, 0.0625F, 16F);
+  public static final Attribute SNEAKING_SPEED =
+      new Attribute("player.sneaking_speed", 25, 0.3F, 0F, 1F);
+  public static final Attribute SPAWN_REINFORCEMENTS =
+      new Attribute("zombie.spawn_reinforcements", 26, 0F, 0F, 1F);
   public static final Attribute STEP_HEIGHT =
       new Attribute("generic.step_height", 27, 0.6F, 0F, 10F);
   public static final Attribute SUBMERGED_MINING_SPEED =

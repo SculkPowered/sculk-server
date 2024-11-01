@@ -1,6 +1,5 @@
 package eu.sculkpowered.server.entity.player;
 
-import eu.sculkpowered.server.attribute.Attribute;
 import eu.sculkpowered.server.command.CommandSource;
 import eu.sculkpowered.server.connection.Connection;
 import eu.sculkpowered.server.container.Container;
@@ -17,17 +16,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Player extends LivingEntity, CommandSource, PlayerInfoEntry, Connection,
     BossBarViewer {
-
-  Attribute BLOCK_BREAK_SPEED =
-      new Attribute("player.block_break_speed", 5, 1F, 0F, 1024F);
-  Attribute BLOCK_INTERACTION_RANGE =
-      new Attribute("player.block_interaction_range", 6, 4.5F, 0F, 64F);
-  Attribute ENTITY_INTERACTION_RANGE =
-      new Attribute("player.entity_interaction_range", 9, 3F, 0F, 64F);
-  Attribute MINING_EFFICIENCY =
-      new Attribute("player.mining_efficiency", 19, 0F, 0F, 1024F);
-  Attribute SNEAKING_SPEED =
-      new Attribute("player.sneaking_speed", 25, 0.3F, 0F, 1F);
 
   /**
    * Gets the name of the player.

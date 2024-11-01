@@ -1,7 +1,5 @@
 package eu.sculkpowered.server.attribute;
 
-import eu.sculkpowered.server.entity.Zombie;
-import eu.sculkpowered.server.entity.player.Player;
 import eu.sculkpowered.server.registry.Registry;
 import eu.sculkpowered.server.registry.SimpleRegistry;
 
@@ -9,37 +7,37 @@ public final class AttributeRegistry {
 
   public static Registry<Attribute> get() {
     final var registry = new SimpleRegistry<>("minecraft:attribute",
-        GenericAttribute.ARMOR);
-    registry.register(GenericAttribute.ARMOR_TOUGHNESS);
-    registry.register(GenericAttribute.ATTACK_DAMAGE);
-    registry.register(GenericAttribute.ATTACK_KNOCKBACK);
-    registry.register(GenericAttribute.ATTACK_SPEED);
-    registry.register(Player.BLOCK_BREAK_SPEED);
-    registry.register(Player.BLOCK_INTERACTION_RANGE);
-    registry.register(GenericAttribute.BURNING_TIME);
-    registry.register(GenericAttribute.EXPLOSION_KNOCKBACK_RESISTANCE);
-    registry.register(Player.ENTITY_INTERACTION_RANGE);
-    registry.register(GenericAttribute.FALL_DAMAGE_MULTIPLIER);
-    registry.register(GenericAttribute.FLYING_SPEED);
-    registry.register(GenericAttribute.FOLLOW_RANGE);
-    registry.register(GenericAttribute.GRAVITY);
-    registry.register(GenericAttribute.JUMP_STRENGTH);
-    registry.register(GenericAttribute.KNOCKBACK_RESISTANCE);
-    registry.register(GenericAttribute.LUCK);
-    registry.register(GenericAttribute.MAX_ABSORPTION);
-    registry.register(GenericAttribute.MAX_HEALTH);
-    registry.register(Player.MINING_EFFICIENCY);
-    registry.register(GenericAttribute.MOVEMENT_EFFICIENCY);
-    registry.register(GenericAttribute.MOVEMENT_SPEED);
-    registry.register(GenericAttribute.OXYGEN_BONUS);
-    registry.register(GenericAttribute.SAFE_FALL_DISTANCE);
-    registry.register(GenericAttribute.SCALE);
-    registry.register(Player.SNEAKING_SPEED);
-    registry.register(Zombie.SPAWN_REINFORCEMENTS);
-    registry.register(GenericAttribute.STEP_HEIGHT);
-    registry.register(GenericAttribute.SUBMERGED_MINING_SPEED);
-    registry.register(GenericAttribute.SWEEPING_DAMAGE_RATIO);
-    registry.register(GenericAttribute.WATER_MOVEMENT_EFFICIENCY);
+        Attributes.ARMOR);
+    registry.register(Attributes.ARMOR_TOUGHNESS);
+    registry.register(Attributes.ATTACK_DAMAGE);
+    registry.register(Attributes.ATTACK_KNOCKBACK);
+    registry.register(Attributes.ATTACK_SPEED);
+    registry.register(Attributes.BLOCK_BREAK_SPEED);
+    registry.register(Attributes.BLOCK_INTERACTION_RANGE);
+    registry.register(Attributes.BURNING_TIME);
+    registry.register(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE);
+    registry.register(Attributes.ENTITY_INTERACTION_RANGE);
+    registry.register(Attributes.FALL_DAMAGE_MULTIPLIER);
+    registry.register(Attributes.FLYING_SPEED);
+    registry.register(Attributes.FOLLOW_RANGE);
+    registry.register(Attributes.GRAVITY);
+    registry.register(Attributes.JUMP_STRENGTH);
+    registry.register(Attributes.KNOCKBACK_RESISTANCE);
+    registry.register(Attributes.LUCK);
+    registry.register(Attributes.MAX_ABSORPTION);
+    registry.register(Attributes.MAX_HEALTH);
+    registry.register(Attributes.MINING_EFFICIENCY);
+    registry.register(Attributes.MOVEMENT_EFFICIENCY);
+    registry.register(Attributes.MOVEMENT_SPEED);
+    registry.register(Attributes.OXYGEN_BONUS);
+    registry.register(Attributes.SAFE_FALL_DISTANCE);
+    registry.register(Attributes.SCALE);
+    registry.register(Attributes.SNEAKING_SPEED);
+    registry.register(Attributes.SPAWN_REINFORCEMENTS);
+    registry.register(Attributes.STEP_HEIGHT);
+    registry.register(Attributes.SUBMERGED_MINING_SPEED);
+    registry.register(Attributes.SWEEPING_DAMAGE_RATIO);
+    registry.register(Attributes.WATER_MOVEMENT_EFFICIENCY);
     return registry;
   }
 }
