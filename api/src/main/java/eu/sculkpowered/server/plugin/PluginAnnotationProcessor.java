@@ -13,7 +13,7 @@ import javax.tools.StandardLocation;
 /**
  * Represents an annotation processor that creates the plugin file for a plugin.
  */
-@SupportedAnnotationTypes("io.github.sculkpowered.server.plugin.PluginDescription")
+@SupportedAnnotationTypes("eu.sculkpowered.server.plugin.PluginDescription")
 public final class PluginAnnotationProcessor extends AbstractProcessor {
 
   @Override
