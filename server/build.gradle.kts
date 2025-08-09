@@ -41,14 +41,14 @@ tasks {
             attributes["Multi-Release"] = true
             attributes["Implementation-Title"] = "Sculk-Server"
             attributes["Implementation-Vendor"] = "SculkPowered Contributors"
-            val gitCommit = ByteArrayOutputStream().use {
+            val gitCommit = "" /*ByteArrayOutputStream().use {
                 exec {
                     executable = "git"
                     standardOutput = it
                     args = listOf("rev-parse", "HEAD")
                 }
                 it.toString().trim().substring(0, 8)
-            }
+            }*/ // TODO
             attributes["Implementation-Version"] = "${project.version} (git-$gitCommit)"
         }
     }
