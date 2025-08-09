@@ -5,10 +5,11 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollIoHandler;
 import io.netty.channel.epoll.EpollServerSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,10 +27,10 @@ public final class NettyServer {
   }
 
   public void connect(final String host, final int port) {
-    final var bossLoopGroup =
-        Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
-    final var workerLoopGroup =
-        Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
+    final var factory =
+        Epoll.isAvailable() ? EpollIoHandler.newFactory() : NioIoHandler.newFactory();
+    final var bossLoopGroup = new MultiThreadIoEventLoopGroup(factory);
+    final var workerLoopGroup = new MultiThreadIoEventLoopGroup(factory);
 
     new ServerBootstrap()
         .channelFactory(

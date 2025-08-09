@@ -171,7 +171,7 @@ public final class Buffer {
       throw new AssertionError(
           "Length should be lower than capacity. (" + capacity + " <" + length + ")");
     }
-    return this.buf.readCharSequence(length, UTF_8).toString();
+    return this.buf.readString(length, UTF_8);
   }
 
   public @NotNull Buffer writeString(String value) {
