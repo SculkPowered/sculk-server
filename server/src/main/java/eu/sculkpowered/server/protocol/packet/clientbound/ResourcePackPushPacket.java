@@ -29,7 +29,15 @@ public final class ResourcePackPushPacket implements ClientboundPacket {
 
   @Override
   public void encode(Buffer buf) {
-
+    buf.writeUniqueId(this.uniqueId)
+        .writeString(this.url)
+        .writeString(this.hash)
+        .writeBoolean(this.forced);
+    if (this.prompt != null) {
+      buf.writeBoolean(true).writeComponent(this.prompt);
+    } else {
+      buf.writeBoolean(false);
+    }
   }
 
   @Override

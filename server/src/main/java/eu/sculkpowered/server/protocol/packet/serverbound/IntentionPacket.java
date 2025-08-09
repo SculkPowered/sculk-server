@@ -1,23 +1,22 @@
 package eu.sculkpowered.server.protocol.packet.serverbound;
 
 import eu.sculkpowered.server.protocol.Buffer;
-import eu.sculkpowered.server.protocol.State;
 import eu.sculkpowered.server.protocol.packet.PacketHandler;
 import eu.sculkpowered.server.protocol.packet.ServerboundPacket;
 
-public final class Intention implements ServerboundPacket {
+public final class IntentionPacket implements ServerboundPacket {
 
   private int version;
   private String serverAddress;
   private int port;
-  private State nextStatus;
+  private int intent;
 
   @Override
   public void decode(Buffer buf) {
     this.version = buf.readVarInt();
     this.serverAddress = buf.readString();
     this.port = buf.readUnsignedShort();
-    this.nextStatus = buf.readVarInt() == 1 ? State.STATUS : State.LOGIN;
+    this.intent = buf.readVarInt();
   }
 
   @Override
@@ -37,8 +36,8 @@ public final class Intention implements ServerboundPacket {
     return this.port;
   }
 
-  public State nextStatus() {
-    return this.nextStatus;
+  public int intent() {
+    return this.intent;
   }
 
   @Override
@@ -60,7 +59,7 @@ public final class Intention implements ServerboundPacket {
         "version=" + this.version +
         ", serverAddress='" + this.serverAddress + '\'' +
         ", port=" + this.port +
-        ", nextStatus=" + this.nextStatus +
+        ", intent=" + this.intent +
         '}';
   }
 }

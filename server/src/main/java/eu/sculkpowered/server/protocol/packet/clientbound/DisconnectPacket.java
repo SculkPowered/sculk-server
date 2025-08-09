@@ -6,21 +6,21 @@ import net.kyori.adventure.text.Component;
 
 public final class DisconnectPacket implements ClientboundPacket {
 
-  private final Component text;
+  private final Component reason;
 
-  public DisconnectPacket(final Component text) {
-    this.text = text;
+  public DisconnectPacket(final Component reason) {
+    this.reason = reason;
   }
 
   @Override
   public void encode(Buffer buf) {
-    buf.writeComponent(this.text);
+    buf.writeComponent(this.reason);
   }
 
   @Override
   public String toString() {
     return "DisconnectPacket{" +
-        "text=" + this.text +
+        "text=" + this.reason +
         '}';
   }
 }

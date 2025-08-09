@@ -8,7 +8,7 @@ public final class ClientInformationWrapper implements PlayerSettings {
 
   private static final ClientInformationPacket DEFAULT =
       new ClientInformationPacket("en_US", (byte) 10, ChatMode.ENABLED, true,
-          127, Hand.RIGHT, true, false);
+          127, Hand.RIGHT, true, false, 0);
 
   private ClientInformationPacket clientInformation = DEFAULT;
   private Locale locale;

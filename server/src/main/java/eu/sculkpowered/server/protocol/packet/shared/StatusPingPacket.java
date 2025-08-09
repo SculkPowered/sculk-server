@@ -7,16 +7,16 @@ import eu.sculkpowered.server.protocol.packet.ServerboundPacket;
 
 public final class StatusPingPacket implements ServerboundPacket, ClientboundPacket {
 
-  private long randomId;
+  private long time;
 
   @Override
   public void decode(Buffer buf) {
-    this.randomId = buf.readLong();
+    this.time = buf.readLong();
   }
 
   @Override
   public void encode(Buffer buf) {
-    buf.writeLong(this.randomId);
+    buf.writeLong(this.time);
   }
 
   @Override
@@ -37,7 +37,7 @@ public final class StatusPingPacket implements ServerboundPacket, ClientboundPac
   @Override
   public String toString() {
     return "StatusPing{" +
-        "randomId=" + this.randomId +
+        "time=" + this.time +
         '}';
   }
 }

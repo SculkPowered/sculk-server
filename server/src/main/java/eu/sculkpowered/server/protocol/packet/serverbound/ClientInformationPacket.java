@@ -18,12 +18,13 @@ public final class ClientInformationPacket implements ServerboundPacket {
   private PlayerSettings.Hand mainHand;
   private boolean enableTextFiltering;
   private boolean allowServerListings;
+  private int particleStatus;
 
   public ClientInformationPacket(final String locale, final byte viewDistance,
       final PlayerSettings.ChatMode chatMode,
       final boolean chatColors, final int skinParts,
-      final PlayerSettings.Hand mainHand,
-      final boolean enableTextFiltering, final boolean allowServerListings) {
+      final PlayerSettings.Hand mainHand, final boolean enableTextFiltering,
+      final boolean allowServerListings, final int particleStatus) {
     this.locale = locale;
     this.viewDistance = viewDistance;
     this.chatMode = chatMode;
@@ -32,6 +33,7 @@ public final class ClientInformationPacket implements ServerboundPacket {
     this.mainHand = mainHand;
     this.enableTextFiltering = enableTextFiltering;
     this.allowServerListings = allowServerListings;
+    this.particleStatus = particleStatus;
   }
 
   private ClientInformationPacket() {}
@@ -46,6 +48,7 @@ public final class ClientInformationPacket implements ServerboundPacket {
     this.mainHand = buf.readEnum(PlayerSettings.Hand.class);
     this.enableTextFiltering = buf.readBoolean();
     this.allowServerListings = buf.readBoolean();
+    this.particleStatus = buf.readVarInt();
   }
 
   @Override
@@ -64,6 +67,7 @@ public final class ClientInformationPacket implements ServerboundPacket {
         ", mainHand=" + this.mainHand +
         ", enableTextFiltering=" + this.enableTextFiltering +
         ", allowServerListings=" + this.allowServerListings +
+        ", particleStatus=" + this.particleStatus +
         '}';
   }
 
@@ -97,5 +101,9 @@ public final class ClientInformationPacket implements ServerboundPacket {
 
   public boolean allowServerListings() {
     return this.allowServerListings;
+  }
+
+  public int particleStatus() {
+    return this.particleStatus;
   }
 }

@@ -4,7 +4,6 @@ import eu.sculkpowered.server.entity.TeleportEntityPacket;
 import eu.sculkpowered.server.protocol.packet.ClientboundPacket;
 import eu.sculkpowered.server.protocol.packet.ServerboundPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.AddEntityPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.AddExperienceOrbPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.AnimatePacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.AwardStatsPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.BlockChangedAckPacket;
@@ -25,10 +24,10 @@ import eu.sculkpowered.server.protocol.packet.clientbound.CustomQueryPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.DisconnectPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.EntityEventPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.GameProfilePacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginFinishedPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LevelChunkWithLightPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginDisconnectPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LoginPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.MoveEntityPosRotPacket;
@@ -86,7 +85,7 @@ import eu.sculkpowered.server.protocol.packet.serverbound.ContainerClickPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.CustomQueryAnswerPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.EditBookPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.HelloPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.Intention;
+import eu.sculkpowered.server.protocol.packet.serverbound.IntentionPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.InteractPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.KeyPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.LoginAcknowledgedPacket;
@@ -121,7 +120,7 @@ public enum State {
   HANDSHAKE(
       clientBound(),
       serverBound()
-          .register(Intention::new)
+          .register(IntentionPacket::new)
   ),
   STATUS(
       clientBound()
@@ -133,9 +132,9 @@ public enum State {
   ),
   LOGIN(
       clientBound()
-          .register(LoginDisconnect.class)
+          .register(LoginDisconnectPacket.class)
           .register(eu.sculkpowered.server.protocol.packet.clientbound.HelloPacket.class)
-          .register(GameProfilePacket.class)
+          .register(LoginFinishedPacket.class)
           .register(LoginCompressionPacket.class)
           .register(CustomQueryPacket.class)
           .skip(), // Cookie Request
@@ -163,7 +162,9 @@ public enum State {
           .register(UpdateTagsPacket.class)
           .skip() // Select Known Packs
           .skip() // Custom Report Details
-          .skip(), // Server Links,
+          .skip() // Server Links
+          .skip() // Clear Dialog
+          .skip(), // Show Dialog
       serverBound()
           .register(ClientInformationPacket.SUPPLIER)
           .skip() // Cookie Response
@@ -173,12 +174,12 @@ public enum State {
           .skip() // Pong
           .skip() // Resource Pack
           .skip() // Select Known Packs
+          .skip() // Custom Click Action
   ),
   PLAY(
       clientBound()
           .skip() // Bundle Delimiter
           .register(AddEntityPacket.class)
-          .register(AddExperienceOrbPacket.class)
           .register(AnimatePacket.class)
           .register(AwardStatsPacket.class)
           .register(BlockChangedAckPacket.class)

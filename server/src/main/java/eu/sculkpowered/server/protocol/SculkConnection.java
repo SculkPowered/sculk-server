@@ -38,8 +38,8 @@ import eu.sculkpowered.server.protocol.packet.handler.LoginPacketHandler;
 import eu.sculkpowered.server.protocol.packet.handler.PlayPacketHandler;
 import eu.sculkpowered.server.protocol.packet.handler.StatusPacketHandler;
 import eu.sculkpowered.server.protocol.packet.clientbound.LoginCompressionPacket;
-import eu.sculkpowered.server.protocol.packet.clientbound.LoginDisconnect;
-import eu.sculkpowered.server.protocol.packet.clientbound.GameProfilePacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginDisconnectPacket;
+import eu.sculkpowered.server.protocol.packet.clientbound.LoginFinishedPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.GameEventPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.LoginPacket;
 import eu.sculkpowered.server.protocol.packet.clientbound.PlayerInfoUpdatePacket;
@@ -154,7 +154,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
               List.of(properties));
         } catch (Exception e) {
           this.send(
-              new LoginDisconnect(
+              new LoginDisconnectPacket(
                   Component.text("Connect through your proxy!", NamedTextColor.RED)));
           return;
         }
@@ -172,7 +172,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       this.addCompressionHandler();
     }
 
-    this.send(new GameProfilePacket(profile));
+    this.send(new LoginFinishedPacket(profile));
     this.player = new SculkPlayer(this.server, this, profile);
   }
 

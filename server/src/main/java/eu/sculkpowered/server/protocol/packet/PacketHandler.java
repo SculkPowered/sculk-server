@@ -1,7 +1,7 @@
 package eu.sculkpowered.server.protocol.packet;
 
 import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
-import eu.sculkpowered.server.protocol.packet.serverbound.Intention;
+import eu.sculkpowered.server.protocol.packet.serverbound.IntentionPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.KeyPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.LoginAcknowledgedPacket;
 import eu.sculkpowered.server.protocol.packet.serverbound.CustomQueryAnswerPacket;
@@ -40,7 +40,7 @@ import eu.sculkpowered.server.protocol.packet.serverbound.StatusRequest;
 public abstract class PacketHandler {
 
   // Handshake
-  public boolean handle(final Intention intention) {
+  public boolean handle(final IntentionPacket intention) {
     return false;
   }
 

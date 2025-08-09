@@ -175,7 +175,7 @@ public final class SculkServer implements Server {
 
     this.nettyServer = new NettyServer(this);
     this.nettyServer.connect(this.configuration.host(), this.configuration.port());
-
+System.out.println("??????????");
     LOGGER.info("Done ({}s)!", DECIMAL_FORMAT
         .format((System.currentTimeMillis() - startTime) / 1000D));
 
