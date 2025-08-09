@@ -51,6 +51,7 @@ import eu.sculkpowered.server.protocol.packet.shared.CustomPayloadPacket;
 import eu.sculkpowered.server.protocol.packet.shared.FinishConfigurationPacket;
 import eu.sculkpowered.server.protocol.packet.shared.SelectKnownPacks;
 import eu.sculkpowered.server.registry.Registries;
+import eu.sculkpowered.server.registry.Registry;
 import eu.sculkpowered.server.util.MojangUtil;
 import eu.sculkpowered.server.world.Position;
 import eu.sculkpowered.server.world.SculkWorld;
@@ -65,12 +66,14 @@ import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 import javax.crypto.spec.SecretKeySpec;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.permission.PermissionChecker;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -193,7 +196,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
     this.send(new RegistryDataPacket(Registries.damageTypes()));
     this.send(new RegistryDataPacket(Registries.enchantments()));
     // TODO: this would be a part of the registry rewrite
-    /*this.send(new RegistryDataPacket(new Registry<>() {
+    this.send(new RegistryDataPacket(new Registry<>() {
       @Override
       public @NotNull String type() {
         return "wolf_variant";
@@ -283,7 +286,7 @@ public final class SculkConnection extends ChannelInboundHandlerAdapter implemen
       public @NotNull Entry defaultValue() {
         return null;
       }
-    }));*/
+    }));
     this.send(FinishConfigurationPacket.INSTANCE);
   }
 
