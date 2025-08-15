@@ -5,7 +5,7 @@ log4j = "2.24.3"
 jline = "3.30.5"
 
 [plugins]
-shadow = { id = "com.gradleup.shadow", version = "9.0.1" }
+shadow = { id = "com.gradleup.shadow", version = "9.0.2" }
 
 [libraries]
 netty-codec = { group = "io.netty", name = "netty-codec", version.ref = "netty" }
