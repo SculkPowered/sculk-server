@@ -159,8 +159,7 @@ public final class AnvilLoader extends DefaultChunkLoader {
       final var block = entry.getString("Name");
       final var properties = entry.getCompound("Properties");
       if (!properties.equals(CompoundBinaryTag.empty())) {
-        final var map = new HashMap<String, String>(
-            properties.keySet().size()); // TODO: change if #size is available
+        final var map = new HashMap<String, String>(properties.size());
         for (final var property : properties) {
           map.put(property.getKey(), ((StringBinaryTag) property.getValue()).value());
         }
