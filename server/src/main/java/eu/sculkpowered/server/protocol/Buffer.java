@@ -376,7 +376,7 @@ public final class Buffer {
       this
           .writeString(property.key())
           .writeString(property.value());
-      if (this.writeOptional(property)) {
+      if (this.writeOptional(property.signature())) {
         this.writeString(property.signature());
       }
     }
