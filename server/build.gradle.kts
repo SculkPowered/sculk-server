@@ -10,9 +10,6 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":server:appender"))
 
-    /*
-        We go back to netty v4, because at this point v5 is stick in the Alpha and is not frequently updated.
-     */
     implementation(libs.bundles.netty)
     implementation(variantOf(libs.netty.transport.epoll) { classifier("linux-x86_64") })
     implementation(variantOf(libs.netty.transport.epoll) { classifier("linux-aarch_64") })
