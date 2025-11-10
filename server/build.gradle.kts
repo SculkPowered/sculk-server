@@ -27,7 +27,9 @@ dependencies {
     implementation(libs.velocity.native)
     implementation(libs.zstd)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform)
+    testRuntimeOnly(libs.junit.engine)
 }
 
 repositories {
