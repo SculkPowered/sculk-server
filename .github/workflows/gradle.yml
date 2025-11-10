@@ -37,7 +37,7 @@ jobs:
           SONATYPE_USER: "${{ secrets.SONATYPE_USER }}"
           SONATYPE_PASSWORD: "${{ secrets.SONATYPE_PASSWORD }}"
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sculk-server
           path: server/build/libs
