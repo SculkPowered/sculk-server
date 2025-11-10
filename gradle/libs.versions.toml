@@ -2,7 +2,7 @@
 netty = "4.2.3.Final"
 adventure = "4.24.0"
 log4j = "2.24.3"
-jline = "3.30.5"
+jline = "3.30.6"
 junit = "5.11.4"
 
 [plugins]
