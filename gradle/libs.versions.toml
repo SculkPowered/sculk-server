@@ -31,7 +31,7 @@ jline = { group = "org.jline", name = "jline-reader", version.ref = "jline" }
 jansi = { group = "org.jline", name = "jansi", version.ref = "jline" }
 
 slf4j = "org.slf4j:slf4j-api:2.0.17"
-fastutil = "it.unimi.dsi:fastutil-core:8.5.16"
+fastutil = "it.unimi.dsi:fastutil-core:8.5.18"
 gson = "com.google.code.gson:gson:2.13.1"
 guava = "com.google.guava:guava:33.4.8-jre"
 brigadier = "com.mojang:brigadier:1.0.18"
