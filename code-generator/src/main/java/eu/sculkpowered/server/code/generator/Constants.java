@@ -20,6 +20,4 @@ final class Constants {
       .getParameterized(Map.class, String.class, JsonObject.class).getType();
   public static final Type STRING_STRING_MAP = TypeToken
       .getParameterized(Map.class, String.class, String.class).getType();
-  public static final Type STRING_STRING_ARRAY_MAP = TypeToken
-      .getParameterized(Map.class, String.class, String[].class).getType();
 }

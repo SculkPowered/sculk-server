@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 final class BlockGenerator extends Generator {
@@ -45,10 +46,11 @@ final class BlockGenerator extends Generator {
       }
 
       final var id = states[0].get("id").getAsInt();
-      blockAdder.add(key.split(":")[1] + "," + id + "," + (defId - id) +
+      final var value = Util.keyToValue(key);
+      blockAdder.add(value + "," + id + "," + (defId - id) +
           (stringBuilder.isEmpty() ? "" : "," + stringBuilder) + "\n");
 
-      blocks.add("public static final BlockState " + (key.split(":")[1].toUpperCase())
+      blocks.add("public static final BlockState " + (value.toUpperCase(Locale.ENGLISH))
           + " = " + "get(\"" + key + "\");");
     });
     this.append(blockPackage.resolve("Block.java"), blocks);

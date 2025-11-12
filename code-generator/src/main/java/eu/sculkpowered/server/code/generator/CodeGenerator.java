@@ -65,7 +65,7 @@ final class CodeGenerator extends Generator {
         if (key.equals("minecraft:marker") || key.equals("minecraft:player")) {
           continue;
         }
-        final var name = this.keyToName(key);
+        final var name = Util.snakeToCamelCase(Util.keyToValue(key));
         final var entityTypePath = entityPath.resolve(name + ".java");
         if (Files.notExists(entityTypePath)) {
           new ClassCreator(entityTypePath, "io.github.sculkpowered.server.entity", name)
@@ -138,7 +138,7 @@ final class CodeGenerator extends Generator {
       throws IOException {
     final var list = new ArrayList<Entry>(map.size());
     map.forEach((key, json) -> {
-      final var keyValue = key.split(":")[1];
+      final var keyValue = Util.keyToValue(key);
       list.add(new Entry(keyValue.toUpperCase(Locale.ENGLISH) + "(\"" + keyValue + "\"),",
           json.get("protocol_id").getAsInt()));
     });
