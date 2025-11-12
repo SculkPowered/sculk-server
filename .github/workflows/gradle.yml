@@ -28,7 +28,7 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x gradlew;
-          ./gradlew check shadowJar;
+          ./gradlew check server:shadowJar;
       - name: Publish
         if: false
         run: |
