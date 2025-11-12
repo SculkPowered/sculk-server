@@ -1,7 +1,7 @@
 package eu.sculkpowered.server.registry;
 
 import eu.sculkpowered.server.attribute.Attribute;
-import eu.sculkpowered.server.container.item.Material;
+import eu.sculkpowered.server.container.item.ItemType;
 import eu.sculkpowered.server.container.item.data.DataComponentType;
 import eu.sculkpowered.server.damage.DamageType;
 import eu.sculkpowered.server.enchantment.Enchantment;
@@ -18,7 +18,7 @@ public final class Registries {
   private static Registry.Mutable<Biome> BIOMES;
   private static Registry.Mutable<DamageType> DAMAGE_TYPES;
   private static Registry<BlockState> BLOCKS;
-  private static Registry<Material> MATERIALS;
+  private static Registry<ItemType> ITEMS;
   private static Registry<Enchantment> ENCHANTMENTS;
   private static Registry<PotionType> POTIONS;
   private static Registry<MobEffectType> MOB_EFFECTS;
@@ -45,8 +45,8 @@ public final class Registries {
     return BLOCKS;
   }
 
-  public static Registry<Material> materials() {
-    return MATERIALS;
+  public static Registry<ItemType> items() {
+    return ITEMS;
   }
 
   public static Registry<Enchantment> enchantments() {
@@ -75,7 +75,7 @@ public final class Registries {
       final Registry.Mutable<Biome> biomes,
       final Registry.Mutable<DamageType> damageTypes,
       final Registry<BlockState> blocks,
-      final Registry<Material> materials,
+      final Registry<ItemType> items,
       final Registry<Enchantment> enchantments,
       final Registry<PotionType> potions,
       final Registry<MobEffectType> mobEffects,
@@ -86,7 +86,7 @@ public final class Registries {
     BIOMES = biomes;
     DAMAGE_TYPES = damageTypes;
     BLOCKS = blocks;
-    MATERIALS = materials;
+    ITEMS = items;
     ENCHANTMENTS = enchantments;
     POTIONS = potions;
     MOB_EFFECTS = mobEffects;

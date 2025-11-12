@@ -13,30 +13,30 @@ public final class ItemStack {
   /**
    * The default item.
    */
-  private static final ItemStack EMPTY = ItemStack.itemStack(Material.AIR, 0);
+  private static final ItemStack EMPTY = ItemStack.itemStack(ItemType.AIR, 0);
 
-  private final Material material;
+  private final ItemType type;
   private final int amount;
   private final DataComponents components;
 
   private ItemStack(
-      final @NotNull Material material,
+      final @NotNull ItemType type,
       final int amount,
       final @NotNull DataComponents components
   ) {
-    this.material = material;
+    this.type = type;
     this.amount = amount;
     this.components = components;
   }
 
   /**
-   * Gets the material of an item.
+   * Gets the type of the item.
    *
-   * @return the material of item
+   * @return the type of item
    * @since 1.0.0
    */
-  public Material material() {
-    return this.material;
+  public ItemType type() {
+    return this.type;
   }
 
   /**
@@ -56,11 +56,11 @@ public final class ItemStack {
    * @since 1.0.0
    */
   public @NotNull ItemStack amount(final int amount) {
-    return new ItemStack(this.material, amount, this.components);
+    return new ItemStack(this.type, amount, this.components);
   }
 
   public @NotNull ItemStack withComponents(final DataComponents components) {
-    return new ItemStack(this.material, this.amount, components);
+    return new ItemStack(this.type, this.amount, components);
   }
 
   /**
@@ -80,13 +80,13 @@ public final class ItemStack {
    * @since 1.0.0
    */
   public boolean isEmpty() {
-    return this.material == Material.AIR || this.amount == 0;
+    return this.type == ItemType.AIR || this.amount == 0;
   }
 
   public <T> T get(final @NotNull DataComponentType<T> type) {
     final var value = this.components.get(type);
     if (value == null) {
-      return Objects.requireNonNull(this.material.components().get(type)).get();
+      return Objects.requireNonNull(this.type.components().get(type)).get();
     } else if (value.isPresent()) {
       return value.get();
     }
@@ -96,32 +96,32 @@ public final class ItemStack {
   @Override
   public String toString() {
     return "ItemStack{" +
-        "material=" + this.material +
+        "type=" + this.type +
         ", amount=" + this.amount +
         '}';
   }
 
-  public static @NotNull ItemStack itemStack(final @NotNull Material material) {
-    return itemStack(material, 1);
+  public static @NotNull ItemStack itemStack(final @NotNull ItemType type) {
+    return itemStack(type, 1);
   }
 
-  public static @NotNull ItemStack itemStack(final @NotNull Material material, final int amount) {
-    return itemStack(material, amount, DataComponents.empty());
+  public static @NotNull ItemStack itemStack(final @NotNull ItemType type, final int amount) {
+    return itemStack(type, amount, DataComponents.empty());
   }
 
   public static @NotNull ItemStack itemStack(
-      final @NotNull Material material,
+      final @NotNull ItemType type,
       final @NotNull DataComponents components
   ) {
-    return itemStack(material, 1, components);
+    return itemStack(type, 1, components);
   }
 
   public static @NotNull ItemStack itemStack(
-      final @NotNull Material material,
+      final @NotNull ItemType type,
       final int amount,
       final @NotNull DataComponents components
       ) {
-    return new ItemStack(material, amount, components);
+    return new ItemStack(type, amount, components);
   }
 
   public static @NotNull ItemStack empty() {

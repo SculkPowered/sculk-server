@@ -17,7 +17,7 @@ import eu.sculkpowered.server.container.SculkEnchantingTableContainer;
 import eu.sculkpowered.server.container.SculkFurnaceContainer;
 import eu.sculkpowered.server.container.SculkLoomContainer;
 import eu.sculkpowered.server.container.SculkStonecutterContainer;
-import eu.sculkpowered.server.container.item.Material;
+import eu.sculkpowered.server.container.item.ItemType;
 import eu.sculkpowered.server.container.item.data.DataComponentTypeRegistry;
 import eu.sculkpowered.server.damage.DamageTypeRegistry;
 import eu.sculkpowered.server.enchantment.Enchantment;
@@ -109,7 +109,7 @@ public final class SculkServer implements Server {
         new SimpleRegistry<>("minecraft:worldgen/biome", Biome.PLAINS),
         DamageTypeRegistry.get(),
         BlockRegistry.get(),
-        new EnumRegistry<>("minecraft:item", Material.AIR),
+        new EnumRegistry<>("minecraft:item", ItemType.AIR),
         new EnumRegistry<>("minecraft:enchantment", Enchantment.EFFICIENCY),
         new EnumRegistry<>("minecraft:potion", PotionType.AWKWARD),
         new EnumRegistry<>("minecraft:mob_effect", MobEffectType.SPEED),

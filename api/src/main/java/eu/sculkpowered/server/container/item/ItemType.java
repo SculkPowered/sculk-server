@@ -15,9 +15,9 @@ import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An enum of all materials supported.
+ * An enum of all item types supported.
  */
-public enum Material implements Registry.Entry {
+public enum ItemType implements Registry.Entry {
 
   // START
   AIR("air"),
@@ -1358,7 +1358,7 @@ public enum Material implements Registry.Entry {
 
   private final Key key;
 
-  Material(@Subst("value") final String key) {
+  ItemType(@Subst("value") final String key) {
     this.key = Key.key(Key.MINECRAFT_NAMESPACE, key);
   }
 
@@ -1388,7 +1388,7 @@ public enum Material implements Registry.Entry {
     return CompoundBinaryTag.empty();
   }
 
-  public static Material get(final int protocolId) {
-    return Registries.materials().get(protocolId);
+  public static ItemType get(final int protocolId) {
+    return Registries.items().get(protocolId);
   }
 }

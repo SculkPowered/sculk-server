@@ -3,7 +3,7 @@ package eu.sculkpowered.server.protocol;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import eu.sculkpowered.server.container.item.ItemStack;
-import eu.sculkpowered.server.container.item.Material;
+import eu.sculkpowered.server.container.item.ItemType;
 import eu.sculkpowered.server.container.item.data.DataComponentType;
 import eu.sculkpowered.server.container.item.data.DataComponents;
 import eu.sculkpowered.server.container.item.data.SculkDataComponentType;
@@ -247,14 +247,14 @@ public final class Buffer {
     if (amount == 0) {
       return ItemStack.empty();
     }
-    return ItemStack.itemStack(Material.get(this.readVarInt()), amount, this.readDataComponents());
+    return ItemStack.itemStack(ItemType.get(this.readVarInt()), amount, this.readDataComponents());
   }
 
   public @NotNull Buffer writeItem(final @NotNull ItemStack item) {
     if (!item.isEmpty()) {
       this
           .writeVarInt(item.amount())
-          .writeVarInt(item.material().id())
+          .writeVarInt(item.type().id())
           .writeDataComponents(item.components().components());
     } else {
       this.writeVarInt(0);

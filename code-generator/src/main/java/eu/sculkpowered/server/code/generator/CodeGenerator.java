@@ -25,13 +25,13 @@ final class CodeGenerator extends Generator {
       new CodeGenerator().generate(tmp.resolve("generated"));
     } finally {
       try (final var stream = Files.walk(tmp).sorted(Comparator.reverseOrder())) {
-        stream.forEach(path -> {
+        /*stream.forEach(path -> {
           try {
             Files.delete(path);
           } catch (IOException e) {
             throw new RuntimeException(e);
           }
-        });
+        });*/
       }
     }
   }
@@ -47,7 +47,7 @@ final class CodeGenerator extends Generator {
       final var json = GSON.fromJson(reader, JsonObject.class);
 
       this.generateRegistry(json.get("minecraft:item").getAsJsonObject(),
-          API_PACKAGE.resolve("container").resolve("item").resolve("Material.java"));
+          API_PACKAGE.resolve("container").resolve("item").resolve("ItemType.java"));
 
       this.generateRegistry(json.get("minecraft:potion").getAsJsonObject(),
           API_PACKAGE.resolve("potion").resolve("PotionType.java"));
