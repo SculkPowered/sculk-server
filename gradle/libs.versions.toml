@@ -3,7 +3,7 @@ netty = "4.2.7.Final"
 adventure = "4.24.0"
 log4j = "2.25.2"
 jline = "3.30.6"
-junit = "5.11.4"
+junit = "6.0.2"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
@@ -40,7 +40,7 @@ zstd = "com.github.luben:zstd-jni:1.5.7-6"
 
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
 junit-platform = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
-junit-engine = { group = "org.junit.platform", name = "junit-platform-launcher", version = "1.11.4" }
+junit-engine = { group = "org.junit.platform", name = "junit-platform-launcher", version = "6.0.2" }
 
 [bundles]
 netty = ["netty-codec", "netty-transport", "netty-transport-epoll"]
