@@ -1,6 +1,6 @@
 [versions]
 netty = "4.2.7.Final"
-adventure = "4.24.0"
+adventure = "4.26.1"
 log4j = "2.25.2"
 jline = "3.30.6"
 junit = "5.11.4"
